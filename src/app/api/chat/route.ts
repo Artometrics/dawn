@@ -19,7 +19,12 @@ const xai = createOpenAI({
 
 export async function POST(req: Request) {
   try {
-    const { messages, model = 'gemini-2.0-flash', system, codeContext } = await req.json();
+    const { 
+      messages, 
+      model = 'gemini-2.0-flash', 
+      teammate,
+      codeContext 
+    } = await req.json();
 
     let selectedModel;
 
@@ -32,14 +37,40 @@ export async function POST(req: Request) {
       selectedModel = openrouter(model);
     }
 
-    const systemPrompt = [
-      system || 'You are Dawn: a high-leverage software engineer, code intelligence assistant, and reasoning engine inspired by Grok and Cursor.',
-      codeContext ? `\n\n--- ACTIVE CODE CONTEXT ---\nFile: ${codeContext.filename || 'untitled'}\n\`\`\`${codeContext.language || 'typescript'}\n${codeContext.content}\n\`\`\`\n------------------------` : '',
-    ].join('');
+    // Build system prompt with Teammate identity, instructions, and persistent memories
+    const systemParts: string[] = [];
+
+    if (teammate) {
+      systemParts.push(
+        `You are ${teammate.name}, serving in the role of "${teammate.role}" inside Dawn Studio.`,
+        teammate.instructions
+      );
+
+      if (teammate.memory && teammate.memory.length > 0) {
+        systemParts.push(
+          '\n--- PERSISTENT MEMORIES & PROJECT NOTES ---',
+          ...teammate.memory.map((m: string, i: number) => `${i + 1}. ${m}`),
+          '--------------------------------------------'
+        );
+      }
+    } else {
+      systemParts.push(
+        'You are Dawn: a high-leverage software engineer, code intelligence assistant, and reasoning engine inspired by Grok and Cursor.'
+      );
+    }
+
+    if (codeContext && codeContext.content) {
+      systemParts.push(
+        `\n--- ACTIVE CODE CONTEXT ---`,
+        `File: ${codeContext.filename || 'untitled'} (${codeContext.language || 'typescript'})`,
+        `\`\`\`${codeContext.language || 'typescript'}\n${codeContext.content}\n\`\`\``,
+        `---------------------------`
+      );
+    }
 
     const result = streamText({
       model: selectedModel,
-      system: systemPrompt,
+      system: systemParts.join('\n\n'),
       messages,
     });
 

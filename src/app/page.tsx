@@ -13,8 +13,16 @@ import {
   Zap, 
   ChevronDown,
   Layers,
-  SquareCode
+  SquareCode,
+  Users,
+  Brain,
+  Plus,
+  Terminal,
+  Settings,
+  Play
 } from 'lucide-react';
+import { Teammate, DEFAULT_TEAMMATES } from '@/types/teammate';
+import { TeammateDialog } from '@/components/teammate-dialog';
 
 // Dynamic import for Monaco to prevent SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -23,6 +31,8 @@ interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  senderName?: string;
+  senderRole?: string;
 }
 
 const AVAILABLE_MODELS = [
@@ -33,20 +43,21 @@ const AVAILABLE_MODELS = [
   { id: 'anthropic/claude-3.7-sonnet', name: 'Claude 3.7 Sonnet', provider: 'OpenRouter', badge: 'Elite Coding' },
 ];
 
-const DEFAULT_CODE = `// Welcome to Dawn Studio
-// Your unified Cursor-style code editor + Grok & Gemini intelligence hub.
+const DEFAULT_CODE = `// Welcome to Dawn Studio (Artometrics)
+// Integrated with Code with Antonio's Grok Bot Teammate Engine
 
 interface AgentConfig {
   name: string;
+  role: string;
   provider: 'google' | 'xai' | 'openrouter';
   model: string;
-  temperature: number;
+  memory: string[];
 }
 
-export async function runDawnAgent(config: AgentConfig, prompt: string) {
-  console.log(\`[Dawn] Routing prompt via \${config.provider} (\${config.model})...\`);
-  // Highlight any code or ask in the right panel to edit or refactor
-  return { status: 'ready', prompt };
+export async function runDawnAgent(config: AgentConfig, task: string) {
+  console.log(\`[Dawn] Running task with \${config.name} (\${config.role})...\`);
+  // Highlight any code or ask your teammate on the right to review, refactor, or test
+  return { status: 'executing', task };
 }
 `;
 
@@ -54,13 +65,26 @@ export default function DawnStudio() {
   const [activeFile, setActiveFile] = useState('agent.ts');
   const [code, setCode] = useState(DEFAULT_CODE);
   const [language, setLanguage] = useState('typescript');
-  const [selectedModel, setSelectedModel] = useState('gemini-2.0-flash');
-  const [persona, setPersona] = useState<'cursor' | 'grok'>('grok');
+  const [viewMode, setViewMode] = useState<'editor' | 'terminal'>('editor');
   
+  // Teammates state (inspired by Antonio's Grok Bot clone)
+  const [teammates, setTeammates] = useState<Teammate[]>(DEFAULT_TEAMMATES);
+  const [activeTeammateId, setActiveTeammateId] = useState<string>('grok-strategist');
+  const [isTeammateDialogOpen, setIsTeammateDialogOpen] = useState(false);
+  const [editingTeammate, setEditingTeammate] = useState<Teammate | null>(null);
+
+  const activeTeammate = teammates.find((t) => t.id === activeTeammateId) || teammates[0];
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [terminalLogs, setTerminalLogs] = useState<string[]>([
+    'Dawn Studio v0.2.0 initialized.',
+    'Gateway ready: Google Gemini 2.0 Flash + Grok 2 / OpenRouter.',
+    '4 AI Teammates loaded into local memory.',
+    'Type instructions in the right panel to execute.',
+  ]);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -75,13 +99,31 @@ export default function DawnStudio() {
   };
 
   const applyCodeToEditor = (text: string) => {
-    // If text contains a markdown code block, extract the inner code
     const codeBlockMatch = text.match(/```(?:[a-zA-Z]+)?\n([\s\S]*?)```/);
     if (codeBlockMatch && codeBlockMatch[1]) {
       setCode(codeBlockMatch[1]);
     } else {
       setCode(text);
     }
+    setTerminalLogs((prev) => [
+      ...prev,
+      `[Editor] Updated ${activeFile} from ${activeTeammate.name}`,
+    ]);
+  };
+
+  const handleSaveTeammate = (newTeammate: Teammate) => {
+    setTeammates((prev) => {
+      const exists = prev.some((t) => t.id === newTeammate.id);
+      if (exists) {
+        return prev.map((t) => (t.id === newTeammate.id ? newTeammate : t));
+      }
+      return [...prev, newTeammate];
+    });
+    setActiveTeammateId(newTeammate.id);
+    setTerminalLogs((prev) => [
+      ...prev,
+      `[Team] Configured teammate: ${newTeammate.name} (${newTeammate.role})`,
+    ]);
   };
 
   const handleSendMessage = async (textToSend?: string) => {
@@ -100,11 +142,16 @@ export default function DawnStudio() {
     setIsLoading(true);
 
     const assistantId = (Date.now() + 1).toString();
-    setMessages((prev) => [...prev, { id: assistantId, role: 'assistant', content: '' }]);
-
-    const systemPrompt = persona === 'cursor'
-      ? 'You are Dawn in Cursor Mode: A laser-focused code editor assistant. When asked to write or modify code, provide direct, copy-paste ready implementations, minimal fluff, and precise explanations of changes.'
-      : 'You are Dawn in Grok Mode: A sharp, witty, highly autonomous engineering strategist and code partner. You challenge weak assumptions, provide high-velocity architecture insights, and write bulletproof code.';
+    setMessages((prev) => [
+      ...prev,
+      { 
+        id: assistantId, 
+        role: 'assistant', 
+        content: '',
+        senderName: activeTeammate.name,
+        senderRole: activeTeammate.role,
+      },
+    ]);
 
     try {
       const response = await fetch('/api/chat', {
@@ -112,8 +159,8 @@ export default function DawnStudio() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
-          model: selectedModel,
-          system: systemPrompt,
+          model: activeTeammate.model,
+          teammate: activeTeammate,
           codeContext: {
             filename: activeFile,
             language,
@@ -173,145 +220,219 @@ export default function DawnStudio() {
           </div>
         </div>
 
-        {/* Center: Model & Persona Selector */}
-        <div className="flex items-center gap-3">
-          {/* Persona Switch */}
-          <div className="flex bg-zinc-900 border border-zinc-800 rounded-md p-0.5 text-xs">
+        {/* Center: Teammates Picker (Grok Bot Architecture) */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center bg-zinc-900/90 border border-zinc-800 rounded-lg p-1 gap-1">
+            <Users className="w-3.5 h-3.5 text-zinc-500 ml-1.5 mr-0.5" />
+            {teammates.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setActiveTeammateId(t.id)}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs transition-all ${
+                  activeTeammateId === t.id
+                    ? 'bg-zinc-800 text-zinc-100 font-medium shadow-sm'
+                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'
+                }`}
+              >
+                <span
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: t.accentColor }}
+                />
+                <span>{t.name}</span>
+                {t.memory.length > 0 && (
+                  <span className="text-[10px] text-zinc-400 bg-zinc-900 px-1 rounded font-mono">
+                    {t.memory.length}
+                  </span>
+                )}
+              </button>
+            ))}
             <button
-              onClick={() => setPersona('grok')}
-              className={`px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 ${
-                persona === 'grok' 
-                  ? 'bg-amber-500/20 text-amber-300 font-medium border border-amber-500/30' 
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
+              onClick={() => {
+                setEditingTeammate(null);
+                setIsTeammateDialogOpen(true);
+              }}
+              title="Add AI Teammate"
+              className="p-1 text-zinc-400 hover:text-amber-400 rounded hover:bg-zinc-800 transition-colors"
             >
-              <Zap className="w-3 h-3" />
-              Grok Mode
+              <Plus className="w-3.5 h-3.5" />
             </button>
-            <button
-              onClick={() => setPersona('cursor')}
-              className={`px-2.5 py-1 rounded transition-colors flex items-center gap-1.5 ${
-                persona === 'cursor' 
-                  ? 'bg-blue-500/20 text-blue-300 font-medium border border-blue-500/30' 
-                  : 'text-zinc-400 hover:text-zinc-200'
-              }`}
-            >
-              <Code2 className="w-3 h-3" />
-              Cursor Mode
-            </button>
-          </div>
-
-          {/* Model Dropdown */}
-          <div className="relative">
-            <select
-              value={selectedModel}
-              onChange={(e) => setSelectedModel(e.target.value)}
-              className="appearance-none bg-zinc-900 border border-zinc-800 text-xs rounded-md pl-3 pr-8 py-1.5 font-mono text-zinc-200 hover:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-amber-500 cursor-pointer"
-            >
-              {AVAILABLE_MODELS.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.name} ({m.provider})
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="w-3.5 h-3.5 text-zinc-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
 
         {/* Right Controls */}
         <div className="flex items-center gap-2">
-          <div className="text-[11px] text-zinc-500 font-mono hidden md:block">
-            Auto-sync: Active
-          </div>
+          <button
+            onClick={() => {
+              setEditingTeammate(activeTeammate);
+              setIsTeammateDialogOpen(true);
+            }}
+            className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200 bg-zinc-900 border border-zinc-800 px-2 py-1 rounded transition-colors"
+          >
+            <Settings className="w-3.5 h-3.5 text-zinc-500" />
+            <span>Config Bot</span>
+          </button>
         </div>
       </header>
 
       {/* Main Split Body */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left: Code Editor (Cursor Experience) */}
+        {/* Left: Code Editor + Terminal / Output Panel */}
         <div className="flex-1 flex flex-col border-r border-zinc-800/80 bg-[#1e1e1e]">
-          {/* File Tab Bar */}
-          <div className="h-9 bg-[#181818] border-b border-zinc-800/70 flex items-center px-2 gap-1 overflow-x-auto text-xs">
-            {['agent.ts', 'gateway.ts', 'schema.ts'].map((f) => (
+          {/* File Tab Bar + View Switcher */}
+          <div className="h-9 bg-[#181818] border-b border-zinc-800/70 flex items-center justify-between px-2 text-xs">
+            <div className="flex items-center gap-1 overflow-x-auto">
+              {['agent.ts', 'gateway.ts', 'schema.ts'].map((f) => (
+                <button
+                  key={f}
+                  onClick={() => {
+                    setActiveFile(f);
+                    setViewMode('editor');
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t border-t-2 text-xs font-mono transition-colors ${
+                    activeFile === f && viewMode === 'editor'
+                      ? 'bg-[#1e1e1e] border-amber-500 text-zinc-100 font-medium'
+                      : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
+                  }`}
+                >
+                  <FileCode className="w-3.5 h-3.5 text-amber-400" />
+                  {f}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-1.5 pr-2">
               <button
-                key={f}
-                onClick={() => setActiveFile(f)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t border-t-2 text-xs font-mono transition-colors ${
-                  activeFile === f
-                    ? 'bg-[#1e1e1e] border-amber-500 text-zinc-100 font-medium'
-                    : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
+                onClick={() => setViewMode(viewMode === 'editor' ? 'terminal' : 'editor')}
+                className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono transition-colors border ${
+                  viewMode === 'terminal'
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                    : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
                 }`}
               >
-                <FileCode className="w-3.5 h-3.5 text-amber-400" />
-                {f}
+                <Terminal className="w-3 h-3" />
+                <span>Console</span>
               </button>
-            ))}
-            <span className="ml-auto text-[11px] text-zinc-500 font-mono pr-2">
-              Context Attached
-            </span>
+              <span className="text-[11px] text-zinc-500 font-mono">
+                Context Attached
+              </span>
+            </div>
           </div>
 
-          {/* Monaco Editor */}
-          <div className="flex-1 relative">
-            <MonacoEditor
-              height="100%"
-              theme="vs-dark"
-              language={language}
-              value={code}
-              onChange={(value) => setCode(value || '')}
-              options={{
-                minimap: { enabled: false },
-                fontSize: 13,
-                fontFamily: 'JetBrains Mono, Menlo, Monaco, monospace',
-                lineNumbers: 'on',
-                scrollBeyondLastLine: false,
-                smoothScrolling: true,
-                cursorBlinking: 'smooth',
-                wordWrap: 'on',
-                renderLineHighlight: 'all',
-              }}
-            />
-          </div>
+          {/* Body: Editor or Terminal */}
+          {viewMode === 'editor' ? (
+            <div className="flex-1 relative">
+              <MonacoEditor
+                height="100%"
+                theme="vs-dark"
+                language={language}
+                value={code}
+                onChange={(value) => setCode(value || '')}
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 13,
+                  fontFamily: 'JetBrains Mono, Menlo, Monaco, monospace',
+                  lineNumbers: 'on',
+                  scrollBeyondLastLine: false,
+                  smoothScrolling: true,
+                  cursorBlinking: 'smooth',
+                  wordWrap: 'on',
+                  renderLineHighlight: 'all',
+                }}
+              />
+            </div>
+          ) : (
+            <div className="flex-1 bg-[#101216] p-4 font-mono text-xs text-zinc-300 overflow-y-auto space-y-1">
+              <div className="text-zinc-500 text-[11px] border-b border-zinc-800 pb-2 mb-2 flex items-center justify-between">
+                <span>DAWN SHELL OUTPUT & ACTIVITY LOGS</span>
+                <span className="text-emerald-400 font-mono">ONLINE</span>
+              </div>
+              {terminalLogs.map((log, index) => (
+                <div key={index} className="flex items-start gap-2">
+                  <span className="text-zinc-600 select-none">›</span>
+                  <span className="text-zinc-300">{log}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Right: AI Intelligence Panel (Grok / Gemini Chat) */}
+        {/* Right: AI Intelligence Panel (Antonio's Grok Bot Teammate Chat) */}
         <div className="w-[480px] flex flex-col bg-[#121418] border-l border-zinc-800/80">
-          {/* Chat Header */}
-          <div className="h-9 border-b border-zinc-800/70 px-3 flex items-center justify-between text-xs text-zinc-400 bg-[#15181e]">
-            <div className="flex items-center gap-1.5 font-medium text-zinc-200">
-              <Bot className="w-3.5 h-3.5 text-amber-400" />
-              <span>{persona === 'grok' ? 'Grok Intelligence' : 'Cursor Copilot'}</span>
+          {/* Active Teammate Header */}
+          <div className="h-12 border-b border-zinc-800/70 px-3 flex items-center justify-between text-xs text-zinc-400 bg-[#15181e]">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-7 h-7 rounded-lg flex items-center justify-center font-bold font-mono text-xs"
+                style={{ backgroundColor: `${activeTeammate.accentColor}25`, color: activeTeammate.accentColor }}
+              >
+                <Bot className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="font-medium text-zinc-200 flex items-center gap-1.5">
+                  <span>{activeTeammate.name}</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                </div>
+                <div className="text-[10px] text-zinc-500 truncate max-w-[220px]">
+                  {activeTeammate.role}
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-500">
-              <span>{activeFile}</span>
+
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded">
+                {activeTeammate.model}
+              </span>
             </div>
           </div>
+
+          {/* Teammate Persistent Memory Pill Bar */}
+          {activeTeammate.memory.length > 0 && (
+            <div className="bg-[#101216] border-b border-zinc-800/60 px-3 py-1.5 flex items-center gap-2 text-[11px] text-zinc-400 overflow-x-auto">
+              <Brain className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="text-[10px] uppercase font-mono text-zinc-500 shrink-0">Memory:</span>
+              <div className="flex items-center gap-1.5 truncate">
+                {activeTeammate.memory.map((m, i) => (
+                  <span
+                    key={i}
+                    title={m}
+                    className="truncate max-w-[140px] bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded text-[10px] text-zinc-300"
+                  >
+                    {m}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Messages Stream */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs select-text">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center text-zinc-500 p-6 space-y-3">
-                <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-amber-400">
-                  <Sparkles className="w-5 h-5" />
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
+                  style={{ backgroundColor: `${activeTeammate.accentColor}20`, color: activeTeammate.accentColor }}
+                >
+                  <Sparkles className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-zinc-300 font-semibold text-sm">Dawn Engine Ready</h3>
-                  <p className="text-xs text-zinc-500 max-w-[260px] mt-1">
-                    Ask questions, refactor <code className="text-amber-400/90">{activeFile}</code>, or instruct Dawn to write new systems.
+                  <h3 className="text-zinc-200 font-semibold text-sm">{activeTeammate.name}</h3>
+                  <p className="text-xs text-zinc-400 max-w-[280px] mt-1">
+                    {activeTeammate.instructions}
                   </p>
                 </div>
-                <div className="grid grid-cols-1 gap-1.5 w-full pt-2">
+                <div className="grid grid-cols-1 gap-1.5 w-full pt-3">
                   {[
-                    'Explain the agent loop in active code',
-                    'Add streaming response handling',
-                    'Convert to production Next.js route handler',
+                    `Review ${activeFile} for architecture flaws`,
+                    `Refactor to modular microservices pattern`,
+                    `Write full test suite for active code`,
                   ].map((preset) => (
                     <button
                       key={preset}
                       onClick={() => handleSendMessage(preset)}
-                      className="text-left px-2.5 py-1.5 rounded bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors text-[11px]"
+                      className="text-left px-3 py-1.5 rounded bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors text-[11px] flex items-center justify-between"
                     >
-                      → {preset}
+                      <span>→ {preset}</span>
+                      <Zap className="w-3 h-3 text-zinc-600" />
                     </button>
                   ))}
                 </div>
@@ -327,13 +448,15 @@ export default function DawnStudio() {
                   }`}
                 >
                   <div className="flex items-center justify-between font-mono text-[10px] text-zinc-500 mb-1.5">
-                    <span className="uppercase">{m.role === 'user' ? 'Kyle' : persona}</span>
+                    <span className="uppercase font-semibold text-zinc-400">
+                      {m.role === 'user' ? 'Kyle' : m.senderName || activeTeammate.name}
+                    </span>
                     <div className="flex items-center gap-1.5">
                       {m.role === 'assistant' && (
                         <button
                           onClick={() => applyCodeToEditor(m.content)}
-                          title="Apply code to editor"
-                          className="hover:text-amber-400 flex items-center gap-1"
+                          title="Apply code directly to Monaco editor"
+                          className="hover:text-amber-400 flex items-center gap-1 text-zinc-400 transition-colors"
                         >
                           <SquareCode className="w-3 h-3" />
                           <span>Apply</span>
@@ -341,7 +464,7 @@ export default function DawnStudio() {
                       )}
                       <button
                         onClick={() => copyToClipboard(m.content, m.id)}
-                        className="hover:text-zinc-300"
+                        className="hover:text-zinc-300 text-zinc-500"
                       >
                         {copiedId === m.id ? (
                           <Check className="w-3 h-3 text-emerald-400" />
@@ -358,9 +481,9 @@ export default function DawnStudio() {
               ))
             )}
             {isLoading && (
-              <div className="flex items-center gap-2 text-xs text-zinc-500 font-mono italic">
+              <div className="flex items-center gap-2 text-xs text-zinc-400 font-mono italic">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                Thinking & generating...
+                {activeTeammate.name} is thinking & analyzing code...
               </div>
             )}
             <div ref={chatEndRef} />
@@ -384,14 +507,19 @@ export default function DawnStudio() {
                     handleSendMessage();
                   }
                 }}
-                placeholder={`Ask ${persona === 'grok' ? 'Grok' : 'Dawn'} or type instruction... (Enter to send)`}
+                placeholder={`Ask ${activeTeammate.name} or type instruction... (Enter to send)`}
                 rows={2}
                 className="w-full bg-transparent px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none resize-none font-sans"
               />
               <div className="flex items-center justify-between px-2.5 py-1.5 border-t border-zinc-800/50 text-[11px] text-zinc-500">
-                <div className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  <span className="font-mono text-[10px]">{selectedModel}</span>
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: activeTeammate.accentColor }}
+                  />
+                  <span className="font-mono text-[10px] text-zinc-400">
+                    {activeTeammate.name} ({activeTeammate.model})
+                  </span>
                 </div>
                 <button
                   type="submit"
@@ -406,6 +534,14 @@ export default function DawnStudio() {
           </form>
         </div>
       </div>
+
+      {/* Teammate Creation & Configuration Modal */}
+      <TeammateDialog
+        open={isTeammateDialogOpen}
+        onOpenChange={setIsTeammateDialogOpen}
+        onSaveTeammate={handleSaveTeammate}
+        existingTeammate={editingTeammate}
+      />
     </div>
   );
 }
