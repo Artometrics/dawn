@@ -19,10 +19,14 @@ import {
   Plus,
   Terminal,
   Settings,
-  Play
+  Flame,
+  Wand2
 } from 'lucide-react';
 import { Teammate, DEFAULT_TEAMMATES } from '@/types/teammate';
 import { TeammateDialog } from '@/components/teammate-dialog';
+import { ChatAvatar } from '@/components/chat-avatar';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 // Dynamic import for Monaco to prevent SSR issues
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), { ssr: false });
@@ -33,15 +37,8 @@ interface Message {
   content: string;
   senderName?: string;
   senderRole?: string;
+  senderAvatarSeed?: string;
 }
-
-const AVAILABLE_MODELS = [
-  { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', provider: 'Google', badge: 'Ultra Fast' },
-  { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', provider: 'Google', badge: 'Deep Reasoning' },
-  { id: 'x-ai/grok-2-1212', name: 'Grok 2', provider: 'OpenRouter / xAI', badge: 'Grok Intel' },
-  { id: 'deepseek/deepseek-chat', name: 'DeepSeek V3', provider: 'OpenRouter', badge: 'Cost Efficient' },
-  { id: 'anthropic/claude-3.7-sonnet', name: 'Claude 3.7 Sonnet', provider: 'OpenRouter', badge: 'Elite Coding' },
-];
 
 const DEFAULT_CODE = `// Welcome to Dawn Studio (Artometrics)
 // Integrated with Code with Antonio's Grok Bot Teammate Engine
@@ -67,7 +64,7 @@ export default function DawnStudio() {
   const [language, setLanguage] = useState('typescript');
   const [viewMode, setViewMode] = useState<'editor' | 'terminal'>('editor');
   
-  // Teammates state (inspired by Antonio's Grok Bot clone)
+  // Teammates state (Code with Antonio Grok Bot architecture)
   const [teammates, setTeammates] = useState<Teammate[]>(DEFAULT_TEAMMATES);
   const [activeTeammateId, setActiveTeammateId] = useState<string>('grok-strategist');
   const [isTeammateDialogOpen, setIsTeammateDialogOpen] = useState(false);
@@ -80,10 +77,10 @@ export default function DawnStudio() {
   const [isLoading, setIsLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [terminalLogs, setTerminalLogs] = useState<string[]>([
-    'Dawn Studio v0.2.0 initialized.',
+    'Dawn Studio v0.3.0 initialized.',
+    'UI: Antonio Grok Bot styling + DiceBear Gaze avatars + Shadcn UI.',
     'Gateway ready: Google Gemini 2.0 Flash + Grok 2 / OpenRouter.',
-    '4 AI Teammates loaded into local memory.',
-    'Type instructions in the right panel to execute.',
+    '4 AI Teammates ready with persistent memory.',
   ]);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -150,6 +147,7 @@ export default function DawnStudio() {
         content: '',
         senderName: activeTeammate.name,
         senderRole: activeTeammate.role,
+        senderAvatarSeed: activeTeammate.avatarSeed,
       },
     ]);
 
@@ -203,83 +201,84 @@ export default function DawnStudio() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-[#0d0f12] text-zinc-100 font-sans overflow-hidden select-none">
+    <div className="flex flex-col h-screen w-screen bg-background text-foreground font-sans overflow-hidden select-none">
       {/* Top Navigation Bar */}
-      <header className="h-12 border-b border-zinc-800/80 bg-[#121418] flex items-center justify-between px-4 z-20">
+      <header className="h-13 border-b border-border bg-sidebar/80 backdrop-blur-md flex items-center justify-between px-4 z-20">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 font-mono font-bold tracking-wider text-sm bg-zinc-900 border border-zinc-700/60 px-2.5 py-1 rounded shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <span className="text-amber-400">DAWN</span>
-            <span className="text-zinc-500">//</span>
-            <span className="text-zinc-400 text-xs font-normal">STUDIO</span>
+          <div className="flex items-center gap-2 font-mono font-bold tracking-wider text-sm bg-muted/60 border border-border px-3 py-1 rounded-lg shadow-sm">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+            <span className="text-amber-500 font-extrabold tracking-tight">DAWN</span>
+            <span className="text-muted-foreground/60">//</span>
+            <span className="text-muted-foreground text-xs font-medium">STUDIO</span>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1.5 text-xs text-zinc-400 bg-zinc-900/60 px-2 py-0.5 rounded border border-zinc-800">
-            <Layers className="w-3.5 h-3.5 text-zinc-500" />
+          <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/30 px-2.5 py-1 rounded-md border border-border/60">
+            <Layers className="w-3.5 h-3.5 text-muted-foreground" />
             <span>Artometrics / dawn</span>
           </div>
         </div>
 
-        {/* Center: Teammates Picker (Grok Bot Architecture) */}
+        {/* Center: Teammates Picker (Antonio's Grok Bot Architecture) */}
         <div className="flex items-center gap-2">
-          <div className="flex items-center bg-zinc-900/90 border border-zinc-800 rounded-lg p-1 gap-1">
-            <Users className="w-3.5 h-3.5 text-zinc-500 ml-1.5 mr-0.5" />
+          <div className="flex items-center bg-muted/40 border border-border rounded-xl p-1 gap-1 shadow-inner">
+            <Users className="w-3.5 h-3.5 text-muted-foreground ml-2 mr-1" />
             {teammates.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setActiveTeammateId(t.id)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs transition-all ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer ${
                   activeTeammateId === t.id
-                    ? 'bg-zinc-800 text-zinc-100 font-medium shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50'
+                    ? 'bg-card text-foreground font-semibold shadow-sm border border-border/80'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                 }`}
               >
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: t.accentColor }}
-                />
+                <ChatAvatar seed={t.avatarSeed} className="size-4 rounded-full" />
                 <span>{t.name}</span>
                 {t.memory.length > 0 && (
-                  <span className="text-[10px] text-zinc-400 bg-zinc-900 px-1 rounded font-mono">
+                  <Badge variant="outline" className="text-[10px] h-4 px-1 py-0 font-mono">
                     {t.memory.length}
-                  </span>
+                  </Badge>
                 )}
               </button>
             ))}
-            <button
+            <Button
+              variant="ghost"
+              size="icon-xs"
               onClick={() => {
                 setEditingTeammate(null);
                 setIsTeammateDialogOpen(true);
               }}
               title="Add AI Teammate"
-              className="p-1 text-zinc-400 hover:text-amber-400 rounded hover:bg-zinc-800 transition-colors"
+              className="text-muted-foreground hover:text-amber-500 hover:bg-muted rounded-md ml-1"
             >
               <Plus className="w-3.5 h-3.5" />
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Right Controls */}
         <div className="flex items-center gap-2">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => {
               setEditingTeammate(activeTeammate);
               setIsTeammateDialogOpen(true);
             }}
-            className="flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-200 bg-zinc-900 border border-zinc-800 px-2 py-1 rounded transition-colors"
+            className="flex items-center gap-1.5 text-xs border-border bg-card/60 hover:bg-muted"
           >
-            <Settings className="w-3.5 h-3.5 text-zinc-500" />
+            <Settings className="w-3.5 h-3.5 text-muted-foreground" />
             <span>Config Bot</span>
-          </button>
+          </Button>
         </div>
       </header>
 
       {/* Main Split Body */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left: Code Editor + Terminal / Output Panel */}
-        <div className="flex-1 flex flex-col border-r border-zinc-800/80 bg-[#1e1e1e]">
+        <div className="flex-1 flex flex-col border-r border-border bg-[#18181b]">
           {/* File Tab Bar + View Switcher */}
-          <div className="h-9 bg-[#181818] border-b border-zinc-800/70 flex items-center justify-between px-2 text-xs">
+          <div className="h-10 bg-sidebar border-b border-border flex items-center justify-between px-2 text-xs">
             <div className="flex items-center gap-1 overflow-x-auto">
               {['agent.ts', 'gateway.ts', 'schema.ts'].map((f) => (
                 <button
@@ -288,33 +287,31 @@ export default function DawnStudio() {
                     setActiveFile(f);
                     setViewMode('editor');
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t border-t-2 text-xs font-mono transition-colors ${
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-t-lg border-t-2 text-xs font-mono transition-colors cursor-pointer ${
                     activeFile === f && viewMode === 'editor'
-                      ? 'bg-[#1e1e1e] border-amber-500 text-zinc-100 font-medium'
-                      : 'border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
+                      ? 'bg-[#18181b] border-amber-500 text-foreground font-medium shadow-sm'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30'
                   }`}
                 >
-                  <FileCode className="w-3.5 h-3.5 text-amber-400" />
+                  <FileCode className="w-3.5 h-3.5 text-amber-500" />
                   {f}
                 </button>
               ))}
             </div>
 
-            <div className="flex items-center gap-1.5 pr-2">
-              <button
+            <div className="flex items-center gap-2 pr-2">
+              <Button
+                variant={viewMode === 'terminal' ? 'secondary' : 'outline'}
+                size="xs"
                 onClick={() => setViewMode(viewMode === 'editor' ? 'terminal' : 'editor')}
-                className={`flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono transition-colors border ${
-                  viewMode === 'terminal'
-                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
-                    : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
-                }`}
+                className="font-mono text-[11px]"
               >
-                <Terminal className="w-3 h-3" />
-                <span>Console</span>
-              </button>
-              <span className="text-[11px] text-zinc-500 font-mono">
+                <Terminal className="w-3 h-3 mr-1" />
+                Console
+              </Button>
+              <Badge variant="outline" className="text-[10px] font-mono text-muted-foreground">
                 Context Attached
-              </span>
+              </Badge>
             </div>
           </div>
 
@@ -341,15 +338,18 @@ export default function DawnStudio() {
               />
             </div>
           ) : (
-            <div className="flex-1 bg-[#101216] p-4 font-mono text-xs text-zinc-300 overflow-y-auto space-y-1">
-              <div className="text-zinc-500 text-[11px] border-b border-zinc-800 pb-2 mb-2 flex items-center justify-between">
+            <div className="flex-1 bg-black/90 p-4 font-mono text-xs text-zinc-300 overflow-y-auto space-y-1.5">
+              <div className="text-muted-foreground text-[11px] border-b border-border pb-2 mb-2 flex items-center justify-between">
                 <span>DAWN SHELL OUTPUT & ACTIVITY LOGS</span>
-                <span className="text-emerald-400 font-mono">ONLINE</span>
+                <span className="text-emerald-400 font-mono flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  ONLINE
+                </span>
               </div>
               {terminalLogs.map((log, index) => (
                 <div key={index} className="flex items-start gap-2">
-                  <span className="text-zinc-600 select-none">›</span>
-                  <span className="text-zinc-300">{log}</span>
+                  <span className="text-muted-foreground select-none">›</span>
+                  <span className="text-zinc-200">{log}</span>
                 </div>
               ))}
             </div>
@@ -357,48 +357,48 @@ export default function DawnStudio() {
         </div>
 
         {/* Right: AI Intelligence Panel (Antonio's Grok Bot Teammate Chat) */}
-        <div className="w-[480px] flex flex-col bg-[#121418] border-l border-zinc-800/80">
+        <div className="w-[500px] flex flex-col bg-sidebar border-l border-border">
           {/* Active Teammate Header */}
-          <div className="h-12 border-b border-zinc-800/70 px-3 flex items-center justify-between text-xs text-zinc-400 bg-[#15181e]">
-            <div className="flex items-center gap-2">
-              <div
-                className="w-7 h-7 rounded-lg flex items-center justify-center font-bold font-mono text-xs"
-                style={{ backgroundColor: `${activeTeammate.accentColor}25`, color: activeTeammate.accentColor }}
-              >
-                <Bot className="w-4 h-4" />
+          <div className="h-14 border-b border-border px-4 flex items-center justify-between bg-card/60">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <ChatAvatar seed={activeTeammate.avatarSeed} animated className="size-9 rounded-full ring-2 ring-border" />
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-sidebar" />
               </div>
               <div>
-                <div className="font-medium text-zinc-200 flex items-center gap-1.5">
+                <div className="font-semibold text-sm text-foreground flex items-center gap-2">
                   <span>{activeTeammate.name}</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 </div>
-                <div className="text-[10px] text-zinc-500 truncate max-w-[220px]">
+                <div className="text-[11px] text-muted-foreground truncate max-w-[220px]">
                   {activeTeammate.role}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="font-mono text-[10px] bg-muted/40">
                 {activeTeammate.model}
-              </span>
+              </Badge>
             </div>
           </div>
 
-          {/* Teammate Persistent Memory Pill Bar */}
+          {/* Teammate Persistent Memory Bar */}
           {activeTeammate.memory.length > 0 && (
-            <div className="bg-[#101216] border-b border-zinc-800/60 px-3 py-1.5 flex items-center gap-2 text-[11px] text-zinc-400 overflow-x-auto">
-              <Brain className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              <span className="text-[10px] uppercase font-mono text-zinc-500 shrink-0">Memory:</span>
+            <div className="bg-muted/20 border-b border-border px-4 py-2 flex items-center gap-2 text-[11px] text-muted-foreground overflow-x-auto">
+              <Brain className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground/80 shrink-0">
+                Memory:
+              </span>
               <div className="flex items-center gap-1.5 truncate">
                 {activeTeammate.memory.map((m, i) => (
-                  <span
+                  <Badge
                     key={i}
+                    variant="secondary"
                     title={m}
-                    className="truncate max-w-[140px] bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded text-[10px] text-zinc-300"
+                    className="truncate max-w-[150px] text-[10px] font-normal"
                   >
                     {m}
-                  </span>
+                  </Badge>
                 ))}
               </div>
             </div>
@@ -407,32 +407,30 @@ export default function DawnStudio() {
           {/* Messages Stream */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs select-text">
             {messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center text-zinc-500 p-6 space-y-3">
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
-                  style={{ backgroundColor: `${activeTeammate.accentColor}20`, color: activeTeammate.accentColor }}
-                >
-                  <Sparkles className="w-6 h-6" />
-                </div>
+              <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground p-6 space-y-4">
+                <ChatAvatar seed={activeTeammate.avatarSeed} animated className="size-16 rounded-full ring-4 ring-border shadow-xl" />
                 <div>
-                  <h3 className="text-zinc-200 font-semibold text-sm">{activeTeammate.name}</h3>
-                  <p className="text-xs text-zinc-400 max-w-[280px] mt-1">
+                  <h3 className="text-foreground font-semibold text-base">{activeTeammate.name}</h3>
+                  <Badge variant="secondary" className="mt-1 text-[11px]">
+                    {activeTeammate.role}
+                  </Badge>
+                  <p className="text-xs text-muted-foreground max-w-[320px] mt-2 leading-relaxed">
                     {activeTeammate.instructions}
                   </p>
                 </div>
-                <div className="grid grid-cols-1 gap-1.5 w-full pt-3">
+                <div className="grid grid-cols-1 gap-2 w-full pt-2">
                   {[
                     `Review ${activeFile} for architecture flaws`,
-                    `Refactor to modular microservices pattern`,
-                    `Write full test suite for active code`,
+                    `Refactor to modular clean architecture`,
+                    `Write complete automated test suite`,
                   ].map((preset) => (
                     <button
                       key={preset}
                       onClick={() => handleSendMessage(preset)}
-                      className="text-left px-3 py-1.5 rounded bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 transition-colors text-[11px] flex items-center justify-between"
+                      className="text-left px-3 py-2 rounded-lg bg-card/60 hover:bg-card border border-border text-muted-foreground hover:text-foreground transition-all text-xs flex items-center justify-between cursor-pointer shadow-sm"
                     >
                       <span>→ {preset}</span>
-                      <Zap className="w-3 h-3 text-zinc-600" />
+                      <Zap className="w-3.5 h-3.5 text-amber-500/70" />
                     </button>
                   ))}
                 </div>
@@ -441,37 +439,46 @@ export default function DawnStudio() {
               messages.map((m) => (
                 <div
                   key={m.id}
-                  className={`p-3 rounded-lg border ${
+                  className={`p-3.5 rounded-xl border transition-all ${
                     m.role === 'user'
-                      ? 'bg-zinc-900 border-zinc-800 text-zinc-200 ml-4'
-                      : 'bg-[#181b22] border-zinc-800/80 text-zinc-300 mr-2'
+                      ? 'bg-primary/10 border-primary/20 text-foreground ml-6 shadow-sm'
+                      : 'bg-card border-border text-card-foreground mr-2 shadow-sm'
                   }`}
                 >
-                  <div className="flex items-center justify-between font-mono text-[10px] text-zinc-500 mb-1.5">
-                    <span className="uppercase font-semibold text-zinc-400">
-                      {m.role === 'user' ? 'Kyle' : m.senderName || activeTeammate.name}
-                    </span>
+                  <div className="flex items-center justify-between font-mono text-[10px] text-muted-foreground mb-2">
                     <div className="flex items-center gap-1.5">
                       {m.role === 'assistant' && (
-                        <button
+                        <ChatAvatar seed={m.senderAvatarSeed || 'assistant'} className="size-3.5 rounded-full" />
+                      )}
+                      <span className="uppercase font-semibold tracking-wider">
+                        {m.role === 'user' ? 'Kyle' : m.senderName || activeTeammate.name}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      {m.role === 'assistant' && (
+                        <Button
+                          variant="ghost"
+                          size="xs"
                           onClick={() => applyCodeToEditor(m.content)}
                           title="Apply code directly to Monaco editor"
-                          className="hover:text-amber-400 flex items-center gap-1 text-zinc-400 transition-colors"
+                          className="h-6 text-xs text-muted-foreground hover:text-amber-500"
                         >
-                          <SquareCode className="w-3 h-3" />
-                          <span>Apply</span>
-                        </button>
+                          <SquareCode className="w-3 h-3 mr-1" />
+                          Apply
+                        </Button>
                       )}
-                      <button
+                      <Button
+                        variant="ghost"
+                        size="icon-xs"
                         onClick={() => copyToClipboard(m.content, m.id)}
-                        className="hover:text-zinc-300 text-zinc-500"
+                        className="text-muted-foreground hover:text-foreground"
                       >
                         {copiedId === m.id ? (
-                          <Check className="w-3 h-3 text-emerald-400" />
+                          <Check className="w-3 h-3 text-emerald-500" />
                         ) : (
                           <Copy className="w-3 h-3" />
                         )}
-                      </button>
+                      </Button>
                     </div>
                   </div>
                   <div className="whitespace-pre-wrap leading-relaxed font-sans text-xs">
@@ -481,8 +488,8 @@ export default function DawnStudio() {
               ))
             )}
             {isLoading && (
-              <div className="flex items-center gap-2 text-xs text-zinc-400 font-mono italic">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono italic">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                 {activeTeammate.name} is thinking & analyzing code...
               </div>
             )}
@@ -495,9 +502,9 @@ export default function DawnStudio() {
               e.preventDefault();
               handleSendMessage();
             }}
-            className="p-3 border-t border-zinc-800/80 bg-[#15181e]"
+            className="p-3 border-t border-border bg-card/60"
           >
-            <div className="relative bg-zinc-900 border border-zinc-800 rounded-lg focus-within:border-amber-500/60 focus-within:ring-1 focus-within:ring-amber-500/20 transition-all">
+            <div className="relative bg-background border border-border rounded-xl focus-within:ring-2 focus-within:ring-amber-500/30 focus-within:border-amber-500 transition-all shadow-sm">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -509,26 +516,24 @@ export default function DawnStudio() {
                 }}
                 placeholder={`Ask ${activeTeammate.name} or type instruction... (Enter to send)`}
                 rows={2}
-                className="w-full bg-transparent px-3 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none resize-none font-sans"
+                className="w-full bg-transparent px-3 py-2 text-xs text-foreground placeholder-muted-foreground focus:outline-none resize-none font-sans"
               />
-              <div className="flex items-center justify-between px-2.5 py-1.5 border-t border-zinc-800/50 text-[11px] text-zinc-500">
-                <div className="flex items-center gap-1.5">
-                  <span
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: activeTeammate.accentColor }}
-                  />
-                  <span className="font-mono text-[10px] text-zinc-400">
+              <div className="flex items-center justify-between px-3 py-2 border-t border-border/40 text-[11px] text-muted-foreground bg-muted/10 rounded-b-xl">
+                <div className="flex items-center gap-2">
+                  <ChatAvatar seed={activeTeammate.avatarSeed} className="size-3.5 rounded-full" />
+                  <span className="font-mono text-[10px] text-muted-foreground">
                     {activeTeammate.name} ({activeTeammate.model})
                   </span>
                 </div>
-                <button
+                <Button
                   type="submit"
+                  size="xs"
                   disabled={isLoading || !input.trim()}
-                  className="bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black px-2.5 py-1 rounded font-medium text-xs flex items-center gap-1 transition-all cursor-pointer"
+                  className="bg-amber-500 hover:bg-amber-600 text-black font-semibold shadow-sm cursor-pointer"
                 >
                   <span>Send</span>
-                  <Send className="w-3 h-3" />
-                </button>
+                  <Send className="w-3 h-3 ml-1" />
+                </Button>
               </div>
             </div>
           </form>
