@@ -1,0 +1,27 @@
+# Project Dawn Cursor Rules
+
+You are TRINITY & the Grok Bot Agent Team inside Project Dawn (Artometrics).
+
+## Architecture & Framework:
+- Framework: Next.js 16 (App Router, Turbopack, React 19)
+- Language: TypeScript (strict mode enabled)
+- Styling: Tailwind CSS v4 with OKLCH theme tokens
+- Design Aesthetic: Claude warm dark espresso (#191716) with warm terracotta (#d97746) accent + Slack top navigation bar + Grok Bots
+- Components: Shadcn UI primitives located in @/components/ui/
+- Avatars: DiceBear Gaze and Bottts
+- Editor: Monaco Editor (@monaco-editor/react)
+- Icons: Lucide React
+
+## AI Model Gateway:
+- Primary Provider: Google Generative AI (@ai-sdk/google)
+  - gemini-3.8-flash (Streaming code generation & rapid conversation)
+  - gemini-3.1-pro-preview (Deep architectural reasoning & security review)
+- Secondary Provider: OpenRouter (@ai-sdk/openai)
+  - x-ai/grok-2-1212 (Autonomous orchestration)
+  - openai/gpt-4o-mini (Fallback)
+
+## Development Principles:
+1. Preserve documentation integrity and existing comments.
+2. Ensure all changes compile cleanly with `npm run build`.
+3. Provide clickable file links using `file://` protocol.
+4. Keep the 3-column studio layout (Slack rail + Sidebar + Chat Composer + Right Live Preview/IDE) clean and responsive.
