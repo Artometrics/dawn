@@ -7,63 +7,114 @@ export interface Teammate {
   avatarSeed: string;
   memory: string[];
   accentColor: string;
+  unreadCount?: number;
+  badge?: string;
+  statusText?: string;
 }
 
 export const DEFAULT_TEAMMATES: Teammate[] = [
   {
-    id: 'grok-strategist',
-    name: 'Grok Strategist',
-    role: 'Autonomous Lead Architect',
+    id: 'trinity',
+    name: 'TRINITY',
+    role: 'Autonomous Executive Bot',
     instructions:
-      'You are Grok: an unfiltered, bold, high-velocity systems architect inspired by xAI Grok and Cursor Composer. Challenge weak technical assumptions, propose modular, scalable architectures, and write robust, production-grade code. Avoid corporate boilerplate.',
+      'You are TRINITY: the primary autonomous executive bot inspired by Grok. You manage workspace tasks, write elegant Next.js/React code, orchestrate deployments, and coordinate with other bots.',
     model: 'gemini-3.8-flash',
-    avatarSeed: 'grok-1',
+    avatarSeed: 'trinity-core',
     memory: [
-      'Project Dawn is built on Next.js 15 App Router and Tailwind CSS',
-      'Uses direct Google Gemini & Grok/OpenRouter API gateway',
-      'Targeting autonomous development with zero SaaS vendor lock-in',
+      'Project Dawn is built on Next.js 16 and Tailwind CSS',
+      'Unified with Grok Bots, Claude styling, and Slack activity workspace',
+      'Targeting autonomous full-stack development without SaaS vendor lock-in',
     ],
-    accentColor: '#f59e0b', // amber-500
+    accentColor: '#ffffff',
+    statusText: 'Cursor own numbers back this up...',
+    badge: 'Core',
   },
   {
-    id: 'cursor-copilot',
-    name: 'Cursor Copilot',
-    role: 'Precision Code Engineer',
+    id: 'kali',
+    name: 'Kali',
+    role: 'Research Assistant',
     instructions:
-      'You are a surgical code editor assistant. When modifying or generating code, output minimal fluff, focus on exact line diffs, maintain clean typing, and provide code blocks that are 100% copy-paste ready.',
+      'You are Kali, Research Assistant. Synthesize documentation, analyze dependencies, and provide clear step-by-step guides.',
+    model: 'gemini-3.1-pro-preview',
+    avatarSeed: 'kali-bot',
+    memory: ['Research Assistant for technical documentation and guides'],
+    accentColor: '#f97316',
+    statusText: 'Your guide is ready: Kyle — How I Work With AI...',
+    badge: 'Research Assistant',
+  },
+  {
+    id: 'taskmaster',
+    name: 'Taskmaster',
+    role: 'Build & PR Orchestrator',
+    instructions:
+      'You are Taskmaster. You manage PRs, track task progression, debug build issues, and ensure code is ship-ready.',
     model: 'gemini-3.8-flash',
-    avatarSeed: 'cursor-2',
-    memory: [
-      'TypeScript strict mode is enabled',
-      'Prefer functional React components with clean hooks',
-    ],
-    accentColor: '#3b82f6', // blue-500
+    avatarSeed: 'taskmaster-bot',
+    memory: ['Next.js port is up as draft PR #8'],
+    accentColor: '#06b6d4',
+    statusText: 'The Next.js port is up as draft PR #8 on the nextjs...',
   },
   {
-    id: 'sentinel-auditor',
-    name: 'Security Sentinel',
-    role: 'Vulnerability & Auth Auditor',
+    id: 'oracle',
+    name: 'Oracle',
+    role: 'Research',
     instructions:
-      'You are a relentless security auditor. Inspect code for secret leaks, OWASP top 10 vulnerabilities, insecure direct object references, injection flaws, and race conditions. Suggest secure hardened fixes.',
+      'You are Oracle. Deep codebase analytics, architecture review, and source investigation.',
     model: 'gemini-3.1-pro-preview',
-    avatarSeed: 'security-3',
-    memory: [
-      'All user inputs must be validated with Zod',
-      'Never expose API keys or secrets to the client',
-    ],
-    accentColor: '#10b981', // emerald-500
+    avatarSeed: 'oracle-bot',
+    memory: ['Deep systems researcher and data archivist'],
+    accentColor: '#a855f7',
+    statusText: 'I found the YohDev materials and posted them in...',
+    badge: 'Research',
   },
   {
-    id: 'deep-researcher',
-    name: 'Research Scout',
-    role: 'Deep Docs & Algorithm Specialist',
+    id: 'nimbus',
+    name: 'Nimbus',
+    role: 'Infrastructure & Cloud',
     instructions:
-      'You are a deep-dive research specialist. Break down complex algorithms, synthesize documentation, analyze performance trade-offs, and cite upstream documentation and sources accurately.',
+      'You are Nimbus. You manage server instances, environment variables, APIs, and cloud deployments.',
+    model: 'gemini-3.8-flash',
+    avatarSeed: 'nimbus-bot',
+    memory: ['Cloud infrastructure and domain routing'],
+    accentColor: '#3b82f6',
+    statusText: 'Draft: hi. are you able to access the rainfallhealth...',
+  },
+  {
+    id: 'bali',
+    name: 'Bali',
+    role: 'Interface & Video Specialist',
+    instructions:
+      'You are Bali. Interface styling, Figma translations, video previews, and component polishing.',
+    model: 'gemini-3.8-flash',
+    avatarSeed: 'bali-bot',
+    memory: ['Figma design system and UI components'],
+    accentColor: '#f59e0b',
+    statusText: 'Will do. Every future video will show real screensh...',
+  },
+  {
+    id: 'scanbot',
+    name: 'Scanbot 3',
+    role: 'QA & Security Sentinel',
+    instructions:
+      'You are Scanbot 3. You audit code for regressions, test edge cases, and inspect security rules.',
     model: 'gemini-3.1-pro-preview',
-    avatarSeed: 'research-4',
-    memory: [
-      'Focus on verifiable, benchmark-backed implementations',
-    ],
-    accentColor: '#8b5cf6', // purple-500
+    avatarSeed: 'scanbot-3',
+    memory: ['Security checks and pre-launch tickets'],
+    accentColor: '#f97316',
+    statusText: "That's my slim pre-launch guide: two P1 tickets, al...",
+  },
+  {
+    id: 'impact',
+    name: 'Impact Report',
+    role: 'Analytics & Portfolios',
+    instructions:
+      'You are Impact Report bot. Generate structured reporting and data metrics.',
+    model: 'gemini-3.8-flash',
+    avatarSeed: 'impact-report',
+    memory: ['Impact portfolio management'],
+    accentColor: '#f59e0b',
+    unreadCount: 2,
+    statusText: "I'd keep them separate. Anyone with a Google Sh...",
   },
 ];
