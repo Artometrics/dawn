@@ -42,7 +42,12 @@ import {
   Search,
   SlidersHorizontal,
   Command,
-  LayoutGrid
+  LayoutGrid,
+  X,
+  PanelLeftClose,
+  PanelLeft,
+  PanelRightClose,
+  PanelRight
 } from 'lucide-react';
 import { Teammate, DEFAULT_TEAMMATES } from '@/types/teammate';
 import { TeammateDialog } from '@/components/teammate-dialog';
@@ -74,6 +79,13 @@ interface Thread {
   unread?: boolean;
 }
 
+interface WorkspaceTab {
+  id: string;
+  type: 'browser' | 'editor';
+  title: string;
+  url?: string;
+}
+
 const INITIAL_THREADS: Thread[] = [
   { id: 't-1', repo: 'webfall', title: 'Figma setup verification', timeAgo: '1d' },
   { id: 't-2', repo: 'webfall', title: 'Homepage development progress', timeAgo: '7d' },
@@ -98,6 +110,10 @@ export async function startServer(port: number = 3000) {
 `;
 
 export default function DawnStudio() {
+  // Panel Layout toggles
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
+
   // Navigation & Threads
   const [threads, setThreads] = useState<Thread[]>(INITIAL_THREADS);
   const [activeThreadId, setActiveThreadId] = useState<string>('t-1');
@@ -110,8 +126,14 @@ export default function DawnStudio() {
   const [editingTeammate, setEditingTeammate] = useState<Teammate | null>(null);
   const activeTeammate = teammates.find((t) => t.id === activeTeammateId) || teammates[0];
 
-  // Editor & Browser State
-  const [activeTab, setActiveTab] = useState<'browser' | 'editor'>('browser');
+  // Tabs State (with dynamic close support!)
+  const [tabs, setTabs] = useState<WorkspaceTab[]>([
+    { id: 'tab-browser', type: 'browser', title: 'AI-Enabled :3000', url: 'http://localhost:3000' },
+    { id: 'tab-editor', type: 'editor', title: 'page.tsx (Monaco)' },
+  ]);
+  const [activeTabId, setActiveTabId] = useState<string>('tab-browser');
+  const activeTab = tabs.find((t) => t.id === activeTabId) || tabs[0];
+
   const [browserUrl, setBrowserUrl] = useState('http://localhost:3000');
   const [inputUrl, setInputUrl] = useState('http://localhost:3000');
   const [isMobilePreview, setIsMobilePreview] = useState(false);
@@ -160,6 +182,33 @@ export default function DawnStudio() {
   const handleRefreshBrowser = () => {
     setBrowserUrl(inputUrl);
     setIframeKey((prev) => prev + 1);
+  };
+
+  const handleCloseTab = (tabIdToClose: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const remaining = tabs.filter((t) => t.id !== tabIdToClose);
+    if (remaining.length === 0) {
+      // If all tabs are closed, hide the right panel
+      setIsRightPanelOpen(false);
+      setTabs([]);
+    } else {
+      setTabs(remaining);
+      if (activeTabId === tabIdToClose) {
+        setActiveTabId(remaining[remaining.length - 1].id);
+      }
+    }
+  };
+
+  const handleNewTab = (type: 'browser' | 'editor' = 'browser') => {
+    const newTab: WorkspaceTab = {
+      id: `tab-${Date.now()}`,
+      type,
+      title: type === 'browser' ? `Preview :${3000 + tabs.length}` : `script-${tabs.length + 1}.ts`,
+      url: 'http://localhost:3000',
+    };
+    setTabs([...tabs, newTab]);
+    setActiveTabId(newTab.id);
+    setIsRightPanelOpen(true);
   };
 
   const handleSaveTeammate = (newTeammate: Teammate) => {
@@ -254,172 +303,207 @@ export default function DawnStudio() {
       {/* ─────────────────────────────────────────────────────────────
           COLUMN 1: LEFT NAVIGATION & REPOSITORIES / THREADS SIDEBAR
       ───────────────────────────────────────────────────────────────── */}
-      <aside className="w-64 bg-[#111216] border-r border-[#202228] flex flex-col shrink-0">
-        {/* Window Traffic Lights & Workspace Switcher */}
-        <div className="h-11 px-3.5 flex items-center justify-between border-b border-[#202228]">
-          <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[#ff5f56] inline-block cursor-pointer hover:opacity-80" />
-            <span className="w-3 h-3 rounded-full bg-[#ffbd2e] inline-block cursor-pointer hover:opacity-80" />
-            <span className="w-3 h-3 rounded-full bg-[#27c93f] inline-block cursor-pointer hover:opacity-80" />
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-[#8a8f98]">
-            <Layers className="w-3.5 h-3.5" />
-            <span className="font-medium text-xs text-[#c9cdd4]">Cursor 2.5</span>
-          </div>
-        </div>
-
-        {/* Action Icon Strip / Search */}
-        <div className="px-3 pt-3 pb-2 flex items-center justify-between text-[#8a8f98]">
-          <div className="flex items-center gap-2">
-            <button className="p-1 rounded hover:bg-[#1a1c23] hover:text-[#ededed] cursor-pointer">
-              <Folder className="w-4 h-4" />
-            </button>
-            <button className="p-1 rounded hover:bg-[#1a1c23] hover:text-[#ededed] cursor-pointer">
-              <Search className="w-4 h-4" />
-            </button>
-            <button className="p-1 rounded hover:bg-[#1a1c23] hover:text-[#ededed] cursor-pointer">
-              <FolderGit2 className="w-4 h-4" />
-            </button>
-          </div>
-          <button 
-            onClick={() => {
-              const newT: Thread = {
-                id: `t-${Date.now()}`,
-                repo: 'webfall',
-                title: 'New Composer task',
-                timeAgo: 'Just now',
-              };
-              setThreads([newT, ...threads]);
-              setActiveThreadId(newT.id);
-            }}
-            title="New Chat / Thread"
-            className="p-1 rounded hover:bg-[#1a1c23] hover:text-white cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Project & Repositories Tree */}
-        <div className="flex-1 overflow-y-auto px-2 space-y-4 text-xs">
-          {/* Projects Section */}
-          <div>
-            <div className="flex items-center justify-between px-2 py-1 text-[11px] font-semibold text-[#6e737e] uppercase tracking-wider">
-              <span>Projects</span>
-              <button className="hover:text-white">
-                <Plus className="w-3.5 h-3.5" />
+      {isSidebarOpen && (
+        <aside className="w-64 bg-[#111216] border-r border-[#202228] flex flex-col shrink-0 transition-all">
+          {/* Window Traffic Lights & Collapse Button */}
+          <div className="h-11 px-3.5 flex items-center justify-between border-b border-[#202228]">
+            <div className="flex items-center gap-2 group">
+              <button 
+                onClick={() => setIsSidebarOpen(false)}
+                title="Close / Collapse Sidebar"
+                className="w-3 h-3 rounded-full bg-[#ff5f56] inline-flex items-center justify-center cursor-pointer hover:opacity-80"
+              >
+                <X className="w-2 h-2 text-[#4c0000] opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+              <span className="w-3 h-3 rounded-full bg-[#ffbd2e] inline-block cursor-pointer hover:opacity-80" />
+              <span className="w-3 h-3 rounded-full bg-[#27c93f] inline-block cursor-pointer hover:opacity-80" />
+            </div>
+            
+            <div className="flex items-center gap-1.5">
+              <span className="font-medium text-xs text-[#c9cdd4]">Cursor 2.5</span>
+              <button
+                onClick={() => setIsSidebarOpen(false)}
+                title="Collapse Sidebar"
+                className="p-1 rounded text-[#6e737e] hover:text-[#ededed] hover:bg-[#1a1c23] ml-1 cursor-pointer"
+              >
+                <PanelLeftClose className="w-3.5 h-3.5" />
               </button>
             </div>
-            <div className="space-y-0.5 mt-1">
-              <div className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[#181920] text-[#c9cdd4] cursor-pointer">
-                <Flame className="w-3.5 h-3.5 text-amber-500" />
-                <span>SEO</span>
-              </div>
-              <div className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[#181920] text-[#c9cdd4] cursor-pointer">
-                <FileText className="w-3.5 h-3.5 text-rose-400" />
-                <span>Rainfall Reports</span>
-              </div>
-            </div>
           </div>
 
-          {/* Repositories Section */}
-          <div>
-            <div className="flex items-center justify-between px-2 py-1 text-[11px] font-semibold text-[#6e737e] uppercase tracking-wider">
-              <span>Repositories</span>
-              <SlidersHorizontal className="w-3.5 h-3.5 text-[#6e737e]" />
+          {/* Action Icon Strip / Search */}
+          <div className="px-3 pt-3 pb-2 flex items-center justify-between text-[#8a8f98]">
+            <div className="flex items-center gap-2">
+              <button className="p-1 rounded hover:bg-[#1a1c23] hover:text-[#ededed] cursor-pointer">
+                <Folder className="w-4 h-4" />
+              </button>
+              <button className="p-1 rounded hover:bg-[#1a1c23] hover:text-[#ededed] cursor-pointer">
+                <Search className="w-4 h-4" />
+              </button>
+              <button className="p-1 rounded hover:bg-[#1a1c23] hover:text-[#ededed] cursor-pointer">
+                <FolderGit2 className="w-4 h-4" />
+              </button>
             </div>
+            <button 
+              onClick={() => {
+                const newT: Thread = {
+                  id: `t-${Date.now()}`,
+                  repo: 'webfall',
+                  title: 'New Composer task',
+                  timeAgo: 'Just now',
+                };
+                setThreads([newT, ...threads]);
+                setActiveThreadId(newT.id);
+              }}
+              title="New Chat / Thread"
+              className="p-1 rounded hover:bg-[#1a1c23] hover:text-white cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
 
-            {/* Repo: impact */}
-            <div className="mt-1">
-              <div className="flex items-center gap-1.5 px-2 py-1 text-[#8a8f98] font-medium">
-                <FolderGit2 className="w-3.5 h-3.5" />
-                <span>impact</span>
-              </div>
-              <div className="pl-4 space-y-0.5 mt-0.5">
-                <button
-                  onClick={() => setActiveThreadId('t-6')}
-                  className={`w-full text-left flex items-center justify-between px-2 py-1.5 rounded-md transition-colors cursor-pointer ${
-                    activeThreadId === 't-6' ? 'bg-[#1e2029] text-white font-medium' : 'text-[#8a8f98] hover:bg-[#181920] hover:text-[#c9cdd4]'
-                  }`}
-                >
-                  <div className="flex items-center gap-1.5 truncate">
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
-                    <span className="truncate">Impact report portfolio</span>
-                  </div>
-                  <span className="text-[10px] text-[#5b606a]">4h</span>
+          {/* Project & Repositories Tree */}
+          <div className="flex-1 overflow-y-auto px-2 space-y-4 text-xs">
+            {/* Projects Section */}
+            <div>
+              <div className="flex items-center justify-between px-2 py-1 text-[11px] font-semibold text-[#6e737e] uppercase tracking-wider">
+                <span>Projects</span>
+                <button className="hover:text-white">
+                  <Plus className="w-3.5 h-3.5" />
                 </button>
               </div>
+              <div className="space-y-0.5 mt-1">
+                <div className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[#181920] text-[#c9cdd4] cursor-pointer">
+                  <Flame className="w-3.5 h-3.5 text-amber-500" />
+                  <span>SEO</span>
+                </div>
+                <div className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[#181920] text-[#c9cdd4] cursor-pointer">
+                  <FileText className="w-3.5 h-3.5 text-rose-400" />
+                  <span>Rainfall Reports</span>
+                </div>
+              </div>
             </div>
 
-            {/* Repo: webfall */}
-            <div className="mt-2">
-              <div className="flex items-center gap-1.5 px-2 py-1 text-[#8a8f98] font-medium">
-                <FolderGit2 className="w-3.5 h-3.5" />
-                <span>webfall</span>
+            {/* Repositories Section */}
+            <div>
+              <div className="flex items-center justify-between px-2 py-1 text-[11px] font-semibold text-[#6e737e] uppercase tracking-wider">
+                <span>Repositories</span>
+                <SlidersHorizontal className="w-3.5 h-3.5 text-[#6e737e]" />
               </div>
-              <div className="pl-3 space-y-0.5 mt-0.5">
-                {threads
-                  .filter((t) => t.repo === 'webfall')
-                  .map((t) => (
-                    <button
-                      key={t.id}
-                      onClick={() => setActiveThreadId(t.id)}
-                      className={`w-full text-left flex items-center justify-between px-2 py-1.5 rounded-md transition-colors cursor-pointer ${
-                        activeThreadId === t.id
-                          ? 'bg-[#1e2029] text-white font-medium shadow-sm'
-                          : 'text-[#8a8f98] hover:bg-[#181920] hover:text-[#c9cdd4]'
-                      }`}
-                    >
-                      <div className="flex items-center gap-1.5 truncate">
-                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${activeThreadId === t.id ? 'bg-amber-400' : 'bg-transparent'}`} />
-                        <span className="truncate">{t.title}</span>
-                      </div>
-                      <span className="text-[10px] text-[#5b606a] shrink-0 ml-1">{t.timeAgo}</span>
-                    </button>
-                  ))}
+
+              {/* Repo: impact */}
+              <div className="mt-1">
+                <div className="flex items-center gap-1.5 px-2 py-1 text-[#8a8f98] font-medium">
+                  <FolderGit2 className="w-3.5 h-3.5" />
+                  <span>impact</span>
+                </div>
+                <div className="pl-4 space-y-0.5 mt-0.5">
+                  <button
+                    onClick={() => setActiveThreadId('t-6')}
+                    className={`w-full text-left flex items-center justify-between px-2 py-1.5 rounded-md transition-colors cursor-pointer ${
+                      activeThreadId === 't-6' ? 'bg-[#1e2029] text-white font-medium' : 'text-[#8a8f98] hover:bg-[#181920] hover:text-[#c9cdd4]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 truncate">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                      <span className="truncate">Impact report portfolio</span>
+                    </div>
+                    <span className="text-[10px] text-[#5b606a]">4h</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Repo: webfall */}
+              <div className="mt-2">
+                <div className="flex items-center gap-1.5 px-2 py-1 text-[#8a8f98] font-medium">
+                  <FolderGit2 className="w-3.5 h-3.5" />
+                  <span>webfall</span>
+                </div>
+                <div className="pl-3 space-y-0.5 mt-0.5">
+                  {threads
+                    .filter((t) => t.repo === 'webfall')
+                    .map((t) => (
+                      <button
+                        key={t.id}
+                        onClick={() => setActiveThreadId(t.id)}
+                        className={`w-full text-left flex items-center justify-between px-2 py-1.5 rounded-md transition-colors cursor-pointer ${
+                          activeThreadId === t.id
+                            ? 'bg-[#1e2029] text-white font-medium shadow-sm'
+                            : 'text-[#8a8f98] hover:bg-[#181920] hover:text-[#c9cdd4]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5 truncate">
+                          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${activeThreadId === t.id ? 'bg-amber-400' : 'bg-transparent'}`} />
+                          <span className="truncate">{t.title}</span>
+                        </div>
+                        <span className="text-[10px] text-[#5b606a] shrink-0 ml-1">{t.timeAgo}</span>
+                      </button>
+                    ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* User Profile Bar at bottom */}
-        <div className="p-3 border-t border-[#202228] flex items-center justify-between text-xs text-[#c9cdd4] bg-[#111216]">
-          <div className="flex items-center gap-2.5">
-            <div className="size-6 rounded-full bg-gradient-to-tr from-amber-500 to-rose-500 flex items-center justify-center text-[11px] font-bold text-black">
-              K
+          {/* User Profile Bar at bottom */}
+          <div className="p-3 border-t border-[#202228] flex items-center justify-between text-xs text-[#c9cdd4] bg-[#111216]">
+            <div className="flex items-center gap-2.5">
+              <div className="size-6 rounded-full bg-gradient-to-tr from-amber-500 to-rose-500 flex items-center justify-center text-[11px] font-bold text-black">
+                K
+              </div>
+              <span className="font-medium truncate">Kyle McAuliffe</span>
             </div>
-            <span className="font-medium truncate">Kyle McAuliffe</span>
+            <button 
+              onClick={() => {
+                setEditingTeammate(activeTeammate);
+                setIsTeammateDialogOpen(true);
+              }}
+              className="text-[#6e737e] hover:text-[#ededed] p-1 rounded hover:bg-[#1a1c23] cursor-pointer"
+            >
+              <Settings className="w-3.5 h-3.5" />
+            </button>
           </div>
-          <button 
-            onClick={() => {
-              setEditingTeammate(activeTeammate);
-              setIsTeammateDialogOpen(true);
-            }}
-            className="text-[#6e737e] hover:text-[#ededed] p-1 rounded hover:bg-[#1a1c23] cursor-pointer"
-          >
-            <Settings className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </aside>
+        </aside>
+      )}
 
       {/* ─────────────────────────────────────────────────────────────
           COLUMN 2: MIDDLE AI AGENT / COMPOSER THREAD
       ───────────────────────────────────────────────────────────────── */}
-      <section className="flex-1 flex flex-col min-w-[420px] max-w-[650px] border-r border-[#202228] bg-[#0d0e11]">
-        {/* Thread Top Bar */}
+      <section className="flex-1 flex flex-col min-w-[380px] border-r border-[#202228] bg-[#0d0e11] transition-all">
+        {/* Thread Top Bar with Open/Close Toggles */}
         <div className="h-11 px-4 border-b border-[#202228] flex items-center justify-between text-xs bg-[#111216]/60 backdrop-blur-md">
           <div className="flex items-center gap-2 font-medium text-[#ededed]">
+            {!isSidebarOpen && (
+              <button
+                onClick={() => setIsSidebarOpen(true)}
+                title="Open Sidebar"
+                className="p-1 rounded text-[#8a8f98] hover:text-[#ededed] hover:bg-[#1a1c23] mr-1 cursor-pointer"
+              >
+                <PanelLeft className="w-4 h-4" />
+              </button>
+            )}
             <span className="truncate">{activeThread.title}</span>
             <Lock className="w-3 h-3 text-[#6e737e]" />
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setActiveTab(activeTab === 'browser' ? 'editor' : 'browser')}
-              className="flex items-center gap-1 text-[11px] text-[#8a8f98] hover:text-[#ededed] bg-[#1a1c23] px-2 py-1 rounded border border-[#272a33] cursor-pointer"
-            >
-              <span>{activeTab === 'browser' ? 'IDE' : 'Browser'}</span>
-              <ExternalLink className="w-3 h-3" />
-            </button>
+            {!isRightPanelOpen && (
+              <button
+                onClick={() => {
+                  if (tabs.length === 0) {
+                    setTabs([
+                      { id: 'tab-browser', type: 'browser', title: 'AI-Enabled :3000', url: 'http://localhost:3000' },
+                      { id: 'tab-editor', type: 'editor', title: 'page.tsx (Monaco)' }
+                    ]);
+                    setActiveTabId('tab-browser');
+                  }
+                  setIsRightPanelOpen(true);
+                }}
+                className="flex items-center gap-1.5 text-[11px] text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-2.5 py-1 rounded-md border border-amber-500/30 cursor-pointer font-medium"
+              >
+                <PanelRight className="w-3.5 h-3.5" />
+                <span>Open Preview / IDE ↗</span>
+              </button>
+            )}
             <button className="text-[#6e737e] hover:text-[#ededed] p-1 cursor-pointer">
               <MoreHorizontal className="w-4 h-4" />
             </button>
@@ -484,7 +568,7 @@ export default function DawnStudio() {
           <div ref={chatEndRef} />
         </div>
 
-        {/* Composer Input Dock (Identical to Screenshot) */}
+        {/* Composer Input Dock */}
         <div className="p-3 border-t border-[#202228] bg-[#111216]">
           {/* Top Pill Controls: Changes, Commit & Push, Design Mode */}
           <div className="flex items-center justify-between mb-2">
@@ -600,146 +684,168 @@ export default function DawnStudio() {
       {/* ─────────────────────────────────────────────────────────────
           COLUMN 3: RIGHT LIVE BROWSER PREVIEW & CODE PANEL
       ───────────────────────────────────────────────────────────────── */}
-      <main className="flex-1 flex flex-col bg-[#0e0f12] overflow-hidden">
-        {/* Top Browser Chrome Bar */}
-        <div className="h-11 border-b border-[#202228] bg-[#111216] px-3 flex items-center justify-between text-xs">
-          {/* Tabs */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setActiveTab('browser')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium cursor-pointer transition-colors ${
-                activeTab === 'browser'
-                  ? 'bg-[#1e2029] text-[#ededed] shadow-sm'
-                  : 'text-[#8a8f98] hover:bg-[#181920] hover:text-[#ededed]'
-              }`}
-            >
-              <Globe className="w-3.5 h-3.5 text-blue-400" />
-              <span>AI-Enabled :3000</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('editor')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium cursor-pointer transition-colors ${
-                activeTab === 'editor'
-                  ? 'bg-[#1e2029] text-[#ededed] shadow-sm'
-                  : 'text-[#8a8f98] hover:bg-[#181920] hover:text-[#ededed]'
-              }`}
-            >
-              <Code2 className="w-3.5 h-3.5 text-amber-400" />
-              <span>page.tsx (Monaco)</span>
-            </button>
-            <button className="text-[#6e737e] hover:text-[#ededed] p-1 ml-1 cursor-pointer">
-              <Plus className="w-3.5 h-3.5" />
-            </button>
-          </div>
+      {isRightPanelOpen && (
+        <main className="flex-1 flex flex-col bg-[#0e0f12] overflow-hidden min-w-[380px] transition-all">
+          {/* Top Browser Chrome Bar with Tab Close Buttons and Panel Close */}
+          <div className="h-11 border-b border-[#202228] bg-[#111216] px-3 flex items-center justify-between text-xs">
+            {/* Tabs List (with explicit X close buttons on each tab) */}
+            <div className="flex items-center gap-1 overflow-x-auto">
+              {tabs.map((tab) => (
+                <div
+                  key={tab.id}
+                  onClick={() => setActiveTabId(tab.id)}
+                  className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium cursor-pointer transition-colors ${
+                    activeTabId === tab.id
+                      ? 'bg-[#1e2029] text-[#ededed] shadow-sm'
+                      : 'text-[#8a8f98] hover:bg-[#181920] hover:text-[#ededed]'
+                  }`}
+                >
+                  {tab.type === 'browser' ? (
+                    <Globe className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                  ) : (
+                    <Code2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  )}
+                  <span className="truncate">{tab.title}</span>
+                  {/* Close Tab Button */}
+                  <button
+                    onClick={(e) => handleCloseTab(tab.id, e)}
+                    title={`Close ${tab.title}`}
+                    className="p-0.5 ml-1 rounded hover:bg-[#2e3240] text-[#6e737e] hover:text-white cursor-pointer opacity-60 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
 
-          {/* Fullscreen & Inspector icons */}
-          <div className="flex items-center gap-2 text-[#8a8f98]">
-            <button
-              onClick={() => setIsMobilePreview(!isMobilePreview)}
-              title="Toggle Mobile Mockup View"
-              className={`p-1.5 rounded hover:bg-[#1a1c23] hover:text-[#ededed] cursor-pointer ${
-                isMobilePreview ? 'text-amber-400 bg-[#1a1c23]' : ''
-              }`}
-            >
-              <Smartphone className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => window.open(browserUrl, '_blank')}
-              title="Open in new window"
-              className="p-1.5 rounded hover:bg-[#1a1c23] hover:text-[#ededed] cursor-pointer"
-            >
-              <Maximize2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Address / Navigation Bar (when in browser tab) */}
-        {activeTab === 'browser' && (
-          <div className="h-10 border-b border-[#202228] bg-[#14151b] px-3 flex items-center gap-2 text-xs">
-            <div className="flex items-center gap-1 text-[#6e737e]">
-              <button className="p-1 rounded hover:text-white cursor-pointer">
-                <ArrowLeft className="w-3.5 h-3.5" />
-              </button>
-              <button className="p-1 rounded hover:text-white cursor-pointer">
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-              <button onClick={handleRefreshBrowser} className="p-1 rounded hover:text-white cursor-pointer">
-                <RotateCw className="w-3.5 h-3.5" />
+              <button 
+                onClick={() => handleNewTab('browser')}
+                title="New Tab"
+                className="text-[#6e737e] hover:text-[#ededed] p-1 ml-1 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            {/* URL input bar */}
-            <div className="flex-1 flex items-center bg-[#0d0e11] border border-[#252731] rounded-lg px-2.5 py-1 text-xs text-[#c9cdd4]">
-              <span className="text-[#5b606a] mr-1.5 font-mono">🔒</span>
-              <input
-                type="text"
-                value={inputUrl}
-                onChange={(e) => setInputUrl(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleRefreshBrowser();
-                  }
-                }}
-                className="w-full bg-transparent text-[#ededed] font-mono text-[11px] focus:outline-none"
-              />
+            {/* Right Action Icons: Mobile view, Fullscreen, and Panel Close Button */}
+            <div className="flex items-center gap-1.5 text-[#8a8f98]">
+              {activeTab?.type === 'browser' && (
+                <button
+                  onClick={() => setIsMobilePreview(!isMobilePreview)}
+                  title="Toggle Mobile Mockup View"
+                  className={`p-1.5 rounded hover:bg-[#1a1c23] hover:text-[#ededed] cursor-pointer ${
+                    isMobilePreview ? 'text-amber-400 bg-[#1a1c23]' : ''
+                  }`}
+                >
+                  <Smartphone className="w-3.5 h-3.5" />
+                </button>
+              )}
+              <button
+                onClick={() => window.open(browserUrl, '_blank')}
+                title="Open in new window"
+                className="p-1.5 rounded hover:bg-[#1a1c23] hover:text-[#ededed] cursor-pointer"
+              >
+                <Maximize2 className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Close Panel Button */}
+              <button
+                onClick={() => setIsRightPanelOpen(false)}
+                title="Close Panel (Hide Preview & Editor)"
+                className="p-1.5 rounded hover:bg-[#1a1c23] hover:text-white text-[#8a8f98] cursor-pointer ml-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </div>
-        )}
 
-        {/* Browser Content Frame / Editor */}
-        <div className="flex-1 relative overflow-hidden bg-[#0a0a0c]">
-          {activeTab === 'browser' ? (
-            isMobilePreview ? (
-              /* Mobile Smartphone Frame View (like in screenshot) */
-              <div className="h-full w-full flex items-center justify-center p-6 bg-gradient-to-b from-[#121318] to-[#0a0a0d] overflow-y-auto">
-                <div className="w-[375px] h-[720px] rounded-[48px] bg-black p-3.5 shadow-2xl ring-1 ring-white/10 relative flex flex-col shrink-0">
-                  {/* Dynamic Island / Notch */}
-                  <div className="absolute top-6 left-1/2 -translate-x-1/2 w-24 h-5 bg-black rounded-full z-20 flex items-center justify-between px-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#18181b]" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-blue-500/40" />
-                  </div>
-                  {/* Screen Content */}
-                  <div className="flex-1 rounded-[38px] overflow-hidden bg-white relative">
-                    <iframe
-                      key={iframeKey}
-                      src={browserUrl}
-                      title="Dawn Live Mobile Preview"
-                      className="w-full h-full border-0"
-                    />
+          {/* Address / Navigation Bar (when in browser tab) */}
+          {activeTab?.type === 'browser' && (
+            <div className="h-10 border-b border-[#202228] bg-[#14151b] px-3 flex items-center gap-2 text-xs">
+              <div className="flex items-center gap-1 text-[#6e737e]">
+                <button className="p-1 rounded hover:text-white cursor-pointer">
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                </button>
+                <button className="p-1 rounded hover:text-white cursor-pointer">
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+                <button onClick={handleRefreshBrowser} className="p-1 rounded hover:text-white cursor-pointer">
+                  <RotateCw className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* URL input bar */}
+              <div className="flex-1 flex items-center bg-[#0d0e11] border border-[#252731] rounded-lg px-2.5 py-1 text-xs text-[#c9cdd4]">
+                <span className="text-[#5b606a] mr-1.5 font-mono">🔒</span>
+                <input
+                  type="text"
+                  value={inputUrl}
+                  onChange={(e) => setInputUrl(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleRefreshBrowser();
+                    }
+                  }}
+                  className="w-full bg-transparent text-[#ededed] font-mono text-[11px] focus:outline-none"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Browser Content Frame / Editor */}
+          <div className="flex-1 relative overflow-hidden bg-[#0a0a0c]">
+            {activeTab?.type === 'browser' ? (
+              isMobilePreview ? (
+                /* Mobile Smartphone Frame View */
+                <div className="h-full w-full flex items-center justify-center p-6 bg-gradient-to-b from-[#121318] to-[#0a0a0d] overflow-y-auto">
+                  <div className="w-[375px] h-[720px] rounded-[48px] bg-black p-3.5 shadow-2xl ring-1 ring-white/10 relative flex flex-col shrink-0">
+                    {/* Dynamic Island / Notch */}
+                    <div className="absolute top-6 left-1/2 -translate-x-1/2 w-24 h-5 bg-black rounded-full z-20 flex items-center justify-between px-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#18181b]" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-blue-500/40" />
+                    </div>
+                    {/* Screen Content */}
+                    <div className="flex-1 rounded-[38px] overflow-hidden bg-white relative">
+                      <iframe
+                        key={iframeKey}
+                        src={browserUrl}
+                        title="Dawn Live Mobile Preview"
+                        className="w-full h-full border-0"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                /* Full Desktop Browser View */
+                <iframe
+                  key={iframeKey}
+                  src={browserUrl}
+                  title="Dawn Live Desktop Preview"
+                  className="w-full h-full border-0 bg-white"
+                />
+              )
             ) : (
-              /* Full Desktop Browser View */
-              <iframe
-                key={iframeKey}
-                src={browserUrl}
-                title="Dawn Live Desktop Preview"
-                className="w-full h-full border-0 bg-white"
+              /* Monaco Code Editor */
+              <MonacoEditor
+                height="100%"
+                theme="vs-dark"
+                language="typescript"
+                value={editorCode}
+                onChange={(value) => setEditorCode(value || '')}
+                options={{
+                  minimap: { enabled: false },
+                  fontSize: 13,
+                  fontFamily: 'JetBrains Mono, Menlo, Monaco, monospace',
+                  lineNumbers: 'on',
+                  scrollBeyondLastLine: false,
+                  smoothScrolling: true,
+                  cursorBlinking: 'smooth',
+                  wordWrap: 'on',
+                }}
               />
-            )
-          ) : (
-            /* Monaco Code Editor */
-            <MonacoEditor
-              height="100%"
-              theme="vs-dark"
-              language="typescript"
-              value={editorCode}
-              onChange={(value) => setEditorCode(value || '')}
-              options={{
-                minimap: { enabled: false },
-                fontSize: 13,
-                fontFamily: 'JetBrains Mono, Menlo, Monaco, monospace',
-                lineNumbers: 'on',
-                scrollBeyondLastLine: false,
-                smoothScrolling: true,
-                cursorBlinking: 'smooth',
-                wordWrap: 'on',
-              }}
-            />
-          )}
-        </div>
-      </main>
+            )}
+          </div>
+        </main>
+      )}
 
       {/* Teammate Configuration Modal */}
       <TeammateDialog

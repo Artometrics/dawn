@@ -106,16 +106,26 @@ export function TeammateDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg bg-card text-card-foreground border-border shadow-2xl p-6">
-        <DialogHeader className="flex flex-row items-center gap-3 pb-3 border-b border-border">
-          <ChatAvatar seed={name || 'new-bot'} animated className="size-9 ring-1 ring-border" />
-          <div>
-            <DialogTitle className="text-base font-semibold">
-              {existingTeammate ? 'Edit Teammate' : 'Configure AI Teammate'}
-            </DialogTitle>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Code with Antonio Grok Bot Teammate Engine
-            </p>
+        <DialogHeader className="flex flex-row items-center justify-between pb-3 border-b border-border">
+          <div className="flex items-center gap-3">
+            <ChatAvatar seed={name || 'new-bot'} animated className="size-9 ring-1 ring-border" />
+            <div>
+              <DialogTitle className="text-base font-semibold">
+                {existingTeammate ? 'Edit Teammate' : 'Configure AI Teammate'}
+              </DialogTitle>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Code with Antonio Grok Bot Teammate Engine
+              </p>
+            </div>
           </div>
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            className="text-muted-foreground hover:text-foreground p-1 rounded-md hover:bg-muted cursor-pointer transition-colors"
+            title="Close dialog"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </DialogHeader>
 
         {/* Quick Presets */}
