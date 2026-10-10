@@ -2,40 +2,59 @@ import { streamText } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 
-// Providers
+// Initialize Google provider with fallback keys
 const google = createGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY,
+  apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 });
 
+// Universal OpenRouter provider
 const openrouter = createOpenAI({
   apiKey: process.env.OPENROUTER_API_KEY,
   baseURL: 'https://openrouter.ai/api/v1',
 });
 
-const xai = createOpenAI({
-  apiKey: process.env.XAI_API_KEY,
-  baseURL: 'https://api.x.ai/v1',
-});
+function resolveModel(requestedModel: string = 'gemini-3.8-flash') {
+  let normalized = requestedModel.toLowerCase().trim();
+
+  // Map legacy / deprecated names to current active Gemini models
+  if (
+    normalized.includes('gemini-2') ||
+    normalized.includes('gemini-flash') ||
+    normalized === 'gemini' ||
+    normalized === 'flash'
+  ) {
+    normalized = 'gemini-3.8-flash';
+  } else if (
+    normalized.includes('gemini-1.5') ||
+    normalized.includes('gemini-pro') ||
+    normalized === 'pro'
+  ) {
+    normalized = 'gemini-3.1-pro-preview';
+  }
+
+  if (normalized.startsWith('gemini')) {
+    return google(normalized);
+  }
+
+  // Any other model (e.g. x-ai/grok-2, claude-3.7-sonnet, deepseek-chat)
+  if (process.env.OPENROUTER_API_KEY) {
+    return openrouter(requestedModel);
+  }
+
+  // Fallback to gemini-3.8-flash
+  return google('gemini-3.8-flash');
+}
 
 export async function POST(req: Request) {
   try {
     const { 
       messages, 
-      model = 'gemini-2.0-flash', 
+      model = 'gemini-3.8-flash', 
       teammate,
       codeContext 
     } = await req.json();
 
-    let selectedModel;
-
-    if (model.startsWith('gemini')) {
-      selectedModel = google(model);
-    } else if (model.startsWith('grok') && process.env.XAI_API_KEY) {
-      selectedModel = xai(model);
-    } else {
-      // Default to OpenRouter for universal routing (including x-ai/grok-2, deepseek, etc.)
-      selectedModel = openrouter(model);
-    }
+    const selectedModel = resolveModel(model);
 
     // Build system prompt with Teammate identity, instructions, and persistent memories
     const systemParts: string[] = [];
@@ -77,9 +96,9 @@ export async function POST(req: Request) {
     return result.toTextStreamResponse();
   } catch (error: any) {
     console.error('Error in Dawn chat route:', error);
-    return new Response(JSON.stringify({ error: error.message || 'Internal error' }), {
+    return new Response(`Error in Dawn AI Gateway: ${error.message || 'Unknown error'}`, {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     });
   }
 }
