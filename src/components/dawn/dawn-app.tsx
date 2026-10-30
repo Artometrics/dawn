@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
-import { Castle, Flag, Map, MessageCircle, Users } from 'lucide-react';
+import { Castle, Flag, Map, MapPin, MessageCircle, Users } from 'lucide-react';
 import { AGENTS, type Agent } from '@/lib/agents';
 import { AgentSheet } from '@/components/dawn/agent-sheet';
 import { DawnProvider, useDawn } from '@/components/dawn/dawn-provider';
@@ -117,7 +117,11 @@ function Shell() {
           </div>
         )}
         {tab === 'map' && (
-          <div className="min-h-0 flex-1 p-3">
+          <div className="flex min-h-0 flex-1 flex-col p-3">
+            <a href="/atlas" className="mb-2 inline-flex min-h-11 items-center gap-2 self-start text-sm text-[#e2a04a]">
+              <MapPin className="h-4 w-4" aria-hidden />
+              Campus
+            </a>
             <AtlasMap avatar={dawn.avatar} />
           </div>
         )}
