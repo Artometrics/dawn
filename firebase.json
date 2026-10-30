@@ -26,6 +26,10 @@
       {
         "source": "/studio",
         "destination": "/studio.html"
+      },
+      {
+        "source": "/atlas",
+        "destination": "/atlas.html"
       }
     ]
   },

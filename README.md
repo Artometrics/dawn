@@ -15,6 +15,8 @@ Instead of paying for multiple isolated SaaS subscriptions and battling fragment
 
 Firebase Hosting serves the static export in `out/` (`output: "export"` in `next.config.ts`).
 The village and Studio chat call Gemini through **Firebase AI Logic** in the browser — no API keys on the page.
+
+**Atlas** is a Stanford campus day at `/atlas`. A 16-bit character walks the Cardinal Quest (El Palo Alto, Stanford Red Barn, Arizona Garden, Lake Lagunita, Hanna House). Each stop shows “Cardinal note coming soon”. Embed it on the Cardinal site with `/atlas?embed=1`. Tiles are [OpenStreetMap](https://www.openstreetmap.org/copyright) (`© OpenStreetMap`). The place list in `data/atlas/stanford-places.json` is name, latitude, and longitude only, collected from Google Maps via Apify on 2026-10-30 (about $0.30).
 The old `/api/chat` server handler is kept at `src/lib/studio/chat-route.ts` for a future Cloud Function if you want OpenRouter/Grok on the host again.
 
 ## ⚡ Architecture & Features
