@@ -72,7 +72,7 @@ function Shell() {
       <main className="flex min-h-0 flex-1 flex-col">
         {tab === 'village' && (
           <div className="flex min-h-0 flex-1 flex-col">
-            <div className="relative min-h-[200px] flex-1">
+            <div className={`relative min-h-0 ${agent ? 'h-32 shrink-0' : 'min-h-[200px] flex-1'}`}>
               <VillageGame
                 avatar={dawn.avatar}
                 poses={town.poses}
@@ -80,7 +80,7 @@ function Shell() {
                 onYou={() => setTab('team')}
               />
             </div>
-            <div className="flex gap-2 overflow-x-auto px-3 py-2">
+            <div className="flex shrink-0 gap-2 overflow-x-auto px-3 py-2">
               {AGENTS.map((item) => (
                 <button
                   key={item.id}
@@ -93,16 +93,27 @@ function Shell() {
                 </button>
               ))}
             </div>
-            <div className="px-3 pb-2 text-xs text-[#d9cbb8]">
-              <p>{town.status} · {town.source === 'gemini' ? 'Gemini' : 'Practice'}</p>
-              {town.lines.slice(-2).map((line, index) => (
-                <p key={`${line.author}-${index}`} className="mt-1 text-[#f3e6d0]">{line.author}: {line.text}</p>
-              ))}
-            </div>
-            {pending > 0 && !agent && (
-              <p className="px-3 pb-2 text-xs text-[#e2a04a]">{pending} waiting for you</p>
+            {town.notice && (
+              <p role="alert" className="mx-3 mb-2 shrink-0 border border-[#e2a04a] bg-[#3a2414] px-3 py-2 text-sm leading-snug text-[#f3e6d0]">
+                {town.notice} These village lines are stand-ins.
+              </p>
             )}
-            {agent && <AgentSheet agent={agent} onClose={() => setAgent(null)} />}
+            {!agent && (
+              <div className="shrink-0 px-3 pb-2 text-sm text-[#d9cbb8]">
+                <p>{town.status}{town.lines.length > 0 ? ` · ${town.source === 'gemini' ? 'Gemini' : 'Stand-in'}` : ''}</p>
+                {town.lines.slice(-2).map((line, index) => (
+                  <p key={`${line.author}-${index}`} className="mt-1 text-[#f3e6d0]">{line.author}: {line.text}</p>
+                ))}
+              </div>
+            )}
+            {pending > 0 && !agent && (
+              <p className="shrink-0 px-3 pb-2 text-xs text-[#e2a04a]">{pending} waiting for you</p>
+            )}
+            {agent && (
+              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                <AgentSheet agent={agent} onClose={() => setAgent(null)} />
+              </div>
+            )}
           </div>
         )}
         {tab === 'map' && (

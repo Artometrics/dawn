@@ -1,4 +1,5 @@
 import { bootFirebase } from '@/lib/firebase-client';
+import { describeGeminiError } from '@/lib/gemini-error';
 import { GEMINI_FAST, remapModelId } from '@/lib/models';
 import type { Teammate } from '@/types/teammate';
 
@@ -21,9 +22,9 @@ export async function streamStudioChat(
 ): Promise<string> {
   const boot = await bootFirebase();
   if (boot.mode !== 'hosted' || !boot.app) {
-    throw new Error(
-      'Gemini is not on this host yet. Turn on Firebase AI Logic for Dawn, then reload.',
-    );
+    const fallback = fallbackReply(describeGeminiError('Gemini is not on this host yet.'));
+    onChunk(fallback);
+    return fallback;
   }
 
   const { GoogleAIBackend, getAI, getGenerativeModel } = await import('firebase/ai');
@@ -78,18 +79,31 @@ export async function streamStudioChat(
   }
 
   const chat = model.startChat({ history });
-  const result = await chat.sendMessageStream(last.content);
-  let accumulated = '';
-  for await (const chunk of result.stream) {
-    const piece = chunk.text();
-    if (!piece) continue;
-    accumulated += piece;
-    onChunk(accumulated);
+  try {
+    const result = await chat.sendMessageStream(last.content, { timeout: 12_000 });
+    let accumulated = '';
+    for await (const chunk of result.stream) {
+      const piece = chunk.text();
+      if (!piece) continue;
+      accumulated += piece;
+      onChunk(accumulated);
+    }
+    if (!accumulated) {
+      const final = await result.response;
+      accumulated = final.text().trim();
+      if (accumulated) onChunk(accumulated);
+    }
+    if (accumulated) return accumulated;
+    const empty = fallbackReply(describeGeminiError('empty'));
+    onChunk(empty);
+    return empty;
+  } catch (error) {
+    const fallback = fallbackReply(describeGeminiError(error));
+    onChunk(fallback);
+    return fallback;
   }
-  if (!accumulated) {
-    const final = await result.response;
-    accumulated = final.text().trim();
-    if (accumulated) onChunk(accumulated);
-  }
-  return accumulated;
+}
+
+function fallbackReply(reason: string): string {
+  return `${reason}\n\nStand-in: I heard you. Nothing is sent, spent, hired, or posted until you approve.`;
 }

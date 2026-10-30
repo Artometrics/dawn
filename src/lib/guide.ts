@@ -1,27 +1,34 @@
 import { systemPrompt, type Agent } from '@/lib/agents';
 import { bootFirebase } from '@/lib/firebase-client';
+import { describeGeminiError } from '@/lib/gemini-error';
 import { clip, detectKind, splitProposal, type Proposal } from '@/lib/proposals';
 
 export type GuideResult = {
   text: string;
   proposal: Proposal | null;
   source: 'gemini' | 'practice';
+  /** Set when the visible text is a stand-in because Gemini did not answer. */
+  error: string | null;
 };
+
+const GEMINI_TIMEOUT_MS = 12_000;
+const GEMINI_MODEL = 'gemini-flash-latest';
+
+type GeminiLine = { text: string | null; error: string | null };
 
 /**
  * Gemini via Firebase AI Logic when the hosted project is configured.
- * Otherwise a short practice reply, labeled as such. No API key is bundled.
+ * A failure returns a short practice reply plus a clear error. No API key is bundled.
  */
-/** One-shot Gemini completion. Returns null when Firebase AI Logic is not on this host. */
+/** One-shot Gemini completion. Returns null when Firebase AI Logic is not on this host or the call fails. */
 export async function completeText(prompt: string): Promise<string | null> {
-  const boot = await bootFirebase();
-  if (boot.mode !== 'hosted' || !boot.app) return null;
-  const { GoogleAIBackend, getAI, getGenerativeModel } = await import('firebase/ai');
-  const ai = getAI(boot.app, { backend: new GoogleAIBackend() });
-  const model = getGenerativeModel(ai, { model: 'gemini-flash-latest' });
-  const result = await model.generateContent(prompt);
-  const text = result.response.text().trim();
-  return text || null;
+  const result = await askGeminiLine(prompt);
+  return result.text;
+}
+
+/** Same call as completeText, with the reason Gemini did not answer. */
+export async function askGeminiLine(prompt: string): Promise<GeminiLine> {
+  return runGemini(prompt);
 }
 
 export async function askAgent(
@@ -30,52 +37,69 @@ export async function askAgent(
   history: { role: 'user' | 'agent'; text: string }[],
   prompt: string,
 ): Promise<GuideResult> {
-  let source: GuideResult['source'] = 'practice';
-  let raw = practiceReply(agent, prompt, memories);
+  const fallback = practiceReply(agent, prompt, memories);
+  const gemini = await runGemini(prompt, {
+    systemInstruction: systemPrompt(agent, memories),
+    history: history.slice(0, -1).slice(-8).map((line) => ({
+      role: line.role === 'user' ? ('user' as const) : ('model' as const),
+      text: line.text,
+    })),
+  });
 
-  try {
-    const gemini = await askGemini(agent, memories, history, prompt);
-    if (gemini.trim()) {
-      raw = gemini.trim();
-      source = 'gemini';
-    }
-  } catch {
-    source = 'practice';
-  }
-
+  const answered = Boolean(gemini.text?.trim());
+  const raw = answered ? gemini.text!.trim() : fallback;
   const parsed = splitProposal(raw);
   const implied = detectKind(prompt);
   const proposal = parsed.proposal ?? (implied ? { kind: implied, summary: clip(prompt, 200) } : null);
-  const text = parsed.text || raw.trim();
-  return { text, proposal, source };
+  const text = parsed.text || raw.trim() || fallback;
+  return {
+    text,
+    proposal,
+    source: answered ? 'gemini' : 'practice',
+    error: answered ? null : gemini.error,
+  };
 }
 
-async function askGemini(
-  agent: Agent,
-  memories: string[],
-  history: { role: 'user' | 'agent'; text: string }[],
+async function runGemini(
   prompt: string,
-): Promise<string> {
+  options?: {
+    systemInstruction?: string;
+    history?: { role: 'user' | 'model'; text: string }[];
+  },
+): Promise<GeminiLine> {
   const boot = await bootFirebase();
   if (boot.mode !== 'hosted' || !boot.app) {
-    throw new Error('Gemini is not on this host yet.');
+    return { text: null, error: describeGeminiError('Gemini is not on this host yet.') };
   }
 
-  const { GoogleAIBackend, getAI, getGenerativeModel } = await import('firebase/ai');
-  const ai = getAI(boot.app, { backend: new GoogleAIBackend() });
-  const model = getGenerativeModel(ai, {
-    model: 'gemini-flash-latest',
-    systemInstruction: systemPrompt(agent, memories),
-  });
-
-  const prior = history.slice(0, -1).slice(-8).map((line) => ({
-    role: line.role === 'user' ? ('user' as const) : ('model' as const),
-    parts: [{ type: 'text' as const, text: line.text }],
-  }));
-
-  const chat = model.startChat({ history: prior });
-  const result = await chat.sendMessage(prompt);
-  return result.response.text();
+  try {
+    const { GoogleAIBackend, getAI, getGenerativeModel } = await import('firebase/ai');
+    const ai = getAI(boot.app, { backend: new GoogleAIBackend() });
+    const model = getGenerativeModel(ai, {
+      model: GEMINI_MODEL,
+      ...(options?.systemInstruction ? { systemInstruction: options.systemInstruction } : {}),
+    });
+    const request = { timeout: GEMINI_TIMEOUT_MS };
+    const history = options?.history?.filter((line) => line.text.trim()) ?? [];
+    let text = '';
+    if (history.length > 0) {
+      const chat = model.startChat({
+        history: history.map((line) => ({
+          role: line.role,
+          parts: [{ type: 'text' as const, text: line.text }],
+        })),
+      });
+      const result = await chat.sendMessage(prompt, request);
+      text = result.response.text().trim();
+    } else {
+      const result = await model.generateContent(prompt, request);
+      text = result.response.text().trim();
+    }
+    if (!text) return { text: null, error: describeGeminiError('empty') };
+    return { text, error: null };
+  } catch (error) {
+    return { text: null, error: describeGeminiError(error) };
+  }
 }
 
 function practiceReply(agent: Agent, prompt: string, memories: string[]): string {

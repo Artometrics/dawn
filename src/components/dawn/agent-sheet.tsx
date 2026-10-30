@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { agentById, type Agent } from '@/lib/agents';
 import { askAgent } from '@/lib/guide';
+import { describeGeminiError } from '@/lib/gemini-error';
 import { actionLabel } from '@/lib/proposals';
 import { useDawn, type Approval } from '@/components/dawn/dawn-provider';
 
@@ -12,6 +13,8 @@ export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => vo
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [source, setSource] = useState<'gemini' | 'practice' | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const scroller = useRef<HTMLDivElement>(null);
   const mine = memories.filter((item) => item.agentId === agent.id).slice(-6);
   const pending = approvals.filter((item) => item.agentId === agent.id && item.status === 'pending');
 
@@ -22,9 +25,11 @@ export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => vo
     const history = [...lines, { role: 'user' as const, text: prompt }];
     setLines(history);
     setBusy(true);
+    setError(null);
     try {
       const result = await askAgent(agent, mine.map((item) => item.text), history, prompt);
       setSource(result.source);
+      setError(result.error);
       setLines([...history, { role: 'agent', text: result.text }]);
       remember(agent.id, `You: ${prompt}`.slice(0, 400));
       remember(agent.id, `${agent.name}: ${result.text}`.slice(0, 400));
@@ -40,13 +45,23 @@ export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => vo
         };
         await addApproval(approval);
       }
+    } catch (err: unknown) {
+      setSource('practice');
+      setError(describeGeminiError(err));
+      setLines([...history, { role: 'agent', text: `${agent.name} heard you. Nothing leaves the village until you approve.` }]);
     } finally {
       setBusy(false);
     }
   }
 
+  useEffect(() => {
+    const node = scroller.current;
+    if (!node) return;
+    node.scrollTop = node.scrollHeight;
+  }, [lines, busy, error]);
+
   return (
-    <section className="flex max-h-[70vh] flex-col gap-3 border-t border-[#5a4636] bg-[#241910] p-3">
+    <section className="flex min-h-0 flex-1 flex-col gap-3 border-t border-[#5a4636] bg-[#241910] p-3">
       <div className="flex items-center gap-2">
         <img src={agent.src} alt="" width={32} height={32} className="h-8 w-8 [image-rendering:pixelated]" />
         <div className="min-w-0 flex-1">
@@ -55,22 +70,32 @@ export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => vo
         </div>
         <button type="button" className="min-h-11 px-3 text-sm" onClick={onClose}>Close</button>
       </div>
-      {source && (
-        <p className="text-xs text-[#e2a04a]">{source === 'gemini' ? 'Gemini' : 'Practice reply. Gemini is off.'}</p>
+      {source === 'gemini' && <p className="text-xs text-[#e2a04a]">Gemini</p>}
+      {error && (
+        <p role="alert" className="border border-[#e2a04a] bg-[#3a2414] px-3 py-2 text-sm leading-snug text-[#f3e6d0]">
+          {error} Showing a stand-in reply.
+        </p>
       )}
       {mine.length > 0 && <p className="text-xs text-[#d9cbb8]">Remembers: {mine.at(-1)?.text}</p>}
-      <div className="flex max-h-40 flex-col gap-2 overflow-y-auto text-sm">
+      <div ref={scroller} className="flex min-h-16 flex-1 flex-col gap-2 overflow-y-auto text-base">
         {lines.map((line, index) => (
-          <p key={`${line.role}-${index}`} className={line.role === 'user' ? 'text-[#f0d7a2]' : ''}>{line.text}</p>
+          <p
+            key={`${line.role}-${index}`}
+            className={line.role === 'user'
+              ? 'ml-8 rounded-2xl bg-[#3a2a1c] px-3 py-2 text-[#f0d7a2]'
+              : 'mr-8 rounded-2xl border border-[#5a4636] bg-[#1c1410] px-3 py-2'}
+          >
+            {line.text}
+          </p>
         ))}
-        {busy && <p className="text-[#d9cbb8]">Thinking…</p>}
+        {busy && <p className="text-sm text-[#d9cbb8]">Thinking…</p>}
       </div>
       {pending.map((item) => (
         <ApprovalRow key={item.id} item={item} onDecide={decide} />
       ))}
       {note && <p className="text-xs text-[#e2a04a]">{note}</p>}
       <form
-        className="flex gap-2"
+        className="flex shrink-0 gap-2"
         onSubmit={(event) => {
           event.preventDefault();
           void send();
