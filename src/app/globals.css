@@ -115,6 +115,10 @@
     --sidebar-ring: oklch(0.556 0 0);
 }
 
+.font-pixel {
+  font-family: var(--font-pixel), monospace;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
