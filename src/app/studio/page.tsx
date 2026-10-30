@@ -69,6 +69,7 @@ import {
 } from 'lucide-react';
 import { Teammate, DEFAULT_TEAMMATES } from '@/types/teammate';
 import { TeammateDialog } from '@/components/teammate-dialog';
+import { streamStudioChat } from '@/lib/studio/client-chat';
 import { ChatAvatar } from '@/components/chat-avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -275,10 +276,8 @@ export default function DawnStudio() {
     ]);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      await streamStudioChat(
+        {
           messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
           model: activeTeammate.model,
           teammate: activeTeammate,
@@ -287,29 +286,13 @@ export default function DawnStudio() {
             language: 'typescript',
             content: editorCode,
           },
-        }),
-      });
-
-      if (!response.ok || !response.body) {
-        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
-      let accumulated = '';
-
-      while (!done) {
-        const { value, done: doneReading } = await reader.read();
-        done = doneReading;
-        if (value) {
-          const chunk = decoder.decode(value, { stream: !done });
-          accumulated += chunk;
+        },
+        (accumulated) => {
           setMessages((prev) =>
             prev.map((m) => (m.id === assistantId ? { ...m, content: accumulated } : m))
           );
-        }
-      }
+        },
+      );
     } catch (err: any) {
       setMessages((prev) =>
         prev.map((m) =>
