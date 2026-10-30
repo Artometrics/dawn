@@ -10,6 +10,13 @@ Instead of paying for multiple isolated SaaS subscriptions and battling fragment
 
 ---
 
+
+## Hosting
+
+Firebase Hosting serves the static export in `out/` (`output: "export"` in `next.config.ts`).
+The village and Studio chat call Gemini through **Firebase AI Logic** in the browser — no API keys on the page.
+The old `/api/chat` server handler is kept at `src/lib/studio/chat-route.ts` for a future Cloud Function if you want OpenRouter/Grok on the host again.
+
 ## ⚡ Architecture & Features
 
 - **Monaco Code Editor**: Full-featured VS Code-style editor with syntax highlighting, auto-completion, and multi-file context tracking.

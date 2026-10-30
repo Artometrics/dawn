@@ -1,3 +1,11 @@
+/**
+ * Studio chat server handler (preserved for local `next dev` without static export,
+ * or a future Cloud Function). Hosted Dawn uses Firebase AI Logic from the browser
+ * via `src/lib/studio/client-chat.ts` — no API keys in the client bundle.
+ *
+ * This file is not an App Router route.
+ */
+
 import { streamText } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
