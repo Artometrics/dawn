@@ -1,6 +1,10 @@
 # Dawn // Studio 🌅
 
-**Dawn** is an autonomous AI development studio, multi-model gateway, and Cursor + Grok hybrid coding environment built for the **Artometrics** ecosystem.
+**Dawn** is a pixel-art village of agents, plus a studio and model gateway for the **Artometrics** ecosystem.
+
+Open the app, join with your name (local emulators) or Google (the Firebase host), and tap Trinity, Kali, or Nimbus. They can draft a send, spend, hire, or post, and nothing leaves until you tap Approve. The Map tab is you on OpenStreetMap. Quests are short goals. The older studio UI is at `/studio`. See `ROADMAP.md`.
+
+The studio is an autonomous development workspace and multi-model gateway.
 
 Instead of paying for multiple isolated SaaS subscriptions and battling fragmented MCP setups, Dawn routes directly to high-context, cost-effective model APIs (Google Gemini, xAI Grok, DeepSeek, Claude) while providing a unified code editing and conversational reasoning interface.
 

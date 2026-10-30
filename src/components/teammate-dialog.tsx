@@ -20,28 +20,28 @@ const PRESETS = [
     role: 'Grok Strategist',
     instructions:
       'Challenge weak technical assumptions, propose modular, scalable architectures, and write robust, production-grade code. Avoid corporate boilerplate.',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.8-flash',
     accentColor: '#f59e0b',
   },
   {
     role: 'Fullstack Architect',
     instructions:
       'Design end-to-end fullstack systems connecting Next.js 15 App Router, Prisma ORM, and streaming APIs with high test coverage and clean type contracts.',
-    model: 'gemini-1.5-pro',
+    model: 'gemini-3.1-pro-preview',
     accentColor: '#3b82f6',
   },
   {
     role: 'Security & Auth Auditor',
     instructions:
       'Review code for security vulnerabilities, OAuth misconfigurations, token leakage, OWASP top 10 flaws, and rate-limiting needs.',
-    model: 'gemini-1.5-pro',
+    model: 'gemini-3.1-pro-preview',
     accentColor: '#10b981',
   },
   {
     role: 'Performance Tuner',
     instructions:
       'Analyze bundle sizes, database query plans, memory leaks, and render latency. Recommend precise, measurable speed optimizations.',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-3.8-flash',
     accentColor: '#ec4899',
   },
 ];
@@ -62,7 +62,7 @@ export function TeammateDialog({
   const [name, setName] = useState(existingTeammate?.name || '');
   const [role, setRole] = useState(existingTeammate?.role || '');
   const [instructions, setInstructions] = useState(existingTeammate?.instructions || '');
-  const [model, setModel] = useState(existingTeammate?.model || 'gemini-2.0-flash');
+  const [model, setModel] = useState(existingTeammate?.model || 'gemini-3.8-flash');
   const [accentColor, setAccentColor] = useState(existingTeammate?.accentColor || '#f59e0b');
   const [memories, setMemories] = useState<string[]>(existingTeammate?.memory || []);
   const [newMemory, setNewMemory] = useState('');
@@ -183,9 +183,9 @@ export function TeammateDialog({
               onChange={(e) => setModel(e.target.value)}
               className="w-full bg-background border border-border rounded-lg px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring font-mono"
             >
-              <option value="gemini-2.0-flash">Gemini 2.0 Flash (Fastest)</option>
-              <option value="gemini-1.5-pro">Gemini 1.5 Pro (Deep Reasoning)</option>
-              <option value="x-ai/grok-2-1212">Grok 2 (OpenRouter/xAI)</option>
+              <option value="gemini-3.8-flash">Gemini Flash</option>
+              <option value="gemini-3.1-pro-preview">Gemini Pro</option>
+              <option value="x-ai/grok-4.7">Grok 4.7 (OpenRouter)</option>
               <option value="deepseek/deepseek-chat">DeepSeek V3</option>
               <option value="anthropic/claude-3.7-sonnet">Claude 3.7 Sonnet</option>
             </select>

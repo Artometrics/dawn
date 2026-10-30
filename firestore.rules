@@ -1,0 +1,264 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: Firebase Auth uid
+    // Fields:
+    //   - name: string (required, 1-40)
+    //   - avatar: int (required, 0-2)
+    //   - updatedAt: number (required, unix ms)
+    //
+    // Collection: users/{uid}/quests/{questId}
+    // Fields:
+    //   - id: string (required, equals document id)
+    //   - title: string (required, 1-80)
+    //   - note: string (required, 0-240)
+    //   - status: string (required, active|done)
+    //   - milestones: list of { label: string 1-60, done: bool } (1-4)
+    //   - createdAt: number (required, immutable)
+    //   - updatedAt: number (required, >= createdAt)
+    //
+    // Collection: users/{uid}/approvals/{approvalId}
+    // Fields:
+    //   - id, agentId (trinity|kali|nimbus), kind (send|spend|hire|post)
+    //   - summary: string 1-200
+    //   - status: pending on create; update may only set approved|declined
+    //   - createdAt immutable, updatedAt >= createdAt
+    //
+    // Collection: users/{uid}/memories/{memoryId}
+    // Fields:
+    //   - id, agentId, text 1-400, createdAt
+    //
+    // Collection: rooms/{roomId}
+    // Fields:
+    //   - title: string equals room id, [a-z0-9-]{2,24}
+    //   - createdBy: uid
+    //   - createdAt: request.time
+    //
+    // Collection: rooms/{roomId}/members/{memberId}
+    //   memberId must be the signed-in uid
+    //   - name 1-40, joinedAt request.time
+    //
+    // Collection: rooms/{roomId}/messages/{messageId}
+    //   - uid must be the sender
+    //   - name, text 1-200, createdAt request.time
+    //   - optional via + approvalId only when an approved send/post
+    //     approval owned by the sender matches the text
+    //
+    // ===============================================================
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function freshMillis(value) {
+      return value is number && value > 1700000000000 && value < 20000000000000;
+    }
+
+    function validProfile(data) {
+      return data.keys().hasOnly(['name', 'avatar', 'updatedAt'])
+        && data.name is string
+        && data.name.size() > 0
+        && data.name.size() <= 40
+        && data.avatar is int
+        && data.avatar >= 0
+        && data.avatar <= 2
+        && freshMillis(data.updatedAt);
+    }
+
+    function milestoneOk(item) {
+      return item is map
+        && item.keys().hasOnly(['label', 'done'])
+        && item.label is string
+        && item.label.size() > 0
+        && item.label.size() <= 60
+        && item.done is bool;
+    }
+
+    function milestonesOk(items) {
+      return items is list
+        && items.size() >= 1
+        && items.size() <= 4
+        && milestoneOk(items[0])
+        && (items.size() < 2 || milestoneOk(items[1]))
+        && (items.size() < 3 || milestoneOk(items[2]))
+        && (items.size() < 4 || milestoneOk(items[3]));
+    }
+
+    function validQuest(data) {
+      return data.keys().hasOnly(['id', 'title', 'note', 'status', 'milestones', 'createdAt', 'updatedAt'])
+        && data.id is string
+        && data.id.size() > 10
+        && data.id.size() < 80
+        && data.title is string
+        && data.title.size() > 0
+        && data.title.size() <= 80
+        && data.note is string
+        && data.note.size() <= 240
+        && data.status in ['active', 'done']
+        && milestonesOk(data.milestones)
+        && freshMillis(data.createdAt)
+        && freshMillis(data.updatedAt)
+        && data.updatedAt >= data.createdAt;
+    }
+
+    function validApproval(data) {
+      return data.keys().hasOnly(['id', 'agentId', 'kind', 'summary', 'status', 'createdAt', 'updatedAt'])
+        && data.id is string
+        && data.id.size() > 10
+        && data.id.size() < 80
+        && data.agentId in ['trinity', 'kali', 'nimbus']
+        && data.kind in ['send', 'spend', 'hire', 'post']
+        && data.summary is string
+        && data.summary.size() > 0
+        && data.summary.size() <= 200
+        && data.status in ['pending', 'approved', 'declined']
+        && freshMillis(data.createdAt)
+        && freshMillis(data.updatedAt)
+        && data.updatedAt >= data.createdAt;
+    }
+
+    function validMemory(data) {
+      return data.keys().hasOnly(['id', 'agentId', 'text', 'createdAt', 'importance', 'kind'])
+        && data.id is string
+        && data.id.size() > 10
+        && data.id.size() < 80
+        && data.agentId in ['trinity', 'kali', 'nimbus']
+        && data.text is string
+        && data.text.size() > 0
+        && data.text.size() <= 400
+        && freshMillis(data.createdAt)
+        && (!data.keys().hasAny(['importance']) || (data.importance is number && data.importance >= 0 && data.importance <= 9))
+        && (!data.keys().hasAny(['kind']) || data.kind in ['conversation', 'reflection', 'observation']);
+    }
+
+    function validRoom(data) {
+      return data.keys().hasOnly(['title', 'createdBy', 'createdAt'])
+        && data.title is string
+        && data.title.size() >= 2
+        && data.title.size() <= 24
+        && data.title.matches('^[a-z0-9-]+$')
+        && data.createdBy == request.auth.uid
+        && data.createdAt == request.time;
+    }
+
+    function validMember(data) {
+      return data.keys().hasOnly(['name', 'joinedAt'])
+        && data.name is string
+        && data.name.size() > 0
+        && data.name.size() <= 40
+        && data.joinedAt == request.time;
+    }
+
+    function approvalMatches(agentId, approvalId, text) {
+      let path = /databases/$(database)/documents/users/$(request.auth.uid)/approvals/$(approvalId);
+      return exists(path)
+        && get(path).data.status == 'approved'
+        && get(path).data.kind in ['send', 'post']
+        && get(path).data.agentId == agentId
+        && get(path).data.summary == text;
+    }
+
+    function agentStampOk(data) {
+      let stamped = data.keys().hasAny(['via']) || data.keys().hasAny(['approvalId']);
+      return !stamped || (
+        data.via in ['trinity', 'kali', 'nimbus']
+        && data.approvalId is string
+        && data.approvalId.size() > 10
+        && approvalMatches(data.via, data.approvalId, data.text)
+      );
+    }
+
+    function validMessage(data) {
+      return data.keys().hasOnly(['uid', 'name', 'text', 'createdAt', 'via', 'approvalId'])
+        && data.uid == request.auth.uid
+        && data.name is string
+        && data.name.size() > 0
+        && data.name.size() <= 40
+        && data.text is string
+        && data.text.size() > 0
+        && data.text.size() <= 200
+        && data.createdAt == request.time
+        && agentStampOk(data);
+    }
+
+    match /users/{uid} {
+      allow get: if isOwner(uid);
+      allow list: if false;
+      allow create, update: if isOwner(uid) && validProfile(request.resource.data);
+      allow delete: if false;
+
+      match /quests/{questId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid)
+          && validQuest(request.resource.data)
+          && request.resource.data.id == questId;
+        allow update: if isOwner(uid)
+          && validQuest(request.resource.data)
+          && request.resource.data.id == questId
+          && request.resource.data.createdAt == resource.data.createdAt;
+        allow delete: if isOwner(uid);
+      }
+
+      match /approvals/{approvalId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid)
+          && validApproval(request.resource.data)
+          && request.resource.data.id == approvalId
+          && request.resource.data.status == 'pending'
+          && request.resource.data.updatedAt == request.resource.data.createdAt;
+        allow update: if isOwner(uid)
+          && validApproval(request.resource.data)
+          && request.resource.data.id == approvalId
+          && resource.data.status == 'pending'
+          && request.resource.data.status in ['approved', 'declined']
+          && request.resource.data.createdAt == resource.data.createdAt
+          && request.resource.data.agentId == resource.data.agentId
+          && request.resource.data.kind == resource.data.kind
+          && request.resource.data.summary == resource.data.summary;
+        allow delete: if isOwner(uid);
+      }
+
+      match /memories/{memoryId} {
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid)
+          && validMemory(request.resource.data)
+          && request.resource.data.id == memoryId;
+        allow update: if false;
+        allow delete: if isOwner(uid);
+      }
+    }
+
+    match /rooms/{roomId} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn()
+        && validRoom(request.resource.data)
+        && request.resource.data.title == roomId;
+      allow update, delete: if false;
+
+      match /members/{memberId} {
+        allow read: if signedIn();
+        allow create, update: if signedIn()
+          && memberId == request.auth.uid
+          && validMember(request.resource.data);
+        allow delete: if signedIn() && memberId == request.auth.uid;
+      }
+
+      match /messages/{messageId} {
+        allow read: if signedIn();
+        allow create: if signedIn() && validMessage(request.resource.data);
+        allow update: if false;
+        allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+      }
+    }
+  }
+}

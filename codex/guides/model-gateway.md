@@ -6,7 +6,7 @@ Project Dawn's AI Gateway lives in `src/app/api/chat/route.ts`. It acts as a uni
   - `gemini-3.8-flash` (Primary low-latency streaming agent)
   - `gemini-3.1-pro-preview` (Deep reasoning & security audits)
 - **OpenRouter Gateway (`@ai-sdk/openai`)**:
-  - `x-ai/grok-2-1212` (xAI Grok 2 Bot engine)
+  - `x-ai/grok-4.7` (xAI Grok. Replaces retired `x-ai/grok-2-1212`.)
   - `openai/gpt-4o-mini` (Universal fast fallback)
   - `anthropic/claude-3.7-sonnet` (Complex refactors)
 
@@ -17,6 +17,8 @@ Legacy model names (like `gemini-2.0-flash` which Google retired) are automatica
 ```typescript
 function resolveModel(requestedModel: string = 'gemini-3.8-flash') {
   let normalized = requestedModel.toLowerCase().trim();
+
+  if (normalized.includes('grok-2')) normalized = 'x-ai/grok-4.7';
 
   if (
     normalized.includes('gemini-2') ||
@@ -35,8 +37,9 @@ function resolveModel(requestedModel: string = 'gemini-3.8-flash') {
     return google(normalized);
   }
 
+  // Retired ids such as x-ai/grok-2-1212 are rewritten to x-ai/grok-4.7 before this call.
   if (process.env.OPENROUTER_API_KEY) {
-    return openrouter(requestedModel);
+    return openrouter(normalized);
   }
 
   return google('gemini-3.8-flash');

@@ -1,6 +1,7 @@
 import { streamText } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
+import { GEMINI_FAST, remapModelId } from '@/lib/models';
 
 // Initialize Google provider with fallback keys
 const google = createGoogleGenerativeAI({
@@ -13,43 +14,26 @@ const openrouter = createOpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
 });
 
-function resolveModel(requestedModel: string = 'gemini-3.8-flash') {
-  let normalized = requestedModel.toLowerCase().trim();
+function resolveModel(requestedModel?: string) {
+  const id = remapModelId(requestedModel);
 
-  // Map legacy / deprecated names to current active Gemini models
-  if (
-    normalized.includes('gemini-2') ||
-    normalized.includes('gemini-flash') ||
-    normalized === 'gemini' ||
-    normalized === 'flash'
-  ) {
-    normalized = 'gemini-3.8-flash';
-  } else if (
-    normalized.includes('gemini-1.5') ||
-    normalized.includes('gemini-pro') ||
-    normalized === 'pro'
-  ) {
-    normalized = 'gemini-3.1-pro-preview';
+  if (id.startsWith('gemini')) {
+    return google(id);
   }
 
-  if (normalized.startsWith('gemini')) {
-    return google(normalized);
-  }
-
-  // Any other model (e.g. x-ai/grok-2, claude-3.7-sonnet, deepseek-chat)
+  // OpenRouter models, including x-ai/grok-4.7 (grok-2-1212 is remapped above).
   if (process.env.OPENROUTER_API_KEY) {
-    return openrouter(requestedModel);
+    return openrouter(id);
   }
 
-  // Fallback to gemini-3.8-flash
-  return google('gemini-3.8-flash');
+  return google(GEMINI_FAST);
 }
 
 export async function POST(req: Request) {
   try {
     const { 
       messages, 
-      model = 'gemini-3.8-flash', 
+      model = GEMINI_FAST, 
       teammate,
       codeContext 
     } = await req.json();

@@ -2,7 +2,7 @@
 
 ## 1. TRINITY (`trinity`)
 - **Role**: Autonomous Executive Bot / Lead Orchestrator
-- **Model**: `gemini-3.8-flash` (with fallback to `openrouter/x-ai/grok-2` or `openai/gpt-4o-mini`)
+- **Model**: `gemini-3.8-flash` (with fallback to `x-ai/grok-4.7` or `openai/gpt-4o-mini`)
 - **Accent Color**: `#ffffff` (White / Minimalist Chrome)
 - **Avatar**: Minimalist cartoon bot face with black tilted oval eyes and gold star badge (`★`)
 - **System Instructions**:
