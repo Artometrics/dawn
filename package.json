@@ -7,7 +7,7 @@
     "build": "next build && node scripts/fix-static-export.mjs",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test src/lib/models.test.ts src/lib/proposals.test.ts src/lib/town/loop.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/models.test.ts src/lib/proposals.test.ts src/lib/gemini-error.test.ts src/lib/town/loop.test.ts src/lib/town/schedule.test.ts",
     "test:rules": "npx -y firebase-tools@latest emulators:exec --only firestore --project dawn-510519 \"node tests/rules.mjs\""
   },
   "dependencies": {
