@@ -5,7 +5,11 @@
   "hosting": {
     "site": "dawn-510519",
     "public": "out",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "headers": [
       {
         "source": "**",
@@ -16,12 +20,25 @@
           }
         ]
       }
+    ],
+    "cleanUrls": true,
+    "rewrites": [
+      {
+        "source": "/studio",
+        "destination": "/studio.html"
+      }
     ]
   },
   "emulators": {
-    "auth": { "port": 9099 },
-    "firestore": { "port": 8080 },
-    "ui": { "enabled": false },
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": false
+    },
     "singleProjectMode": true
   }
 }
