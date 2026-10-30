@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && node scripts/fix-static-export.mjs",
     "start": "next start",
     "lint": "eslint",
     "test": "node --experimental-strip-types --test src/lib/models.test.ts src/lib/proposals.test.ts src/lib/town/loop.test.ts",
