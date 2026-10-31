@@ -7,6 +7,22 @@ import { describeGeminiError } from '@/lib/gemini-error';
 import { actionLabel } from '@/lib/proposals';
 import { useDawn, type Approval } from '@/components/dawn/dawn-provider';
 
+function draftedApproval(
+  agentId: Approval['agentId'],
+  proposal: { kind: Approval['kind']; summary: string },
+): Approval {
+  const now = Date.now();
+  return {
+    id: crypto.randomUUID(),
+    agentId,
+    kind: proposal.kind,
+    summary: proposal.summary,
+    status: 'pending',
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
 export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => void }) {
   const { memories, remember, addApproval, approvals, decide, note } = useDawn();
   const [lines, setLines] = useState<{ role: 'user' | 'agent'; text: string }[]>([]);
@@ -34,16 +50,7 @@ export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => vo
       remember(agent.id, `You: ${prompt}`.slice(0, 400));
       remember(agent.id, `${agent.name}: ${result.text}`.slice(0, 400));
       if (result.proposal) {
-        const approval: Approval = {
-          id: crypto.randomUUID(),
-          agentId: agent.id,
-          kind: result.proposal.kind,
-          summary: result.proposal.summary,
-          status: 'pending',
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-        };
-        await addApproval(approval);
+        await addApproval(draftedApproval(agent.id, result.proposal));
       }
     } catch (err: unknown) {
       setSource('practice');
@@ -61,39 +68,39 @@ export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => vo
   }, [lines, busy, error]);
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col gap-3 border-t border-[#5a4636] bg-[#241910] p-3">
+    <section className="flex min-h-0 flex-1 flex-col gap-3 bg-[var(--dawn-bg)] p-3">
       <div className="flex items-center gap-2">
-        <img src={agent.src} alt="" width={32} height={32} className="h-8 w-8 [image-rendering:pixelated]" />
+        <img src={agent.src} alt="" width={36} height={36} className="h-9 w-9 rounded-lg bg-[var(--dawn-chip)] [image-rendering:pixelated]" />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold">{agent.name}</p>
-          <p className="truncate text-xs text-[#d9cbb8]">{agent.title}</p>
+          <p className="text-[16px] font-medium">{agent.name}</p>
+          <p className="truncate text-[13px] text-[var(--dawn-muted)]">{agent.title}</p>
         </div>
-        <button type="button" className="min-h-11 px-3 text-sm" onClick={onClose}>Close</button>
+        <button type="button" className="min-h-11 px-3 text-[15px]" onClick={onClose}>Close</button>
       </div>
-      {source === 'gemini' && <p className="text-xs text-[#e2a04a]">Gemini</p>}
+      {source === 'gemini' && <p className="text-[13px] text-[var(--dawn-accent)]">Gemini</p>}
       {error && (
-        <p role="alert" className="border border-[#e2a04a] bg-[#3a2414] px-3 py-2 text-sm leading-snug text-[#f3e6d0]">
+        <p role="alert" className="rounded-2xl bg-[var(--dawn-elev)] px-3 py-2 text-[15px] leading-snug">
           {error} Showing a stand-in reply.
         </p>
       )}
-      {mine.length > 0 && <p className="text-xs text-[#d9cbb8]">Remembers: {mine.at(-1)?.text}</p>}
-      <div ref={scroller} className="flex min-h-16 flex-1 flex-col gap-2 overflow-y-auto text-base">
+      {mine.length > 0 && <p className="text-[13px] text-[var(--dawn-muted)]">Remembers: {mine.at(-1)?.text}</p>}
+      <div ref={scroller} className="flex min-h-16 flex-1 flex-col gap-2 overflow-y-auto text-[16px]">
         {lines.map((line, index) => (
           <p
             key={`${line.role}-${index}`}
             className={line.role === 'user'
-              ? 'ml-8 rounded-2xl bg-[#3a2a1c] px-3 py-2 text-[#f0d7a2]'
-              : 'mr-8 rounded-2xl border border-[#5a4636] bg-[#1c1410] px-3 py-2'}
+              ? 'ml-8 rounded-2xl bg-[var(--dawn-chip)] px-3 py-2'
+              : 'mr-8 rounded-2xl bg-[var(--dawn-elev)] px-3 py-2'}
           >
             {line.text}
           </p>
         ))}
-        {busy && <p className="text-sm text-[#d9cbb8]">Thinking…</p>}
+        {busy && <p className="text-[14px] text-[var(--dawn-muted)]">Thinking…</p>}
       </div>
       {pending.map((item) => (
         <ApprovalRow key={item.id} item={item} onDecide={decide} />
       ))}
-      {note && <p className="text-xs text-[#e2a04a]">{note}</p>}
+      {note && <p className="text-[13px] text-[var(--dawn-accent)]">{note}</p>}
       <form
         className="flex shrink-0 gap-2"
         onSubmit={(event) => {
@@ -107,9 +114,13 @@ export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => vo
           value={input}
           onChange={(event) => setInput(event.target.value)}
           placeholder={`Ask ${agent.name}`}
-          className="min-h-11 flex-1 border border-[#5a4636] bg-[#1c1410] px-3 text-base"
+          className="dawn-field flex-1"
         />
-        <button type="submit" disabled={busy || !input.trim()} className="min-h-11 min-w-16 border border-[#e2a04a] px-3 text-sm disabled:opacity-40">
+        <button
+          type="submit"
+          disabled={busy || !input.trim()}
+          className="inline-flex min-h-11 min-w-16 items-center justify-center rounded-full bg-[var(--dawn-pill)] px-4 text-[14px] font-medium text-[var(--dawn-ink)] disabled:opacity-40"
+        >
           Ask
         </button>
       </form>
@@ -126,14 +137,13 @@ function ApprovalRow({
 }) {
   const agent = agentById(item.agentId);
   return (
-    <div className="border border-[#e2a04a] p-2 text-sm">
-      <p className="text-xs uppercase tracking-wide text-[#e2a04a]">{actionLabel(item.kind)} · needs you</p>
-      <p className="mt-1">{agent?.name}: {item.summary}</p>
-      <div className="mt-2 flex gap-2">
-        <button type="button" className="min-h-11 flex-1 bg-[#e2a04a] text-[#1c1410]" onClick={() => void onDecide(item.id, 'approved')}>
+    <div className="rounded-2xl bg-[var(--dawn-elev)] p-3 text-[15px]">
+      <p>{agent?.name} drafted a {actionLabel(item.kind)}: {item.summary}</p>
+      <div className="mt-3 flex gap-2">
+        <button type="button" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[var(--dawn-pill)] text-[14px] font-medium text-[var(--dawn-ink)]" onClick={() => void onDecide(item.id, 'approved')}>
           Approve
         </button>
-        <button type="button" className="min-h-11 flex-1 border border-[#5a4636]" onClick={() => void onDecide(item.id, 'declined')}>
+        <button type="button" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[var(--dawn-chip)] text-[14px]" onClick={() => void onDecide(item.id, 'declined')}>
           No
         </button>
       </div>

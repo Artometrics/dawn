@@ -5,9 +5,15 @@ import type { Map as LeafletMap, Marker } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { YOU_LOOKS } from '@/lib/agents';
 
-const FALLBACK: [number, number] = [37.7749, -122.4194];
+const FALLBACK: [number, number] = [37.4275, -122.1697];
 
-export function AtlasMap({ avatar }: { avatar: number }) {
+export function AtlasMap({
+  avatar,
+  focusToken = 0,
+}: {
+  avatar: number;
+  focusToken?: number;
+}) {
   const host = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markerRef = useRef<Marker | null>(null);
@@ -20,7 +26,7 @@ export function AtlasMap({ avatar }: { avatar: number }) {
     void import('leaflet').then((leaflet) => {
       if (dead || mapRef.current) return;
       const L = leaflet.default;
-      const map = L.map(parent, { zoomControl: true }).setView(FALLBACK, 13);
+      const map = L.map(parent, { zoomControl: false, attributionControl: true }).setView(FALLBACK, 14);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap',
@@ -31,7 +37,7 @@ export function AtlasMap({ avatar }: { avatar: number }) {
         iconSize: [32, 32],
         iconAnchor: [16, 16],
       });
-      markerRef.current = L.marker(FALLBACK, { icon }).addTo(map);
+      markerRef.current = L.marker(FALLBACK, { icon, title: 'You' }).addTo(map);
       mapRef.current = map;
       window.setTimeout(() => map.invalidateSize(), 150);
       if (!navigator.geolocation) return;
@@ -54,12 +60,19 @@ export function AtlasMap({ avatar }: { avatar: number }) {
     };
   }, [avatar]);
 
+  useEffect(() => {
+    const map = mapRef.current;
+    const marker = markerRef.current;
+    if (!map || !marker || focusToken === 0) return;
+    map.setView(marker.getLatLng(), 15);
+  }, [focusToken]);
+
   return (
-    <div className="flex h-full min-h-0 flex-col gap-2">
-      <p className="text-sm text-[#d9cbb8]">
-        {place === 'here' ? 'You are on the map.' : 'Stand-in spot until location is allowed.'} Places and services come later.
+    <div className="dawn-map relative h-full min-h-0">
+      <p className="pointer-events-none absolute top-16 left-4 z-[400] max-w-[16rem] text-[13px] text-[var(--dawn-secondary)]">
+        {place === 'here' ? 'You are on the map.' : 'Stand-in spot until location is allowed.'}
       </p>
-      <div ref={host} className="min-h-[280px] flex-1 border border-[#5a4636]" />
+      <div ref={host} className="h-full min-h-[240px]" />
     </div>
   );
 }

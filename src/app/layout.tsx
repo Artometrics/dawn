@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Press_Start_2P } from "next/font/google";
+import { Geist, Geist_Mono, Press_Start_2P, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,6 +18,12 @@ const pixel = Press_Start_2P({
   variable: "--font-pixel",
 });
 
+const serif = Source_Serif_4({
+  weight: ["500", "600"],
+  subsets: ["latin"],
+  variable: "--font-serif",
+});
+
 export const metadata: Metadata = {
   title: "Dawn",
   description: "A pixel village of agents. You approve anything that leaves the room.",
@@ -27,7 +33,7 @@ export const metadata: Metadata = {
 export const viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#1c1410",
+  themeColor: "#0e0e0c",
 };
 
 export default function RootLayout({
@@ -38,7 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${pixel.variable} dark h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${pixel.variable} ${serif.variable} dark h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
