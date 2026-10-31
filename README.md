@@ -4,6 +4,18 @@
 
 Open the app, join with your name (local emulators) or Google (the Firebase host), and tap Trinity, Kali, or Nimbus. They can draft a send, spend, hire, or post, and nothing leaves until you tap Approve. The Map tab is you on OpenStreetMap. Quests are short goals. The older studio UI is at `/studio`. See `ROADMAP.md`.
 
+## Decided
+
+The home shell is a night phone, in the grain of the Claude and Grok screens Kyle attached. Near-black ground, warm grey text, one clay accent, a serif “Dawn” wordmark, and a drawer with Quests, Village, Atlas, and Library. Pinned is the three agents. Recents are quests, with a relative date. A white “+ New quest” pill floats above a search field pinned to the bottom. Round buttons sit in the top corners.
+
+That replaces the espresso pixel header and the five-tab bar as the way you move. The village, the approval gate, group chat, the team card, and Studio stay. Chat, the team card, and Studio live in Library so the drawer stays at four rows. From 768px wide the drawer stays open.
+
+Atlas is a flat drawing of the campus place list: charcoal ground, lighter roads, neon only on the walked path, the live zone, and the next goal. Stops are dark-blue pills. Minor names fade as you zoom out. The sheet drags and the chips filter the list. The 8/16-bit character still walks the Cardinal Quest. The Here chip is the geolocation map on OpenStreetMap, darkened, with the OpenStreetMap credit. A dark tile host we tried drew an API-key watermark, so it is not used.
+
+Quest checks are a hollow or filled mark in a fixed cell. The clay accent marks the open section, a waiting approval, and a selected chip. The one filled action on a screen is the white pill.
+
+## Studio
+
 The studio is an autonomous development workspace and multi-model gateway.
 
 Instead of paying for multiple isolated SaaS subscriptions and battling fragmented MCP setups, Dawn routes directly to high-context, cost-effective model APIs (Google Gemini, xAI Grok, DeepSeek, Claude) while providing a unified code editing and conversational reasoning interface.

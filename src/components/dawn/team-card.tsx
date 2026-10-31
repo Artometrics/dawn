@@ -44,16 +44,16 @@ export function TeamCard() {
 
   return (
     <div className="flex flex-col gap-4">
-      <label className="text-sm" htmlFor="your-name">
+      <label className="text-[14px] text-[var(--dawn-secondary)]" htmlFor="your-name">
         Your name
         <input
           id="your-name"
           value={name}
           onChange={(event) => setName(event.target.value)}
-          className="mt-1 min-h-11 w-full border border-[#5a4636] bg-[#1c1410] px-3 text-base"
+          className="dawn-field mt-1"
         />
       </label>
-      <div className="flex gap-2">
+      <div className="flex gap-2" role="group" aria-label="Your look">
         {YOU_LOOKS.map((src, index) => (
           <button
             key={src}
@@ -61,48 +61,47 @@ export function TeamCard() {
             aria-label={`Look ${index + 1}`}
             aria-pressed={avatar === index}
             onClick={() => setAvatar(index)}
-            className={`min-h-11 min-w-11 border p-1 ${avatar === index ? 'border-[#e2a04a]' : 'border-[#5a4636]'}`}
+            className={`grid min-h-11 min-w-11 place-items-center rounded-xl bg-[var(--dawn-chip)] p-1 ${avatar === index ? 'outline outline-2 outline-offset-2 outline-[var(--dawn-accent)]' : ''}`}
           >
             <img src={src} alt="" width={32} height={32} className="h-8 w-8 [image-rendering:pixelated]" />
           </button>
         ))}
       </div>
-      <article id="team-card" className="border border-[#e2a04a] bg-[#2a1d14] p-3">
+      <article id="team-card" className="rounded-2xl bg-[var(--dawn-elev)] p-3">
         <div className="flex items-center gap-3">
           <img src={YOU_LOOKS[avatar]} alt="" width={48} height={48} className="h-12 w-12 [image-rendering:pixelated]" />
           <div>
-            <p className="text-xs text-[#e2a04a]">Dawn team</p>
-            <p className="text-lg">{name || 'You'}</p>
+            <p className="dawn-wordmark text-[22px] leading-none">Dawn</p>
+            <p className="mt-1 text-[16px]">{name || 'You'}</p>
           </div>
         </div>
         <ul className="mt-3 flex flex-col gap-2">
           {AGENTS.map((agent) => (
-            <li key={agent.id} className="flex items-center gap-2 text-sm">
+            <li key={agent.id} className="flex items-center gap-2 text-[15px]">
               <img src={agent.src} alt="" width={32} height={32} className="h-8 w-8 [image-rendering:pixelated]" />
               <span>{agent.name}</span>
-              <span className="text-[#d9cbb8]">{agent.title}</span>
+              <span className="text-[var(--dawn-muted)]">{agent.title}</span>
             </li>
           ))}
         </ul>
       </article>
       <div className="flex gap-2">
-        <button type="button" className="min-h-11 flex-1 border border-[#e2a04a] text-sm" onClick={() => void share()}>
+        <button type="button" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[var(--dawn-pill)] text-[14px] font-medium text-[var(--dawn-ink)]" onClick={() => void share()}>
           {copied ? 'Copied' : 'Share'}
         </button>
-        <button type="button" className="min-h-11 flex-1 border border-[#5a4636] text-sm" onClick={() => void save()}>
+        <button type="button" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[var(--dawn-chip)] text-[14px]" onClick={() => void save()}>
           Save image
         </button>
       </div>
-      <p className="text-xs text-[#d9cbb8]">Trinity plans. Kali and Nimbus work. You approve anything that leaves.</p>
-      <button type="button" className="min-h-11 text-left text-sm text-[#d9cbb8]" onClick={() => void clearDesk()}>
+      <p className="text-[13px] leading-5 text-[var(--dawn-muted)]">Trinity plans. Kali and Nimbus work. You approve anything that leaves.</p>
+      <button type="button" className="min-h-11 text-left text-[15px] text-[var(--dawn-secondary)]" onClick={() => void clearDesk()}>
         Clear quests and notes
       </button>
       {user && (
-        <button type="button" className="min-h-11 text-left text-sm" onClick={() => void signOut()}>
+        <button type="button" className="min-h-11 text-left text-[15px]" onClick={() => void signOut()}>
           Sign out
         </button>
       )}
-      <a href="/studio" className="min-h-11 text-sm text-[#e2a04a]">Studio</a>
     </div>
   );
 }
@@ -114,11 +113,11 @@ async function renderCard(name: string, avatar: number): Promise<File | null> {
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
   ctx.imageSmoothingEnabled = false;
-  ctx.fillStyle = '#2a1d14';
+  ctx.fillStyle = '#171715';
   ctx.fillRect(0, 0, 320, 180);
-  ctx.strokeStyle = '#e2a04a';
+  ctx.strokeStyle = '#d97746';
   ctx.strokeRect(4, 4, 312, 172);
-  ctx.fillStyle = '#f3e6d0';
+  ctx.fillStyle = '#f3f1ec';
   ctx.font = '16px monospace';
   ctx.fillText('Dawn team', 16, 32);
   ctx.font = '20px monospace';

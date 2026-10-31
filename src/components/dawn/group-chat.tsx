@@ -124,7 +124,7 @@ export function GroupChat() {
   }
 
   if (!user) {
-    return <p className="text-sm text-[#d9cbb8]">Sign in, then join a room. Another signed-in person can use the same room name.</p>;
+    return <p className="text-[15px] leading-6 text-[var(--dawn-secondary)]">Sign in, then join a room. Another signed-in person can use the same room name.</p>;
   }
 
   return (
@@ -135,19 +135,19 @@ export function GroupChat() {
           id="room-name"
           value={room}
           onChange={(event) => setRoom(event.target.value)}
-          className="min-h-11 flex-1 border border-[#5a4636] bg-[#1c1410] px-3 text-base"
+          className="dawn-field flex-1"
         />
-        <button type="submit" className="min-h-11 border border-[#e2a04a] px-3 text-sm">{joined ? 'Switch' : 'Join'}</button>
+        <button type="submit" className="inline-flex min-h-11 items-center rounded-full bg-[var(--dawn-pill)] px-4 text-[14px] font-medium text-[var(--dawn-ink)]">{joined ? 'Switch' : 'Join'}</button>
       </form>
-      {people.length > 0 && <p className="text-xs text-[#d9cbb8]">Here: {people.join(', ')}</p>}
-      {error && <p className="text-xs text-[#e2a04a]">{error}</p>}
+      {people.length > 0 && <p className="text-[13px] text-[var(--dawn-muted)]">Here: {people.join(', ')}</p>}
+      {error && <p role="alert" className="text-[13px] text-[var(--dawn-accent)]">{error}</p>}
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto">
-        {joined && messages.length === 0 && <p className="text-sm text-[#d9cbb8]">No one has spoken.</p>}
+        {joined && messages.length === 0 && <p className="text-[15px] text-[var(--dawn-secondary)]">No one has spoken.</p>}
         {messages.map((message) => {
           const via = message.via ? agentById(message.via) : undefined;
           return (
-            <article key={message.id} className="border border-[#5a4636] p-2 text-sm">
-              <p className="text-xs text-[#e2a04a]">{via ? `${via.name} · ok by ${message.name}` : message.name}</p>
+            <article key={message.id} className="rounded-2xl bg-[var(--dawn-elev)] px-3 py-2 text-[15px]">
+              <p className="text-[13px] text-[var(--dawn-accent)]">{via ? `${via.name} · ok by ${message.name}` : message.name}</p>
               <p className="mt-1">{message.text}</p>
             </article>
           );
@@ -161,12 +161,12 @@ export function GroupChat() {
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             placeholder="Say something"
-            className="min-h-11 flex-1 border border-[#5a4636] bg-[#1c1410] px-3 text-base"
+            className="dawn-field flex-1"
           />
-          <button type="submit" disabled={!draft.trim()} className="min-h-11 border border-[#e2a04a] px-3 text-sm disabled:opacity-40">Send</button>
+          <button type="submit" disabled={!draft.trim()} className="inline-flex min-h-11 items-center rounded-full bg-[var(--dawn-pill)] px-4 text-[14px] font-medium text-[var(--dawn-ink)] disabled:opacity-40">Send</button>
         </form>
       )}
-      <p className="text-xs text-[#d9cbb8]">Your words go out when you tap Send. Agents wait for Approve.</p>
+      <p className="text-[13px] text-[var(--dawn-muted)]">Your words go out when you tap Send. Agents wait for Approve.</p>
     </div>
   );
 }

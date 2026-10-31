@@ -130,3 +130,115 @@
     @apply font-sans;
   }
 }
+
+/* Dawn phone shell. Scoped so Studio keeps its own tokens. */
+.dawn-root {
+  --dawn-bg: #0e0e0c;
+  --dawn-elev: #171715;
+  --dawn-field: #1c1c1a;
+  --dawn-chip: #2a2a27;
+  --dawn-text: #f3f1ec;
+  --dawn-secondary: #c4bdb3;
+  --dawn-muted: #8f887f;
+  --dawn-accent: #d97746;
+  --dawn-pill: #f7f4ef;
+  --dawn-ink: #141210;
+  --dawn-marker: #1a3358;
+  --dawn-map: #161816;
+  --dawn-road: #3a413c;
+  --dawn-neon-orange: #ff7a2f;
+  --dawn-neon-green: #3ee08a;
+  --dawn-neon-blue: #4cb7ff;
+  color: var(--dawn-text);
+  background: var(--dawn-bg);
+  color-scheme: dark;
+  caret-color: var(--dawn-accent);
+  scrollbar-color: #3a3834 transparent;
+}
+
+.dawn-wordmark {
+  font-family: var(--font-serif), "Iowan Old Style", Palatino, serif;
+  font-weight: 560;
+  letter-spacing: -0.03em;
+}
+
+.dawn-root ::selection {
+  background: var(--dawn-accent);
+  color: var(--dawn-ink);
+}
+
+.dawn-root :focus-visible {
+  outline: 2px solid var(--dawn-accent);
+  outline-offset: 2px;
+}
+
+.dawn-search:focus-within {
+  outline: 2px solid var(--dawn-accent);
+  outline-offset: 2px;
+}
+
+.dawn-field {
+  min-height: 44px;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--dawn-field);
+  color: var(--dawn-text);
+  padding: 0 16px;
+  font-size: 16px;
+}
+
+.dawn-field::placeholder {
+  color: #a8a199;
+}
+
+.dawn-mark {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border: 1.5px solid var(--dawn-muted);
+  border-radius: 999px;
+  background: transparent;
+}
+
+.dawn-mark:checked {
+  border-color: var(--dawn-accent);
+  background: var(--dawn-accent);
+}
+
+.dawn-map-surface {
+  touch-action: none;
+  background: var(--dawn-map);
+  isolation: isolate;
+  z-index: 0;
+}
+
+.dawn-map-surface.is-here {
+  touch-action: auto;
+}
+
+.dawn-map .leaflet-container {
+  background: var(--dawn-map);
+  font-family: inherit;
+  z-index: 0;
+}
+
+.dawn-map .leaflet-tile-pane {
+  filter: grayscale(0.35) brightness(0.42) contrast(1.15);
+}
+
+.dawn-map .leaflet-control-attribution {
+  background: transparent;
+  color: var(--dawn-muted);
+  font-size: 10px;
+}
+
+.dawn-map .leaflet-control-attribution a {
+  color: var(--dawn-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dawn-drawer {
+    transition: none;
+  }
+}
