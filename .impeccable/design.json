@@ -1,0 +1,380 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-31T17:30:00.000Z",
+  "title": "Design System: Dawn",
+  "extensions": {
+    "colorMeta": {
+      "clay": {
+        "role": "primary",
+        "displayName": "Clay",
+        "canonical": "oklch(67% 0.138 45.9)",
+        "tonalRamp": ["oklch(15% 0.138 45.9)", "oklch(26.4% 0.138 45.9)", "oklch(37.9% 0.138 45.9)", "oklch(49.3% 0.138 45.9)", "oklch(60.7% 0.138 45.9)", "oklch(72.1% 0.138 45.9)", "oklch(83.6% 0.138 45.9)", "oklch(95% 0.138 45.9)"]
+      },
+      "night": {
+        "role": "neutral",
+        "displayName": "Night Ground",
+        "canonical": "oklch(16.3% 0.004 106.8)",
+        "tonalRamp": ["oklch(15% 0.004 106.8)", "oklch(26.4% 0.004 106.8)", "oklch(37.9% 0.004 106.8)", "oklch(49.3% 0.004 106.8)", "oklch(60.7% 0.004 106.8)", "oklch(72.1% 0.004 106.8)", "oklch(83.6% 0.004 106.8)", "oklch(95% 0.004 106.8)"]
+      },
+      "raised": {
+        "role": "neutral",
+        "displayName": "Raised Night",
+        "canonical": "oklch(20.4% 0.004 106.7)",
+        "tonalRamp": ["oklch(15% 0.004 106.7)", "oklch(26.4% 0.004 106.7)", "oklch(37.9% 0.004 106.7)", "oklch(49.3% 0.004 106.7)", "oklch(60.7% 0.004 106.7)", "oklch(72.1% 0.004 106.7)", "oklch(83.6% 0.004 106.7)", "oklch(95% 0.004 106.7)"]
+      },
+      "field": {
+        "role": "neutral",
+        "displayName": "Field",
+        "canonical": "oklch(22.6% 0.004 106.7)",
+        "tonalRamp": ["oklch(15% 0.004 106.7)", "oklch(26.4% 0.004 106.7)", "oklch(37.9% 0.004 106.7)", "oklch(49.3% 0.004 106.7)", "oklch(60.7% 0.004 106.7)", "oklch(72.1% 0.004 106.7)", "oklch(83.6% 0.004 106.7)", "oklch(95% 0.004 106.7)"]
+      },
+      "chip": {
+        "role": "neutral",
+        "displayName": "Chip Stone",
+        "canonical": "oklch(28.4% 0.005 106.7)",
+        "tonalRamp": ["oklch(15% 0.005 106.7)", "oklch(26.4% 0.005 106.7)", "oklch(37.9% 0.005 106.7)", "oklch(49.3% 0.005 106.7)", "oklch(60.7% 0.005 106.7)", "oklch(72.1% 0.005 106.7)", "oklch(83.6% 0.005 106.7)", "oklch(95% 0.005 106.7)"]
+      },
+      "sheet": {
+        "role": "neutral",
+        "displayName": "Sheet",
+        "canonical": "oklch(18.2% 0.002 106.6)",
+        "tonalRamp": ["oklch(15% 0.002 106.6)", "oklch(26.4% 0.002 106.6)", "oklch(37.9% 0.002 106.6)", "oklch(49.3% 0.002 106.6)", "oklch(60.7% 0.002 106.6)", "oklch(72.1% 0.002 106.6)", "oklch(83.6% 0.002 106.6)", "oklch(95% 0.002 106.6)"]
+      },
+      "warm-paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "canonical": "oklch(95.8% 0.007 88.6)",
+        "tonalRamp": ["oklch(15% 0.007 88.6)", "oklch(26.4% 0.007 88.6)", "oklch(37.9% 0.007 88.6)", "oklch(49.3% 0.007 88.6)", "oklch(60.7% 0.007 88.6)", "oklch(72.1% 0.007 88.6)", "oklch(83.6% 0.007 88.6)", "oklch(95% 0.007 88.6)"]
+      },
+      "warm-grey": {
+        "role": "neutral",
+        "displayName": "Warm Grey",
+        "canonical": "oklch(80.1% 0.016 77)",
+        "tonalRamp": ["oklch(15% 0.016 77)", "oklch(26.4% 0.016 77)", "oklch(37.9% 0.016 77)", "oklch(49.3% 0.016 77)", "oklch(60.7% 0.016 77)", "oklch(72.1% 0.016 77)", "oklch(83.6% 0.016 77)", "oklch(95% 0.016 77)"]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Taupe",
+        "canonical": "oklch(63% 0.016 74.3)",
+        "tonalRamp": ["oklch(15% 0.016 74.3)", "oklch(26.4% 0.016 74.3)", "oklch(37.9% 0.016 74.3)", "oklch(49.3% 0.016 74.3)", "oklch(60.7% 0.016 74.3)", "oklch(72.1% 0.016 74.3)", "oklch(83.6% 0.016 74.3)", "oklch(95% 0.016 74.3)"]
+      },
+      "placeholder": {
+        "role": "neutral",
+        "displayName": "Placeholder",
+        "canonical": "oklch(71.3% 0.014 71.3)",
+        "tonalRamp": ["oklch(15% 0.014 71.3)", "oklch(26.4% 0.014 71.3)", "oklch(37.9% 0.014 71.3)", "oklch(49.3% 0.014 71.3)", "oklch(60.7% 0.014 71.3)", "oklch(72.1% 0.014 71.3)", "oklch(83.6% 0.014 71.3)", "oklch(95% 0.014 71.3)"]
+      },
+      "pill": {
+        "role": "neutral",
+        "displayName": "Pill White",
+        "canonical": "oklch(96.8% 0.007 80.7)",
+        "tonalRamp": ["oklch(15% 0.007 80.7)", "oklch(26.4% 0.007 80.7)", "oklch(37.9% 0.007 80.7)", "oklch(49.3% 0.007 80.7)", "oklch(60.7% 0.007 80.7)", "oklch(72.1% 0.007 80.7)", "oklch(83.6% 0.007 80.7)", "oklch(95% 0.007 80.7)"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Pill Ink",
+        "canonical": "oklch(18.4% 0.005 67.5)",
+        "tonalRamp": ["oklch(15% 0.005 67.5)", "oklch(26.4% 0.005 67.5)", "oklch(37.9% 0.005 67.5)", "oklch(49.3% 0.005 67.5)", "oklch(60.7% 0.005 67.5)", "oklch(72.1% 0.005 67.5)", "oklch(83.6% 0.005 67.5)", "oklch(95% 0.005 67.5)"]
+      },
+      "marker": {
+        "role": "tertiary",
+        "displayName": "Marker Navy",
+        "canonical": "oklch(32.2% 0.073 258.1)",
+        "tonalRamp": ["oklch(15% 0.073 258.1)", "oklch(26.4% 0.073 258.1)", "oklch(37.9% 0.073 258.1)", "oklch(49.3% 0.073 258.1)", "oklch(60.7% 0.073 258.1)", "oklch(72.1% 0.073 258.1)", "oklch(83.6% 0.073 258.1)", "oklch(95% 0.073 258.1)"]
+      },
+      "map": {
+        "role": "neutral",
+        "displayName": "Map Charcoal",
+        "canonical": "oklch(20.6% 0.005 145.4)",
+        "tonalRamp": ["oklch(15% 0.005 145.4)", "oklch(26.4% 0.005 145.4)", "oklch(37.9% 0.005 145.4)", "oklch(49.3% 0.005 145.4)", "oklch(60.7% 0.005 145.4)", "oklch(72.1% 0.005 145.4)", "oklch(83.6% 0.005 145.4)", "oklch(95% 0.005 145.4)"]
+      },
+      "road": {
+        "role": "neutral",
+        "displayName": "Road",
+        "canonical": "oklch(36.7% 0.013 154.6)",
+        "tonalRamp": ["oklch(15% 0.013 154.6)", "oklch(26.4% 0.013 154.6)", "oklch(37.9% 0.013 154.6)", "oklch(49.3% 0.013 154.6)", "oklch(60.7% 0.013 154.6)", "oklch(72.1% 0.013 154.6)", "oklch(83.6% 0.013 154.6)", "oklch(95% 0.013 154.6)"]
+      },
+      "path": {
+        "role": "tertiary",
+        "displayName": "Path Neon",
+        "canonical": "oklch(72.5% 0.182 46)",
+        "tonalRamp": ["oklch(15% 0.182 46)", "oklch(26.4% 0.182 46)", "oklch(37.9% 0.182 46)", "oklch(49.3% 0.182 46)", "oklch(60.7% 0.182 46)", "oklch(72.1% 0.182 46)", "oklch(83.6% 0.182 46)", "oklch(95% 0.182 46)"]
+      },
+      "zone": {
+        "role": "tertiary",
+        "displayName": "Zone Neon",
+        "canonical": "oklch(80.4% 0.18 154.9)",
+        "tonalRamp": ["oklch(15% 0.18 154.9)", "oklch(26.4% 0.18 154.9)", "oklch(37.9% 0.18 154.9)", "oklch(49.3% 0.18 154.9)", "oklch(60.7% 0.18 154.9)", "oklch(72.1% 0.18 154.9)", "oklch(83.6% 0.18 154.9)", "oklch(95% 0.18 154.9)"]
+      },
+      "next": {
+        "role": "tertiary",
+        "displayName": "Next Neon",
+        "canonical": "oklch(74.8% 0.142 241.8)",
+        "tonalRamp": ["oklch(15% 0.142 241.8)", "oklch(26.4% 0.142 241.8)", "oklch(37.9% 0.142 241.8)", "oklch(49.3% 0.142 241.8)", "oklch(60.7% 0.142 241.8)", "oklch(72.1% 0.142 241.8)", "oklch(83.6% 0.142 241.8)", "oklch(95% 0.142 241.8)"]
+      },
+      "grip": {
+        "role": "neutral",
+        "displayName": "Grip",
+        "canonical": "oklch(34.1% 0.007 84.6)",
+        "tonalRamp": ["oklch(15% 0.007 84.6)", "oklch(26.4% 0.007 84.6)", "oklch(37.9% 0.007 84.6)", "oklch(49.3% 0.007 84.6)", "oklch(60.7% 0.007 84.6)", "oklch(72.1% 0.007 84.6)", "oklch(83.6% 0.007 84.6)", "oklch(95% 0.007 84.6)"]
+      },
+      "place-dot": {
+        "role": "neutral",
+        "displayName": "Place Dot",
+        "canonical": "oklch(49.7% 0.014 161.7)",
+        "tonalRamp": ["oklch(15% 0.014 161.7)", "oklch(26.4% 0.014 161.7)", "oklch(37.9% 0.014 161.7)", "oklch(49.3% 0.014 161.7)", "oklch(60.7% 0.014 161.7)", "oklch(72.1% 0.014 161.7)", "oklch(83.6% 0.014 161.7)", "oklch(95% 0.014 161.7)"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The drawer wordmark, and the same face at 22px on the team card."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "The centered screen title in the header."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Nav rows, quest titles, catalog names, and field text."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Section names, relative dates, blurbs, and map meta. Sentence case."
+      }
+    },
+    "shadows": [
+      {
+        "name": "pill",
+        "value": "0 8px 20px rgba(0,0,0,0.35)",
+        "purpose": "The floating New quest pill."
+      },
+      {
+        "name": "menu",
+        "value": "0 12px 32px rgba(0,0,0,0.4)",
+        "purpose": "The You menu."
+      },
+      {
+        "name": "map-control",
+        "value": "0 8px 18px rgba(0,0,0,0.35)",
+        "purpose": "The layers and recenter buttons."
+      },
+      {
+        "name": "sheet",
+        "value": "0 -10px 28px rgba(0,0,0,0.4)",
+        "purpose": "The campus sheet, cast upward."
+      },
+      {
+        "name": "marker",
+        "value": "0 6px 16px rgba(0,0,0,0.35)",
+        "purpose": "Every stop pill."
+      },
+      {
+        "name": "marker-next",
+        "value": "0 0 0 2px #4cb7ff, 0 6px 16px rgba(0,0,0,0.35)",
+        "purpose": "The stop you are walking toward."
+      },
+      {
+        "name": "marker-done",
+        "value": "0 0 0 2px #ff7a2f, 0 6px 16px rgba(0,0,0,0.35)",
+        "purpose": "A stop that is already done."
+      }
+    ],
+    "motion": [
+      {
+        "name": "drawer",
+        "value": "transform 200ms ease-out",
+        "purpose": "The phone drawer slide. Removed under prefers-reduced-motion."
+      },
+      {
+        "name": "walk",
+        "value": "smoothstep, 1600ms–4800ms",
+        "purpose": "The sprite eases between stops. Duration is degrees times 90000, clamped. Reduced motion jumps to the stop. The sprite frame flips every 180ms."
+      },
+      {
+        "name": "label-fade",
+        "value": "opacity clamp(0, (scale - 1.15) / 0.7, 1)",
+        "purpose": "Minor place names fade out as the campus zooms out."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "md",
+        "value": "768px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Wordmark",
+      "kind": "custom",
+      "refersTo": "wordmark",
+      "description": "The serif word Dawn, used in the drawer and at 22px on the team card.",
+      "html": "<p class=\"ds-wordmark\">Dawn</p>",
+      "css": ".ds-wordmark { margin: 0; padding: 8px 12px; background: #0e0e0c; color: #f3f1ec; font-family: \"Source Serif 4\", \"Iowan Old Style\", Palatino, serif; font-weight: 560; font-size: 34px; line-height: 1; letter-spacing: -0.03em; }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one filled action. The floating New quest pill is 15px with a shadow; Add, Send, Approve, and Walk are 14px medium on the same fill.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/><path d=\"M12 5v14\"/></svg>New quest</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 4px; height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: #f7f4ef; color: #141210; font-family: Geist, \"Geist Fallback\", ui-sans-serif, system-ui, sans-serif; font-size: 15px; font-weight: 500; box-shadow: 0 8px 20px rgba(0,0,0,0.35); cursor: pointer; } .ds-btn-primary:focus-visible { outline: 2px solid #d97746; outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.4; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "The chip-stone action for Decline, Join, and other steps that are not the one primary pill.",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\">Decline</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: #2a2a27; color: #f3f1ec; font-family: Geist, \"Geist Fallback\", ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; } .ds-btn-secondary:focus-visible { outline: 2px solid #d97746; outline-offset: 2px; }"
+    },
+    {
+      "name": "Icon Button",
+      "kind": "button",
+      "refersTo": "button-icon",
+      "description": "A 44px chip-stone disc for menu, close, back, layers, and recenter.",
+      "html": "<button class=\"ds-btn-icon\" type=\"button\" aria-label=\"Menu\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 5h16\"/><path d=\"M4 12h16\"/><path d=\"M4 19h16\"/></svg></button>",
+      "css": ".ds-btn-icon { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 999px; background: #2a2a27; color: #f3f1ec; cursor: pointer; } .ds-btn-icon:focus-visible { outline: 2px solid #d97746; outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Field",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "The bottom search. Atlas uses the same capsule at 44px on black at 70% opacity.",
+      "html": "<label class=\"ds-search\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#8f887f\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/></svg><input class=\"ds-search-input\" type=\"search\" placeholder=\"Search\" aria-label=\"Search\" /></label>",
+      "css": ".ds-search { display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 16px; border-radius: 999px; background: #1c1c1a; } .ds-search:focus-within { outline: 2px solid #d97746; outline-offset: 2px; } .ds-search-input { flex: 1; min-width: 0; height: 100%; border: 0; background: transparent; color: #f3f1ec; font-family: Geist, \"Geist Fallback\", ui-sans-serif, system-ui, sans-serif; font-size: 16px; outline: none; } .ds-search-input::placeholder { color: #a8a199; }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Campus filters and the Student or Researcher pair. Selected fills with clay.",
+      "html": "<button class=\"ds-chip\" type=\"button\">Gardens</button><button class=\"ds-chip\" type=\"button\" aria-pressed=\"true\">Quest</button>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; height: 36px; margin-right: 8px; padding: 0 12px; border: 0; border-radius: 999px; background: #2a2a27; color: #f3f1ec; font-family: Geist, \"Geist Fallback\", ui-sans-serif, system-ui, sans-serif; font-size: 14px; cursor: pointer; } .ds-chip[aria-pressed=\"true\"] { background: #d97746; color: #141210; } .ds-chip:focus-visible { outline: 2px solid #d97746; outline-offset: 2px; }"
+    },
+    {
+      "name": "Nav Item",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "A drawer section. The open section colors the icon and the label clay and leaves the row unfilled.",
+      "html": "<button class=\"ds-nav\" type=\"button\" aria-current=\"page\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z\"/><path d=\"M4 22v-7\"/></svg><span>Quests</span></button>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 14px; background: #0e0e0c; color: #f3f1ec; font-family: Geist, \"Geist Fallback\", ui-sans-serif, system-ui, sans-serif; font-size: 16px; font-weight: 400; cursor: pointer; } .ds-nav[aria-current=\"page\"] { color: #d97746; } .ds-nav:focus-visible { outline: 2px solid #d97746; outline-offset: 2px; }"
+    },
+    {
+      "name": "Quest Row",
+      "kind": "custom",
+      "refersTo": "quest-row",
+      "description": "A quest is a title and a muted relative date. Hover lifts the row to raised night.",
+      "html": "<button class=\"ds-quest\" type=\"button\"><span class=\"ds-quest-title\">Read the brief</span><span class=\"ds-quest-meta\">In progress · 2h ago</span></button>",
+      "css": ".ds-quest { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; width: 100%; min-height: 56px; padding: 8px; border: 0; border-radius: 14px; background: #0e0e0c; color: #f3f1ec; font-family: Geist, \"Geist Fallback\", ui-sans-serif, system-ui, sans-serif; text-align: left; cursor: pointer; } .ds-quest:hover { background: #171715; } .ds-quest:focus-visible { outline: 2px solid #d97746; outline-offset: 2px; } .ds-quest-title { font-size: 16px; line-height: 20px; } .ds-quest-meta { margin-top: 2px; color: #8f887f; font-size: 13px; }"
+    },
+    {
+      "name": "Stop Marker",
+      "kind": "custom",
+      "refersTo": "marker",
+      "description": "A campus stop pill. The next stop adds a next-neon ring; a finished stop adds a path-neon ring.",
+      "html": "<button class=\"ds-marker\" type=\"button\"><span class=\"ds-marker-icon\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8\"/><path d=\"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/></svg></span>El Palo Alto</button>",
+      "css": ".ds-marker { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 10px 0 4px; border: 0; border-radius: 10px; background: #1a3358; color: #ffffff; font-family: Geist, \"Geist Fallback\", ui-sans-serif, system-ui, sans-serif; font-size: 13px; font-weight: 500; box-shadow: 0 0 0 2px #4cb7ff, 0 6px 16px rgba(0,0,0,0.35); cursor: pointer; } .ds-marker:focus-visible { outline: 2px solid #d97746; outline-offset: 2px; } .ds-marker-icon { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 8px; background: rgba(255,255,255,0.1); }"
+    },
+    {
+      "name": "Message",
+      "kind": "card",
+      "refersTo": "message",
+      "description": "A room or agent line on raised night. Your own agent-thread bubble uses chip stone instead.",
+      "html": "<div class=\"ds-message\"><p class=\"ds-message-who\">Trinity · ok by You</p><p class=\"ds-message-text\">Nothing leaves until you approve.</p></div>",
+      "css": ".ds-message { max-width: 280px; padding: 8px 12px; border-radius: 18px; background: #171715; color: #f3f1ec; font-family: Geist, \"Geist Fallback\", ui-sans-serif, system-ui, sans-serif; } .ds-message-who { margin: 0; color: #d97746; font-size: 13px; } .ds-message-text { margin: 4px 0 0; font-size: 15px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Calm Night List",
+    "overview": "Dawn on a phone is a calm night list. The ground is near-black, reading text steps through three warm greys, and clay is the only chromatic mark in the shell. The first screen shows the work: a quest title and a muted date, a round menu, a round You button, and one white pill. The espresso pixel dashboard and a marketing hero are the rejected first screen.\n\nThe word Dawn is set in Source Serif 4. Every other line in this shell is the grotesque. Actions, fields, and icon buttons are capsules. A message, a menu, or the team card sits on a slightly lifted grey with a gentle corner, still flat. A shadow appears only when something floats over the night: the white pill, the You menu, the map controls, the campus sheet, and the place markers.\n\nAtlas is its own night. The ground goes charcoal, the roads a step lighter, and neon is reserved for the walked path, the live zone, and the next leg. Stops are dark-blue pills. The person on the map is a pixel sprite. Minor names fade as the map zooms out. Studio keeps its own tokens and is outside this shell.",
+    "keyCharacteristics": [
+      "Near-black ground with three warm text tiers: paper, grey, and muted taupe",
+      "Clay as a mark: the open section, a waiting count, a checked circle, a selected chip, focus, and a short alert",
+      "One warm-white pill for the primary action",
+      "Serif wordmark, grotesque for interface text",
+      "Capsules for actions and fields; flat grey steps for depth",
+      "A separate charcoal map with neon only on the path, the zone, and the next leg"
+    ],
+    "rules": [
+      {
+        "name": "The Clay Mark Rule",
+        "body": "Clay colors a mark or a selected chip. It does not fill the ground, a card, or the primary action.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Pill Rule",
+        "body": "The warm-white pill is the filled action that moves the work forward. Decline, Talk, Join, and the waiting row sit on chip stone or as plain text.",
+        "section": "colors"
+      },
+      {
+        "name": "The Neon Stays on the Map Rule",
+        "body": "Path orange, zone green, and next blue appear on the campus drawing and on stop rings. The list shell does not use them.",
+        "section": "colors"
+      },
+      {
+        "name": "The Wordmark Rule",
+        "body": "Source Serif 4 is for the word Dawn. Screen titles, rows, and buttons stay in the grotesque.",
+        "section": "typography"
+      },
+      {
+        "name": "The Three Tiers Rule",
+        "body": "Ordinary reading text is warm paper, then warm grey, then muted taupe. Clay on a sentence is an alert, a finished quest, or the name of who spoke.",
+        "section": "typography"
+      },
+      {
+        "name": "The Phone Column Rule",
+        "body": "Build the first viewport as a single column with a bottom search. The drawer is an overlay until 768px, then a 280px column.",
+        "section": "layout"
+      },
+      {
+        "name": "The Clearance Rule",
+        "body": "Lists keep clearance for the floating pill and the bottom search, and both edges honor the safe-area insets.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Night Rule",
+        "body": "A resting surface is a flat grey step. A soft black shadow appears only under a floating pill, menu, map control, sheet, or marker.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Capsule Rule",
+        "body": "Actions, fields, chips, and icon buttons are capsules. Containers that hold a sentence use 18px. The sheet rounds the top only.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Fixed Mark Rule",
+        "body": "A milestone is a 22px circle in a fixed cell. Open is a hollow muted stroke. Done is a clay fill. The words stay in the row.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Open Section Rule",
+        "body": "The current section is clay on the icon and the label. The row behind them stays unfilled.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "**Do** keep Night Ground for the shell and Map Charcoal for Atlas.",
+      "**Do** use one warm-white pill for the action that moves the work forward.",
+      "**Do** color the open section’s icon and label clay, and leave that row unfilled.",
+      "**Do** keep a quest row to a title and a muted relative date.",
+      "**Do** keep icon buttons, nav rows, text fields, and primary pills at 44px.",
+      "**Do** draw the campus flat, with neon only on the path, the live zone, the next leg, and stop rings.",
+      "**Do** fade minor place labels as the scale falls from 1.85 toward 1.15.",
+      "**Do** focus with a 2px clay outline, 2px outside the control.",
+      "**Do** drop the drawer transition under reduced motion, and jump the walker to the stop instead of playing the 1600–4800ms smoothstep."
+    ],
+    "donts": [
+      "**Don't** restyle this shell with the Studio espresso ground. Studio keeps its own tokens.",
+      "**Don't** open the first screen with a marketing hero.",
+      "**Don't** wrap a quest row in a card, a border, or a shadow.",
+      "**Don't** fill the ground, a panel, or the primary action with clay.",
+      "**Don't** use path, zone, or next neon in the list shell.",
+      "**Don't** set the word Dawn in the grotesque, or set interface sentences in the serif.",
+      "**Don't** put a second filled primary pill on the same screen.",
+      "**Don't** shrink icon buttons, nav rows, fields, or primary pills below 44px.",
+      "**Don't** set interface text in Press Start 2P. The pixel person is a sprite."
+    ]
+  }
+}
