@@ -28,7 +28,6 @@ export default function LetterPage() {
     void (async () => {
       const url = await gatewayBase();
       setBase(url);
-      if (!url) return;
       const reader = readerId();
       if (params.get('confirm')) {
         const response = await fetch(`${url}/api/public/confirm`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-reader-id': reader }, body: JSON.stringify({ token: params.get('confirm'), readerId: reader }) });

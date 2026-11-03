@@ -2,7 +2,7 @@ import { startAgentsServer } from '../src/lib/dawn-agents/http.ts';
 
 const email = (process.env.DAWN_ALLOWED_EMAIL || process.env.DAWN_OWNER_EMAIL || '').trim();
 if (!email) {
-  console.error('Set DAWN_ALLOWED_EMAIL to the one Google account that may enter. It is not printed.');
+  console.error('Set DAWN_ALLOWED_EMAIL to the Google accounts that may enter, separated by commas. It is not printed.');
   process.exit(1);
 }
 

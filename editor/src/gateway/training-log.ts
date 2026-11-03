@@ -1,5 +1,6 @@
 import { appendFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
+import { firstAllowedEmail } from '../../../src/lib/dawn-agents/proxy-auth.ts';
 import { toBackfillLine, trainingRecord, type TrainingInput, type TrainingRecord } from '../shared/training.ts';
 
 export type TrainingResult = {
@@ -61,7 +62,7 @@ export class TrainingLog {
   }
 
   private async postImport(url: string, body: unknown): Promise<boolean> {
-    const email = this.options.ownerEmail?.trim();
+    const email = firstAllowedEmail(this.options.ownerEmail || '');
     if (!email) return false;
     const fetchImpl = this.options.fetchImpl ?? fetch;
     const response = await fetchImpl(url, {

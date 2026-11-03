@@ -2,6 +2,10 @@
 
 Agent faces are 16×16 frames from [Kenney Tiny Dungeon](https://kenney.nl/assets/tiny-dungeon), CC0 1.0. The full sheet is `public/tiles/kenney-tiny-dungeon.png`. The cropped faces are in `public/sprites/agents/`. CC0 allows later commercial use. Credit is recorded on the Credits page even though CC0 does not require it.
 
+The village still uses [Kenney Tiny Town](https://kenney.nl/assets/tiny-town), also CC0. The packed 16×16 sheet is `public/tiles/kenney-tiny-town.png`.
+
+The live home map is a staging plate, `public/maps/dawn-town-staging.png`: the approved Dawn Town comp, cropped to the map and panned under the chrome. It is not a ripped game map. A Tiled `.tmj` file can replace that layer later. The six pinned agents in `public/sprites/town/` are original Dawn pixel art, listed on the Credits page.
+
 Other notices, including AI Town (MIT) and Stanford Generative Agents, stay in `THIRD_PARTY_NOTICES.md`.
 
 ## Dawn Agents

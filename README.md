@@ -50,7 +50,9 @@ npm run dev
 
 On the public host, Google sign-in is oauth2-proxy. One cookie on `2-29-173-68.sslip.io` opens `/agents`, `/editor`, and the letter admin. The public letter at `/letter` stays open. The redirect URI is `https://2-29-173-68.sslip.io/oauth2/callback`. See `deploy/oauth.env.example` and `editor/scripts/install-ubuntu.sh`. The agents gateway and the code gateway trust `X-Auth-Request-Email` only when the TCP peer is loopback.
 
-Leave `gatewayUrl` empty in `public/dawn-agents-config.json` so the browser calls `/api` on the same host. Caddy routes that to the gateway and copies the proxy header.
+`DAWN_ALLOWED_EMAIL` is a comma-separated list. The public host uses `kylesmcauliffe@gmail.com,team@artometrics.com`. oauth2-proxy reads one address per line; the install script splits that list into `/etc/dawn/allowed-emails.txt`. The code gateway forwards training rows as the first address in the list.
+
+Leave `gatewayUrl` empty in `public/dawn-agents-config.json`. An empty string, or a value that is only whitespace, means the browser calls `/api` on the same host. Caddy routes that to the gateway and copies the proxy header. Do not put a host in that file unless the gateway really lives somewhere else. A blank value must not point `/agents` at a hardcoded host.
 
 Spend is estimated per call and hard-stops at `DAWN_SPEND_CAP_USD` (default $20) for the UTC month. Change it in Settings. Prices are estimates.
 

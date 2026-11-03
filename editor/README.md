@@ -30,7 +30,7 @@ sudoedit /etc/dawn-code/env
 sudo systemctl start dawn-code-gateway dawn-code
 ```
 
-Set `DAWN_CODE_TOKEN` and at least one of `GEMINI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `XAI_API_KEY`, or `OPENROUTER_API_KEY`. Sign-in is Google through oauth2-proxy, not a password and not a `?tkn=` query. `deploy/oauth.env.example` lists `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `OAUTH2_PROXY_COOKIE_SECRET`, and `DAWN_ALLOWED_EMAIL`. The redirect URI is `https://2-29-173-68.sslip.io/oauth2/callback`.
+Set `DAWN_CODE_TOKEN` and at least one of `GEMINI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `XAI_API_KEY`, or `OPENROUTER_API_KEY`. Sign-in is Google through oauth2-proxy, not a password and not a `?tkn=` query. `deploy/oauth.env.example` lists `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `OAUTH2_PROXY_COOKIE_SECRET`, and `DAWN_ALLOWED_EMAIL` (comma-separated; the install script writes one address per line). The redirect URI is `https://2-29-173-68.sslip.io/oauth2/callback`.
 
 OpenVSCode and both gateways bind `127.0.0.1`. Caddy is the public door. It checks the shared `_oauth2_proxy` cookie for `/agents`, `/editor`, and `/api` (the letter admin). `/letter` and `/api/public` are not checked. The gateways honor `X-Auth-Request-Email` only from a loopback peer.
 

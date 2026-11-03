@@ -19,8 +19,18 @@ export type AgentRecord = {
   model: string;
   computer: ComputerKind;
   avatar: PixelAvatar;
+  /** Summoned historical figure. The persona lives in instructions. */
+  figure?: boolean;
   createdAt: number;
   updatedAt: number;
+};
+
+export type ThreadHuman = {
+  id: string;
+  name: string;
+  email?: string;
+  /** owner is the signed-in person. invited is stored only; no mail is sent. */
+  status: 'owner' | 'invited';
 };
 
 export type ThreadKind = 'direct' | 'group' | 'job';
@@ -30,6 +40,12 @@ export type ThreadRecord = {
   kind: ThreadKind;
   title: string;
   agentIds: string[];
+  humans?: ThreadHuman[];
+  /** Saved for a future notification channel. Nothing sends alerts today. */
+  hideAlerts?: boolean;
+  /** When false, this thread's rows stay out of the training export. Default is included. */
+  saveTraining?: boolean;
+  leftAt?: number | null;
   createdAt: number;
   updatedAt: number;
 };

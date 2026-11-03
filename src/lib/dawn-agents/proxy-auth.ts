@@ -23,14 +23,27 @@ export function emailFromProxyHeaders(headers: IncomingHttpHeaders): string {
  * A request that reached this process from anywhere else cannot become the owner
  * by setting the header itself.
  */
+/** Comma-separated allowlist. Whitespace around each address is ignored. */
+export function allowedEmails(value: string): string[] {
+  return value
+    .split(',')
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+/** The code gateway forwards training rows as this one address. */
+export function firstAllowedEmail(value: string): string {
+  return allowedEmails(value)[0] || '';
+}
+
 export function proxyUserAllowed(
   remoteAddress: string | undefined,
   headers: IncomingHttpHeaders,
   allowedEmail: string,
 ): boolean {
   if (!isLoopback(remoteAddress)) return false;
-  const allowed = allowedEmail.trim().toLowerCase();
+  const allowed = allowedEmails(allowedEmail);
   const email = emailFromProxyHeaders(headers);
-  if (!allowed || !email) return false;
-  return email === allowed;
+  if (allowed.length === 0 || !email) return false;
+  return allowed.includes(email);
 }

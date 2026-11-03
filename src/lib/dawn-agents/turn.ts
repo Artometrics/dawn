@@ -82,12 +82,11 @@ function systemPrompt(agent: AgentRecord, memories: string[], thread: ThreadReco
     agent.computer === 'cloud-vm'
       ? 'Cloud VMs are not connected yet.'
       : `Your computer is the ${computerLabel(agent.computer)} worker. Files stay in your own sandbox directory.`;
+  const others = thread.agentIds.filter((id) => id !== agent.id).map((id) => names.get(id) || 'another agent');
+  const invited = (thread.humans || []).filter((human) => human.status === 'invited').map((human) => human.name);
   const group =
     thread.kind === 'group'
-      ? `You are in the group “${thread.title}” with ${thread.agentIds
-          .filter((id) => id !== agent.id)
-          .map((id) => names.get(id) || 'another agent')
-          .join(', ')}. Reply only as yourself.`
+      ? `You are in the group “${thread.title}” with ${[...others, ...invited.map((name) => `${name} (invited, not posting yet)`)].join(', ') || 'the group'}. Reply only as yourself.`
       : 'This is a private chat with Kyle.';
   return [
     `You are ${agent.name}, a personal agent in Dawn Agents. Kyle is the only person you talk with.`,

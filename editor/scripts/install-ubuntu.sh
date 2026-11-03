@@ -92,8 +92,16 @@ if [[ ! -f /etc/dawn/oauth.env ]]; then
 fi
 # shellcheck disable=SC1091
 source /etc/dawn/oauth.env
-allowed="${DAWN_ALLOWED_EMAIL:-kylesmcauliffe@gmail.com}"
-printf '%s\n' "$allowed" > /etc/dawn/allowed-emails.txt
+allowed="${DAWN_ALLOWED_EMAIL:-kylesmcauliffe@gmail.com,team@artometrics.com}"
+# oauth2-proxy wants one address per line. The env value is comma-separated.
+: > /etc/dawn/allowed-emails.txt
+while IFS= read -r email; do
+  email="${email#"${email%%[![:space:]]*}"}"
+  email="${email%"${email##*[![:space:]]}"}"
+  if [[ -n "$email" ]]; then
+    printf '%s\n' "$email" >> /etc/dawn/allowed-emails.txt
+  fi
+done < <(printf '%s\n' "$allowed" | tr ',' '\n')
 chown root:dawnproxy /etc/dawn/allowed-emails.txt /etc/dawn/oauth.env
 chmod 0640 /etc/dawn/allowed-emails.txt
 chmod 0640 /etc/dawn/oauth.env

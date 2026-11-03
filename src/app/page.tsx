@@ -1,16 +1,11 @@
-'use client';
+import type { Metadata } from 'next';
+import { HomeClient } from '@/components/home/home-client';
 
-import dynamic from 'next/dynamic';
-
-const DawnApp = dynamic(() => import('@/components/dawn/dawn-app').then((mod) => mod.DawnApp), {
-  ssr: false,
-  loading: () => (
-    <div className="flex h-dvh items-center justify-center bg-[#0e0e0c] text-[#f3f1ec]">
-      Opening Dawn…
-    </div>
-  ),
-});
+export const metadata: Metadata = {
+  title: 'Dawn',
+  description: 'A 16-bit map of Dawn. Search, walk, and open the desk.',
+};
 
 export default function HomePage() {
-  return <DawnApp />;
+  return <HomeClient />;
 }

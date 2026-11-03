@@ -1,4 +1,5 @@
 import type { PixelAvatar } from '@/lib/dawn-agents/types';
+import { resolveGatewayBase } from '@/lib/dawn-agents/gateway-url';
 
 export type GatewayState = {
   ownerEmail: string;
@@ -28,11 +29,23 @@ export type Agent = {
   model: string;
   computer: 'hetzner' | 'mac' | 'cloud-vm';
   avatar: PixelAvatar;
+  figure?: boolean;
   createdAt: number;
   updatedAt: number;
 };
 
-export type Thread = { id: string; kind: 'direct' | 'group' | 'job'; title: string; agentIds: string[]; updatedAt: number };
+export type ThreadHuman = { id: string; name: string; email?: string; status: 'owner' | 'invited' };
+export type Thread = {
+  id: string;
+  kind: 'direct' | 'group' | 'job';
+  title: string;
+  agentIds: string[];
+  humans?: ThreadHuman[];
+  hideAlerts?: boolean;
+  saveTraining?: boolean;
+  leftAt?: number | null;
+  updatedAt: number;
+};
 export type ToolCall = { id: string; name: string; input: unknown; state: string; output?: unknown };
 export type ChatMessage = {
   id: string;
@@ -56,16 +69,17 @@ export type Subscriber = { id: string; email: string; status: string; consentAt:
 export type Send = { id: string; articleId: string; sentAt: number; recipients: number; opens: number; clicks: number };
 
 export async function gatewayBase(): Promise<string> {
-  const baked = process.env.NEXT_PUBLIC_DAWN_AGENTS_URL;
-  if (baked) return baked.replace(/\/$/, '');
+  let configured: unknown;
   try {
     const response = await fetch('/dawn-agents-config.json', { cache: 'no-store' });
-    const json = (await response.json()) as { gatewayUrl?: string };
-    if (json.gatewayUrl) return json.gatewayUrl.replace(/\/$/, '');
+    if (response.ok) {
+      const json = (await response.json()) as { gatewayUrl?: unknown };
+      configured = json.gatewayUrl;
+    }
   } catch {
-    /* local default */
+    /* same origin */
   }
-  return '';
+  return resolveGatewayBase(process.env.NEXT_PUBLIC_DAWN_AGENTS_URL, configured);
 }
 
 export function googleSignInHref(): string {
@@ -81,8 +95,13 @@ export async function api<T>(base: string, path: string, init: RequestInit = {})
     throw new Error('Sign in with Google.');
   }
   const text = await response.text();
-  const data = text ? (JSON.parse(text) as T & { error?: string }) : ({} as T);
-  if (!response.ok) throw new Error((data as { error?: string }).error || 'Request failed.');
+  let data: T & { error?: string };
+  try {
+    data = text ? (JSON.parse(text) as T & { error?: string }) : ({} as T & { error?: string });
+  } catch {
+    throw new Error(response.status === 401 ? 'Sign in with Google.' : 'The desk is offline.');
+  }
+  if (!response.ok) throw new Error(data.error || (response.status === 401 ? 'Sign in with Google.' : 'The desk is offline.'));
   return data;
 }
 
