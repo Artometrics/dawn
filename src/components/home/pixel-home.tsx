@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
-import { Bookmark, Code, Compass, Layers, LocateFixed, Mail, Map, Palette, Plus, Sparkles, Users } from 'lucide-react';
+import { Bookmark, Box, Code, Compass, Folder, Layers, LocateFixed, Mail, Map, MessageCircle, Palette, Plus, Sparkles, Users } from 'lucide-react';
 import { spriteById, defaultSpriteId } from '@/lib/credits/sprites';
-import { api, gatewayBase, googleSignInHref, type Agent } from '@/components/dawn-agents/api';
+import { api, gatewayBase, googleSignInHref, type Agent, type Thread } from '@/components/dawn-agents/api';
 import {
   PLAYER_SRC,
   SHEET_COLS,
@@ -49,8 +49,11 @@ export function PixelHome() {
   const [labels, setLabels] = useState(true);
   const [sheetH, setSheetH] = useState(228);
   const [agents, setAgents] = useState<Agent[] | null>(null);
+  const [threads, setThreads] = useState<Thread[]>([]);
   const [agentsNote, setAgentsNote] = useState('');
   const [ready, setReady] = useState(false);
+  const panelRef = useRef(false);
+  panelRef.current = panel;
 
   const selected = world.landmarks.find((spot) => spot.id === selectedId) ?? null;
   const matches = query.trim()
@@ -137,6 +140,10 @@ export function PixelHome() {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (panelRef.current) {
+        if (event.key === 'Escape') setPanel(false);
+        return;
+      }
       const tag = (event.target as HTMLElement | null)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
       const dirs: Record<string, [number, number]> = {
@@ -170,12 +177,15 @@ export function PixelHome() {
     void (async () => {
       try {
         const base = await gatewayBase();
-        const state = await api<{ agents: Agent[] }>(base, '/api/state');
-        if (!cancel) setAgents(state.agents);
+        const state = await api<{ agents: Agent[]; threads: Thread[] }>(base, '/api/state');
+        if (cancel) return;
+        setAgents(state.agents);
+        setThreads(state.threads);
       } catch (error) {
         if (cancel) return;
         const message = error instanceof Error ? error.message : 'The desk is offline.';
         setAgents(null);
+        setThreads([]);
         setAgentsNote(message);
       }
     })();
@@ -252,6 +262,11 @@ export function PixelHome() {
   }
 
   const scale = viewRef.current.scale || 3;
+  const recents = threads
+    .filter((thread) => thread.kind === 'direct' || thread.kind === 'group')
+    .slice()
+    .sort((a, b) => b.updatedAt - a.updatedAt)
+    .slice(0, 8);
   const place = selected ?? {
     name: 'Dawn',
     kind: 'Home',
@@ -261,7 +276,8 @@ export function PixelHome() {
   };
 
   return (
-    <div className="ph">
+    <div className={panel ? 'ph menu-open' : 'ph'}>
+      <div className="ph-stage">
       <canvas
         ref={canvasRef}
         className="ph-canvas"
@@ -290,8 +306,9 @@ export function PixelHome() {
         <button
           type="button"
           className="ph-glass ph-dotbtn"
-          aria-label="Your agents"
+          aria-label="Menu"
           aria-expanded={panel}
+          aria-controls="dawn-menu"
           onClick={() => setPanel((open) => !open)}
         >
           <span className="ph-dot" />
@@ -420,6 +437,7 @@ export function PixelHome() {
           </div>
         )}
       </section>
+      {panel && <button type="button" className="ph-peek" aria-label="Close menu" onClick={() => setPanel(false)} />}
       <nav className="ph-tabs" aria-label="Primary">
         <button type="button" className={tab === 'explore' ? 'ph-tab on' : 'ph-tab'} onClick={() => setTab('explore')}>
           <span className="ph-tab-bubble"><Compass /></span>
@@ -434,29 +452,48 @@ export function PixelHome() {
           Contribute
         </button>
       </nav>
-      {panel && (
-        <aside className="ph-agents" aria-label="Your agents">
-          <h2>Your agents</h2>
+      </div>
+      <aside id="dawn-menu" className={panel ? 'ph-drawer open' : 'ph-drawer'} aria-label="Dawn" aria-hidden={!panel} inert={!panel}>
+        <p className="ph-drawer-mark">Dawn</p>
+        <nav className="ph-drawer-nav" aria-label="Dawn">
+          <a href="/agents"><MessageCircle aria-hidden /> Chats</a>
+          <a href="/studio"><Folder aria-hidden /> Projects</a>
+          <a href="/editor"><Code aria-hidden /> Code</a>
+          <a href="/letter"><Box aria-hidden /> Artifacts</a>
+        </nav>
+        <div className="ph-drawer-scroll">
+          <p className="ph-drawer-label">Pinned</p>
           {agentsNote === 'Sign in with Google.' && (
-            <p className="ph-note"><a href={googleSignInHref()}>Sign in with Google</a> to see the list.</p>
+            <p className="ph-note"><a href={googleSignInHref()}>Sign in with Google</a> to see your agents.</p>
           )}
           {agentsNote && agentsNote !== 'Sign in with Google.' && <p className="ph-note">{agentsNote}</p>}
-          {agents && agents.length === 0 && <p className="ph-note">No agents yet. <a href="/agents">Create one</a>.</p>}
+          {agents && agents.length === 0 && <p className="ph-note">No agents yet.</p>}
+          {!agents && !agentsNote && <p className="ph-note">Opening the list…</p>}
           {agents?.map((agent) => {
             const sprite = spriteById(agent.avatar.sprite || defaultSpriteId(agent.id));
             return (
-              <a key={agent.id} className="ph-agent" href="/agents">
-                {sprite && <img src={sprite.src} alt="" />}
-                <span>
-                  {agent.name}
-                  <small>{agent.model}</small>
-                </span>
+              <a key={agent.id} className="ph-drawer-row" href={`/agents?agent=${encodeURIComponent(agent.id)}`}>
+                {sprite && <img src={sprite.src} alt="" width={24} height={24} />}
+                <span>{agent.name}</span>
               </a>
             );
           })}
-          {!agents && !agentsNote && <p className="ph-note">Opening the list…</p>}
-        </aside>
-      )}
+          <p className="ph-drawer-label">Recents</p>
+          {recents.length === 0 && <p className="ph-note">No chats yet.</p>}
+          {recents.map((thread) => (
+            <a key={thread.id} className="ph-drawer-row" href={`/agents?thread=${encodeURIComponent(thread.id)}`}>
+              <MessageCircle aria-hidden />
+              <span>{thread.title || 'Chat'}</span>
+            </a>
+          ))}
+        </div>
+        <div className="ph-drawer-foot">
+          <button type="button" className="ph-drawer-avatar" aria-label="You" onClick={() => { setPanel(false); setTab('you'); }}>
+            <img src={PLAYER_SRC} alt="" />
+          </button>
+          <a className="ph-newchat" href="/agents?section=edit"><Plus aria-hidden /> New chat</a>
+        </div>
+      </aside>
     </div>
   );
 }

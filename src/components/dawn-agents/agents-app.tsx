@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AGENT_SPRITES, defaultSpriteId } from '@/lib/credits/sprites';
 import { formatUsd } from '@/lib/dawn-agents/spend';
 import { recipeAttributes } from '@/lib/dawn-agents/recipes';
@@ -21,10 +21,11 @@ export function AgentsRoot() {
   const [threadId, setThreadId] = useState<string | null>(null);
   const [needsGoogle, setNeedsGoogle] = useState(false);
   const [queue, setQueue] = useState<GatewayState['data'] extends never ? never : { id: string; track: string; status: string; messages?: { content: string }[] }[]>([]);
+  const openedLink = useRef(false);
 
   useEffect(() => {
     const asked = new URLSearchParams(window.location.search).get('section');
-    if (asked === 'recipes' || asked === 'letter' || asked === 'data' || asked === 'settings') setSection(asked);
+    if (asked === 'recipes' || asked === 'letter' || asked === 'data' || asked === 'settings' || asked === 'edit') setSection(asked);
     void (async () => {
       const url = await gatewayBase();
       setBase(url);
@@ -32,6 +33,25 @@ export function AgentsRoot() {
       await refresh(url);
     })();
   }, []);
+
+  useEffect(() => {
+    if (!state || openedLink.current) return;
+    const params = new URLSearchParams(window.location.search);
+    const thread = params.get('thread');
+    const agent = params.get('agent');
+    openedLink.current = true;
+    if (thread && state.threads.some((item) => item.id === thread)) {
+      setThreadId(thread);
+      setSection('agents');
+      return;
+    }
+    if (!agent) return;
+    const direct = state.threads.find((item) => item.kind === 'direct' && item.agentIds[0] === agent);
+    if (direct) {
+      setThreadId(direct.id);
+      setSection('agents');
+    }
+  }, [state]);
 
   async function refresh(url = base) {
     try {
