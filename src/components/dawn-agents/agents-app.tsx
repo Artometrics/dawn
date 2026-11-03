@@ -23,6 +23,8 @@ export function AgentsRoot() {
   const [queue, setQueue] = useState<GatewayState['data'] extends never ? never : { id: string; track: string; status: string; messages?: { content: string }[] }[]>([]);
 
   useEffect(() => {
+    const asked = new URLSearchParams(window.location.search).get('section');
+    if (asked === 'recipes' || asked === 'letter' || asked === 'data' || asked === 'settings') setSection(asked);
     void (async () => {
       const url = await gatewayBase();
       setBase(url);
@@ -47,7 +49,6 @@ export function AgentsRoot() {
   }
 
   if (!ready) return <div className="dawn-agents login">Opening the desk…</div>;
-  if (!base) return <div className="dawn-agents login"><p>Set the gateway URL in dawn-agents-config.json.</p></div>;
   if (!state) {
     return (
       <div className="dawn-agents">

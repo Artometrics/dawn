@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { tokensMatch } from './auth';
-import { emailFromProxyHeaders, isLoopback, proxyUserAllowed } from './proxy-auth';
+import { emailFromProxyHeaders, firstAllowedEmail, isLoopback, proxyUserAllowed } from './proxy-auth';
 import { ComputerRouter, type ComputerResult } from './computer';
 import {
   chartStoryExample,
@@ -150,7 +150,7 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
     }
     if (req.method === 'GET' && pathname === '/api/auth/me') {
       if (!ownerOk(req)) return sendJson(res, 401, { error: 'Sign in with Google.' });
-      return sendJson(res, 200, { email: emailFromProxyHeaders(req.headers) || ownerEmail });
+      return sendJson(res, 200, { email: emailFromProxyHeaders(req.headers) || firstAllowedEmail(ownerEmail) });
     }
     if (!ownerOk(req)) {
       sendJson(res, 401, { error: 'Sign in with Google.' });

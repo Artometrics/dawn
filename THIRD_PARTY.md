@@ -2,6 +2,8 @@
 
 Agent faces are 16×16 frames from [Kenney Tiny Dungeon](https://kenney.nl/assets/tiny-dungeon), CC0 1.0. The full sheet is `public/tiles/kenney-tiny-dungeon.png`. The cropped faces are in `public/sprites/agents/`. CC0 allows later commercial use. Credit is recorded on the Credits page even though CC0 does not require it.
 
+The home overworld uses [Kenney Tiny Town](https://kenney.nl/assets/tiny-town), also CC0. The packed 16×16 sheet is `public/tiles/kenney-tiny-town.png`. The player standing on that map is the Scout frame from Tiny Dungeon (`public/sprites/agents/scout.png`). No other characters are placed on the map.
+
 Other notices, including AI Town (MIT) and Stanford Generative Agents, stay in `THIRD_PARTY_NOTICES.md`.
 
 ## Dawn Agents

@@ -1,0 +1,14 @@
+Tiny Town tilesheet used for the Dawn home overworld.
+
+Artist: Kenney (https://kenney.nl)
+Source: https://kenney.nl/assets/tiny-town
+License: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+
+The file kenney-tiny-town.png is Tilemap/tilemap_packed.png from that pack
+(16×16 tiles, 12 columns, no spacing). CC0 allows commercial use.
+Credit is not required. Dawn records it anyway.
+
+The player on the home map is the existing Scout frame
+(public/sprites/agents/scout.png) from Kenney Tiny Dungeon, CC0.
+No other characters are placed on the map.

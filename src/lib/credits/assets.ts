@@ -11,6 +11,8 @@ const CC0 = 'CC0-1.0';
 
 export const BUNDLED_ASSETS: BundledAsset[] = [
   { file: 'public/tiles/kenney-tiny-dungeon.png', what: 'Village floor sheet', artist: 'Kenney', sourceUrl: KENNEY_URL, license: CC0 },
+  { file: 'public/tiles/kenney-tiny-town.png', what: 'Home overworld tiles (grass, trees, paths, fences, buildings)', artist: 'Kenney', sourceUrl: 'https://kenney.nl/assets/tiny-town', license: CC0 },
+  { file: 'public/tiles/kenney-tiny-town-license.txt', what: 'License note for the home overworld', artist: 'Kenney', sourceUrl: 'https://kenney.nl/assets/tiny-town', license: CC0 },
   { file: 'public/tiles/trinity.png', what: 'Village portrait, Trinity (sheet frame 84)', artist: 'Kenney', sourceUrl: KENNEY_URL, license: CC0 },
   { file: 'public/tiles/kali.png', what: 'Village portrait, Kali (sheet frame 88)', artist: 'Kenney', sourceUrl: KENNEY_URL, license: CC0 },
   { file: 'public/tiles/nimbus.png', what: 'Village portrait, Nimbus (sheet frame 86)', artist: 'Kenney', sourceUrl: KENNEY_URL, license: CC0 },
