@@ -29,11 +29,23 @@ export type Agent = {
   model: string;
   computer: 'hetzner' | 'mac' | 'cloud-vm';
   avatar: PixelAvatar;
+  figure?: boolean;
   createdAt: number;
   updatedAt: number;
 };
 
-export type Thread = { id: string; kind: 'direct' | 'group' | 'job'; title: string; agentIds: string[]; updatedAt: number };
+export type ThreadHuman = { id: string; name: string; email?: string; status: 'owner' | 'invited' };
+export type Thread = {
+  id: string;
+  kind: 'direct' | 'group' | 'job';
+  title: string;
+  agentIds: string[];
+  humans?: ThreadHuman[];
+  hideAlerts?: boolean;
+  saveTraining?: boolean;
+  leftAt?: number | null;
+  updatedAt: number;
+};
 export type ToolCall = { id: string; name: string; input: unknown; state: string; output?: unknown };
 export type ChatMessage = {
   id: string;

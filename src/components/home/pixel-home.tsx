@@ -263,7 +263,7 @@ export function PixelHome() {
 
   const scale = viewRef.current.scale || 3;
   const recents = threads
-    .filter((thread) => thread.kind === 'direct' || thread.kind === 'group')
+    .filter((thread) => (thread.kind === 'direct' || thread.kind === 'group') && !thread.leftAt)
     .slice()
     .sort((a, b) => b.updatedAt - a.updatedAt)
     .slice(0, 8);

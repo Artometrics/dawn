@@ -29,9 +29,14 @@ export function trainingTarget(row: TrainingRow): string | null {
  * A saved correction replaces the assistant turn. Thumbs-down rows without a
  * correction stay in the table and are left out of the file.
  */
-export function toFineTuneJsonl(rows: TrainingRow[], providers: TrainingProviders = defaultTrainingProviders()): string {
+export function toFineTuneJsonl(
+  rows: TrainingRow[],
+  providers: TrainingProviders = defaultTrainingProviders(),
+  skipThreadIds?: ReadonlySet<string>,
+): string {
   const lines: string[] = [];
   for (const row of rows) {
+    if (skipThreadIds?.has(row.threadId)) continue;
     if (!providers[row.provider]) continue;
     const assistant = trainingTarget(row);
     if (!assistant) continue;

@@ -176,8 +176,9 @@ export function AgentsRoot() {
 }
 
 function AgentList({ state, threadId, onOpen, onNew }: { state: GatewayState; threadId: string | null; onOpen: (id: string) => void; onNew: () => void }) {
-  const directs = state.threads.filter((thread) => thread.kind === 'direct');
-  const groups = state.threads.filter((thread) => thread.kind === 'group');
+  const visible = state.threads.filter((thread) => !thread.leftAt);
+  const directs = visible.filter((thread) => thread.kind === 'direct');
+  const groups = visible.filter((thread) => thread.kind === 'group');
   return (
     <div className="list" style={{ overflow: 'auto' }}>
       {directs.map((thread) => {

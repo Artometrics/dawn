@@ -5,6 +5,7 @@ import { ArrowUp, ChevronLeft, Mic, Phone, Plus } from 'lucide-react';
 import { PixelAvatarView } from './pixel-avatar';
 import { api, readSse, type Agent, type ChatMessage, type GatewayState, type ToolCall } from './api';
 import { ChatWallpaper, WALLPAPERS, readWallpaper, writeWallpaper, type WallpaperId } from './chat-wallpaper';
+import { GroupInfo } from './group-info';
 
 const SEEN_KEY = 'dawn-chat-seen';
 
@@ -19,6 +20,7 @@ export function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: 
   const [wallpaper, setWallpaper] = useState<WallpaperId>('town');
   const [listening, setListening] = useState(false);
   const [toast, setToast] = useState('');
+  const [info, setInfo] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const messages = useMemo(() => {
@@ -157,11 +159,11 @@ export function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: 
           <span className="im-sr">Back</span>
         </button>
         <div className="im-center">
-          <div className="im-faces" aria-hidden>
+          <button type="button" className="im-faces" aria-label={`${title} details`} onClick={() => setInfo(true)}>
             {members.map((agent) => (
               <PixelAvatarView key={agent.id} avatar={agent.avatar} size={members.length > 1 ? 28 : 36} title={agent.name} />
             ))}
-          </div>
+          </button>
           <div className="im-name">{title}</div>
         </div>
         <button type="button" className="im-call" aria-label="Call" onClick={() => setToast('Calls are not on this desk.')}>
@@ -249,6 +251,26 @@ export function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: 
           }}
         />
       </form>
+      {info && thread && (
+        <GroupInfo
+          base={base}
+          state={state}
+          thread={thread}
+          messages={messages}
+          wallpaper={wallpaper}
+          onWallpaper={(id) => {
+            setWallpaper(id);
+            writeWallpaper(id);
+          }}
+          onClose={() => setInfo(false)}
+          onLeft={() => {
+            setInfo(false);
+            onBack();
+          }}
+          onRefresh={onRefresh}
+          onError={onError}
+        />
+      )}
     </div>
   );
 }

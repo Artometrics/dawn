@@ -29,11 +29,12 @@ import { keyStatus } from './provider';
 import { recipeAttributes, recipeById, recipeSnippet, RECIPES } from './recipes';
 import { scrubPii } from './pii';
 import { secretValuesFromEnv } from './scrub';
-import { exportableCount } from './training';
+import { exportableCount, toFineTuneJsonl } from './training';
 import { resumeTool, runAgentTurn, type TurnContext } from './turn';
-import type { AgentRecord, ChatChannel, ComputerKind, MessageRecord, PixelAvatar } from './types';
+import type { AgentRecord, ChatChannel, ComputerKind, MessageRecord, PixelAvatar, ThreadHuman, ThreadRecord } from './types';
 import { TRAINING_PROVIDER_IDS } from './types';
 import { validAvatar } from './avatar';
+import { spriteById } from '../credits/sprites';
 import { WorkerHub } from './worker-hub';
 import type { WorkerKind } from './types';
 
@@ -205,6 +206,13 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       if ('error' in thread) return sendJson(res, 400, thread);
       return sendJson(res, 201, thread);
     }
+    const threadPatch = pathname.match(/^\/api\/threads\/([^/]+)$/);
+    if (threadPatch && req.method === 'PATCH') {
+      const body = await readJson(req);
+      const patched = await patchThread(threadPatch[1], body);
+      if ('error' in patched) return sendJson(res, 400, patched);
+      return sendJson(res, 200, patched);
+    }
     const messagePost = pathname.match(/^\/api\/threads\/([^/]+)\/messages$/);
     if (messagePost && req.method === 'POST') {
       const body = await readJson(req);
@@ -324,7 +332,8 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
     }
     if (req.method === 'GET' && pathname === '/api/training/export.jsonl') {
       const data = await store.read();
-      const body = (await import('./training')).toFineTuneJsonl(data.training, data.settings.trainingProviders);
+      const skip = new Set(data.threads.filter((thread) => thread.saveTraining === false).map((thread) => thread.id));
+      const body = toFineTuneJsonl(data.training, data.settings.trainingProviders, skip);
       cors(res);
       res.writeHead(200, {
         'content-type': 'application/x-ndjson; charset=utf-8',
@@ -858,7 +867,11 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       id: newId('th'),
       kind: 'group' as const,
       title: String(body.title || 'Group').slice(0, 40),
-      agentIds: ids.slice(0, 6),
+      agentIds: ids.slice(0, 12),
+      humans: [] as ThreadHuman[],
+      hideAlerts: false,
+      saveTraining: true,
+      leftAt: null,
       createdAt: now,
       updatedAt: now,
     };
@@ -866,6 +879,90 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       data.threads.push(thread);
     });
     return { thread };
+  }
+
+  function addAgent(agents: AgentRecord[], row: ThreadRecord, agentId: string) {
+    if (!agents.some((agent) => agent.id === agentId)) return false;
+    if (!row.agentIds.includes(agentId)) row.agentIds.push(agentId);
+    row.agentIds = row.agentIds.slice(0, 12);
+    if (row.agentIds.length > 1 && row.kind === 'direct') row.kind = 'group';
+    return true;
+  }
+
+  async function patchThread(id: string, body: Record<string, unknown>) {
+    const current = await store.read();
+    const existing = current.threads.find((item) => item.id === id);
+    if (!existing) return { error: 'That chat is gone.' };
+    if (typeof body.addAgentId === 'string' && !current.agents.some((agent) => agent.id === body.addAgentId)) {
+      return { error: 'That agent is not on the desk.' };
+    }
+    const summon = body.summon && typeof body.summon === 'object' ? (body.summon as { name?: unknown; persona?: unknown }) : null;
+    if (summon && (!String(summon.name || '').trim() || !String(summon.persona || '').trim())) {
+      return { error: 'A figure needs a name and a persona.' };
+    }
+    if (summon && current.agents.length >= 24) return { error: 'The desk is full.' };
+    const invite = body.invite && typeof body.invite === 'object' ? (body.invite as { name?: unknown }) : null;
+    if (invite && !String(invite.name || '').trim()) return { error: 'A person needs a name.' };
+    let summoned: AgentRecord | null = null;
+    await store.update((data) => {
+      const row = data.threads.find((item) => item.id === id);
+      if (!row) return;
+      if (typeof body.hideAlerts === 'boolean') {
+        // TODO: nothing reads hideAlerts until Dawn has a notification channel.
+        row.hideAlerts = body.hideAlerts;
+      }
+      if (typeof body.saveTraining === 'boolean') row.saveTraining = body.saveTraining;
+      if (body.leave === true) {
+        row.leftAt = Date.now();
+        row.updatedAt = Date.now();
+        return;
+      }
+      if (typeof body.addAgentId === 'string') addAgent(data.agents, row, body.addAgentId);
+      const summon = body.summon;
+      if (summon && typeof summon === 'object') {
+        const name = String((summon as { name?: unknown }).name || '').trim();
+        const persona = String((summon as { persona?: unknown }).persona || '').trim();
+        const sprite = String((summon as { sprite?: unknown }).sprite || 'elder');
+        if (name && persona) {
+          const now = Date.now();
+          const agent: AgentRecord = {
+            id: newId('a'),
+            name: name.slice(0, 40),
+            instructions: persona.slice(0, 4000),
+            model: MODELS[0],
+            computer: 'hetzner',
+            avatar: { sprite: spriteById(sprite) ? sprite : 'elder' },
+            figure: true,
+            createdAt: now,
+            updatedAt: now,
+          };
+          if (data.agents.length < 24) {
+            data.agents.push(agent);
+            addAgent(data.agents, row, agent.id);
+            summoned = agent;
+          }
+        }
+      }
+      const invite = body.invite;
+      if (invite && typeof invite === 'object') {
+        const name = String((invite as { name?: unknown }).name || '').trim();
+        const email = String((invite as { email?: unknown }).email || '').trim();
+        if (name) {
+          // TODO: deliver the invite. There is no second account and no invite mailer.
+          const human: ThreadHuman = {
+            id: newId('h'),
+            name: name.slice(0, 40),
+            status: 'invited',
+          };
+          if (email) human.email = email.slice(0, 80);
+          row.humans = [...(row.humans || []), human].slice(0, 12);
+        }
+      }
+      row.updatedAt = Date.now();
+    });
+    const thread = (await store.read()).threads.find((item) => item.id === id);
+    if (!thread) return { error: 'That chat is gone.' };
+    return { thread, summoned, delivered: false };
   }
 
   async function talk(threadId: string, text: string, channel: ChatChannel, emit: (event: string, data: unknown) => void, recipeId?: string) {
