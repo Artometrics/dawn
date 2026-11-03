@@ -1,6 +1,6 @@
 # Dawn Agents editor API and training log
 
-Dawn Code calls this contract. It was taken from the Dawn Agents design on `cursor/dawn-agents-v1-0f2d` before that branch merged. Where the service is missing, Dawn Code stubs the call and says so.
+The source of truth is `docs/dawn-agents-editor-api.md`. This note is how Dawn Code calls it. Where a route is missing, Dawn Code stubs the call and says so.
 
 Base URL: `DAWN_AGENTS_URL` (default `http://127.0.0.1:8787`).
 
@@ -16,7 +16,9 @@ Dawn Code’s own gateway is separate and listens on `127.0.0.1:8791`. It proxie
 { "agents": [{ "id": "a_0123456789ab", "name": "Researcher", "instructions": "", "model": "gemini-3.8-flash", "computer": "hetzner" }] }
 ```
 
-Agent ids match `a_` plus 12 hex characters.
+Agent ids match `a_` plus at least 8 hex characters. Follow-ups go to `POST /api/v1/agents/:id/messages` with `{ "text", "threadId" }`. `POST /api/v1/jobs/:id/messages` is only the fallback. `GET /api/v1/jobs/:id` returns `{ "job", "messages" }`. Recipe HTML comes from `GET /api/v1/recipes/:id/snippet`.
+
+Training rows are chat-format JSONL posted to `POST /api/data/import` with the owner session. The editor token is not used for that import.
 
 `POST /api/v1/jobs`
 

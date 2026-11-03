@@ -537,6 +537,54 @@ class DawnCodeView implements vscode.WebviewViewProvider {
     if (task) await this.dispatch('agent', task, this.state.model);
   }
 
+  async insertRecipe(): Promise<void> {
+    if (!this.requireToken()) return;
+    await vscode.commands.executeCommand('dawnCode.chat.focus');
+    try {
+      const listed = await postJson<{ stubbed: boolean; message?: string; recipes: { id: string; name: string; tags: string[] }[] }>(gateway(), token(), '/v1/dawn-agents/recipes');
+      if (listed.stubbed || !listed.recipes.length) {
+        const message = listed.message ?? 'No Style Recipes were returned.';
+        this.state.banner = message;
+        this.post();
+        void vscode.window.showWarningMessage(message);
+        return;
+      }
+      const picked = await vscode.window.showQuickPick(
+        listed.recipes.map((recipe) => ({ label: recipe.name, description: recipe.tags.join(', '), id: recipe.id })),
+        { title: 'Insert a Style Recipe', ignoreFocusOut: true },
+      );
+      if (!picked) return;
+      const snippet = await postJson<{ html: string; name: string; stubbed: boolean; message?: string }>(gateway(), token(), `/v1/dawn-agents/recipes/${encodeURIComponent(picked.id)}`);
+      if (!snippet.html) {
+        const message = snippet.message ?? 'That recipe has no HTML.';
+        this.state.banner = message;
+        this.post();
+        void vscode.window.showWarningMessage(message);
+        return;
+      }
+      const editor = vscode.window.activeTextEditor;
+      if (!editor || editor.document.uri.scheme !== 'file') {
+        this.state.banner = 'Open a file before inserting a recipe.';
+        this.post();
+        return;
+      }
+      const applied = await editor.edit((builder) => builder.insert(editor.selection.active, snippet.html));
+      if (!applied) throw new Error('VS Code did not insert the recipe.');
+      const relative = vscode.workspace.asRelativePath(editor.document.uri);
+      await postJson(gateway(), token(), '/v1/training-log', {
+        kind: 'inline',
+        action: 'edit',
+        model: this.state.model,
+        prompt: `Insert Style Recipe ${snippet.name}`,
+        response: snippet.html,
+        paths: [relative],
+      });
+      this.note(`Inserted ${snippet.name}.`);
+    } catch (error) {
+      this.fail(error);
+    }
+  }
+
   async handoff(): Promise<void> {
     if (!this.requireToken()) return;
     await vscode.commands.executeCommand('dawnCode.chat.focus');
@@ -625,6 +673,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('dawnCode.inlineEdit', () => view.promptInline()),
     vscode.commands.registerCommand('dawnCode.agentRun', () => view.promptAgent()),
     vscode.commands.registerCommand('dawnCode.sendToAgent', () => view.handoff()),
+    vscode.commands.registerCommand('dawnCode.insertRecipe', () => view.insertRecipe()),
     vscode.commands.registerCommand('dawnCode.acceptChange', () => view.accept()),
     vscode.commands.registerCommand('dawnCode.rejectChange', () => view.reject()),
   );

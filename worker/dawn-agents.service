@@ -1,0 +1,30 @@
+[Unit]
+Description=Dawn Agents worker (outbound only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=dawn-agents
+Group=dawn-agents
+EnvironmentFile=/etc/dawn-agents/worker.env
+WorkingDirectory=/var/lib/dawn-agents
+ExecStart=/usr/bin/node /opt/dawn-agents/dawn-worker.mjs
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/var/lib/dawn-agents
+RestrictAddressFamilies=AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

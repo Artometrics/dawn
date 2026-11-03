@@ -33,6 +33,92 @@ The village and Studio chat call Gemini through **Firebase AI Logic** in the bro
 **Atlas** is a Stanford campus day at `/atlas`. A 16-bit character walks the Cardinal Quest (El Palo Alto, Stanford Red Barn, Arizona Garden, Lake Lagunita, Hanna House). Each stop shows “Cardinal note coming soon”. Embed it on the Cardinal site with `/atlas?embed=1`. Tiles are [OpenStreetMap](https://www.openstreetmap.org/copyright) (`© OpenStreetMap`). The place list in `data/atlas/stanford-places.json` is name, latitude, and longitude only, collected from Google Maps via Apify on 2026-10-30 (about $0.30).
 The old `/api/chat` server handler is kept at `src/lib/studio/chat-route.ts` for a future Cloud Function if you want OpenRouter/Grok on the host again.
 
+## Dawn Agents
+
+Dawn Agents is Kyle's private desk at `/agents`. One owner. No signups and no billing. The static app stays on Firebase Hosting. Model calls, the worker, and the training log run in a separate Node gateway because the site is a static export.
+
+### Gateway
+
+```bash
+cp .env.example .env.local
+# Fill DAWN_OWNER_EMAIL, DAWN_OWNER_PASSWORD, DAWN_AGENTS_SECRET,
+# DAWN_WORKER_TOKEN, and DAWN_EDITOR_TOKEN. Put Gemini and xAI keys in the
+# same file. Never commit it.
+npm run agents
+npm run dev
+```
+
+Open http://localhost:3000/agents and sign in. On localhost the page calls http://127.0.0.1:8787. For a hosted gateway set `gatewayUrl` in `public/dawn-agents-config.json` (a URL, not a secret) or `NEXT_PUBLIC_DAWN_AGENTS_URL` at build time.
+
+Spend is estimated per call and hard-stops at `DAWN_SPEND_CAP_USD` (default $20) for the UTC month. Change it in Settings. Prices are estimates.
+
+The training log is on by default. Gemini, xAI, OpenRouter, and the stand-in are included in the JSONL export until you turn one off. Settings notes that some providers' terms restrict training on outputs. Export from Settings. Thumbs-down rows without a correction stay in the table and are left out of the file. A saved correction replaces the assistant turn. Obvious keys, emails, and phone numbers are scrubbed. The log never stores env values.
+
+### Hetzner worker (Ubuntu 24.04)
+
+The computer is a Linux worker that dials out. It does not open a port. Each agent gets `/var/lib/dawn-agents/sandboxes/<agentId>`. Allowlisted commands run immediately. Anything else waits for Allow. A short denylist never runs.
+
+On the server, with Node.js 22+:
+
+```bash
+sudo ./worker/install-linux.sh
+# Edit /etc/dawn-agents/worker.env
+# DAWN_AGENTS_URL=https://your-gateway
+# DAWN_WORKER_TOKEN=<same value as the gateway>
+sudo systemctl restart dawn-agents
+systemctl status dawn-agents
+```
+
+The unit runs as `dawn-agents` with `ProtectSystem=strict` and write access only under `/var/lib/dawn-agents`. No Hetzner password goes in the script or the repo.
+
+### Optional Mac worker
+
+The Mac is a second computer, not the default. Assign an agent to Mac in the editor.
+
+```bash
+cd worker
+cp worker.env.example worker.env
+# DAWN_WORKER_KIND=mac, plus the gateway URL and the same token
+node dawn-worker.mjs
+```
+
+Sandboxes land in `~/dawn-agents/<agentId>`. `worker/com.artometrics.dawn-agents.plist.example` is a launchd sketch. The Mac worker uses the same allowlist. It does not add a separate OS sandbox profile.
+
+### Data Studio, Style Recipes, and the letter
+
+Data Studio (inside the same $20 cap) collects chats, letter drafts, and taste events three times a day UTC (08:00, 14:00, 20:00) or when you press Collect now. Tracks: chart-to-story (a real source URL is required), fact-check with true/false, visual taste from Style Recipes, agent corrections, taste signals, writing, A/B preferences, and synthetic rows. Synthetic rows are tagged, judged, and capped at about half the real set. The default generator is the desk model (an open model through OpenRouter when `DAWN_SYNTHETIC_MODEL` and `OPENROUTER_API_KEY` are set). Exports are JSONL in SFT (`messages`) and DPO (`prompt`, `chosen`, `rejected`) shapes, each with `license`, `provenance`, `consent`, and `ownerId`.
+
+Style Recipes at `/agents` (Recipes) is the board from https://recipes-510519.web.app. That site stays up. Like, save, skip, and mix are engagement events. Agents can apply a recipe in chat, and Dawn Code inserts `GET /api/v1/recipes/:id/snippet`.
+
+The letter (Publish) is the studio newsletter. https://newsletter-510519.web.app stays up. Draft with an agent, apply a recipe, publish a public page at `/letter`, import or export subscribers as CSV, and send only after an explicit confirm. Confirmation mail is also a button, not an automatic send. Opens and clicks are counted when the gateway is the host of the pixel and the link redirect. Resend, Postmark, or SES are used when their env keys are set. Otherwise mail stays in the local outbox.
+
+Anonymous newsletter readers get a random `r_` id in local storage. Engagement events store that id, not the email.
+
+### Backfill JSONL
+
+`POST /api/data/import` accepts chat-format JSONL. `POST /api/data/import-dir` reads `DAWN_BACKFILL_DIR` or `/workspace/personal-model` when that directory exists.
+
+```json
+{"messages":[{"role":"system","content":"..."},{"role":"user","content":"..."},{"role":"assistant","content":"..."}],"metadata":{"id":"b1","source":"personal-model","license":"internal","provenance":"Kyle archive"}}
+```
+
+`messages` is required. `metadata` is optional. Missing license becomes `unknown` and the row waits in the review queue with `consent: "missing"`.
+
+### Editor API
+
+See `docs/dawn-agents-editor-api.md`. Auth is `Authorization: Bearer $DAWN_EDITOR_TOKEN`.
+
+### What is stubbed
+
+- Cloud VM computers implement the same interface and return a clear error.
+- Firestore rules reserve `users/{uid}/dawnAgents` for a later mirror. The live store is the gateway's JSON file.
+- Without a model key, chat uses a local stand-in that still runs tools. Stand-in rows cost $0 and are included in the training export until you exclude that provider.
+- Web search uses the DuckDuckGo instant-answer API.
+- The Linux install is confined by systemd. A local dev worker is the directory jail plus the allowlist.
+- SES sends only when AWS credentials are set. There is no inbox UI for the console outbox.
+- Group replies run one agent after another.
+- Dawn Code, the VS Code editor, is in `editor/`. It calls `docs/dawn-agents-editor-api.md` and keeps a local stub when a route is missing.
+
 ## ⚡ Architecture & Features
 
 - **Monaco Code Editor**: Full-featured VS Code-style editor with syntax highlighting, auto-completion, and multi-file context tracking.

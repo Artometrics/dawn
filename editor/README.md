@@ -55,16 +55,19 @@ Prices in `src/shared/spend.ts` are estimates. The panel labels the total as est
 
 ## Dawn Agents and the training log
 
-The contract is `contract/dawn-agents.v1.md`.
+The live contract is `docs/dawn-agents-editor-api.md`. Dawn Code calls those routes. A missing route, an empty token, or a connection error still falls back to a local stub.
 
-| Call | When it is real | When it is stubbed |
+| Call | Merged behavior | Stub |
 | --- | --- | --- |
-| `GET /api/v1/agents` | Dawn Agents is up and `DAWN_EDITOR_TOKEN` is set | Empty URL, empty token, connection error, or 404. The picker shows one stub agent. |
-| `POST /api/v1/jobs` and `POST /api/v1/jobs/:id/messages` | Same | The task is not sent. The panel says so. A 401 is shown as a refusal, not a stub. |
-| `GET /api/v1/spend` | The route returns `spentUsd` | The panel says the agents ledger is not merged. The editor’s own ledger still counts toward the cap. |
-| `POST /api/v1/training-log` | `DAWN_TRAINING_LOG_URL` or `$DAWN_AGENTS_URL/api/v1/training-log` returns 2xx | The row is still appended to `$DAWN_CODE_DATA/training-log.jsonl`. |
+| `GET /api/v1/agents` | Lists agents. Ids are `a_` plus at least 8 hex characters. | One stub agent when the route is missing. |
+| `POST /api/v1/jobs` | Creates a job thread and returns `jobId` plus replies. | The task is not sent. |
+| `GET /api/v1/jobs/:id` | Returns the thread and its messages. | The gateway remembers only the stub it created. |
+| `POST /api/v1/agents/:id/messages` | Follow-up with `{ text, threadId }`. | If that route is missing, Dawn Code tries `POST /api/v1/jobs/:id/messages`, then a stub. |
+| `GET /api/v1/recipes` and `GET /api/v1/recipes/:id/snippet` | **Dawn Code: Insert Style Recipe** inserts the HTML. | No HTML is invented. The command says the recipes were not loaded. |
+| `GET /api/v1/spend` | Not in the merged API. Agent turns hit the same cap and return the error in the reply. | The panel says the agents ledger is not merged. Dawn Code’s own ledger still counts toward $20. |
+| `POST /api/data/import` | Owner session. The gateway logs in with `DAWN_OWNER_EMAIL` and `DAWN_OWNER_PASSWORD` (or `DAWN_OWNER_TOKEN`) and sends chat-format JSONL. The editor token is not used for this. | The row stays in `$DAWN_CODE_DATA/training-log.jsonl`. A leftover `POST /api/v1/training-log` is tried only when import is not accepted. |
 
-`cursor/dawn-agents-v1-0f2d` had not merged when this was written, and `docs/dawn-agents-editor-api.md` was not in the tree. Job status for a stub exists only in the gateway process that created it.
+A 401 is a refused token, not a stub. `Agent not found.` is a failed job, not a stub.
 
 ## Keys
 

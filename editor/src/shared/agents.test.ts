@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import test from 'node:test';
-import { createDawnJob, listDawnAgents, postDawnJobMessage, readDawnAgentsSpend } from './agents.ts';
+import { createDawnJob, getDawnJob, getDawnSnippet, listDawnAgents, listDawnRecipes, postDawnJobMessage, readDawnAgentsSpend } from './agents.ts';
 
 async function withServer(
   handler: (req: import('node:http').IncomingMessage, res: import('node:http').ServerResponse) => void,
@@ -96,6 +96,70 @@ test('spend stays unknown when the route is not merged', async () => {
     const spend = await readDawnAgentsSpend({ baseUrl, token: 'editor-token' });
     assert.equal(spend.known, false);
     assert.equal(spend.spentUsd, null);
+  });
+});
+
+test('merged job, message, and recipe routes are parsed', async () => {
+  await withServer((req, res) => {
+    if (req.method === 'POST' && req.url === '/api/v1/jobs') {
+      res.writeHead(201, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        jobId: 'th_abc',
+        replies: [{ id: 'm_1', role: 'assistant', content: 'Shipped', tools: [], usage: { promptTokens: 4, completionTokens: 2, costUsd: 0 } }],
+      }));
+      return;
+    }
+    if (req.method === 'GET' && req.url === '/api/v1/jobs/th_abc') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        job: { id: 'th_abc', title: 'Header', agentIds: ['a_0123456789abcdef'] },
+        messages: [
+          { role: 'user', content: 'prompt' },
+          { role: 'assistant', content: 'Shipped', agentId: 'a_0123456789abcdef' },
+        ],
+      }));
+      return;
+    }
+    if (req.method === 'POST' && req.url === '/api/v1/agents/a_0123456789abcdef/messages') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ threadId: 'th_abc', replies: [{ content: 'Next' }] }));
+      return;
+    }
+    if (req.method === 'GET' && req.url === '/api/v1/recipes') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ recipes: [{ id: 'pixel-billboard', name: 'Pixel Mosaic Billboard', tags: ['Styles'] }] }));
+      return;
+    }
+    if (req.method === 'GET' && req.url === '/api/v1/recipes/pixel-billboard/snippet') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ id: 'pixel-billboard', name: 'Pixel Mosaic Billboard', html: '<section>billboard</section>' }));
+      return;
+    }
+    if (req.method === 'POST' && req.url === '/api/v1/jobs' ) {
+      res.end();
+      return;
+    }
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Agent not found.' }));
+  }, async (baseUrl) => {
+    const opts = { baseUrl, token: 'editor-token' };
+    const job = await createDawnJob(opts, { agentId: 'a_0123456789abcdef', prompt: 'Insert the pixel billboard header', title: 'Header' });
+    assert.equal(job.stubbed, false);
+    assert.equal(job.jobId, 'th_abc');
+    assert.equal(job.replies[0].usage?.inputTokens, 4);
+    const loaded = await getDawnJob(opts, 'th_abc');
+    assert.equal(loaded?.agentId, 'a_0123456789abcdef');
+    assert.equal(loaded?.replies.length, 1);
+    const follow = await postDawnJobMessage(opts, 'th_abc', 'again', 'a_0123456789abcdef');
+    assert.equal(follow.replies[0].content, 'Next');
+    const recipes = await listDawnRecipes(opts);
+    assert.equal(recipes.stubbed, false);
+    assert.equal(recipes.recipes[0].id, 'pixel-billboard');
+    const snippet = await getDawnSnippet(opts, 'pixel-billboard');
+    assert.equal(snippet.html, '<section>billboard</section>');
+    const missingAgent = await createDawnJob({ ...opts, fetchImpl: async () => new Response(JSON.stringify({ error: 'Agent not found.' }), { status: 404, headers: { 'content-type': 'application/json' } }) }, { agentId: 'a_0123456789abcdef', prompt: 'x' });
+    assert.equal(missingAgent.stubbed, false);
+    assert.equal(missingAgent.status, 'failed');
   });
 });
 

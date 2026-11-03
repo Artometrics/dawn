@@ -15,17 +15,20 @@ const port = Number(process.env.DAWN_CODE_PORT || 8791);
 const host = process.env.DAWN_CODE_HOST || '127.0.0.1';
 const cap = process.env.DAWN_SPEND_CAP_USD ? Number(process.env.DAWN_SPEND_CAP_USD) : 20;
 
+const agentsUrl = (process.env.DAWN_AGENTS_URL || 'http://127.0.0.1:8787').replace(/\/$/, '');
 const server = createGateway({
   token,
   dataDir,
   capUsd: Number.isFinite(cap) ? cap : 20,
   mock: process.env.DAWN_CODE_MOCK === '1',
   mockDelayMs: Number(process.env.DAWN_CODE_MOCK_DELAY_MS || 16),
-  agentsUrl: process.env.DAWN_AGENTS_URL || 'http://127.0.0.1:8787',
+  agentsUrl,
   editorToken: process.env.DAWN_EDITOR_TOKEN || '',
-  trainingLogUrl:
-    process.env.DAWN_TRAINING_LOG_URL ||
-    `${(process.env.DAWN_AGENTS_URL || 'http://127.0.0.1:8787').replace(/\/$/, '')}/api/v1/training-log`,
+  importUrl: process.env.DAWN_DATA_IMPORT_URL || `${agentsUrl}/api/data/import`,
+  ownerToken: process.env.DAWN_OWNER_TOKEN || '',
+  ownerEmail: process.env.DAWN_OWNER_EMAIL || '',
+  ownerPassword: process.env.DAWN_OWNER_PASSWORD || '',
+  trainingLogUrl: process.env.DAWN_TRAINING_LOG_URL || `${agentsUrl}/api/v1/training-log`,
   trainingToken: process.env.DAWN_TRAINING_LOG_TOKEN || process.env.DAWN_EDITOR_TOKEN || '',
 });
 

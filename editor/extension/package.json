@@ -38,6 +38,7 @@
       { "command": "dawnCode.inlineEdit", "title": "Dawn Code: Inline Edit", "category": "Dawn Code" },
       { "command": "dawnCode.agentRun", "title": "Dawn Code: Agent Edit", "category": "Dawn Code" },
       { "command": "dawnCode.sendToAgent", "title": "Dawn Code: Send to Dawn Agent", "category": "Dawn Code" },
+      { "command": "dawnCode.insertRecipe", "title": "Dawn Code: Insert Style Recipe", "category": "Dawn Code" },
       { "command": "dawnCode.acceptChange", "title": "Dawn Code: Accept Changes", "category": "Dawn Code" },
       { "command": "dawnCode.rejectChange", "title": "Dawn Code: Reject Changes", "category": "Dawn Code" }
     ],

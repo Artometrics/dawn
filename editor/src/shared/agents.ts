@@ -2,11 +2,17 @@
  * Client for the Dawn Agents editor API.
  * Contract (planned on cursor/dawn-agents-v1-0f2d, not merged):
  *   Authorization: Bearer <DAWN_EDITOR_TOKEN>
+ * Documented in docs/dawn-agents-editor-api.md:
  *   GET  /api/v1/agents
+ *   POST /api/v1/agents/:id/messages  { text, threadId? }
  *   POST /api/v1/jobs                 { agentId, prompt, title? }
- *   POST /api/v1/jobs/:id/messages    { text, prompt }
- * Agent ids are `a_` plus 12 hex characters. Errors are `{ "error": string }`.
- * A down service, a missing token, or a 404 becomes a stub result. A 401 does not.
+ *   GET  /api/v1/jobs/:id
+ *   POST /api/v1/jobs/:id/messages    fallback if the agent-message route is missing
+ *   GET  /api/v1/recipes
+ *   GET  /api/v1/recipes/:id/snippet
+ * Agent ids are `a_` plus at least 8 hex characters. Errors are `{ "error": string }`.
+ * A down service, a missing token, or a missing route becomes a stub. A 401 does not.
+ * "Agent not found." is a real answer, not a stub.
  */
 
 export type DawnAgent = {
@@ -62,7 +68,14 @@ const STUB_AGENT: DawnAgent = {
   computer: 'hetzner',
 };
 
-const AGENT_ID = /^a_[0-9a-f]{12}$/;
+const AGENT_ID = /^a_[0-9a-f]{8,}$/;
+const REAL_MISS = /^(Agent not found|Job not found|Recipe not found|Thread not found)/i;
+
+function isMissingRoute(status: number, body: unknown): boolean {
+  if (status === 501) return true;
+  if (status !== 404) return false;
+  return !REAL_MISS.test(errorMessage(body, ''));
+}
 
 function trimBase(url: string): string {
   return url.replace(/\/+$/, '');
@@ -99,11 +112,40 @@ export function normalizeAgent(value: unknown): DawnAgent | null {
   };
 }
 
+function numberField(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+}
+
+export function normalizeReply(value: unknown, fallbackAgentId: string): DawnReply | null {
+  if (!value || typeof value !== 'object') return null;
+  const item = value as { agentId?: unknown; content?: unknown; toolCalls?: unknown; tools?: unknown; usage?: unknown; role?: unknown };
+  if (item.role === 'user') return null;
+  const content = typeof item.content === 'string' ? item.content : '';
+  const usageRaw = item.usage && typeof item.usage === 'object' ? item.usage as Record<string, unknown> : undefined;
+  const usage = usageRaw
+    ? {
+        inputTokens: numberField(usageRaw.inputTokens) ?? numberField(usageRaw.promptTokens) ?? 0,
+        outputTokens: numberField(usageRaw.outputTokens) ?? numberField(usageRaw.completionTokens) ?? 0,
+        costUsd: numberField(usageRaw.costUsd) ?? 0,
+      }
+    : undefined;
+  const tools = Array.isArray(item.tools) ? item.tools : Array.isArray(item.toolCalls) ? item.toolCalls : [];
+  return {
+    agentId: typeof item.agentId === 'string' ? item.agentId : fallbackAgentId,
+    content,
+    toolCalls: tools,
+    usage,
+  };
+}
+
 export function normalizeJob(value: unknown, fallbackAgentId: string): DawnJob | null {
   if (!value || typeof value !== 'object') return null;
   const record = value as {
+    job?: unknown;
+    messages?: unknown;
     jobId?: unknown;
     id?: unknown;
+    threadId?: unknown;
     status?: unknown;
     agentId?: unknown;
     title?: unknown;
@@ -111,22 +153,34 @@ export function normalizeJob(value: unknown, fallbackAgentId: string): DawnJob |
     message?: unknown;
     stubbed?: unknown;
   };
-  const jobId = typeof record.jobId === 'string' ? record.jobId : typeof record.id === 'string' ? record.id : '';
+  if (record.job && typeof record.job === 'object') {
+    const thread = record.job as { id?: unknown; title?: unknown; agentIds?: unknown };
+    const jobId = typeof thread.id === 'string' ? thread.id : '';
+    if (!jobId) return null;
+    const agentId = Array.isArray(thread.agentIds) && typeof thread.agentIds[0] === 'string' ? thread.agentIds[0] : fallbackAgentId;
+    const replies = Array.isArray(record.messages)
+      ? record.messages.flatMap((item) => {
+          const reply = normalizeReply(item, agentId);
+          return reply ? [reply] : [];
+        })
+      : [];
+    return {
+      jobId,
+      status: replies.length ? 'completed' : 'queued',
+      stubbed: false,
+      agentId,
+      title: typeof thread.title === 'string' ? thread.title : undefined,
+      replies,
+    };
+  }
+  const jobId = typeof record.jobId === 'string' ? record.jobId : typeof record.threadId === 'string' ? record.threadId : typeof record.id === 'string' ? record.id : '';
   if (!jobId) return null;
   const statusRaw = typeof record.status === 'string' ? record.status : 'completed';
   const status = (['queued', 'running', 'completed', 'failed', 'stubbed'] as const).find((item) => item === statusRaw) ?? 'completed';
   const replies = Array.isArray(record.replies)
-    ? record.replies.flatMap((reply) => {
-        if (!reply || typeof reply !== 'object') return [];
-        const item = reply as { agentId?: unknown; content?: unknown; toolCalls?: unknown; usage?: unknown };
-        const content = typeof item.content === 'string' ? item.content : '';
-        const usage = item.usage && typeof item.usage === 'object' ? (item.usage as DawnReply['usage']) : undefined;
-        return [{
-          agentId: typeof item.agentId === 'string' ? item.agentId : fallbackAgentId,
-          content,
-          toolCalls: Array.isArray(item.toolCalls) ? item.toolCalls : [],
-          usage,
-        }];
+    ? record.replies.flatMap((item) => {
+        const reply = normalizeReply(item, fallbackAgentId);
+        return reply ? [reply] : [];
       })
     : [];
   return {
@@ -178,7 +232,7 @@ export async function listDawnAgents(opts: AgentsClientOptions): Promise<AgentsL
   try {
     const response = await call(opts, '/api/v1/agents');
     const body = await readJson(response);
-    if (response.status === 404 || response.status === 501) {
+    if (isMissingRoute(response.status, body)) {
       return stubList('Dawn Agents has no /api/v1/agents yet.');
     }
     if (response.status === 401 || response.status === 403) {
@@ -211,15 +265,14 @@ export async function createDawnJob(
       body: { agentId: input.agentId, prompt: input.prompt, title: input.title },
     });
     const body = await readJson(response);
-    if (response.status === 404 || response.status === 501) {
+    if (isMissingRoute(response.status, body)) {
       return stubJob(input.agentId, 'Dawn Agents has no /api/v1/jobs yet. This task was not sent.', input.title);
     }
     if (!response.ok) {
-      const failed = response.status === 401 || response.status === 402 || response.status === 403;
       return {
         ...stubJob(input.agentId, errorMessage(body, `Dawn Agents returned ${response.status}.`), input.title),
-        stubbed: !failed,
-        status: failed ? 'failed' : 'stubbed',
+        stubbed: false,
+        status: 'failed',
       };
     }
     return normalizeJob(body, input.agentId) ?? stubJob(input.agentId, 'Dawn Agents returned a job Dawn Code could not read.', input.title);
@@ -238,20 +291,107 @@ export async function postDawnJobMessage(
     return stubJob(agentId, 'This job is a local stub. The follow-up was not sent.');
   }
   try {
+    if (agentId) {
+      const primary = await call(opts, `/api/v1/agents/${encodeURIComponent(agentId)}/messages`, {
+        method: 'POST',
+        body: { text, threadId: jobId },
+      });
+      const primaryBody = await readJson(primary);
+      if (primary.ok) {
+        return normalizeJob(primaryBody, agentId) ?? stubJob(agentId, 'Dawn Agents returned a follow-up Dawn Code could not read.');
+      }
+      if (!isMissingRoute(primary.status, primaryBody)) {
+        return { ...stubJob(agentId, errorMessage(primaryBody, `Dawn Agents returned ${primary.status}.`)), stubbed: false, status: 'failed' };
+      }
+    }
     const response = await call(opts, `/api/v1/jobs/${encodeURIComponent(jobId)}/messages`, {
       method: 'POST',
-      body: { text, prompt: text },
+      body: { text, prompt: text, threadId: jobId },
     });
     const body = await readJson(response);
-    if (response.status === 404 || response.status === 501) {
+    if (isMissingRoute(response.status, body)) {
       return stubJob(agentId, 'Dawn Agents does not have job messages yet. The follow-up was not sent.');
     }
     if (!response.ok) {
-      return stubJob(agentId, errorMessage(body, `Dawn Agents returned ${response.status}.`));
+      return { ...stubJob(agentId, errorMessage(body, `Dawn Agents returned ${response.status}.`)), stubbed: false, status: 'failed' };
     }
     return normalizeJob(body, agentId) ?? stubJob(agentId, 'Dawn Agents returned a follow-up Dawn Code could not read.');
   } catch {
     return stubJob(agentId, 'Dawn Agents is not reachable. The follow-up was not sent.');
+  }
+}
+
+export async function getDawnJob(opts: AgentsClientOptions, jobId: string): Promise<DawnJob | null> {
+  if (!opts.baseUrl || !opts.token || jobId.startsWith('stub_')) return null;
+  try {
+    const response = await call(opts, `/api/v1/jobs/${encodeURIComponent(jobId)}`);
+    if (!response.ok) return null;
+    return normalizeJob(await readJson(response), '');
+  } catch {
+    return null;
+  }
+}
+
+export type DawnRecipe = { id: string; name: string; tags: string[] };
+
+export type DawnSnippet = {
+  id: string;
+  name: string;
+  html: string;
+  stubbed: boolean;
+  message?: string;
+};
+
+export async function listDawnRecipes(opts: AgentsClientOptions): Promise<{ stubbed: boolean; recipes: DawnRecipe[]; message?: string }> {
+  if (!opts.baseUrl || !opts.token) {
+    return { stubbed: true, recipes: [], message: 'Dawn Agents is not configured. Style Recipes were not loaded.' };
+  }
+  try {
+    const response = await call(opts, '/api/v1/recipes');
+    const body = await readJson(response);
+    if (isMissingRoute(response.status, body)) {
+      return { stubbed: true, recipes: [], message: 'Dawn Agents has no /api/v1/recipes yet.' };
+    }
+    if (!response.ok) return { stubbed: false, recipes: [], message: errorMessage(body, `Dawn Agents returned ${response.status}.`) };
+    const raw = (body as { recipes?: unknown }).recipes;
+    const recipes = Array.isArray(raw)
+      ? raw.flatMap((item) => {
+          if (!item || typeof item !== 'object') return [];
+          const recipe = item as { id?: unknown; name?: unknown; tags?: unknown };
+          if (typeof recipe.id !== 'string' || typeof recipe.name !== 'string') return [];
+          return [{
+            id: recipe.id,
+            name: recipe.name,
+            tags: Array.isArray(recipe.tags) ? recipe.tags.filter((tag): tag is string => typeof tag === 'string') : [],
+          }];
+        })
+      : [];
+    return { stubbed: false, recipes };
+  } catch {
+    return { stubbed: true, recipes: [], message: 'Dawn Agents is not reachable. Style Recipes were not loaded.' };
+  }
+}
+
+export async function getDawnSnippet(opts: AgentsClientOptions, id: string): Promise<DawnSnippet> {
+  if (!opts.baseUrl || !opts.token) {
+    return { id, name: id, html: '', stubbed: true, message: 'Dawn Agents is not configured.' };
+  }
+  try {
+    const response = await call(opts, `/api/v1/recipes/${encodeURIComponent(id)}/snippet`);
+    const body = await readJson(response);
+    if (isMissingRoute(response.status, body)) {
+      return { id, name: id, html: '', stubbed: true, message: 'Dawn Agents has no recipe snippets yet.' };
+    }
+    if (!response.ok) return { id, name: id, html: '', stubbed: false, message: errorMessage(body, `Dawn Agents returned ${response.status}.`) };
+    const record = body as { id?: unknown; name?: unknown; html?: unknown };
+    return {
+      id: typeof record.id === 'string' ? record.id : id,
+      name: typeof record.name === 'string' ? record.name : id,
+      html: typeof record.html === 'string' ? record.html : '',
+      stubbed: false,
+    };
+  } catch {
+    return { id, name: id, html: '', stubbed: true, message: 'Dawn Agents is not reachable.' };
   }
 }
 

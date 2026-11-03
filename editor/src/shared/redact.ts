@@ -8,6 +8,8 @@ const SECRET_NAMES = [
   'DAWN_CODE_PASSWORD',
   'DAWN_CODE_CONNECTION_TOKEN',
   'DAWN_AGENTS_SECRET',
+  'DAWN_OWNER_PASSWORD',
+  'DAWN_OWNER_TOKEN',
 ] as const;
 
 const KEY_PATTERN = /\b(sk-[A-Za-z0-9_\-]{8,}|AIza[0-9A-Za-z\-_]{10,}|sk-or-v1-[A-Za-z0-9]+)\b/g;

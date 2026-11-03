@@ -241,10 +241,11 @@ test('each chat is stored and forwarded to the training log', async () => {
     assert.equal(training.forwarded, true);
     assert.equal(training.stubbed, false);
     const lines = (await readFile(path.join(dataDir, 'training-log.jsonl'), 'utf8')).trim().split('\n');
-    const row = JSON.parse(lines.at(-1) ?? '{}') as { prompt: string; paths: string[]; action: string };
-    assert.equal(row.action, 'response');
-    assert.equal(row.paths[0], 'editor/sample/hello.ts');
-    assert.equal(row.prompt.includes('xai-test-secret-value'), false);
+    const row = JSON.parse(lines.at(-1) ?? '{}') as { messages: { role: string; content: string }[]; metadata: { action: string; source: string } };
+    assert.equal(row.metadata.source, 'dawn-code');
+    assert.equal(row.metadata.action, 'response');
+    assert.equal(row.messages.some((message) => message.role === 'user' && message.content.includes('explain greet')), true);
+    assert.equal(JSON.stringify(row).includes('xai-test-secret-value'), false);
 
     const decision = await (await fetch(`http://127.0.0.1:${port}/v1/training-log`, {
       method: 'POST',

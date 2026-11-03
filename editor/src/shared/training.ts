@@ -42,7 +42,28 @@ function field(value: unknown, max: number, env: Record<string, string | undefin
   return redact(clip(text, max).text, env);
 }
 
-/** Build the dataset row. Secrets are removed before it is stored or sent. */
+/** Chat-format row from docs/dawn-agents-editor-api.md. Extra metadata stays in the local file. Import ignores it. */
+export function toBackfillLine(record: TrainingRecord): string {
+  const messages: { role: 'system' | 'user' | 'assistant'; content: string }[] = [
+    { role: 'system', content: `Dawn Code ${record.kind}. Decision: ${record.action}.` },
+  ];
+  if (record.prompt) messages.push({ role: 'user', content: record.prompt });
+  const assistant = record.response || (record.action === 'accept' || record.action === 'reject' ? record.action : '');
+  if (assistant) messages.push({ role: 'assistant', content: assistant });
+  return JSON.stringify({
+    messages,
+    metadata: {
+      id: record.id,
+      source: 'dawn-code',
+      license: 'internal',
+      provenance: 'Dawn Code editor',
+      created: record.at.slice(0, 10),
+      kind: record.kind,
+      action: record.action,
+    },
+  });
+}
+
 export function trainingRecord(
   input: TrainingInput,
   env: Record<string, string | undefined> = process.env,

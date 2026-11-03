@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import path from 'node:path';
-import { createDawnJob, listDawnAgents, postDawnJobMessage, readDawnAgentsSpend, type DawnJob } from '../shared/agents.ts';
+import { createDawnJob, getDawnJob, getDawnSnippet, listDawnAgents, listDawnRecipes, postDawnJobMessage, readDawnAgentsSpend, type DawnJob } from '../shared/agents.ts';
 import { applySelection, parseJsonObject, validateEdits, type FileEdit } from '../shared/edits.ts';
 import { MODEL_CHOICES, remapModelId } from '../shared/models.ts';
 import { agentUserPrompt, inlineUserPrompt, standInAgent, standInInline, type CodeContext } from '../shared/prompts.ts';
@@ -23,6 +23,10 @@ export type GatewayOptions = {
   editorToken?: string;
   trainingLogUrl?: string;
   trainingToken?: string;
+  importUrl?: string;
+  ownerToken?: string;
+  ownerEmail?: string;
+  ownerPassword?: string;
   env?: GatewayEnv;
   fetchImpl?: typeof fetch;
   now?: () => Date;
@@ -91,9 +95,15 @@ export function createGateway(options: GatewayOptions) {
   const env = options.env ?? process.env;
   const capUsd = Number.isFinite(options.capUsd) ? Number(options.capUsd) : DEFAULT_CAP_USD;
   const store = new SpendStore(path.join(options.dataDir, 'spend.json'), capUsd, options.now);
+  const agentsBase = options.agentsUrl?.replace(/\/$/, '') ?? '';
   const training = new TrainingLog(path.join(options.dataDir, 'training-log.jsonl'), {
     url: options.trainingLogUrl,
     token: options.trainingToken || options.editorToken,
+    importUrl: options.importUrl,
+    ownerToken: options.ownerToken,
+    ownerEmail: options.ownerEmail,
+    ownerPassword: options.ownerPassword,
+    loginUrl: agentsBase ? `${agentsBase}/api/auth/login` : '',
     fetchImpl: options.fetchImpl,
     env,
     now: options.now,
@@ -190,10 +200,21 @@ export function createGateway(options: GatewayOptions) {
       json(res, 200, job);
       return;
     }
+    const recipeMatch = url.pathname.match(/^\/v1\/dawn-agents\/recipes\/([^/]+)$/);
+    if (method === 'GET' && recipeMatch) {
+      json(res, 200, await getDawnSnippet(await agentsOptions(), decodeURIComponent(recipeMatch[1])));
+      return;
+    }
+    if (method === 'GET' && url.pathname === '/v1/dawn-agents/recipes') {
+      json(res, 200, await listDawnRecipes(await agentsOptions()));
+      return;
+    }
     const jobMatch = url.pathname.match(/^\/v1\/dawn-agents\/jobs\/([^/]+)$/);
     if (method === 'GET' && jobMatch) {
-      const job = memory.get(decodeURIComponent(jobMatch[1]));
-      if (!job) throw new HttpError(404, 'Job is not in this gateway. Dawn Agents status polling is not merged.');
+      const jobId = decodeURIComponent(jobMatch[1]);
+      const live = await getDawnJob(await agentsOptions(), jobId);
+      const job = live ?? memory.get(jobId);
+      if (!job) throw new HttpError(404, 'Job not found.');
       json(res, 200, job);
       return;
     }
