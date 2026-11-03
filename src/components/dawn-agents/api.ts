@@ -1,7 +1,5 @@
 import type { PixelAvatar } from '@/lib/dawn-agents/types';
 
-const TOKEN_KEY = 'dawn-agents-token';
-
 export type GatewayState = {
   ownerEmail: string;
   agents: Agent[];
@@ -57,18 +55,6 @@ export type Article = { id: string; title: string; slug: string; subject: string
 export type Subscriber = { id: string; email: string; status: string; consentAt: number | null; createdAt: number };
 export type Send = { id: string; articleId: string; sentAt: number; recipients: number; opens: number; clicks: number };
 
-export function token(): string {
-  return sessionStorage.getItem(TOKEN_KEY) || '';
-}
-
-export function saveToken(value: string) {
-  sessionStorage.setItem(TOKEN_KEY, value);
-}
-
-export function clearToken() {
-  sessionStorage.removeItem(TOKEN_KEY);
-}
-
 export async function gatewayBase(): Promise<string> {
   const baked = process.env.NEXT_PUBLIC_DAWN_AGENTS_URL;
   if (baked) return baked.replace(/\/$/, '');
@@ -79,19 +65,20 @@ export async function gatewayBase(): Promise<string> {
   } catch {
     /* local default */
   }
-  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') return 'http://127.0.0.1:8787';
   return '';
+}
+
+export function googleSignInHref(): string {
+  const next = typeof location === 'undefined' ? '/agents' : `${location.pathname}${location.search}`;
+  return `/oauth2/start?rd=${encodeURIComponent(next)}`;
 }
 
 export async function api<T>(base: string, path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);
   if (!headers.has('content-type') && init.body) headers.set('content-type', 'application/json');
-  const session = token();
-  if (session) headers.set('authorization', `Bearer ${session}`);
-  const response = await fetch(`${base}${path}`, { ...init, headers });
-  if (response.status === 401) {
-    clearToken();
-    throw new Error('Sign in first.');
+  const response = await fetch(`${base}${path}`, { ...init, headers, credentials: 'include', redirect: 'manual' });
+  if (response.status === 401 || response.status === 302 || response.status === 303 || response.type === 'opaqueredirect') {
+    throw new Error('Sign in with Google.');
   }
   const text = await response.text();
   const data = text ? (JSON.parse(text) as T & { error?: string }) : ({} as T);

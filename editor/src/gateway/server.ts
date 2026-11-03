@@ -7,6 +7,7 @@ import { agentUserPrompt, inlineUserPrompt, standInAgent, standInInline, type Co
 import { redact } from '../shared/redact.ts';
 import { clip, safeRelativePath } from '../shared/paths.ts';
 import { DEFAULT_CAP_USD, spendView, type SpendView } from '../shared/spend.ts';
+import { proxyUserAllowed } from '../../../src/lib/dawn-agents/proxy-auth.ts';
 import { HttpError, bearer, json, readJson, startSse, tokensMatch, writeEvent } from './http.ts';
 import { completeText, resolveProvider, streamChat, type ChatTurn, type GatewayEnv } from './providers.ts';
 import { SpendStore } from './store.ts';
@@ -24,9 +25,7 @@ export type GatewayOptions = {
   trainingLogUrl?: string;
   trainingToken?: string;
   importUrl?: string;
-  ownerToken?: string;
   ownerEmail?: string;
-  ownerPassword?: string;
   env?: GatewayEnv;
   fetchImpl?: typeof fetch;
   now?: () => Date;
@@ -95,15 +94,11 @@ export function createGateway(options: GatewayOptions) {
   const env = options.env ?? process.env;
   const capUsd = Number.isFinite(options.capUsd) ? Number(options.capUsd) : DEFAULT_CAP_USD;
   const store = new SpendStore(path.join(options.dataDir, 'spend.json'), capUsd, options.now);
-  const agentsBase = options.agentsUrl?.replace(/\/$/, '') ?? '';
   const training = new TrainingLog(path.join(options.dataDir, 'training-log.jsonl'), {
     url: options.trainingLogUrl,
     token: options.trainingToken || options.editorToken,
     importUrl: options.importUrl,
-    ownerToken: options.ownerToken,
     ownerEmail: options.ownerEmail,
-    ownerPassword: options.ownerPassword,
-    loginUrl: agentsBase ? `${agentsBase}/api/auth/login` : '',
     fetchImpl: options.fetchImpl,
     env,
     now: options.now,
@@ -161,7 +156,9 @@ export function createGateway(options: GatewayOptions) {
       return;
     }
 
-    if (!options.token || !tokensMatch(bearer(req), options.token)) {
+    const allowedEmail = options.ownerEmail || env.DAWN_ALLOWED_EMAIL || env.DAWN_OWNER_EMAIL || '';
+    const proxyOk = proxyUserAllowed(req.socket.remoteAddress, req.headers, allowedEmail);
+    if (!proxyOk && (!options.token || !tokensMatch(bearer(req), options.token))) {
       json(res, 401, { error: 'Unauthorized' });
       return;
     }

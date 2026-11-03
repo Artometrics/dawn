@@ -1,0 +1,404 @@
+[
+  {
+    "name": "@ai-sdk/google",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://ai-sdk.dev/docs"
+  },
+  {
+    "name": "@ai-sdk/openai",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://ai-sdk.dev/docs"
+  },
+  {
+    "name": "@ai-sdk/react",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://ai-sdk.dev/docs"
+  },
+  {
+    "name": "@base-ui/react",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://base-ui.com"
+  },
+  {
+    "name": "@dicebear/core",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://www.dicebear.com"
+  },
+  {
+    "name": "@dicebear/styles",
+    "kind": "dawn",
+    "license": "SEE LICENSE IN LICENSE.md",
+    "url": "https://github.com/dicebear/styles"
+  },
+  {
+    "name": "@firebase/rules-unit-testing",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://github.com/firebase/firebase-js-sdk"
+  },
+  {
+    "name": "@hookform/resolvers",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://react-hook-form.com"
+  },
+  {
+    "name": "@monaco-editor/react",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/suren-atoyan/monaco-react#readme"
+  },
+  {
+    "name": "@radix-ui/react-dialog",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://radix-ui.com/primitives"
+  },
+  {
+    "name": "@radix-ui/react-dropdown-menu",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://radix-ui.com/primitives"
+  },
+  {
+    "name": "@radix-ui/react-tabs",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://radix-ui.com/primitives"
+  },
+  {
+    "name": "@radix-ui/react-use-controllable-state",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://radix-ui.com/primitives"
+  },
+  {
+    "name": "@rive-app/react-webgl2",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/rive-app/rive-react#readme"
+  },
+  {
+    "name": "@shadcn/react",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://ui.shadcn.com"
+  },
+  {
+    "name": "@streamdown/cjk",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://github.com/vercel/streamdown"
+  },
+  {
+    "name": "@streamdown/code",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://github.com/vercel/streamdown"
+  },
+  {
+    "name": "@streamdown/math",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://github.com/vercel/streamdown"
+  },
+  {
+    "name": "@streamdown/mermaid",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://github.com/vercel/streamdown"
+  },
+  {
+    "name": "@tailwindcss/turbopack",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://tailwindcss.com"
+  },
+  {
+    "name": "@types/leaflet",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/leaflet"
+  },
+  {
+    "name": "@types/node",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/node"
+  },
+  {
+    "name": "@types/react",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react"
+  },
+  {
+    "name": "@types/react-dom",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react-dom"
+  },
+  {
+    "name": "@xyflow/react",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://reactflow.dev"
+  },
+  {
+    "name": "ai",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://ai-sdk.dev/docs"
+  },
+  {
+    "name": "ansi-to-react",
+    "kind": "dawn",
+    "license": "BSD-3-Clause",
+    "url": "https://github.com/nteract/ansi-to-react"
+  },
+  {
+    "name": "class-variance-authority",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://github.com/joe-bell/cva#readme"
+  },
+  {
+    "name": "clsx",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "lukeed/clsx"
+  },
+  {
+    "name": "cmdk",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/pacocoursey/cmdk#readme"
+  },
+  {
+    "name": "cn",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/shadcn-ui/cn"
+  },
+  {
+    "name": "date-fns",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/date-fns/date-fns"
+  },
+  {
+    "name": "embla-carousel-react",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://www.embla-carousel.com"
+  },
+  {
+    "name": "eslint",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://eslint.org"
+  },
+  {
+    "name": "eslint-config-next",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://nextjs.org/docs/app/api-reference/config/eslint"
+  },
+  {
+    "name": "firebase",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://firebase.google.com/"
+  },
+  {
+    "name": "input-otp",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://input-otp.rodz.dev/"
+  },
+  {
+    "name": "leaflet",
+    "kind": "dawn",
+    "license": "BSD-2-Clause",
+    "url": "https://leafletjs.com/"
+  },
+  {
+    "name": "lucide-react",
+    "kind": "dawn",
+    "license": "ISC",
+    "url": "https://lucide.dev"
+  },
+  {
+    "name": "media-chrome",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/muxinc/media-chrome#readme"
+  },
+  {
+    "name": "motion",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/motiondivision/motion"
+  },
+  {
+    "name": "nanoid",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "ai/nanoid"
+  },
+  {
+    "name": "next",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://nextjs.org"
+  },
+  {
+    "name": "next-themes",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/pacocoursey/next-themes"
+  },
+  {
+    "name": "phaser",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://phaser.io"
+  },
+  {
+    "name": "react",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://react.dev/"
+  },
+  {
+    "name": "react-day-picker",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://daypicker.dev"
+  },
+  {
+    "name": "react-dom",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://react.dev/"
+  },
+  {
+    "name": "react-hook-form",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://react-hook-form.com"
+  },
+  {
+    "name": "react-jsx-parser",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "TroyAlford/react-jsx-parser"
+  },
+  {
+    "name": "react-resizable-panels",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://react-resizable-panels.vercel.app/"
+  },
+  {
+    "name": "recharts",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/recharts/recharts"
+  },
+  {
+    "name": "shadcn",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://ui.shadcn.com"
+  },
+  {
+    "name": "shiki",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/shikijs/shiki#readme"
+  },
+  {
+    "name": "streamdown",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://streamdown.ai"
+  },
+  {
+    "name": "tailwind-merge",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/dcastil/tailwind-merge"
+  },
+  {
+    "name": "tailwindcss",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://tailwindcss.com"
+  },
+  {
+    "name": "tokenlens",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/xn1cklas/tokenlens/tree/HEAD/packages/tokenlens#readme"
+  },
+  {
+    "name": "tw-animate-css",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/Wombosvideo/tw-animate-css#readme"
+  },
+  {
+    "name": "typescript",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://www.typescriptlang.org/"
+  },
+  {
+    "name": "use-stick-to-bottom",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://use-stick-to-bottom.samdenty.io"
+  },
+  {
+    "name": "zod",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://zod.dev"
+  },
+  {
+    "name": "@types/node",
+    "kind": "dawn-code",
+    "license": "MIT",
+    "url": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+  },
+  {
+    "name": "@types/vscode",
+    "kind": "dawn-code",
+    "license": "MIT",
+    "url": "https://github.com/DefinitelyTyped/DefinitelyTyped"
+  },
+  {
+    "name": "@vscode/vsce",
+    "kind": "dawn-code",
+    "license": "MIT",
+    "url": "https://github.com/microsoft/vscode-vsce"
+  },
+  {
+    "name": "esbuild",
+    "kind": "dawn-code",
+    "license": "MIT",
+    "url": "https://github.com/evanw/esbuild"
+  },
+  {
+    "name": "typescript",
+    "kind": "dawn-code",
+    "license": "Apache-2.0",
+    "url": "https://github.com/microsoft/TypeScript"
+  }
+]

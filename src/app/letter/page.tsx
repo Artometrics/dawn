@@ -81,6 +81,7 @@ export default function LetterPage() {
             <div dangerouslySetInnerHTML={{ __html: current.html || '' }} />
           </article>
         )}
+        <p className="note"><a href="/credits">Credits & licenses</a></p>
       </main>
     </div>
   );

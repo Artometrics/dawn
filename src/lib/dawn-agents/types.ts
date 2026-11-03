@@ -5,8 +5,11 @@ export type WorkerKind = 'linux' | 'mac';
 export type TrainingProvider = 'google' | 'xai' | 'openrouter' | 'stand-in';
 
 export type PixelAvatar = {
-  grid: 8 | 16;
-  cells: string;
+  /** Painted grid kept for older agents. New agents use sprite. */
+  grid?: 8 | 16;
+  cells?: string;
+  /** Id from the Kenney Tiny Dungeon character set. */
+  sprite?: string;
 };
 
 export type AgentRecord = {

@@ -38,6 +38,10 @@
       {
         "source": "/letter",
         "destination": "/letter.html"
+      },
+      {
+        "source": "/credits",
+        "destination": "/credits.html"
       }
     ]
   },

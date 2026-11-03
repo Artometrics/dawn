@@ -19,6 +19,9 @@ export function secretValuesFromEnv(env: NodeJS.ProcessEnv = process.env): strin
     'DAWN_EDITOR_TOKEN',
     'DAWN_AGENTS_SECRET',
     'DAWN_OWNER_PASSWORD',
+    'GOOGLE_CLIENT_SECRET',
+    'OAUTH2_PROXY_CLIENT_SECRET',
+    'OAUTH2_PROXY_COOKIE_SECRET',
   ];
   return names.map((name) => env[name]?.trim() ?? '').filter((value) => value.length >= 8);
 }

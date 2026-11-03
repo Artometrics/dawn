@@ -8,6 +8,7 @@ fi
 exec "$SERVER" \
   --host 0.0.0.0 \
   --port 3000 \
-  --connection-token "${DAWN_CODE_CONNECTION_TOKEN:?set DAWN_CODE_CONNECTION_TOKEN}" \
+  --server-base-path /editor \
+  --without-connection-token \
   --accept-server-license-terms \
   --default-folder /home/workspace

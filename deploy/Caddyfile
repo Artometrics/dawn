@@ -1,0 +1,80 @@
+# Dawn on one host. oauth2-proxy is the only Google sign-in.
+# One cookie on this domain covers /agents, /editor, and the letter admin API.
+# The public letter (signup, confirm, read) is not behind the proxy.
+# Do not turn on access logs. They are not needed, and query strings must stay out of them.
+
+(dawn_auth) {
+	forward_auth 127.0.0.1:4180 {
+		uri /oauth2/auth
+		copy_headers X-Auth-Request-User X-Auth-Request-Email X-Auth-Request-Preferred-Username
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+		header_up X-Forwarded-Uri {uri}
+		@api_denied {
+			status 401
+			header Accept *application/json*
+		}
+		handle_response @api_denied {
+			respond "Sign in with Google." 401
+		}
+		@denied status 401
+		handle_response @denied {
+			redir * /oauth2/start?rd={http.request.uri} 302
+		}
+	}
+}
+
+{$DAWN_PUBLIC_HOST} {
+	encode gzip
+
+	handle /oauth2/* {
+		reverse_proxy 127.0.0.1:4180
+	}
+
+	# Public letter page and its signup, confirm, open, and click routes.
+	handle /letter* {
+		root * {$DAWN_STATIC_ROOT}
+		try_files {path} {path}.html {path}/index.html
+		file_server
+	}
+	handle /api/public/* {
+		reverse_proxy 127.0.0.1:8787
+	}
+	handle /api/worker/* {
+		reverse_proxy 127.0.0.1:8787
+	}
+	handle /api/health {
+		reverse_proxy 127.0.0.1:8787
+	}
+
+	# Village, atlas, studio, credits, and static files stay public.
+	@public path / /atlas /atlas/* /studio /studio/* /credits /credits/* /sprites/* /tiles/* /_next/* /dawn-agents-config.json /favicon.ico
+	handle @public {
+		root * {$DAWN_STATIC_ROOT}
+		try_files {path} {path}.html {path}/index.html
+		file_server
+	}
+
+	# Letter admin lives in the agents desk. Same cookie as the editor.
+	handle /agents* {
+		import dawn_auth
+		root * {$DAWN_STATIC_ROOT}
+		try_files {path} {path}.html {path}/index.html
+		file_server
+	}
+
+	handle /editor* {
+		import dawn_auth
+		reverse_proxy 127.0.0.1:3000
+	}
+
+	handle /api/* {
+		import dawn_auth
+		reverse_proxy 127.0.0.1:8787
+	}
+
+	handle {
+		import dawn_auth
+		respond "Not found" 404
+	}
+}

@@ -16,15 +16,11 @@ export type TrainingResult = {
 export class TrainingLog {
   private chain: Promise<unknown> = Promise.resolve();
   private readonly file: string;
-  private session = '';
   private readonly options: {
     url?: string;
     token?: string;
     importUrl?: string;
-    ownerToken?: string;
     ownerEmail?: string;
-    ownerPassword?: string;
-    loginUrl?: string;
     fetchImpl?: typeof fetch;
     env?: Record<string, string | undefined>;
     now?: () => Date;
@@ -36,10 +32,7 @@ export class TrainingLog {
       url?: string;
       token?: string;
       importUrl?: string;
-      ownerToken?: string;
       ownerEmail?: string;
-      ownerPassword?: string;
-      loginUrl?: string;
       fetchImpl?: typeof fetch;
       env?: Record<string, string | undefined>;
       now?: () => Date;
@@ -67,25 +60,21 @@ export class TrainingLog {
     return { id: record.id, logged: true, ...delivery };
   }
 
-  private async ownerToken(): Promise<string> {
-    if (this.options.ownerToken) return this.options.ownerToken;
-    if (this.session) return this.session;
-    if (!this.options.loginUrl || !this.options.ownerEmail || !this.options.ownerPassword) return '';
+  private async postImport(url: string, body: unknown): Promise<boolean> {
+    const email = this.options.ownerEmail?.trim();
+    if (!email) return false;
     const fetchImpl = this.options.fetchImpl ?? fetch;
-    try {
-      const response = await fetchImpl(this.options.loginUrl, {
-        method: 'POST',
-        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: this.options.ownerEmail, password: this.options.ownerPassword }),
-        signal: AbortSignal.timeout(4_000),
-      });
-      if (!response.ok) return '';
-      const body = await response.json() as { token?: unknown };
-      this.session = typeof body.token === 'string' ? body.token : '';
-      return this.session;
-    } catch {
-      return '';
-    }
+    const response = await fetchImpl(url, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-Auth-Request-Email': email,
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(4_000),
+    });
+    return response.ok;
   }
 
   private async post(url: string, token: string, body: unknown): Promise<boolean> {
@@ -106,9 +95,8 @@ export class TrainingLog {
   private async forward(record: TrainingRecord): Promise<{ forwarded: boolean; stubbed: boolean }> {
     const line = toBackfillLine(record);
     try {
-      const owner = await this.ownerToken();
-      if (this.options.importUrl && owner) {
-        const imported = await this.post(this.options.importUrl, owner, { jsonl: `${line}\n` });
+      if (this.options.importUrl && this.options.ownerEmail) {
+        const imported = await this.postImport(this.options.importUrl, { jsonl: `${line}\n` });
         if (imported) return { forwarded: true, stubbed: false };
       }
       const url = this.options.url?.trim();

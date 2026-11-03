@@ -25,9 +25,7 @@ const server = createGateway({
   agentsUrl,
   editorToken: process.env.DAWN_EDITOR_TOKEN || '',
   importUrl: process.env.DAWN_DATA_IMPORT_URL || `${agentsUrl}/api/data/import`,
-  ownerToken: process.env.DAWN_OWNER_TOKEN || '',
-  ownerEmail: process.env.DAWN_OWNER_EMAIL || '',
-  ownerPassword: process.env.DAWN_OWNER_PASSWORD || '',
+  ownerEmail: process.env.DAWN_ALLOWED_EMAIL || process.env.DAWN_OWNER_EMAIL || '',
   trainingLogUrl: process.env.DAWN_TRAINING_LOG_URL || `${agentsUrl}/api/v1/training-log`,
   trainingToken: process.env.DAWN_TRAINING_LOG_TOKEN || process.env.DAWN_EDITOR_TOKEN || '',
 });

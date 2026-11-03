@@ -12,7 +12,7 @@ npm ci
 bash scripts/dev.sh
 ```
 
-Open `http://127.0.0.1:3000/?tkn=dev-connection-token`. The dev script forces stand-in answers (`DAWN_CODE_MOCK=1`) unless you export `DAWN_CODE_MOCK=0` and set a model key. The gateway listens on `127.0.0.1:8791`.
+Open `http://127.0.0.1:3000/editor`. The dev script forces stand-in answers (`DAWN_CODE_MOCK=1`) unless you export `DAWN_CODE_MOCK=0` and set a model key. The gateway listens on `127.0.0.1:8791`. There is no connection token in the URL.
 
 ```bash
 npm test
@@ -30,9 +30,9 @@ sudoedit /etc/dawn-code/env
 sudo systemctl start dawn-code-gateway dawn-code
 ```
 
-Set `DAWN_CODE_TOKEN`, `DAWN_CODE_CONNECTION_TOKEN`, and at least one of `GEMINI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `XAI_API_KEY`, or `OPENROUTER_API_KEY`. Optional `DAWN_CODE_PASSWORD` turns on Caddy basic auth for the user `kyle`. `DAWN_CODE_DOMAIN` is the HTTPS name. With no domain, Caddy uses `tls internal` on `:8443`.
+Set `DAWN_CODE_TOKEN` and at least one of `GEMINI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `XAI_API_KEY`, or `OPENROUTER_API_KEY`. Sign-in is Google through oauth2-proxy, not a password and not a `?tkn=` query. `deploy/oauth.env.example` lists `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `OAUTH2_PROXY_COOKIE_SECRET`, and `DAWN_ALLOWED_EMAIL`. The redirect URI is `https://2-29-173-68.sslip.io/oauth2/callback`.
 
-OpenVSCode and the gateway bind `127.0.0.1`. Caddy is the only public door. Do not log query strings: the connection token is `?tkn=`.
+OpenVSCode and both gateways bind `127.0.0.1`. Caddy is the public door. It checks the shared `_oauth2_proxy` cookie for `/agents`, `/editor`, and `/api` (the letter admin). `/letter` and `/api/public` are not checked. The gateways honor `X-Auth-Request-Email` only from a loopback peer.
 
 Docker Compose is in `docker/docker-compose.yml`. Copy `.env.example` to `.env` first. The supported path on the Hetzner box is the install script.
 
@@ -65,7 +65,7 @@ The live contract is `docs/dawn-agents-editor-api.md`. Dawn Code calls those rou
 | `POST /api/v1/agents/:id/messages` | Follow-up with `{ text, threadId }`. | If that route is missing, Dawn Code tries `POST /api/v1/jobs/:id/messages`, then a stub. |
 | `GET /api/v1/recipes` and `GET /api/v1/recipes/:id/snippet` | **Dawn Code: Insert Style Recipe** inserts the HTML. | No HTML is invented. The command says the recipes were not loaded. |
 | `GET /api/v1/spend` | Not in the merged API. Agent turns hit the same cap and return the error in the reply. | The panel says the agents ledger is not merged. Dawn Code’s own ledger still counts toward $20. |
-| `POST /api/data/import` | Owner session. The gateway logs in with `DAWN_OWNER_EMAIL` and `DAWN_OWNER_PASSWORD` (or `DAWN_OWNER_TOKEN`) and sends chat-format JSONL. The editor token is not used for this. | The row stays in `$DAWN_CODE_DATA/training-log.jsonl`. A leftover `POST /api/v1/training-log` is tried only when import is not accepted. |
+| `POST /api/data/import` | The code gateway calls Dawn Agents on localhost and sets `X-Auth-Request-Email` to `DAWN_ALLOWED_EMAIL`. Dawn Agents accepts that header only from loopback. | The row stays in `$DAWN_CODE_DATA/training-log.jsonl`. A leftover `POST /api/v1/training-log` is tried only when import is not accepted. |
 
 A 401 is a refused token, not a stub. `Agent not found.` is a failed job, not a stub.
 

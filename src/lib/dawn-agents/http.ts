@@ -2,7 +2,8 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'node:ht
 import { randomBytes } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { passwordsMatch, signSession, tokensMatch, verifySession } from './auth';
+import { tokensMatch } from './auth';
+import { emailFromProxyHeaders, isLoopback, proxyUserAllowed } from './proxy-auth';
 import { ComputerRouter, type ComputerResult } from './computer';
 import {
   chartStoryExample,
@@ -43,10 +44,10 @@ const COMPUTERS: ComputerKind[] = ['hetzner', 'mac', 'cloud-vm'];
 export type ServerOptions = {
   storePath: string;
   ownerEmail: string;
-  ownerPassword: string;
-  sessionSecret: string;
   workerToken: string;
   editorToken: string;
+  /** Local dev only. Loopback with no proxy header is treated as the owner. */
+  allowLoopbackOwner?: boolean;
   spendCapUsd?: number;
   forceStandIn?: boolean;
   host?: string;
@@ -77,6 +78,7 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
     secrets: secretValuesFromEnv(),
   };
   const ownerEmail = options.ownerEmail.trim().toLowerCase();
+  const allowLoopbackOwner = options.allowLoopbackOwner === true;
 
   const server = createServer(async (req, res) => {
     try {
@@ -146,27 +148,21 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       await editorRoute(req, res, pathname);
       return;
     }
-    if (req.method === 'POST' && pathname === '/api/auth/login') {
-      const body = await readJson(req);
-      const email = String(body.email || '').trim().toLowerCase();
-      const password = String(body.password || '');
-      if (!passwordsMatch(email, ownerEmail) || !passwordsMatch(password, options.ownerPassword)) {
-        sendJson(res, 401, { error: 'Email or password is wrong.' });
-        return;
-      }
-      sendJson(res, 200, { token: signSession(options.sessionSecret, email), email });
-      return;
+    if (req.method === 'GET' && pathname === '/api/auth/me') {
+      if (!ownerOk(req)) return sendJson(res, 401, { error: 'Sign in with Google.' });
+      return sendJson(res, 200, { email: emailFromProxyHeaders(req.headers) || ownerEmail });
     }
     if (!ownerOk(req)) {
-      sendJson(res, 401, { error: 'Sign in first.' });
+      sendJson(res, 401, { error: 'Sign in with Google.' });
       return;
     }
     await ownerRoute(req, res, pathname);
   }
 
   function ownerOk(req: IncomingMessage): boolean {
-    const session = verifySession(options.sessionSecret, bearer(req));
-    return Boolean(session && session.email.toLowerCase() === ownerEmail);
+    if (proxyUserAllowed(req.socket.remoteAddress, req.headers, ownerEmail)) return true;
+    if (allowLoopbackOwner && isLoopback(req.socket.remoteAddress) && !emailFromProxyHeaders(req.headers)) return true;
+    return false;
   }
 
   async function ownerRoute(req: IncomingMessage, res: ServerResponse, pathname: string) {

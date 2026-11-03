@@ -1,3 +1,4 @@
+import { spriteById } from '../credits/sprites';
 import type { PixelAvatar } from './types';
 
 export const PALETTE = ['', '#0047ff', '#ff3d8a', '#f4f1ea', '#10131c', '#7aa2ff', '#ff9ec4', '#243049'] as const;
@@ -67,6 +68,7 @@ export function avatarFromSeed(seed: string, grid: 8 | 16 = 8): PixelAvatar {
 export function validAvatar(value: unknown): value is PixelAvatar {
   if (!value || typeof value !== 'object') return false;
   const avatar = value as PixelAvatar;
+  if (typeof avatar.sprite === 'string' && spriteById(avatar.sprite)) return true;
   if (avatar.grid !== 8 && avatar.grid !== 16) return false;
   return typeof avatar.cells === 'string' && avatar.cells.length === avatar.grid * avatar.grid && /^[0-7]+$/.test(avatar.cells);
 }
