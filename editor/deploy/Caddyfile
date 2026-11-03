@@ -1,0 +1,9 @@
+# Dawn Code. install-ubuntu.sh rewrites the site address and optional basic auth.
+# OpenVSCode binds localhost only. Caddy is the HTTPS door.
+# Do not log query strings: the connection token is passed as ?tkn=.
+
+:8443 {
+	tls internal
+	encode gzip
+	reverse_proxy 127.0.0.1:3000
+}

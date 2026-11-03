@@ -1,0 +1,5 @@
+{$DAWN_CODE_DOMAIN::8443} {
+	tls internal
+	encode gzip
+	reverse_proxy editor:3000
+}

@@ -1,0 +1,73 @@
+{
+  "name": "dawn-code",
+  "displayName": "Dawn Code",
+  "description": "Chat, inline edit, and reviewable agent edits for Kyle's editor. Model keys stay on the gateway.",
+  "version": "0.1.0",
+  "publisher": "artometrics",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": ["Other"],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onView:dawnCode.chat",
+    "onCommand:dawnCode.inlineEdit"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "dawn-code",
+          "title": "Dawn Code",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "dawn-code": [
+        {
+          "type": "webview",
+          "id": "dawnCode.chat",
+          "name": "Dawn Code"
+        }
+      ]
+    },
+    "commands": [
+      { "command": "dawnCode.inlineEdit", "title": "Dawn Code: Inline Edit", "category": "Dawn Code" },
+      { "command": "dawnCode.agentRun", "title": "Dawn Code: Agent Edit", "category": "Dawn Code" },
+      { "command": "dawnCode.sendToAgent", "title": "Dawn Code: Send to Dawn Agent", "category": "Dawn Code" },
+      { "command": "dawnCode.acceptChange", "title": "Dawn Code: Accept Changes", "category": "Dawn Code" },
+      { "command": "dawnCode.rejectChange", "title": "Dawn Code: Reject Changes", "category": "Dawn Code" }
+    ],
+    "keybindings": [
+      { "command": "dawnCode.inlineEdit", "key": "ctrl+alt+i", "mac": "cmd+alt+i", "when": "editorHasSelection" },
+      { "command": "dawnCode.acceptChange", "key": "ctrl+shift+enter", "mac": "cmd+shift+enter" },
+      { "command": "dawnCode.rejectChange", "key": "ctrl+shift+backspace", "mac": "cmd+shift+backspace" }
+    ],
+    "configuration": {
+      "title": "Dawn Code",
+      "properties": {
+        "dawnCode.gatewayUrl": {
+          "type": "string",
+          "default": "http://127.0.0.1:8791",
+          "description": "Local Dawn Code gateway. Model keys are read there, not in the browser."
+        },
+        "dawnCode.model": {
+          "type": "string",
+          "default": "gemini-3.8-flash",
+          "enum": ["gemini-3.8-flash", "gemini-3.1-pro-preview", "x-ai/grok-4.7", "openai/gpt-4o-mini"],
+          "description": "Model for chat, inline edit, and agent review."
+        }
+      }
+    },
+    "themes": [
+      {
+        "label": "Artometrics Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/artometrics-dark.json"
+      }
+    ]
+  }
+}

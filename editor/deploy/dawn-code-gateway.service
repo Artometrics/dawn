@@ -1,0 +1,18 @@
+[Unit]
+Description=Dawn Code model gateway
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=dawncode
+Group=dawncode
+EnvironmentFile=/etc/dawn-code/env
+ExecStart=/opt/dawn-code/bin/run-gateway.sh
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,20 @@
+{
+  "name": "dawn-code",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Dawn Code gateway, VS Code extension, and server install.",
+  "scripts": {
+    "test": "node --experimental-strip-types --test src/shared/*.test.ts src/gateway/*.test.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p extension/tsconfig.json --noEmit",
+    "build": "node scripts/build.mjs",
+    "package": "node scripts/build.mjs --package"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/vscode": "^1.95.0",
+    "@vscode/vsce": "^3.6.0",
+    "esbuild": "^0.25.5",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+extension/out/
+extension/README.md
+*.vsix
+data/
+.env
+.cache/
+*.tsbuildinfo
