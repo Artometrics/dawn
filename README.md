@@ -1,5 +1,7 @@
 # Dawn // Studio 🌅
 
+**Dawn Code**, the browser editor, lives in [`editor/`](editor/README.md). It is separate from the village app.
+
 **Dawn** is a pixel-art village of agents, plus a studio and model gateway for the **Artometrics** ecosystem.
 
 Open the app, join with your name (local emulators) or Google (the Firebase host), and tap Trinity, Kali, or Nimbus. They can draft a send, spend, hire, or post, and nothing leaves until you tap Approve. The Map tab is you on OpenStreetMap. Quests are short goals. The older studio UI is at `/studio`. See `ROADMAP.md`.
@@ -86,7 +88,7 @@ Sandboxes land in `~/dawn-agents/<agentId>`. `worker/com.artometrics.dawn-agents
 
 Data Studio (inside the same $20 cap) collects chats, letter drafts, and taste events three times a day UTC (08:00, 14:00, 20:00) or when you press Collect now. Tracks: chart-to-story (a real source URL is required), fact-check with true/false, visual taste from Style Recipes, agent corrections, taste signals, writing, A/B preferences, and synthetic rows. Synthetic rows are tagged, judged, and capped at about half the real set. The default generator is the desk model (an open model through OpenRouter when `DAWN_SYNTHETIC_MODEL` and `OPENROUTER_API_KEY` are set). Exports are JSONL in SFT (`messages`) and DPO (`prompt`, `chosen`, `rejected`) shapes, each with `license`, `provenance`, `consent`, and `ownerId`.
 
-Style Recipes at `/agents` (Recipes) is the board from https://recipes-510519.web.app. That site stays up. Like, save, skip, and mix are engagement events. Agents can apply a recipe in chat, and the editor API returns copyable HTML. Dawn Code is the future editor; it calls `GET /api/v1/recipes/:id/snippet`.
+Style Recipes at `/agents` (Recipes) is the board from https://recipes-510519.web.app. That site stays up. Like, save, skip, and mix are engagement events. Agents can apply a recipe in chat, and Dawn Code inserts `GET /api/v1/recipes/:id/snippet`.
 
 The letter (Publish) is the studio newsletter. https://newsletter-510519.web.app stays up. Draft with an agent, apply a recipe, publish a public page at `/letter`, import or export subscribers as CSV, and send only after an explicit confirm. Confirmation mail is also a button, not an automatic send. Opens and clicks are counted when the gateway is the host of the pixel and the link redirect. Resend, Postmark, or SES are used when their env keys are set. Otherwise mail stays in the local outbox.
 
@@ -115,7 +117,7 @@ See `docs/dawn-agents-editor-api.md`. Auth is `Authorization: Bearer $DAWN_EDITO
 - The Linux install is confined by systemd. A local dev worker is the directory jail plus the allowlist.
 - SES sends only when AWS credentials are set. There is no inbox UI for the console outbox.
 - Group replies run one agent after another.
-- The VS Code editor is not in this repo. The HTTP API is.
+- Dawn Code, the VS Code editor, is in `editor/`. It calls `docs/dawn-agents-editor-api.md` and keeps a local stub when a route is missing.
 
 ## ⚡ Architecture & Features
 

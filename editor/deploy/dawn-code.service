@@ -1,0 +1,17 @@
+[Unit]
+Description=Dawn Code OpenVSCode Server
+After=network-online.target dawn-code-gateway.service
+Wants=dawn-code-gateway.service
+
+[Service]
+Type=simple
+User=dawncode
+Group=dawncode
+EnvironmentFile=/etc/dawn-code/env
+ExecStart=/opt/dawn-code/bin/run-editor.sh
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

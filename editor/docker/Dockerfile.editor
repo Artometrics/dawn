@@ -1,0 +1,8 @@
+FROM gitpod/openvscode-server:1.109.5
+USER root
+COPY dist/dawn-code.vsix /opt/dawn-code.vsix
+COPY docker/entrypoint.sh /opt/dawn-entrypoint.sh
+COPY deploy/settings.json /opt/dawn-settings.json
+RUN chmod 0755 /opt/dawn-entrypoint.sh
+USER openvscode-server
+ENTRYPOINT ["/opt/dawn-entrypoint.sh"]

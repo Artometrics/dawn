@@ -1,0 +1,43 @@
+# Dawn Code on one host. Publish only Caddy. The gateway is on the compose network
+# because the editor container calls it; it is not published to the host.
+services:
+  gateway:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    env_file: ../.env
+    environment:
+      DAWN_CODE_HOST: 0.0.0.0
+      DAWN_CODE_DATA: /var/lib/dawn-code
+    volumes:
+      - dawn-code-data:/var/lib/dawn-code
+    restart: unless-stopped
+
+  editor:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.editor
+    env_file: ../.env
+    environment:
+      DAWN_CODE_TOKEN: ${DAWN_CODE_TOKEN}
+      DAWN_CODE_CONNECTION_TOKEN: ${DAWN_CODE_CONNECTION_TOKEN}
+    volumes:
+      - ${DAWN_CODE_WORKSPACE:-../sample}:/home/workspace
+    depends_on:
+      - gateway
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2.10
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8443:8443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - editor
+    restart: unless-stopped
+
+volumes:
+  dawn-code-data:

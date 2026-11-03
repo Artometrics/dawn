@@ -1,8 +1,12 @@
-# Third-party notes for Dawn Agents
+# Third-party
+
+Other notices, including AI Town (MIT) and Stanford Generative Agents, stay in `THIRD_PARTY_NOTICES.md`.
+
+## Dawn Agents
 
 Dawn Agents is original code. The projects below were read for architecture only. No source from them is copied into this repo.
 
-## open-webui/open-webui
+### open-webui/open-webui
 
 https://github.com/open-webui/open-webui
 
@@ -10,7 +14,7 @@ License: a custom license (GitHub SPDX `NOASSERTION`), Copyright (c) 2023- Open 
 
 What we used from the idea, not the code: a chat desk can route one conversation to more than one model provider, and the provider choice stays on the server.
 
-## All-Hands-AI/OpenHands
+### All-Hands-AI/OpenHands
 
 https://github.com/All-Hands-AI/OpenHands
 
@@ -18,7 +22,7 @@ License: MIT.
 
 What we used from the idea, not the code: the agent runtime is separate from the computer that runs commands. The computer is reached through a narrow action/result interface. Risky actions wait for a person. Dawn's `ComputerProvider` is that seam. The Hetzner worker and the optional Mac worker are two implementations. A cloud VM can be a third later. No OpenHands files are included.
 
-## argilla-io/argilla
+### argilla-io/argilla
 
 https://github.com/argilla-io/argilla
 
@@ -28,10 +32,50 @@ What we used from the idea, not the code: a dataset is a list of records with re
 
 Records carry `ownerId`, `consent`, `license`, and `provenance` so a later multi-user version does not have to invent those fields. v1 has a single owner.
 
-## Already in this repo
-
-Other notices, including AI Town (MIT) and Stanford Generative Agents, stay in `THIRD_PARTY_NOTICES.md`.
-
-## Kyle's own sites
+### Kyle's own sites
 
 Style Recipes (https://recipes-510519.web.app) and the studio letter (https://newsletter-510519.web.app) are ported as behavior and, for recipes, as Kyle's palette, type, and layout data. Those sites are left deployed. Their source was not in the public Artometrics GitHub org, so the port follows the live Style Recipes assets and the letter's public behavior (double opt-in, explicit send, Resend-style transport).
+
+## Dawn Code
+
+Dawn Code does not vendor the source of the projects below. The install script downloads the OpenVSCode Server binary. The chat, inline edit, and agent review behavior was written for this repo after reading how those projects structure the same jobs.
+
+### OpenVSCode Server
+
+The editor process is [gitpod-io/openvscode-server](https://github.com/gitpod-io/openvscode-server) v1.109.5, MIT.
+
+```
+MIT License
+
+Copyright (c) 2015 - present Microsoft Corporation
+```
+
+The binary is not committed. `editor/scripts/install-ubuntu.sh` and `editor/scripts/dev.sh` download the release tarball. See that repository for the full MIT text (`LICENSE.txt`).
+
+### code-server
+
+[coder/code-server](https://github.com/coder/code-server) is the other MIT browser VS Code distribution that was considered for the same job. Dawn Code ships OpenVSCode Server instead. No code-server source is included.
+
+```
+Copyright (c) 2019 Coder Technologies Inc.
+```
+
+### Continue
+
+[continuedev/continue](https://github.com/continuedev/continue) is Apache-2.0.
+
+```
+Copyright 2023 Continue Dev, Inc.
+```
+
+Patterns used, without copying their source: the sidebar chat webview, an inline edit whose prompt is the code before the selection, the selection, and the code after it (`core/edit/streamDiffLines.ts`, `constructEditPrompt`), and an accept-all / reject-all step after the edit (`extensions/vscode/src/quickEdit/QuickEditQuickPick.ts`). Dawn Code shows that review with VS Code’s diff viewer rather than Continue’s vertical diff decorations.
+
+### Cline
+
+[cline/cline](https://github.com/cline/cline) is Apache-2.0.
+
+```
+Copyright 2026 Cline Bot Inc.
+```
+
+Patterns used, without copying their source: a review diff whose both sides are virtual documents so the workspace file is not written until the edit is accepted (`apps/vscode/src/sdk/sdk-diff-edit-coordinator.ts`), and a multi-file review opened with `vscode.changes` (`apps/vscode/src/hosts/vscode/hostbridge/diff/openMultiFileDiff.ts`). Dawn Code’s agent pass stops at that review. It does not run Cline’s tool loop or a shell.
