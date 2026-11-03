@@ -26,3 +26,5 @@ function publish(route) {
 
 publish('studio');
 publish('atlas');
+publish('agents');
+publish('letter');

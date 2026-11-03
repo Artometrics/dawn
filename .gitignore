@@ -36,6 +36,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# Dawn Agents gateway store (chats, training rows, subscribers)
+/data/dawn-agents/
+
 # vercel
 .vercel
 

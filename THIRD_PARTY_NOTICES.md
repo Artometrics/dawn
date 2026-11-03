@@ -1,5 +1,7 @@
 # Third-party notices
 
+Dawn Agents references are in `THIRD_PARTY.md`. No source from Open WebUI, OpenHands, or Argilla is included.
+
 ## a16z AI Town
 
 Conversation prompts, the memory importance question, the reflection prompt, and the
