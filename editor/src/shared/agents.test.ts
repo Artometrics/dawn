@@ -40,7 +40,7 @@ test('a live editor API is parsed and a 401 is not stubbed as success', async ()
       return;
     }
     res.writeHead(401, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Email or password is wrong' }));
+    res.end(JSON.stringify({ error: 'Sign in with Google.' }));
   }, async (baseUrl) => {
     const list = await listDawnAgents({ baseUrl, token: 'editor-token' });
     assert.equal(list.stubbed, false);
@@ -50,7 +50,7 @@ test('a live editor API is parsed and a 401 is not stubbed as success', async ()
     const refused = await listDawnAgents({ baseUrl, token: 'nope' });
     assert.equal(refused.stubbed, false);
     assert.equal(refused.agents.length, 0);
-    assert.equal(refused.message, 'Email or password is wrong');
+    assert.equal(refused.message, 'Sign in with Google.');
   });
 });
 

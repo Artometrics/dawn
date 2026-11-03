@@ -2,6 +2,8 @@
 
 The future Dawn Code editor (VS Code based) calls this HTTP API on the gateway. The static site does not serve it. Base URL is the gateway origin, for example `http://127.0.0.1:8787`.
 
+The browser desk at `/agents` does not use this token. Google sign-in (oauth2-proxy) covers `/agents`, `/editor`, and the letter admin. The public letter at `/letter` does not. `/api/v1` is the service path the editor gateway calls from localhost.
+
 Auth for every `/api/v1` route:
 
 ```http
@@ -9,7 +11,7 @@ Authorization: Bearer $DAWN_EDITOR_TOKEN
 Content-Type: application/json
 ```
 
-The browser session token is a different secret and cannot call `/api/v1`. The editor token cannot read the training log or the subscriber list.
+The browser does not send this token. Owner routes trust `X-Auth-Request-Email` only from loopback, after oauth2-proxy. The editor token cannot read the training log or the subscriber list.
 
 ## Agents
 

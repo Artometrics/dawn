@@ -75,7 +75,11 @@ textarea { min-height: 120px; resize: vertical; }
   min-height: 64px;
 }
 .agent-row.on { background: #12182a; }
-.pixel-avatar { shape-rendering: crispEdges; border-radius: 6px; background: #10131c; border: 2px solid #1a2030; }
+.pixel-avatar { shape-rendering: crispEdges; image-rendering: pixelated; border-radius: 6px; background: #10131c; border: 2px solid #1a2030; }
+.sprite-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 8px; }
+.sprite-pick button { background: #141824; border: 1px solid var(--line); border-radius: 8px; min-height: 56px; padding: 6px; }
+.sprite-pick button.on { outline: 2px solid var(--blue); }
+.sprite-pick img { image-rendering: pixelated; width: 40px; height: 40px; }
 .muted { color: var(--muted); }
 .small { font-size: 13px; }
 .error { color: #ffb3cc; }

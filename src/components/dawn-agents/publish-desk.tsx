@@ -112,9 +112,8 @@ export function PublishDesk({
 
 async function downloadSubs() {
   const base = (await import('./api')).gatewayBase;
-  const token = (await import('./api')).token;
   const url = await base();
-  const response = await fetch(`${url}/api/subscribers/export.csv`, { headers: { authorization: `Bearer ${token()}` } });
+  const response = await fetch(`${url}/api/subscribers/export.csv`, { credentials: 'include', redirect: 'manual' });
   const blob = await response.blob();
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);

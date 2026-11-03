@@ -175,6 +175,7 @@ function Shell() {
         </div>
         <div className="px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <AccountBlock />
+          <a href="/credits" className="mt-2 inline-flex min-h-11 items-center text-[14px] text-[var(--dawn-muted)]">Credits & licenses</a>
         </div>
       </aside>
 
@@ -315,6 +316,7 @@ function Shell() {
                 className="h-full min-w-0 flex-1 bg-transparent text-[16px] outline-none placeholder:text-[#a8a199]"
               />
             </label>
+            <a href="/credits" className="mt-2 block text-center text-[13px] text-[var(--dawn-muted)]">Credits & licenses</a>
           </div>
         )}
       </div>

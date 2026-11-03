@@ -1,0 +1,13 @@
+Character sprites in this folder are individual 16×16 frames from
+Kenney's Tiny Dungeon pack.
+
+Artist: Kenney (https://kenney.nl)
+Source: https://kenney.nl/assets/tiny-dungeon
+License: CC0 1.0 Universal
+https://creativecommons.org/publicdomain/zero/1.0/
+
+CC0 allows use in a commercial product. Credit is not required.
+Dawn records the attribution anyway.
+
+The frames were cut from public/tiles/kenney-tiny-dungeon.png,
+which is the same CC0 sheet used for the village floor.

@@ -28,3 +28,4 @@ publish('studio');
 publish('atlas');
 publish('agents');
 publish('letter');
+publish('credits');

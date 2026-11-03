@@ -20,7 +20,6 @@ services:
     env_file: ../.env
     environment:
       DAWN_CODE_TOKEN: ${DAWN_CODE_TOKEN}
-      DAWN_CODE_CONNECTION_TOKEN: ${DAWN_CODE_CONNECTION_TOKEN}
     volumes:
       - ${DAWN_CODE_WORKSPACE:-../sample}:/home/workspace
     depends_on:

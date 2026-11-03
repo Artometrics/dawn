@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { avatarFromSeed, scaleAvatar } from '@/lib/dawn-agents/avatar';
+import { AGENT_SPRITES, defaultSpriteId } from '@/lib/credits/sprites';
 import { formatUsd } from '@/lib/dawn-agents/spend';
 import { recipeAttributes } from '@/lib/dawn-agents/recipes';
-import { AvatarEditor, PixelAvatarView } from './pixel-avatar';
+import { PixelAvatarView } from './pixel-avatar';
 import { DataPanel } from './data-panel';
 import { PublishDesk } from './publish-desk';
 import { RecipesBoard } from './recipes-board';
-import { api, clearToken, gatewayBase, readSse, saveToken, token, type Agent, type ChatMessage, type GatewayState, type ToolCall } from './api';
+import { api, gatewayBase, googleSignInHref, readSse, type Agent, type ChatMessage, type GatewayState, type ToolCall } from './api';
 
 type Section = 'agents' | 'recipes' | 'letter' | 'data' | 'settings' | 'edit';
 
@@ -19,8 +19,7 @@ export function AgentsRoot() {
   const [error, setError] = useState('');
   const [section, setSection] = useState<Section>('agents');
   const [threadId, setThreadId] = useState<string | null>(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [needsGoogle, setNeedsGoogle] = useState(false);
   const [queue, setQueue] = useState<GatewayState['data'] extends never ? never : { id: string; track: string; status: string; messages?: { content: string }[] }[]>([]);
 
   useEffect(() => {
@@ -28,38 +27,22 @@ export function AgentsRoot() {
       const url = await gatewayBase();
       setBase(url);
       setReady(true);
-      if (token() && url) await refresh(url);
+      await refresh(url);
     })();
   }, []);
 
   async function refresh(url = base) {
-    if (!url || !token()) return;
     try {
       const next = await api<GatewayState>(url, '/api/state');
       setState(next);
       const data = await api<{ queue: typeof queue }>(url, '/api/data');
       setQueue(data.queue || []);
+      setNeedsGoogle(false);
       setError('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'The desk is offline.');
-    }
-  }
-
-  async function login(event: React.FormEvent) {
-    event.preventDefault();
-    setError('');
-    try {
-      const result = await fetch(`${base}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const body = (await result.json()) as { token?: string; error?: string };
-      if (!result.ok || !body.token) throw new Error(body.error || 'Sign-in failed.');
-      saveToken(body.token);
-      await refresh(base);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Sign-in failed.');
+      const message = err instanceof Error ? err.message : 'The desk is offline.';
+      if (message === 'Sign in with Google.') setNeedsGoogle(true);
+      else setError(message);
     }
   }
 
@@ -69,15 +52,13 @@ export function AgentsRoot() {
     return (
       <div className="dawn-agents">
         <div className="login">
-          <form onSubmit={login}>
+          <div>
             <p className="word">DAWN</p>
             <h1>Agents</h1>
-            <p className="note">One owner. No signups.</p>
-            <label>Email<input autoComplete="username" value={email} onChange={(event) => setEmail(event.target.value)} /></label>
-            <label>Password<input type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} /></label>
+            <p className="note">One Google account. No password on this page.</p>
             {error && <p className="error">{error}</p>}
-            <button className="primary" type="submit">Enter</button>
-          </form>
+            {needsGoogle && <a className="primary" href={googleSignInHref()} style={{ display: 'inline-flex', alignItems: 'center' }}>Sign in with Google</a>}
+          </div>
         </div>
       </div>
     );
@@ -159,7 +140,7 @@ export function AgentsRoot() {
               onExport={async (format) => download(base, `/api/data/export?format=${format}`, `dawn-${format}.jsonl`)}
             />
           )}
-          {section === 'settings' && <Settings base={base} state={state} onSaved={() => refresh()} onSignOut={() => { clearToken(); setState(null); }} />}
+          {section === 'settings' && <Settings base={base} state={state} onSaved={() => refresh()} />}
         </section>
       </div>
       <nav className="tabbar">
@@ -249,9 +230,14 @@ function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: { base:
     try {
       const response = await fetch(`${base}${path}`, {
         method: 'POST',
-        headers: { authorization: `Bearer ${token()}`, 'content-type': 'application/json', accept: 'text/event-stream' },
+        headers: { 'content-type': 'application/json', accept: 'text/event-stream' },
+        credentials: 'include',
+        redirect: 'manual',
         body: JSON.stringify(body),
       });
+      if (response.status === 401 || response.status === 302 || response.status === 303) {
+        throw new Error('Sign in with Google.');
+      }
       if (!response.ok) {
         const data = (await response.json()) as { error?: string };
         throw new Error(data.error || 'Chat failed.');
@@ -420,8 +406,7 @@ function AgentEditor({ base, agents, onDone, onError }: { base: string; agents: 
   const [instructions, setInstructions] = useState('You are a careful studio partner. You keep answers short and you use tools when Kyle asks.');
   const [model, setModel] = useState('gemini-3.8-flash');
   const [computer, setComputer] = useState<'hetzner' | 'mac' | 'cloud-vm'>('hetzner');
-  const [grid, setGrid] = useState<8 | 16>(8);
-  const [avatar, setAvatar] = useState(avatarFromSeed('dawn', 8));
+  const [sprite, setSprite] = useState(defaultSpriteId('dawn'));
   const [editing, setEditing] = useState<string>('');
   return (
     <form
@@ -429,6 +414,7 @@ function AgentEditor({ base, agents, onDone, onError }: { base: string; agents: 
       onSubmit={async (event) => {
         event.preventDefault();
         try {
+          const avatar = { sprite };
           if (editing) await api(base, `/api/agents/${editing}`, { method: 'PATCH', body: JSON.stringify({ name, instructions, model, computer, avatar }) });
           else await api(base, '/api/agents', { method: 'POST', body: JSON.stringify({ name, instructions, model, computer, avatar }) });
           onDone();
@@ -450,15 +436,14 @@ function AgentEditor({ base, agents, onDone, onError }: { base: string; agents: 
             setInstructions(agent.instructions);
             setModel(agent.model);
             setComputer(agent.computer);
-            setGrid(agent.avatar.grid);
-            setAvatar(agent.avatar);
+            setSprite(agent.avatar.sprite || defaultSpriteId(agent.name));
           }}>
             <option value="">New</option>
             {agents.map((agent) => <option key={agent.id} value={agent.id}>{agent.name}</option>)}
           </select>
         </label>
       )}
-      <label>Name<input value={name} onChange={(event) => { setName(event.target.value); if (!editing) setAvatar(avatarFromSeed(event.target.value || 'dawn', grid)); }} /></label>
+      <label>Name<input value={name} onChange={(event) => { setName(event.target.value); if (!editing) setSprite(defaultSpriteId(event.target.value || 'dawn')); }} /></label>
       <label>Instructions<textarea value={instructions} onChange={(event) => setInstructions(event.target.value)} /></label>
       <label>
         Model
@@ -476,17 +461,20 @@ function AgentEditor({ base, agents, onDone, onError }: { base: string; agents: 
           <option value="cloud-vm" disabled>Cloud VM later</option>
         </select>
       </label>
-      <div className="actions">
-        <button type="button" className={grid === 8 ? 'primary' : 'ghost'} onClick={() => { setGrid(8); setAvatar({ grid: 8, cells: scaleAvatar(avatar.cells, avatar.grid, 8) }); }}>8-bit</button>
-        <button type="button" className={grid === 16 ? 'primary' : 'ghost'} onClick={() => { setGrid(16); setAvatar({ grid: 16, cells: scaleAvatar(avatar.cells, avatar.grid, 16) }); }}>16-bit</button>
+      <p className="note">16-bit characters from Kenney, CC0.</p>
+      <div className="sprite-pick" role="listbox" aria-label="Agent sprite">
+        {AGENT_SPRITES.map((item) => (
+          <button key={item.id} type="button" className={sprite === item.id ? 'on' : ''} aria-pressed={sprite === item.id} aria-label={item.name} onClick={() => setSprite(item.id)}>
+            <img src={item.src} alt="" width={40} height={40} />
+          </button>
+        ))}
       </div>
-      <AvatarEditor avatar={avatar} onChange={setAvatar} />
       <button className="primary" type="submit">Save agent</button>
     </form>
   );
 }
 
-function Settings({ base, state, onSaved, onSignOut }: { base: string; state: GatewayState; onSaved: () => void; onSignOut: () => void }) {
+function Settings({ base, state, onSaved }: { base: string; state: GatewayState; onSaved: () => void }) {
   const [cap, setCap] = useState(String(state.spend.capUsd));
   const providers = state.training.providers;
   async function save(patch: Record<string, unknown>) {
@@ -529,7 +517,8 @@ function Settings({ base, state, onSaved, onSignOut }: { base: string; state: Ga
       </table>
       <h3>Routines</h3>
       <Routines base={base} state={state} onSaved={onSaved} />
-      <button type="button" className="ghost" onClick={onSignOut}>Sign out</button>
+      <p><a href="/credits">Credits & licenses</a></p>
+      <a className="ghost" href="/oauth2/sign_out?rd=/">Sign out</a>
     </div>
   );
 }
@@ -551,7 +540,7 @@ function Routines({ base, state, onSaved }: { base: string; state: GatewayState;
           <li key={routine.id} className="row">
             <span className="grow">{routine.name} · {routine.cron}</span>
             <button type="button" className="ghost" onClick={async () => {
-              const response = await fetch(`${base}/api/routines/${routine.id}/run`, { method: 'POST', headers: { authorization: `Bearer ${token()}` } });
+              const response = await fetch(`${base}/api/routines/${routine.id}/run`, { method: 'POST', credentials: 'include', redirect: 'manual' });
               await response.text();
               onSaved();
             }}>Run now</button>
@@ -566,14 +555,15 @@ function SpendMeter({ spent, cap }: { spent: number; cap: number }) {
   const ratio = cap > 0 ? Math.min(1, spent / cap) : 0;
   return (
     <div>
-      <p className="small nums">{formatUsd(spent)} / {formatUsd(cap)}</p>
+            <p className="small nums">{formatUsd(spent)} / {formatUsd(cap)}</p>
       <div className={ratio > 0.8 ? 'meter warn' : 'meter'}><span style={{ width: `${ratio * 100}%` }} /></div>
+      <p className="small"><a href="/credits">Credits & licenses</a></p>
     </div>
   );
 }
 
 async function download(base: string, path: string, filename: string) {
-  const response = await fetch(`${base}${path}`, { headers: { authorization: `Bearer ${token()}` } });
+  const response = await fetch(`${base}${path}`, { credentials: 'include', redirect: 'manual' });
   const blob = await response.blob();
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);

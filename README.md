@@ -41,14 +41,16 @@ Dawn Agents is Kyle's private desk at `/agents`. One owner. No signups and no bi
 
 ```bash
 cp .env.example .env.local
-# Fill DAWN_OWNER_EMAIL, DAWN_OWNER_PASSWORD, DAWN_AGENTS_SECRET,
-# DAWN_WORKER_TOKEN, and DAWN_EDITOR_TOKEN. Put Gemini and xAI keys in the
-# same file. Never commit it.
+# Set DAWN_ALLOWED_EMAIL, DAWN_WORKER_TOKEN, and DAWN_EDITOR_TOKEN.
+# For local use without Google, also set DAWN_ALLOW_LOOPBACK_OWNER=1.
+# Never set that on the public host. Never commit the file.
 npm run agents
 npm run dev
 ```
 
-Open http://localhost:3000/agents and sign in. On localhost the page calls http://127.0.0.1:8787. For a hosted gateway set `gatewayUrl` in `public/dawn-agents-config.json` (a URL, not a secret) or `NEXT_PUBLIC_DAWN_AGENTS_URL` at build time.
+On the public host, Google sign-in is oauth2-proxy. One cookie on `2-29-173-68.sslip.io` opens `/agents`, `/editor`, and the letter admin. The public letter at `/letter` stays open. The redirect URI is `https://2-29-173-68.sslip.io/oauth2/callback`. See `deploy/oauth.env.example` and `editor/scripts/install-ubuntu.sh`. The agents gateway and the code gateway trust `X-Auth-Request-Email` only when the TCP peer is loopback.
+
+Leave `gatewayUrl` empty in `public/dawn-agents-config.json` so the browser calls `/api` on the same host. Caddy routes that to the gateway and copies the proxy header.
 
 Spend is estimated per call and hard-stops at `DAWN_SPEND_CAP_USD` (default $20) for the UTC month. Change it in Settings. Prices are estimates.
 
@@ -106,7 +108,7 @@ Anonymous newsletter readers get a random `r_` id in local storage. Engagement e
 
 ### Editor API
 
-See `docs/dawn-agents-editor-api.md`. Auth is `Authorization: Bearer $DAWN_EDITOR_TOKEN`.
+See `docs/dawn-agents-editor-api.md`. Browser routes use the Google session. The editor service still calls `/api/v1` with `DAWN_EDITOR_TOKEN` from localhost. OpenVSCode does not use a `?tkn=` connection token. Caddy does not ask for a password.
 
 ### What is stubbed
 

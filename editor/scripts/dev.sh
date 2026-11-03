@@ -10,7 +10,6 @@ export DAWN_CODE_DATA="${DAWN_CODE_DATA:-$ROOT/data}"
 export DAWN_CODE_HOST="${DAWN_CODE_HOST:-127.0.0.1}"
 export DAWN_CODE_PORT="${DAWN_CODE_PORT:-8791}"
 export DAWN_CODE_DEMO="${DAWN_CODE_DEMO:-1}"
-export DAWN_CODE_CONNECTION_TOKEN="${DAWN_CODE_CONNECTION_TOKEN:-dev-connection-token}"
 export DAWN_AGENTS_URL="${DAWN_AGENTS_URL:-http://127.0.0.1:8787}"
 export DAWN_TRAINING_LOG_URL="${DAWN_TRAINING_LOG_URL:-}"
 export OPENVSCODE_PORT="${OPENVSCODE_PORT:-3000}"
@@ -49,7 +48,8 @@ WORKSPACE="$(cd "$ROOT/.." && pwd)"
 exec "$CACHE/bin/openvscode-server" \
   --host 127.0.0.1 \
   --port "$OPENVSCODE_PORT" \
-  --connection-token "$DAWN_CODE_CONNECTION_TOKEN" \
+  --server-base-path /editor \
+  --without-connection-token \
   --accept-server-license-terms \
   --server-data-dir "$SERVER_DATA" \
   --default-folder "$WORKSPACE"

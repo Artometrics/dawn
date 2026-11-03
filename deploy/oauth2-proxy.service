@@ -1,0 +1,20 @@
+[Unit]
+Description=Dawn Google sign-in (oauth2-proxy)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=dawnproxy
+Group=dawnproxy
+EnvironmentFile=/etc/dawn/oauth.env
+ExecStart=/usr/local/bin/run-oauth2-proxy
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/etc/dawn
+
+[Install]
+WantedBy=multi-user.target

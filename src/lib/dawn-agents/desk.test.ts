@@ -11,6 +11,8 @@ import { scrubText } from './scrub';
 import { toFineTuneJsonl } from './training';
 import { DEFAULT_TRAINING_PROVIDERS } from './types';
 import { assessTask } from '../../../worker/sandbox.mjs';
+import { validAvatar } from './avatar';
+import { AGENT_SPRITES } from '../credits/sprites';
 
 test('training export includes every provider until a switch is turned off', () => {
   assert.equal(DEFAULT_TRAINING_PROVIDERS.google, true);
@@ -69,6 +71,12 @@ test('backfill JSONL keeps metadata and parks unknown licenses in review', () =>
   assert.match(toDpoJsonl(parsed.examples), /^$/);
 });
 
+test('a Kenney sprite is a valid agent avatar and the painted grid still is', () => {
+  assert.equal(validAvatar({ sprite: AGENT_SPRITES[0].id }), true);
+  assert.equal(validAvatar({ sprite: 'not-a-sprite' }), false);
+  assert.equal(validAvatar({ grid: 8, cells: '1'.repeat(64) }), true);
+});
+
 test('risky commands wait and blocked commands never run', () => {
   const curl = assessTask({ action: 'exec', command: 'curl https://example.com' });
   assert.equal(curl.decision, 'confirm');
@@ -86,8 +94,6 @@ test('owner can chat, group, track spend, export training, and run a sandbox too
   const server = await startAgentsServer({
     storePath,
     ownerEmail: 'kyle@example.com',
-    ownerPassword: 'test-password-value',
-    sessionSecret: 'test-session-secret',
     workerToken: 'test-worker-token',
     editorToken: 'test-editor-token',
     forceStandIn: true,
@@ -106,7 +112,9 @@ test('owner can chat, group, track spend, export training, and run a sandbox too
     },
   });
   try {
-    const token = await login(server.url);
+    const blocked = await fetch(`${server.url}/api/state`, { headers: { 'x-auth-request-email': 'other@example.com' } });
+    assert.equal(blocked.status, 401);
+    const token = 'owner';
     const first = await api(server.url, token, '/api/agents', { name: 'Ada', instructions: 'Ada keeps the plan short.', model: 'gemini-3.8-flash', computer: 'hetzner', avatar: { grid: 8, cells: '1'.repeat(64) } });
     const second = await api(server.url, token, '/api/agents', { name: 'Bea', instructions: 'Bea looks things up.', model: 'x-ai/grok-4.7', computer: 'hetzner', avatar: { grid: 8, cells: '2'.repeat(64) } });
     const adaThread = first.thread.id as string;
@@ -129,7 +137,7 @@ test('owner can chat, group, track spend, export training, and run a sandbox too
     const denied = await api(server.url, token, `/api/articles/missing/send`, { confirm: false });
     assert.equal(denied.status, 400);
     assert.equal(server.outbox.length, 0);
-    const exportRes = await fetch(`${server.url}/api/training/export.jsonl`, { headers: { authorization: `Bearer ${token}` } });
+    const exportRes = await fetch(`${server.url}/api/training/export.jsonl`, { headers: ownerHeaders() });
     const jsonl = await exportRes.text();
     assert.match(jsonl, /"messages"/);
     const editor = await fetch(`${server.url}/api/v1/agents/${adaId}/messages`, {
@@ -140,7 +148,7 @@ test('owner can chat, group, track spend, export training, and run a sandbox too
     assert.equal(editor.status, 200);
     const unsent = await fetch(`${server.url}/api/articles/nope/send`, {
       method: 'POST',
-      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+      headers: ownerHeaders(),
       body: JSON.stringify({ confirm: false }),
     });
     assert.equal(unsent.status, 400);
@@ -185,21 +193,14 @@ function event(surface: 'recipes' | 'newsletter', action: EngagementEvent['actio
   };
 }
 
-async function login(url: string) {
-  const response = await fetch(`${url}/api/auth/login`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ email: 'kyle@example.com', password: 'test-password-value' }),
-  });
-  const body = (await response.json()) as { token: string };
-  assert.equal(response.status, 200);
-  return body.token;
+function ownerHeaders(): Record<string, string> {
+  return { 'x-auth-request-email': 'kyle@example.com', 'content-type': 'application/json' };
 }
 
 async function api(url: string, token: string, pathname: string, body?: unknown) {
   const response = await fetch(`${url}${pathname}`, {
     method: body ? 'POST' : 'GET',
-    headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+    headers: ownerHeaders(),
     body: body ? JSON.stringify(body) : undefined,
   });
   const data = (await response.json()) as Record<string, never> & { status?: number };
@@ -209,7 +210,7 @@ async function api(url: string, token: string, pathname: string, body?: unknown)
 async function sse(url: string, token: string, pathname: string, body: unknown) {
   const response = await fetch(`${url}${pathname}`, {
     method: 'POST',
-    headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+    headers: ownerHeaders(),
     body: JSON.stringify(body),
   });
   const text = await response.text();
