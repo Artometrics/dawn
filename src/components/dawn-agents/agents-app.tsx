@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AGENT_SPRITES, defaultSpriteId } from '@/lib/credits/sprites';
 import { formatUsd } from '@/lib/dawn-agents/spend';
 import { recipeAttributes } from '@/lib/dawn-agents/recipes';
@@ -8,7 +8,8 @@ import { PixelAvatarView } from './pixel-avatar';
 import { DataPanel } from './data-panel';
 import { PublishDesk } from './publish-desk';
 import { RecipesBoard } from './recipes-board';
-import { api, gatewayBase, googleSignInHref, readSse, type Agent, type ChatMessage, type GatewayState, type ToolCall } from './api';
+import { api, gatewayBase, googleSignInHref, type Agent, type GatewayState } from './api';
+import { ChatPane } from './chat-pane';
 
 type Section = 'agents' | 'recipes' | 'letter' | 'data' | 'settings' | 'edit';
 
@@ -229,196 +230,6 @@ function GroupButton({ state }: { state: GatewayState }) {
       ))}
       <button className="primary" type="submit">Start group</button>
     </form>
-  );
-}
-
-function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: { base: string; state: GatewayState; threadId: string; onBack: () => void; onRefresh: () => Promise<void>; onError: (message: string) => void }) {
-  const thread = state.threads.find((item) => item.id === threadId);
-  const [text, setText] = useState('');
-  const [live, setLive] = useState<ChatMessage[]>([]);
-  const [streaming, setStreaming] = useState(false);
-  const [recipeId, setRecipeId] = useState('');
-  const messages = useMemo(() => {
-    const saved = state.messages.filter((message) => message.threadId === threadId);
-    const extra = live.filter((message) => !saved.some((item) => item.id === message.id));
-    return [...saved, ...extra];
-  }, [state.messages, live, threadId]);
-  const title = thread?.title || 'Chat';
-
-  async function send(path: string, body: Record<string, unknown>) {
-    setStreaming(true);
-    setErrorSafe('');
-    try {
-      const response = await fetch(`${base}${path}`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', accept: 'text/event-stream' },
-        credentials: 'include',
-        redirect: 'manual',
-        body: JSON.stringify(body),
-      });
-      if (response.status === 401 || response.status === 302 || response.status === 303) {
-        throw new Error('Sign in with Google.');
-      }
-      if (!response.ok) {
-        const data = (await response.json()) as { error?: string };
-        throw new Error(data.error || 'Chat failed.');
-      }
-      await readSse(response, (event, data) => {
-        if (event === 'error') onError(String(data.message || 'Chat failed.'));
-        if (event === 'user' || event === 'assistant' || event === 'done') {
-          const message = data.message as ChatMessage | undefined;
-          if (!message) return;
-          setLive((current) => {
-            const index = current.findIndex((item) => item.id === message.id);
-            if (index === -1) return [...current, message];
-            const next = current.slice();
-            next[index] = { ...next[index], ...message };
-            return next;
-          });
-        }
-        if (event === 'delta') {
-          setLive((current) => current.map((message) => (message.id === data.messageId ? { ...message, content: String(data.text || '') } : message)));
-        }
-        if (event === 'tool') {
-          const tool = data.tool as ToolCall;
-          setLive((current) => current.map((message) => {
-            if (message.id !== data.messageId) return message;
-            const tools = message.tools ? message.tools.slice() : [];
-            const index = tools.findIndex((item) => item.id === tool.id);
-            if (index === -1) tools.push(tool);
-            else tools[index] = tool;
-            return { ...message, tools };
-          }));
-        }
-      });
-      setLive([]);
-      await onRefresh();
-    } catch (err) {
-      onError(err instanceof Error ? err.message : 'Chat failed.');
-    } finally {
-      setStreaming(false);
-    }
-  }
-
-  function setErrorSafe(value: string) {
-    if (value) onError(value);
-  }
-
-  return (
-    <div className="chat">
-      <div className="topbar">
-        <button type="button" className="icon-btn" onClick={onBack}>Back</button>
-        <strong className="grow">{title}</strong>
-      </div>
-      <MemoryPanel base={base} state={state} agentId={thread?.agentIds[0]} onRefresh={onRefresh} />
-      <div className="messages">
-        {messages.map((message) => (
-          <MessageView key={message.id} message={message} agents={state.agents} streaming={streaming} base={base} onRefresh={onRefresh} />
-        ))}
-      </div>
-      <form
-        className="composer"
-        onSubmit={(event) => {
-          event.preventDefault();
-          const value = text.trim();
-          if (!value || streaming) return;
-          setText('');
-          void send(`/api/threads/${threadId}/messages`, { text: value, recipeId: recipeId || undefined });
-        }}
-      >
-        <label className="grow">
-          Message
-          <textarea value={text} onChange={(event) => setText(event.target.value)} onKeyDown={(event) => {
-            if (event.key === 'Enter' && !event.shiftKey) {
-              event.preventDefault();
-              event.currentTarget.form?.requestSubmit();
-            }
-          }} />
-        </label>
-        <button className="primary" type="submit" disabled={streaming || !text.trim()}>Send</button>
-      </form>
-      <div className="actions" style={{ padding: '0 12px 12px' }}>
-        <select value={recipeId} onChange={(event) => setRecipeId(event.target.value)} aria-label="Apply a Style Recipe">
-          <option value="">No recipe</option>
-          {state.recipes.map((recipe) => <option key={recipe.id} value={recipe.id}>{recipe.name}</option>)}
-        </select>
-        <button type="button" className="ghost" disabled={streaming || !text.trim()} onClick={() => { const value = text.trim(); setText(''); void send(`/api/threads/${threadId}/ab`, { text: value }); }}>Compare two answers</button>
-      </div>
-    </div>
-  );
-}
-
-function MessageView({ message, agents, streaming, base, onRefresh }: { message: ChatMessage; agents: Agent[]; streaming: boolean; base: string; onRefresh: () => Promise<void> }) {
-  const agent = agents.find((item) => item.id === message.agentId);
-  const [correction, setCorrection] = useState(message.correction || '');
-  const [reason, setReason] = useState('');
-  if (message.role === 'user') return <div className="bubble user">{message.content}</div>;
-  return (
-    <article className="bubble">
-      <div className="who">
-        {agent && <PixelAvatarView avatar={agent.avatar} size={28} title={agent.name} />}
-        <span>{agent?.name || 'Agent'}</span>
-        {message.usage?.provider === 'stand-in' && <span className="muted small">stand-in</span>}
-      </div>
-      <p>{message.content}{streaming && !message.content.endsWith('.') ? <span className="caret" /> : null}</p>
-      {message.tools?.map((tool) => (
-        <div key={tool.id} className="tool">
-          <header><span>{tool.name}</span><span>{tool.state.replace('_', ' ')}</span></header>
-          <pre>{JSON.stringify(tool.output || tool.input, null, 2)}</pre>
-          {tool.state === 'needs_confirm' && (
-            <div className="actions">
-              <button type="button" className="primary" onClick={() => decide(base, message.id, tool.id, true, onRefresh)}>Allow</button>
-              <button type="button" className="ghost" onClick={() => decide(base, message.id, tool.id, false, onRefresh)}>Don't run</button>
-            </div>
-          )}
-        </div>
-      ))}
-      <div className="actions">
-        <button type="button" className="ghost" aria-pressed={message.feedback === 'up'} onClick={() => feedback(base, message.id, message.feedback === 'up' ? null : 'up', onRefresh)}>Up</button>
-        <button type="button" className="ghost" aria-pressed={message.feedback === 'down'} onClick={() => feedback(base, message.id, message.feedback === 'down' ? null : 'down', onRefresh)}>Down</button>
-      </div>
-      <label>Correction<textarea value={correction} onChange={(event) => setCorrection(event.target.value)} /></label>
-      <button type="button" className="ghost" onClick={() => feedback(base, message.id, message.feedback || 'down', onRefresh, correction)}>Save correction</button>
-      <label>Why this reply<input value={reason} onChange={(event) => setReason(event.target.value)} /></label>
-      <button type="button" className="ghost" onClick={() => pick(base, message, reason, onRefresh)}>Prefer this reply</button>
-      {message.correction && <p className="note">Your correction is saved for training.</p>}
-    </article>
-  );
-}
-
-async function decide(base: string, messageId: string, toolCallId: string, allow: boolean, onRefresh: () => Promise<void>) {
-  await api(base, '/api/confirm', { method: 'POST', body: JSON.stringify({ messageId, toolCallId, allow }) });
-  await onRefresh();
-}
-
-async function feedback(base: string, messageId: string, value: 'up' | 'down' | null, onRefresh: () => Promise<void>, correction?: string) {
-  await api(base, `/api/messages/${messageId}/feedback`, { method: 'POST', body: JSON.stringify({ feedback: value, correction }) });
-  await onRefresh();
-}
-
-async function pick(base: string, message: ChatMessage, reason: string, onRefresh: () => Promise<void>) {
-  const state = await api<GatewayState>(base, '/api/state');
-  const others = state.messages.filter((item) => item.threadId === message.threadId && item.role === 'assistant' && item.id !== message.id);
-  const rejected = others.at(-1);
-  if (!rejected) return;
-  const user = state.messages.filter((item) => item.threadId === message.threadId && item.role === 'user').at(-1);
-  await api(base, '/api/preferences', { method: 'POST', body: JSON.stringify({ prompt: user?.content || 'Which reply is better?', chosenMessageId: message.id, rejectedMessageId: rejected.id, reason }) });
-  await onRefresh();
-}
-
-function MemoryPanel({ base, state, agentId, onRefresh }: { base: string; state: GatewayState; agentId?: string; onRefresh: () => Promise<void> }) {
-  const [text, setText] = useState('');
-  const memories = state.memories.filter((memory) => memory.agentId === agentId);
-  if (!agentId) return null;
-  return (
-    <details className="sheet-view" style={{ paddingTop: 8, paddingBottom: 0 }}>
-      <summary>Memory ({memories.length})</summary>
-      <ul>{memories.map((memory) => <li key={memory.id}>{memory.text}</li>)}</ul>
-      <form className="actions" onSubmit={async (event) => { event.preventDefault(); if (!text.trim()) return; await api(base, '/api/memories', { method: 'POST', body: JSON.stringify({ agentId, text }) }); setText(''); await onRefresh(); }}>
-        <input value={text} onChange={(event) => setText(event.target.value)} placeholder="Remember this" aria-label="New memory" />
-        <button className="ghost" type="submit">Save</button>
-      </form>
-    </details>
   );
 }
 
