@@ -4,17 +4,8 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointer
 import { Box, Cloud, Code, Compass, Folder, Layers, Map, MessageCircle, Plus, User } from 'lucide-react';
 import { TOWN_CAST, TOWN_RECENTS } from '@/lib/credits/town';
 import { api, gatewayBase, googleSignInHref, type Thread } from '@/components/dawn-agents/api';
-import {
-  MAP_SRC,
-  PLAYER_SRC,
-  TILE,
-  buildOverworld,
-  canWalk,
-  landmarkAt,
-  stepToward,
-  type Landmark,
-  type Overworld,
-} from '@/lib/home/overworld';
+import { activeMapLayer, hotspotAt, type MapHotspot, type MapLayer } from '@/lib/home/map-layer';
+import { PLAYER_SRC } from '@/lib/home/overworld';
 import './pixel-home.css';
 
 type Tab = 'explore' | 'you' | 'contribute';
@@ -29,17 +20,14 @@ const CHIPS: { label: string; href?: string; panel?: boolean }[] = [
 ];
 
 export function PixelHome() {
-  const world = useMemo(() => buildOverworld(), []);
+  const layer = useMemo(() => activeMapLayer(), []);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const sheetRef = useRef<HTMLImageElement | null>(null);
-  const playerRef = useRef<HTMLImageElement | null>(null);
-  const viewRef = useRef({ w: 0, h: 0, scale: 2 });
+  const mapRef = useRef<HTMLImageElement | null>(null);
+  const viewRef = useRef({ w: 0, h: 0 });
+  const frameRef = useRef({ fit: 1, ox: 0, oy: 0 });
   const camRef = useRef({ x: 0, y: 0 });
-  const followRef = useRef(true);
-  const goalRef = useRef<{ x: number; y: number } | null>(null);
   const dragRef = useRef<{ x: number; y: number; camX: number; camY: number; moved: boolean } | null>(null);
 
-  const [player, setPlayer] = useState(world.spawn);
   const [cam, setCam] = useState({ x: 0, y: 0 });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>('explore');
@@ -52,26 +40,17 @@ export function PixelHome() {
   const panelRef = useRef(false);
   panelRef.current = panel;
 
-  const selected = world.landmarks.find((spot) => spot.id === selectedId) ?? null;
+  const selected = layer.hotspots.find((spot) => spot.id === selectedId) ?? null;
   const matches = query.trim()
-    ? world.landmarks.filter((spot) => `${spot.name} ${spot.kind} ${spot.blurb}`.toLowerCase().includes(query.trim().toLowerCase()))
+    ? layer.hotspots.filter((spot) => `${spot.name} ${spot.kind} ${spot.blurb}`.toLowerCase().includes(query.trim().toLowerCase()))
     : [];
 
   useEffect(() => {
-    const sheet = new Image();
-    const face = new Image();
-    let pending = 2;
-    const done = () => {
-      pending -= 1;
-      if (pending === 0) setReady(true);
-    };
-    sheet.onload = done;
-    face.onload = done;
-    sheet.src = MAP_SRC;
-    face.src = PLAYER_SRC;
-    sheetRef.current = sheet;
-    playerRef.current = face;
-  }, []);
+    const map = new Image();
+    map.onload = () => setReady(true);
+    map.src = layer.src;
+    mapRef.current = map;
+  }, [layer.src]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -79,61 +58,33 @@ export function PixelHome() {
     const fit = () => {
       const parent = canvas.parentElement;
       if (!parent) return;
-      const scale = parent.clientWidth >= 900 ? 3 : 2;
-      const w = Math.floor(parent.clientWidth / scale);
-      const h = Math.floor(parent.clientHeight / scale);
-      viewRef.current = { w, h, scale };
+      const w = parent.clientWidth;
+      const h = parent.clientHeight;
+      viewRef.current = { w, h };
       canvas.width = w;
       canvas.height = h;
-      canvas.style.width = `${w * scale}px`;
-      canvas.style.height = `${h * scale}px`;
-      if (followRef.current) {
-        const next = centerOf(world, player, w, h);
-        camRef.current = next;
-        setCam(next);
-      }
-      paint(canvas, world, sheetRef.current, playerRef.current, player, camRef.current);
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+      const frame = frameFor(layer, w, h);
+      frameRef.current = frame;
+      const next = clampCam(layer, (layer.view.w * frame.fit - w) / 2, 0, w, h, frame.fit);
+      camRef.current = next;
+      setCam(next);
+      paint(canvas, layer, mapRef.current, next, frame);
     };
     fit();
     const observer = new ResizeObserver(fit);
     observer.observe(canvas.parentElement || canvas);
     return () => observer.disconnect();
-  }, [player, world]);
+  }, [layer]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !ready) return;
-    paint(canvas, world, sheetRef.current, playerRef.current, player, cam);
-  }, [ready, player, cam, world]);
-
-  useEffect(() => {
-    if (!followRef.current) return;
-    const next = centerOf(world, player, viewRef.current.w, viewRef.current.h);
-    camRef.current = next;
-    setCam(next);
-  }, [player, world]);
-
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      const goal = goalRef.current;
-      if (!goal) return;
-      setPlayer((current) => {
-        const next = stepToward(world, current, goal);
-        if (next.x === current.x && next.y === current.y) {
-          goalRef.current = null;
-          return current;
-        }
-        if (next.x === goal.x && next.y === goal.y) {
-          goalRef.current = null;
-          followRef.current = true;
-          const spot = world.landmarks.find((item) => item.approach.x === goal.x && item.approach.y === goal.y);
-          if (spot) setSelectedId(spot.id);
-        }
-        return next;
-      });
-    }, 150);
-    return () => window.clearInterval(id);
-  }, [world]);
+    const frame = frameFor(layer, viewRef.current.w, viewRef.current.h);
+    frameRef.current = frame;
+    paint(canvas, layer, mapRef.current, cam, frame);
+  }, [ready, cam, layer]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -148,24 +99,18 @@ export function PixelHome() {
         ArrowDown: [0, 1],
         ArrowLeft: [-1, 0],
         ArrowRight: [1, 0],
-        w: [0, -1],
-        a: [-1, 0],
-        s: [0, 1],
-        d: [1, 0],
       };
       const dir = dirs[event.key];
       if (!dir) return;
       event.preventDefault();
-      goalRef.current = null;
-      followRef.current = true;
-      setPlayer((current) => {
-        const next = { x: current.x + dir[0], y: current.y + dir[1] };
-        return canWalk(world, next.x, next.y) ? next : current;
-      });
+      const frame = frameRef.current;
+      const next = clampCam(layer, camRef.current.x + dir[0] * 48, camRef.current.y + dir[1] * 48, viewRef.current.w, viewRef.current.h, frame.fit);
+      camRef.current = next;
+      setCam(next);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [world]);
+  }, [layer]);
 
   useEffect(() => {
     if (!panel) return;
@@ -184,14 +129,15 @@ export function PixelHome() {
     };
   }, [panel]);
 
-  function focusLandmark(spot: Landmark, walk: boolean) {
+  function focusLandmark(spot: MapHotspot) {
     setSelectedId(spot.id);
     setTab('explore');
     setQuery('');
     setPanel(false);
-    followRef.current = false;
-    goalRef.current = walk ? spot.approach : null;
-    const next = centerOf(world, spot.approach, viewRef.current.w, viewRef.current.h);
+    const frame = frameRef.current;
+    const localX = (spot.x - layer.view.x + spot.w / 2) * frame.fit - viewRef.current.w / 2;
+    const localY = (spot.y - layer.view.y + spot.h / 2) * frame.fit - viewRef.current.h / 2;
+    const next = clampCam(layer, localX, localY, viewRef.current.w, viewRef.current.h, frame.fit);
     camRef.current = next;
     setCam(next);
   }
@@ -204,13 +150,11 @@ export function PixelHome() {
   function onPointerMove(event: ReactPointerEvent<HTMLCanvasElement>) {
     const drag = dragRef.current;
     if (!drag) return;
-    const scale = viewRef.current.scale;
-    const dx = (event.clientX - drag.x) / scale;
-    const dy = (event.clientY - drag.y) / scale;
-    if (Math.hypot(dx, dy) > 4) drag.moved = true;
+    const dx = event.clientX - drag.x;
+    const dy = event.clientY - drag.y;
+    if (Math.hypot(dx, dy) > 6) drag.moved = true;
     if (!drag.moved) return;
-    followRef.current = false;
-    const next = clampCam(world, drag.camX - dx, drag.camY - dy, viewRef.current.w, viewRef.current.h);
+    const next = clampCam(layer, drag.camX - dx, drag.camY - dy, viewRef.current.w, viewRef.current.h, frameRef.current.fit);
     camRef.current = next;
     setCam(next);
   }
@@ -220,19 +164,12 @@ export function PixelHome() {
     dragRef.current = null;
     if (!drag || drag.moved) return;
     const rect = event.currentTarget.getBoundingClientRect();
-    const scale = viewRef.current.scale;
-    const wx = camRef.current.x + (event.clientX - rect.left) / scale;
-    const wy = camRef.current.y + (event.clientY - rect.top) / scale;
-    const tile = { x: Math.floor(wx / TILE), y: Math.floor(wy / TILE) };
-    const spot = landmarkAt(world, tile.x, tile.y);
-    if (spot) {
-      focusLandmark(spot, true);
-      return;
-    }
-    if (!canWalk(world, tile.x, tile.y)) return;
-    setSelectedId(null);
-    goalRef.current = tile;
-    followRef.current = true;
+    const frame = frameRef.current;
+    const ix = layer.view.x + (camRef.current.x + event.clientX - rect.left - frame.ox) / frame.fit;
+    const iy = layer.view.y + (camRef.current.y + event.clientY - rect.top - frame.oy) / frame.fit;
+    const spot = hotspotAt(layer, ix, iy);
+    if (spot) focusLandmark(spot);
+    else setSelectedId(null);
   }
 
   function onSheetPointerDown(event: ReactPointerEvent<HTMLButtonElement>) {
@@ -251,7 +188,7 @@ export function PixelHome() {
     window.addEventListener('pointerup', up);
   }
 
-  const scale = viewRef.current.scale || 2;
+  const frame = frameRef.current;
   const recents = threads
     .filter((thread) => (thread.kind === 'direct' || thread.kind === 'group') && !thread.leftAt)
     .slice()
@@ -274,22 +211,22 @@ export function PixelHome() {
       <canvas
         ref={canvasRef}
         className="ph-canvas"
-        aria-label="Dawn overworld. Drag to pan. Arrow keys or a tap walk the player."
+        aria-label="Dawn Town. Drag to pan. Tap a building."
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
       />
       {labels &&
-        world.landmarks.map((spot) => {
-          const left = (spot.x + spot.w / 2) * TILE - cam.x;
-          const top = spot.y * TILE - cam.y;
+        layer.hotspots.map((spot) => {
+          const left = frame.ox + (spot.x - layer.view.x + spot.w / 2) * frame.fit - cam.x;
+          const top = frame.oy + (spot.y - layer.view.y) * frame.fit - cam.y;
           return (
             <button
               key={spot.id}
               type="button"
               className="ph-label"
-              style={{ left: left * scale, top: top * scale }}
-              onClick={() => focusLandmark(spot, true)}
+              style={{ left, top }}
+              onClick={() => focusLandmark(spot)}
             >
               {spot.name}
             </button>
@@ -311,7 +248,7 @@ export function PixelHome() {
           role="search"
           onSubmit={(event) => {
             event.preventDefault();
-            if (matches[0]) focusLandmark(matches[0], true);
+            if (matches[0]) focusLandmark(matches[0]);
           }}
         >
           <input
@@ -330,7 +267,7 @@ export function PixelHome() {
           {matches.length === 0 && <li className="ph-note">Nothing on the map matches.</li>}
           {matches.map((spot) => (
             <li key={spot.id}>
-              <button type="button" onClick={() => focusLandmark(spot, true)}>
+              <button type="button" onClick={() => focusLandmark(spot)}>
                 {spot.name}
                 <small>{spot.kind}</small>
               </button>
@@ -356,8 +293,7 @@ export function PixelHome() {
           className="ph-fab locate"
           aria-label="Recenter"
           onClick={() => {
-            followRef.current = true;
-            const next = centerOf(world, player, viewRef.current.w, viewRef.current.h);
+            const next = clampCam(layer, 0, 0, viewRef.current.w, viewRef.current.h, frameRef.current.fit);
             camRef.current = next;
             setCam(next);
           }}
@@ -471,30 +407,41 @@ export function PixelHome() {
 
 function paint(
   canvas: HTMLCanvasElement,
-  world: Overworld,
+  mapLayer: MapLayer,
   map: HTMLImageElement | null,
-  face: HTMLImageElement | null,
-  player: { x: number; y: number },
   cam: { x: number; y: number },
+  frame: { fit: number; ox: number; oy: number },
 ) {
   const ctx = canvas.getContext('2d');
   if (!ctx || !map || !map.complete || !map.naturalWidth) return;
   ctx.imageSmoothingEnabled = false;
-  ctx.fillStyle = '#5aaa48';
+  ctx.fillStyle = '#3f8f34';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(map, Math.round(-cam.x), Math.round(-cam.y));
-  if (face && face.complete && face.naturalWidth) {
-    ctx.drawImage(face, player.x * TILE - cam.x, player.y * TILE - cam.y - 6, TILE, TILE);
-  }
-  void world;
+  const { view } = mapLayer;
+  ctx.drawImage(
+    map,
+    view.x,
+    view.y,
+    view.w,
+    view.h,
+    Math.round(frame.ox - cam.x),
+    Math.round(frame.oy - cam.y),
+    Math.round(view.w * frame.fit),
+    Math.round(view.h * frame.fit),
+  );
 }
 
-function centerOf(world: Overworld, cell: { x: number; y: number }, viewW: number, viewH: number) {
-  return clampCam(world, cell.x * TILE + TILE / 2 - viewW / 2, cell.y * TILE + TILE / 2 - viewH / 2, viewW, viewH);
+function frameFor(mapLayer: MapLayer, viewW: number, viewH: number) {
+  if (viewW <= 0 || viewH <= 0) return { fit: 1, ox: 0, oy: 0 };
+  const top = Math.min(96, viewH * 0.12);
+  const bottom = Math.min(270, viewH * 0.34);
+  const band = Math.max(180, viewH - top - bottom);
+  const fit = band / mapLayer.view.h;
+  return { fit, ox: 0, oy: top };
 }
 
-function clampCam(world: Overworld, x: number, y: number, viewW: number, viewH: number) {
-  const maxX = Math.max(0, world.w * TILE - viewW);
-  const maxY = Math.max(0, world.h * TILE - viewH);
+function clampCam(mapLayer: MapLayer, x: number, y: number, viewW: number, viewH: number, fit: number) {
+  const maxX = Math.max(0, mapLayer.view.w * fit - viewW);
+  const maxY = Math.max(0, mapLayer.view.h * fit - viewH);
   return { x: Math.min(maxX, Math.max(0, x)), y: Math.min(maxY, Math.max(0, y)) };
 }
