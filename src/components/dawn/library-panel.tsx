@@ -106,6 +106,21 @@ export function LibraryPanel({
               Open
             </a>
           </div>
+          <div className="mt-2 flex items-center gap-3">
+            <span className="grid h-11 w-11 place-items-center rounded-xl bg-[var(--dawn-chip)]">
+              <Code2 className="h-5 w-5" aria-hidden />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[16px] leading-5">Dawn Agents</p>
+              <p className="truncate text-[13px] leading-5 text-[var(--dawn-muted)]">Personal agents, recipes, and the letter.</p>
+            </div>
+            <a
+              href="/agents"
+              className="inline-flex h-9 shrink-0 items-center rounded-full bg-[var(--dawn-chip)] px-4 text-[14px] font-medium"
+            >
+              Open
+            </a>
+          </div>
         </section>
       )}
 

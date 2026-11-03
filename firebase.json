@@ -30,6 +30,14 @@
       {
         "source": "/atlas",
         "destination": "/atlas.html"
+      },
+      {
+        "source": "/agents",
+        "destination": "/agents.html"
+      },
+      {
+        "source": "/letter",
+        "destination": "/letter.html"
       }
     ]
   },

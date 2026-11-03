@@ -237,6 +237,16 @@ service cloud.firestore {
       }
     }
 
+    // Dawn Agents mirror. The live store is the gateway file. Only the owner
+    // can read or write these documents if a later sync uses Firestore.
+    match /users/{uid}/dawnAgents/{docId} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && docId.size() > 8
+        && docId.size() < 80
+        && request.resource.size() < 200000;
+    }
+
     match /rooms/{roomId} {
       allow get: if signedIn();
       allow list: if false;
