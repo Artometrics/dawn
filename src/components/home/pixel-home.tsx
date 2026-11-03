@@ -1,13 +1,12 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
-import { Bookmark, Box, Code, Compass, Folder, Layers, LocateFixed, Mail, Map, MessageCircle, Palette, Plus, Sparkles, Users } from 'lucide-react';
-import { spriteById, defaultSpriteId } from '@/lib/credits/sprites';
-import { api, gatewayBase, googleSignInHref, type Agent, type Thread } from '@/components/dawn-agents/api';
+import { Box, Cloud, Code, Compass, Folder, Layers, Map, MessageCircle, Plus, User } from 'lucide-react';
+import { TOWN_CAST, TOWN_RECENTS } from '@/lib/credits/town';
+import { api, gatewayBase, googleSignInHref, type Thread } from '@/components/dawn-agents/api';
 import {
+  MAP_SRC,
   PLAYER_SRC,
-  SHEET_COLS,
-  SHEET_SRC,
   TILE,
   buildOverworld,
   canWalk,
@@ -20,13 +19,13 @@ import './pixel-home.css';
 
 type Tab = 'explore' | 'you' | 'contribute';
 
-const CHIPS: { label: string; href?: string; ask?: boolean; panel?: boolean; icon: typeof Sparkles }[] = [
-  { label: 'Ask Dawn', href: '/agents', ask: true, icon: Sparkles },
-  { label: 'Agents', panel: true, icon: Users },
-  { label: 'Editor', href: '/editor', icon: Code },
-  { label: 'Recipes', href: '/agents?section=recipes', icon: Palette },
-  { label: 'Letter', href: '/letter', icon: Mail },
-  { label: 'Studio', href: '/studio', icon: Map },
+const CHIPS: { label: string; href?: string; panel?: boolean }[] = [
+  { label: 'Ask Dawn', href: '/agents' },
+  { label: 'Agents', panel: true },
+  { label: 'Editor', href: '/editor' },
+  { label: 'Recipes', href: '/agents?section=recipes' },
+  { label: 'Letter', href: '/letter' },
+  { label: 'Studio', href: '/studio' },
 ];
 
 export function PixelHome() {
@@ -34,7 +33,7 @@ export function PixelHome() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const sheetRef = useRef<HTMLImageElement | null>(null);
   const playerRef = useRef<HTMLImageElement | null>(null);
-  const viewRef = useRef({ w: 0, h: 0, scale: 3 });
+  const viewRef = useRef({ w: 0, h: 0, scale: 2 });
   const camRef = useRef({ x: 0, y: 0 });
   const followRef = useRef(true);
   const goalRef = useRef<{ x: number; y: number } | null>(null);
@@ -46,11 +45,9 @@ export function PixelHome() {
   const [tab, setTab] = useState<Tab>('explore');
   const [panel, setPanel] = useState(false);
   const [query, setQuery] = useState('');
-  const [labels, setLabels] = useState(true);
+  const [labels, setLabels] = useState(false);
   const [sheetH, setSheetH] = useState(228);
-  const [agents, setAgents] = useState<Agent[] | null>(null);
   const [threads, setThreads] = useState<Thread[]>([]);
-  const [agentsNote, setAgentsNote] = useState('');
   const [ready, setReady] = useState(false);
   const panelRef = useRef(false);
   panelRef.current = panel;
@@ -70,7 +67,7 @@ export function PixelHome() {
     };
     sheet.onload = done;
     face.onload = done;
-    sheet.src = SHEET_SRC;
+    sheet.src = MAP_SRC;
     face.src = PLAYER_SRC;
     sheetRef.current = sheet;
     playerRef.current = face;
@@ -82,7 +79,7 @@ export function PixelHome() {
     const fit = () => {
       const parent = canvas.parentElement;
       if (!parent) return;
-      const scale = parent.clientWidth >= 900 ? 4 : 3;
+      const scale = parent.clientWidth >= 900 ? 3 : 2;
       const w = Math.floor(parent.clientWidth / scale);
       const h = Math.floor(parent.clientHeight / scale);
       viewRef.current = { w, h, scale };
@@ -173,20 +170,13 @@ export function PixelHome() {
   useEffect(() => {
     if (!panel) return;
     let cancel = false;
-    setAgentsNote('');
     void (async () => {
       try {
         const base = await gatewayBase();
-        const state = await api<{ agents: Agent[]; threads: Thread[] }>(base, '/api/state');
-        if (cancel) return;
-        setAgents(state.agents);
-        setThreads(state.threads);
-      } catch (error) {
-        if (cancel) return;
-        const message = error instanceof Error ? error.message : 'The desk is offline.';
-        setAgents(null);
-        setThreads([]);
-        setAgentsNote(message);
+        const state = await api<{ threads: Thread[] }>(base, '/api/state');
+        if (!cancel) setThreads(state.threads);
+      } catch {
+        if (!cancel) setThreads([]);
       }
     })();
     return () => {
@@ -261,18 +251,21 @@ export function PixelHome() {
     window.addEventListener('pointerup', up);
   }
 
-  const scale = viewRef.current.scale || 3;
+  const scale = viewRef.current.scale || 2;
   const recents = threads
     .filter((thread) => (thread.kind === 'direct' || thread.kind === 'group') && !thread.leftAt)
     .slice()
     .sort((a, b) => b.updatedAt - a.updatedAt)
     .slice(0, 8);
+  const shownRecents = recents.length
+    ? recents.map((thread) => ({ id: thread.id, title: thread.title || 'Chat', href: `/agents?thread=${encodeURIComponent(thread.id)}` }))
+    : TOWN_RECENTS.map((item) => ({ id: item.id, title: item.title, href: item.href }));
   const place = selected ?? {
-    name: 'Dawn',
+    name: 'Dawn Town',
     kind: 'Home',
-    blurb: 'A 16-bit desk. Walk up to a building, or search it.',
+    blurb: '',
     href: '/agents',
-    suggestion: 'Things to do this weekend?',
+    suggestion: 'What should I build today?',
   };
 
   return (
@@ -311,7 +304,7 @@ export function PixelHome() {
           aria-controls="dawn-menu"
           onClick={() => setPanel((open) => !open)}
         >
-          <span className="ph-dot" />
+          <span className="ph-dots" aria-hidden><i /><i /><i /></span>
         </button>
         <form
           className="ph-glass ph-search"
@@ -329,7 +322,7 @@ export function PixelHome() {
           />
         </form>
         <button type="button" className="ph-avatar" aria-label="You" onClick={() => { setTab('you'); setPanel(false); }}>
-          <img src={PLAYER_SRC} alt="" />
+          <User aria-hidden />
         </button>
       </header>
       {query.trim() && (
@@ -348,15 +341,9 @@ export function PixelHome() {
       <div className="ph-chips">
         {CHIPS.map((chip) =>
           chip.panel ? (
-            <button key={chip.label} type="button" className="ph-chip" onClick={() => setPanel(true)}>
-              <chip.icon aria-hidden />
-              {chip.label}
-            </button>
+            <button key={chip.label} type="button" className="ph-chip" onClick={() => setPanel(true)}>{chip.label}</button>
           ) : (
-            <a key={chip.label} className={chip.ask ? 'ph-chip ask' : 'ph-chip'} href={chip.href}>
-              <chip.icon aria-hidden />
-              {chip.label}
-            </a>
+            <a key={chip.label} className="ph-chip" href={chip.href}>{chip.label}</a>
           ),
         )}
       </div>
@@ -375,7 +362,7 @@ export function PixelHome() {
             setCam(next);
           }}
         >
-          <LocateFixed />
+          <Compass />
         </button>
       </div>
       <section className="ph-sheet" style={{ height: sheetH }} aria-label="Place">
@@ -386,23 +373,17 @@ export function PixelHome() {
           <>
             <div className="ph-placehead">
               <div>
-                <h1>{place.name}</h1>
-                <p className="ph-blurb">{place.blurb}</p>
+                <h1>{selected ? selected.name : 'Dawn Town'}</h1>
+                {selected && <p className="ph-blurb">{selected.blurb}</p>}
               </div>
               <div className="ph-weather">
-                <span className="ph-sun" aria-hidden />
-                <span>
-                  Clear
-                  <span className="ph-aqi"><i />Studio air</span>
-                </span>
+                <Cloud aria-hidden />
+                <span>68°F</span>
               </div>
             </div>
             <a className="ph-plan" href="/agents">
-              <span className="ph-plan-title">
-                <Sparkles aria-hidden />
-                Make plans with Ask Dawn
-              </span>
-              <span className="ph-suggest">→ {place.suggestion}</span>
+              <span className="ph-plan-title">Make plans with Ask Dawn</span>
+              <span className="ph-suggest">{place.suggestion}</span>
             </a>
             {selected && <a className="ph-open" href={selected.href}>Open {selected.name}</a>}
           </>
@@ -440,11 +421,11 @@ export function PixelHome() {
       {panel && <button type="button" className="ph-peek" aria-label="Close menu" onClick={() => setPanel(false)} />}
       <nav className="ph-tabs" aria-label="Primary">
         <button type="button" className={tab === 'explore' ? 'ph-tab on' : 'ph-tab'} onClick={() => setTab('explore')}>
-          <span className="ph-tab-bubble"><Compass /></span>
+          <span className="ph-tab-bubble"><Map /></span>
           Explore
         </button>
         <button type="button" className={tab === 'you' ? 'ph-tab on' : 'ph-tab'} onClick={() => setTab('you')}>
-          <span className="ph-tab-bubble"><Bookmark /></span>
+          <span className="ph-tab-bubble"><User /></span>
           You
         </button>
         <button type="button" className={tab === 'contribute' ? 'ph-tab on' : 'ph-tab'} onClick={() => setTab('contribute')}>
@@ -463,33 +444,23 @@ export function PixelHome() {
         </nav>
         <div className="ph-drawer-scroll">
           <p className="ph-drawer-label">Pinned</p>
-          {agentsNote === 'Sign in with Google.' && (
-            <p className="ph-note"><a href={googleSignInHref()}>Sign in with Google</a> to see your agents.</p>
-          )}
-          {agentsNote && agentsNote !== 'Sign in with Google.' && <p className="ph-note">{agentsNote}</p>}
-          {agents && agents.length === 0 && <p className="ph-note">No agents yet.</p>}
-          {!agents && !agentsNote && <p className="ph-note">Opening the list…</p>}
-          {agents?.map((agent) => {
-            const sprite = spriteById(agent.avatar.sprite || defaultSpriteId(agent.id));
-            return (
-              <a key={agent.id} className="ph-drawer-row" href={`/agents?agent=${encodeURIComponent(agent.id)}`}>
-                {sprite && <img src={sprite.src} alt="" width={24} height={24} />}
-                <span>{agent.name}</span>
-              </a>
-            );
-          })}
+          {TOWN_CAST.map((agent) => (
+            <a key={agent.id} className="ph-drawer-row" href={agent.href}>
+              <img src={agent.src} alt="" width={28} height={28} />
+              <span>{agent.name}</span>
+            </a>
+          ))}
           <p className="ph-drawer-label">Recents</p>
-          {recents.length === 0 && <p className="ph-note">No chats yet.</p>}
-          {recents.map((thread) => (
-            <a key={thread.id} className="ph-drawer-row" href={`/agents?thread=${encodeURIComponent(thread.id)}`}>
+          {shownRecents.map((thread) => (
+            <a key={thread.id} className="ph-drawer-row" href={thread.href}>
               <MessageCircle aria-hidden />
-              <span>{thread.title || 'Chat'}</span>
+              <span>{thread.title}</span>
             </a>
           ))}
         </div>
         <div className="ph-drawer-foot">
           <button type="button" className="ph-drawer-avatar" aria-label="You" onClick={() => { setPanel(false); setTab('you'); }}>
-            <img src={PLAYER_SRC} alt="" />
+            <User aria-hidden />
           </button>
           <a className="ph-newchat" href="/agents?section=edit"><Plus aria-hidden /> New chat</a>
         </div>
@@ -501,50 +472,21 @@ export function PixelHome() {
 function paint(
   canvas: HTMLCanvasElement,
   world: Overworld,
-  sheet: HTMLImageElement | null,
+  map: HTMLImageElement | null,
   face: HTMLImageElement | null,
   player: { x: number; y: number },
   cam: { x: number; y: number },
 ) {
   const ctx = canvas.getContext('2d');
-  if (!ctx || !sheet || !sheet.complete || !sheet.naturalWidth) return;
+  if (!ctx || !map || !map.complete || !map.naturalWidth) return;
   ctx.imageSmoothingEnabled = false;
-  ctx.fillStyle = '#143018';
+  ctx.fillStyle = '#5aaa48';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  const x0 = Math.max(0, Math.floor(cam.x / TILE));
-  const y0 = Math.max(0, Math.floor(cam.y / TILE));
-  const x1 = Math.min(world.w, Math.ceil((cam.x + canvas.width) / TILE));
-  const y1 = Math.min(world.h, Math.ceil((cam.y + canvas.height) / TILE));
-  for (let y = y0; y < y1; y += 1) {
-    for (let x = x0; x < x1; x += 1) {
-      blit(ctx, sheet, world.ground[y][x], x * TILE - cam.x, y * TILE - cam.y);
-    }
-  }
-  const sprites: { x: number; y: number; tile: number }[] = [];
-  for (let y = y0; y < y1; y += 1) {
-    for (let x = x0; x < x1; x += 1) {
-      const tile = world.object[y][x];
-      if (tile != null) sprites.push({ x, y, tile });
-    }
-  }
-  sprites.sort((a, b) => a.y - b.y);
-  for (const sprite of sprites) {
-    if (sprite.y >= player.y) break;
-    blit(ctx, sheet, sprite.tile, sprite.x * TILE - cam.x, sprite.y * TILE - cam.y);
-  }
+  ctx.drawImage(map, Math.round(-cam.x), Math.round(-cam.y));
   if (face && face.complete && face.naturalWidth) {
-    ctx.drawImage(face, player.x * TILE - cam.x, player.y * TILE - cam.y - 4, TILE, TILE);
+    ctx.drawImage(face, player.x * TILE - cam.x, player.y * TILE - cam.y - 6, TILE, TILE);
   }
-  for (const sprite of sprites) {
-    if (sprite.y < player.y) continue;
-    blit(ctx, sheet, sprite.tile, sprite.x * TILE - cam.x, sprite.y * TILE - cam.y);
-  }
-}
-
-function blit(ctx: CanvasRenderingContext2D, sheet: HTMLImageElement, index: number, dx: number, dy: number) {
-  const sx = (index % SHEET_COLS) * TILE;
-  const sy = Math.floor(index / SHEET_COLS) * TILE;
-  ctx.drawImage(sheet, sx, sy, TILE, TILE, Math.round(dx), Math.round(dy), TILE, TILE);
+  void world;
 }
 
 function centerOf(world: Overworld, cell: { x: number; y: number }, viewW: number, viewH: number) {

@@ -93,31 +93,41 @@
 }
 
 .ph-dotbtn {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   flex: none;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  color: inherit;
+  color: #fff;
+  background: rgba(20, 22, 24, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
 }
 
-.ph-dot {
-  width: 14px;
-  height: 14px;
+.ph-dots {
+  display: flex;
+  gap: 3px;
+}
+
+.ph-dots i {
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ffe1cc, #d97746 46%, #8d4318 100%);
-  box-shadow: 0 0 0 4px rgba(217, 119, 70, 0.28);
+  background: #fff;
 }
 
 .ph-search {
   flex: 1;
   min-width: 0;
-  height: 46px;
+  height: 44px;
   border-radius: 999px;
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 0 18px;
+  background: rgba(255, 255, 255, 0.28);
 }
 
 .ph-search input {
@@ -126,6 +136,7 @@
   outline: none;
   background: transparent;
   color: #fff;
+  text-align: center;
   font: 600 16px/1 var(--font-geist-sans), sans-serif;
   letter-spacing: -0.01em;
 }
@@ -135,25 +146,22 @@
 }
 
 .ph-avatar {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   flex: none;
   border-radius: 50%;
   padding: 0;
+  display: grid;
+  place-items: center;
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.92);
-  background: #c4784a;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(20, 22, 24, 0.72);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
 }
 
-.ph-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  transform: scale(2.4);
-}
+.ph-avatar svg { width: 22px; height: 22px; }
 
 .ph-results {
   position: absolute;
@@ -211,29 +219,20 @@
 
 .ph-chip {
   flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 34px;
-  padding: 0 12px;
-  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  padding: 8px;
+  border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(32, 28, 26, 0.82);
+  background: rgba(18, 20, 22, 0.82);
   color: #f4f1ec;
-  font: 600 13px/1 var(--font-geist-sans), sans-serif;
+  font: 650 12px/1.15 var(--font-geist-sans), sans-serif;
+  text-align: center;
   text-decoration: none;
+  white-space: normal;
   backdrop-filter: blur(10px);
-}
-
-.ph-chip svg {
-  width: 15px;
-  height: 15px;
-}
-
-.ph-chip.ask {
-  background: rgba(12, 18, 32, 0.72);
-  border-color: #0047ff;
-  color: #e7eeff;
 }
 
 .ph-fabs {
@@ -250,9 +249,9 @@
   height: 46px;
   display: grid;
   place-items: center;
-  border-radius: 14px;
+  border-radius: 50%;
   border: 0;
-  background: #2a2724;
+  background: rgba(28, 30, 32, 0.9);
   color: #f6f3ee;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
 }
@@ -263,7 +262,6 @@
 }
 
 .ph-fab.locate {
-  border-radius: 16px;
   background: #1aa394;
   color: #04221f;
 }
@@ -322,14 +320,16 @@
 .ph-weather {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex: none;
   padding: 6px 10px;
-  border-radius: 14px;
+  border-radius: 999px;
   background: #2a2623;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 650;
 }
+
+.ph-weather svg { width: 16px; height: 16px; }
 
 .ph-sun {
   width: 16px;
@@ -482,7 +482,7 @@
 
 .ph-tab.on .ph-tab-bubble {
   background: #123f3a;
-  color: #8ff3e4;
+  color: #3ee0c5;
   border-radius: 999px;
   padding: 4px 14px;
 }
@@ -518,10 +518,11 @@
 }
 
 .ph-drawer-mark {
-  margin: 4px 8px 18px;
-  font-size: 32px;
-  font-weight: 650;
-  letter-spacing: -0.04em;
+  margin: 8px 8px 22px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 42px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
   line-height: 1;
 }
 
@@ -554,8 +555,8 @@
 }
 
 .ph-drawer-row img {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   flex: none;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
@@ -601,16 +602,13 @@
   border-radius: 50%;
   overflow: hidden;
   padding: 0;
-  background: #c4784a;
+  display: grid;
+  place-items: center;
+  background: #3a3a3c;
+  color: #c8c4be;
 }
 
-.ph-drawer-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  image-rendering: pixelated;
-  transform: scale(2.2);
-}
+.ph-drawer-avatar svg { width: 18px; height: 18px; }
 
 .ph-newchat {
   display: inline-flex;

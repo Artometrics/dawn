@@ -4,6 +4,7 @@ import { Markdown } from '@/components/credits/markdown';
 import './credits.css';
 import { BUNDLED_ASSETS, BUNDLED_FONTS } from '@/lib/credits/assets';
 import { AGENT_SPRITES } from '@/lib/credits/sprites';
+import { TOWN_CAST } from '@/lib/credits/town';
 import libraries from '@/lib/credits/libraries.json';
 
 export const metadata: Metadata = {
@@ -25,7 +26,7 @@ export default function CreditsPage() {
 
       <h2>Agent sprites</h2>
       <p>
-        These 16×16 characters are frames from Kenney’s Tiny Dungeon sheet. The license is CC0, which allows a commercial product later. They are the only faces an agent can wear.
+        These 16×16 characters are frames from Kenney’s Tiny Dungeon sheet. The license is CC0, which allows a commercial product later.
       </p>
       <ul className="sprite-credits">
         {AGENT_SPRITES.map((sprite) => (
@@ -37,6 +38,24 @@ export default function CreditsPage() {
               <p>Artist: {sprite.artist}</p>
               <p>License: {sprite.license}</p>
               <p><a href={sprite.sourceUrl}>{sprite.sourceUrl}</a></p>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <h2>Dawn Town</h2>
+      <p>
+        The home map, the player, and these six agents are original pixel art made for Dawn. They are not from Pokémon or any other game.
+      </p>
+      <ul className="sprite-credits">
+        {TOWN_CAST.map((sprite) => (
+          <li key={sprite.id}>
+            <img src={sprite.src} alt="" width={48} height={48} />
+            <div>
+              <strong>{sprite.name}</strong>
+              <p>{sprite.file}</p>
+              <p>Artist: Dawn</p>
+              <p>License: Project original</p>
             </div>
           </li>
         ))}

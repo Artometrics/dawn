@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { SHEET_COLS, SHEET_SRC, TILE } from '@/lib/home/overworld';
+const TILE = 16;
+const SHEET_COLS = 12;
+const SHEET_SRC = '/tiles/kenney-tiny-town.png';
 
 export const WALLPAPERS = [
   { id: 'town', name: 'Town' },
