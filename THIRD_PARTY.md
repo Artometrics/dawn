@@ -61,6 +61,14 @@ https://github.com/code-with-antonio/nightcode
 
 Checked 2026-11-06 at commit `255883f130d350541e806f2431e7df32369f24bf`. GitHub reports the repo public and `license: null`. The tree has no `LICENSE` file. No source is copied. `packages/cli/src/lib/local-tools.ts` was read only to see that PLAN mode allows read and list tools, and that BUILD mode adds writes and a shell. The server package depends on Clerk, Polar, Prisma, and the OpenAI and Anthropic SDK packages. Dawn keeps its own auth and `src/lib/dawn-agents/spend.ts`.
 
+### code-with-antonio/ai-teammates
+
+Customer archive `ai-teammates-main.tar.gz`, saved at `/home/ubuntu/.cursor/projects/agent-repos-dawn/uploads/ai-teammates-main.tar_ca32.gz`. Root directory `code-with-antonio-ai-teammates-de32f46/`. No `LICENSE`, `NOTICE`, or `COPYING` file, and `package.json` has no `license` field. No source is copied. `lib/sandbox-tools.ts`, `lib/daytona.ts`, and `lib/handoff-tool.ts` were read for the tool and sandbox shape only. The app depends on Clerk, Daytona, Trigger.dev, and Neon.
+
+### code-with-antonio/sandbox
+
+Customer archive `sandbox-main.tar.gz`, saved at `/home/ubuntu/.cursor/projects/agent-repos-dawn/uploads/sandbox-main.tar_7929.gz`. Root directory `code-with-antonio-sandbox-ac18750/`. No `LICENSE`, `NOTICE`, or `COPYING` file, and `package.json` has no `license` field. No source is copied. `lib/games/tools.ts`, `lib/daytona/utils.ts`, and `lib/games/authorize.ts` were read for the path and auth shape only. The app depends on Clerk, Daytona, Trigger.dev, Neon, and Anthropic.
+
 ### Kyle's own sites
 
 Style Recipes (https://recipes-510519.web.app) and the studio letter (https://newsletter-510519.web.app) are ported as behavior and, for recipes, as Kyle's palette, type, and layout data. Those sites are left deployed. Their source was not in the public Artometrics GitHub org, so the port follows the live Style Recipes assets and the letter's public behavior (double opt-in, explicit send, Resend-style transport).

@@ -70,10 +70,11 @@ What Dawn does not take:
 
 Add one pure function, `planLocalProject`, that builds an inspectable plan against a caller-supplied project port.
 
-- Mode `plan` may list `.` and read at most five relative files, 4,000 characters each.
-- Mode `build`, `writeFile`, `editFile`, and `bash` stop before the port reads. `glob` and `grep` are refused because they would spawn a search.
-- Hidden names, `node_modules`, absolute paths, and `..` never reach the port.
-- Key-shaped text and `ghp_` / `github_pat_` shapes are scrubbed. The plan has no GitHub token field and no remote.
+- Mode `plan` calls `list('.')` once. Returned names are copied only as `{ name, type }` after a single-segment check. Hidden names, `node_modules`, `..`, `~`, absolute names, and extra fields are dropped. At most 40 names are kept, from the first 200 raw entries.
+- The port is asked to `read` at most five times. A missing file spends one of those calls. Text is redacted, then cut at 4,000 characters, so a token is not split by the cut.
+- Any mode other than `plan` returns before the port is called. `writeFile`, `editFile`, and `bash` are refused inside plan mode and are not executed. `glob` and `grep` are refused because they would spawn a search.
+- A path with `..`, a leading `~`, a hidden segment, `node_modules`, or a drive prefix never reaches `read`.
+- Key-shaped text and `ghp_` / `github_pat_` shapes are scrubbed, including text echoed in a refusal. The plan has no GitHub token field and no remote. The brief is capped at 2,000 characters after redaction.
 - CRM search, add task, calendar read, note search, and web search are recorded as `not_called`. Cloud Run, Gemini, Firestore, and the scheduler are recorded the same way.
 - The local connector is `mocked`. A later acceptance run can put the same read-only list and read on the existing worker.
 
@@ -91,6 +92,8 @@ Add one pure function, `planLocalProject`, that builds an inspectable plan again
 | NightCode BUILD, Clerk, Polar, Prisma, model SDK | Their app | Not imported | Needs a license before any file is copied |
 | Git remotes | Workspace | `git: not_connected` | Allowlisted `git status` only, after the worker is up. No token in source |
 | Village and Atlas | 8/16-bit Dawn | Untouched | Stays off the worker |
+| AI Teammates archive | Hosted desktop, shell, and handoff | Excluded. No license file | Not a replacement for the Dawn worker |
+| Sandbox archive | Game-directory file tools | Excluded. No license file | Path jail already exists on the Dawn worker |
 
 ## Provenance
 
@@ -110,6 +113,17 @@ This PR is not a live agent.
 3. Local slice, separate PR: start the existing worker, confirm it is online, and run only the plan's list and read inside that agent's sandbox. Still no shell from the planner.
 4. NightCode source stays out until a license or a course grant is attached to an archive Kyle is allowed to reuse.
 
+## Customer archives
+
+Two archives were attached for this review. Neither contains a `LICENSE`, `NOTICE`, or `COPYING` file, and neither `package.json` sets `license`. No source from either archive is imported. Clerk, Daytona, Trigger.dev, Neon, Sentry, and their billing ledgers stay out.
+
+| Archive on disk | Root inside the tar | What it is | Verdict |
+| --- | --- | --- | --- |
+| `/home/ubuntu/.cursor/projects/agent-repos-dawn/uploads/ai-teammates-main.tar_ca32.gz` (supplied as `ai-teammates-main.tar.gz`) | `code-with-antonio-ai-teammates-de32f46/` | A Grok-Bot-shaped app. `lib/sandbox-tools.ts` gives every bot `bash`, `readFile`, `writeFile`, `listFiles`, `recall`, `remember`, and mouse, keyboard, and screenshot tools on a Daytona desktop. `lib/daytona.ts` creates one sandbox per bot. `lib/handoff-tool.ts` passes a group turn to another bot. There is no allow or confirm gate in those files. Output is cut at 20,000 characters. Auth and plans are Clerk (`lib/billing.ts`). The model goes through Neon. Turns run on Trigger.dev. | **Exclude** as code. **Defer** the hosted desktop. Dawn's worker already confines a local folder and asks before a command that is not on the allowlist. A Daytona desktop is a separate paid computer, not a gap in the mocked plan. |
+| `/home/ubuntu/.cursor/projects/agent-repos-dawn/uploads/sandbox-main.tar_7929.gz` (supplied as `sandbox-main.tar.gz`) | `code-with-antonio-sandbox-ac18750/` | A game builder. `lib/games/tools.ts` exposes `ask_player`, `read_file`, `write_file`, `replace_text`, `list_files`, and `delete_file`. `resolveGamePath` keeps paths inside `/home/daytona/game` (`lib/daytona/utils.ts`, `GAME_DIR`) and refuses a path before the sandbox sees it. Names must match a small character set. Reads stop at 128,000 bytes. `mkdir` is the one shell call, and only after that check. `lib/games/authorize.ts` is Clerk organization auth. | **Exclude** as code. **Defer** nothing new. The mocked plan and `worker/sandbox.mjs` already keep reads inside a relative root and refuse writes from this planner. The game tools are a write-enabled builder for a three.js preview, not Dawn's village or desk. |
+
+Neither archive adds an extension point this slice needs. The local connector remains the existing Dawn worker. The cloud loop remains the section 5.2 Cloud Run and Gemini path, still unwired.
+
 ## Tests
 
-`src/lib/dawn-agents/local-plan.test.ts` is on `npm test`. It checks the mock listing, the read budget, scrubbing, and that build tools and parent paths do not reach the port. It does not listen, spawn, or call a provider.
+`src/lib/dawn-agents/local-plan.test.ts` is on `npm test`. It checks the mock listing, the read budget (including failed reads), scrubbing before truncation, a hostile listing, and that build mode and parent paths do not reach `read`. It does not listen, spawn, or call a provider.

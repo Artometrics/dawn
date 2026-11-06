@@ -31,6 +31,11 @@ export const PLAN_BOUNDS = {
   maxReads: 5,
   maxChars: 4_000,
   maxEntries: 40,
+  maxName: 80,
+  maxBrief: 2_000,
+  maxRefused: 24,
+  maxToolNotes: 16,
+  maxListScan: 200,
 } as const;
 
 export type CloudTool = (typeof CLOUD_TOOLS)[number];
@@ -68,6 +73,7 @@ export type LocalPlan = {
   mode: 'plan';
   projectLabel: string;
   brief: string;
+  briefTruncated: boolean;
   listing: { path: '.'; entries: LocalEntry[] };
   reads: PlanRead[];
   refused: RefusedStep[];
@@ -101,22 +107,54 @@ function cloudTools(): Record<CloudTool, 'not_called'> {
   };
 }
 
-/** Relative path with no parent segment and no hidden top. */
+/** Relative path with no parent segment, home shortcut, or hidden name. */
 export function projectPath(value: string): string | null {
   if (typeof value !== 'string') return null;
   const text = value.trim().replace(/\\/g, '/');
   if (!text || text.length > 180 || text.includes('\0')) return null;
-  if (text.startsWith('/') || /^[A-Za-z]:\//.test(text)) return null;
+  if (text.startsWith('/') || text.startsWith('~') || /^[A-Za-z]:\//.test(text)) return null;
   const parts = text.split('/');
-  if (parts.some((part) => part === '' || part === '..')) return null;
-  if (parts.some((part) => part.startsWith('.') || part === 'node_modules')) return null;
+  if (parts.some((part) => part === '' || part === '..' || part === '~' || part.startsWith('~'))) return null;
+  if (parts.some((part) => part.startsWith('.') || part === 'node_modules' || part.includes(':'))) return null;
   return parts.join('/');
+}
+
+function clipNoted(value: unknown, max = 180): string | undefined {
+  if (typeof value !== 'string' || !value) return undefined;
+  const text = redact(value);
+  return text.length > max ? text.slice(0, max) : text;
+}
+
+function listingEntry(value: unknown): LocalEntry | null {
+  if (!value || typeof value !== 'object') return null;
+  const record = value as { name?: unknown; type?: unknown };
+  if (typeof record.name !== 'string') return null;
+  if (record.type !== 'file' && record.type !== 'directory') return null;
+  const name = record.name;
+  if (!name || name.length > PLAN_BOUNDS.maxName || name.includes('\0') || name.includes('/') || name.includes('\\')) return null;
+  if (name === '..' || name === '.' || name === '~' || name.startsWith('~') || name.startsWith('.') || name === 'node_modules' || name.includes(':')) {
+    return null;
+  }
+  return { name, type: record.type };
+}
+
+function takeListing(raw: unknown): LocalEntry[] {
+  if (!Array.isArray(raw)) throw new Error('The local project port did not return a list.');
+  const entries: LocalEntry[] = [];
+  const scan = Math.min(raw.length, PLAN_BOUNDS.maxListScan);
+  for (let index = 0; index < scan; index += 1) {
+    const entry = listingEntry(raw[index]);
+    if (!entry) continue;
+    entries.push(entry);
+    if (entries.length >= PLAN_BOUNDS.maxEntries) break;
+  }
+  return entries;
 }
 
 function redact(value: string): string {
   return scrubText(value)
-    .replace(/\bghp_[A-Za-z0-9]{8,}\b/g, '[redacted]')
-    .replace(/\bgithub_pat_[A-Za-z0-9_]{8,}\b/g, '[redacted]');
+    .replace(/ghp_[A-Za-z0-9]{8,}/g, '[redacted]')
+    .replace(/github_pat_[A-Za-z0-9_]{8,}/g, '[redacted]');
 }
 
 export function filesPort(files: { path: string; content: string }[]): LocalProjectPort {
@@ -155,60 +193,98 @@ export function filesPort(files: { path: string; content: string }[]): LocalProj
   };
 }
 
+function pushRefused(refused: RefusedStep[], step: RefusedStep): void {
+  if (refused.length >= PLAN_BOUNDS.maxRefused) return;
+  refused.push(step);
+}
+
 export function planLocalProject(input: LocalPlanInput): LocalPlanResult {
   if (input.product && input.product !== 'dawn') {
     return { ok: false, reason: 'This planner is for Dawn.' };
   }
-  if (input.mode === 'build') {
-    return { ok: false, reason: 'Build mode is not connected. Plan mode only lists and reads.' };
+  const mode = input.mode === undefined ? 'plan' : String(input.mode).toLowerCase();
+  if (mode !== 'plan') {
+    return {
+      ok: false,
+      reason: mode === 'build'
+        ? 'Build mode is not connected. Plan mode only lists and reads.'
+        : 'Only plan mode is connected.',
+    };
   }
   const projectLabel = input.projectLabel.trim();
   if (!projectLabel || projectLabel.length > 40 || /[\\/]/.test(projectLabel)) {
     return { ok: false, reason: 'The project label is a short name, not a path.' };
   }
-  const brief = redact(input.brief).trim();
-  if (!brief) return { ok: false, reason: 'A brief is required.' };
+  const redactedBrief = redact(input.brief).trim();
+  if (!redactedBrief) return { ok: false, reason: 'A brief is required.' };
+  const briefTruncated = redactedBrief.length > PLAN_BOUNDS.maxBrief;
+  const brief = briefTruncated ? redactedBrief.slice(0, PLAN_BOUNDS.maxBrief) : redactedBrief;
 
   const refused: RefusedStep[] = [];
-  for (const tool of input.requestedTools ?? []) {
+  const requested = input.requestedTools ?? [];
+  for (const tool of requested.slice(0, PLAN_BOUNDS.maxToolNotes)) {
+    if (typeof tool !== 'string') {
+      pushRefused(refused, { tool: 'unknown', reason: 'Unknown tool.' });
+      continue;
+    }
     if (READ_ONLY.has(tool)) continue;
     if (BUILD_ONLY.has(tool)) {
-      refused.push({ tool, reason: 'Plan mode does not write files or run a shell.' });
+      pushRefused(refused, { tool, reason: 'Plan mode does not write files or run a shell.' });
       continue;
     }
     if (UNPORTED.has(tool)) {
-      refused.push({ tool, reason: 'Search tools are not connected. This slice does not spawn a process.' });
+      pushRefused(refused, { tool, reason: 'Search tools are not connected. This slice does not spawn a process.' });
       continue;
     }
-    refused.push({ tool, reason: 'Unknown tool.' });
+    pushRefused(refused, { tool: tool.slice(0, 40), reason: 'Unknown tool.' });
+  }
+  if (requested.length > PLAN_BOUNDS.maxToolNotes) {
+    pushRefused(refused, { tool: 'tools', reason: 'Further tool names were not inspected.' });
   }
 
   let entries: LocalEntry[] = [];
   try {
-    entries = input.port.list('.').slice(0, PLAN_BOUNDS.maxEntries);
+    entries = takeListing(input.port.list('.'));
   } catch {
     return { ok: false, reason: 'The local project port failed while listing.' };
   }
 
   const reads: PlanRead[] = [];
-  for (const target of input.readPaths ?? []) {
-    const safe = projectPath(target);
+  let portReads = 0;
+  const readPaths = input.readPaths ?? [];
+  for (let index = 0; index < readPaths.length; index += 1) {
+    const target = readPaths[index];
+    if (portReads >= PLAN_BOUNDS.maxReads) {
+      pushRefused(refused, {
+        tool: 'readFile',
+        target: clipNoted(target),
+        reason: `Read budget is ${PLAN_BOUNDS.maxReads}.`,
+      });
+      break;
+    }
+    const safe = projectPath(typeof target === 'string' ? target : '');
     if (!safe) {
-      refused.push({ tool: 'readFile', target, reason: 'That path stays out of the plan.' });
+      pushRefused(refused, {
+        tool: 'readFile',
+        target: clipNoted(target),
+        reason: 'That path stays out of the plan.',
+      });
       continue;
     }
-    if (reads.length >= PLAN_BOUNDS.maxReads) {
-      refused.push({ tool: 'readFile', target: safe, reason: `Read budget is ${PLAN_BOUNDS.maxReads}.` });
-      continue;
-    }
+    portReads += 1;
     let loaded: ReturnType<LocalProjectPort['read']>;
     try {
       loaded = input.port.read(safe);
     } catch {
       return { ok: false, reason: 'The local project port failed while reading.' };
     }
-    if (!loaded.ok) {
-      refused.push({ tool: 'readFile', target: safe, reason: loaded.reason });
+    if (!loaded || loaded.ok !== true || typeof loaded.content !== 'string') {
+      const reason = loaded && loaded.ok === false ? clipNoted(loaded.reason) : undefined;
+      pushRefused(refused, {
+        tool: 'readFile',
+        target: safe,
+        reason: reason || 'That read did not return text.',
+      });
       continue;
     }
     const text = redact(loaded.content);
@@ -227,6 +303,7 @@ export function planLocalProject(input: LocalPlanInput): LocalPlanResult {
     mode: 'plan',
     projectLabel,
     brief,
+    briefTruncated,
     listing: { path: '.', entries },
     reads,
     refused,

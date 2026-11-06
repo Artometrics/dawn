@@ -119,3 +119,76 @@ test('a sixth read is refused and key-shaped text is scrubbed', () => {
   assert.equal(planLocalProject({ projectLabel: 'other/app', brief: 'x', port: filesPort([]) }).ok, false);
   assert.equal(planLocalProject({ projectLabel: 'dawn', brief: 'x', product: 'elsewhere', port: filesPort([]) }).ok, false);
 });
+
+test('a hostile port cannot leak listing names, and redaction happens before truncation', () => {
+  const seen: string[] = [];
+  const token = 'ghp_abcdefghijklmnop';
+  const body = `${'a'.repeat(3_990)}${token}!TAIL`;
+  const port: LocalProjectPort = {
+    list() {
+      seen.push('list');
+      return [
+        { name: '.env', type: 'file' },
+        { name: '../secret', type: 'file' },
+        { name: 'node_modules', type: 'directory' },
+        { name: '/etc/passwd', type: 'file' },
+        { name: 'src', type: 'directory', token } as LocalProjectPort['list'] extends (...args: never[]) => Array<infer T> ? T : never,
+      ];
+    },
+    read(path) {
+      seen.push(`read:${path}`);
+      return { ok: true, content: body };
+    },
+  };
+  const plan = planLocalProject({
+    projectLabel: 'dawn',
+    brief: 'inspect',
+    readPaths: ['src/app.ts', '~/secret', 'C:/Windows/note.txt'],
+    port,
+  });
+  assert.equal(plan.ok, true);
+  if (!plan.ok) return;
+  assert.deepEqual(plan.listing.entries, [{ name: 'src', type: 'directory' }]);
+  assert.equal(JSON.stringify(plan.listing).includes('env'), false);
+  assert.equal(JSON.stringify(plan.listing).includes(token), false);
+  assert.equal(seen.includes('read:~/secret'), false);
+  assert.equal(plan.reads.length, 1);
+  assert.equal(plan.reads[0].text.includes(token), false);
+  assert.equal(plan.reads[0].text.includes('ghp_'), false);
+  assert.equal(plan.reads[0].truncated, true);
+  assert.equal(plan.reads[0].text.length, 4_000);
+
+  const blocked = planLocalProject({
+    projectLabel: 'dawn',
+    brief: 'write it',
+    mode: 'BUILD' as 'build',
+    readPaths: ['src/app.ts'],
+    port,
+  });
+  assert.equal(blocked.ok, false);
+  assert.equal(seen.filter((call) => call.startsWith('read:')).length, 1);
+});
+
+test('failed reads still spend the port budget', () => {
+  const seen: string[] = [];
+  const port: LocalProjectPort = {
+    list() {
+      return [];
+    },
+    read(path) {
+      seen.push(path);
+      return { ok: false, reason: 'missing' };
+    },
+  };
+  const plan = planLocalProject({
+    projectLabel: 'dawn',
+    brief: 'look',
+    readPaths: ['a.ts', 'b.ts', 'c.ts', 'd.ts', 'e.ts', 'f.ts'],
+    port,
+  });
+  assert.equal(plan.ok, true);
+  if (!plan.ok) return;
+  assert.deepEqual(seen, ['a.ts', 'b.ts', 'c.ts', 'd.ts', 'e.ts']);
+  assert.equal(plan.reads.length, 0);
+  assert.equal(plan.refused.some((step) => step.target === 'f.ts'), true);
+});
