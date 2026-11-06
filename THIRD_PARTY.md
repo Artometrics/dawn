@@ -38,6 +38,37 @@ What we used from the idea, not the code: a dataset is a list of records with re
 
 Records carry `ownerId`, `consent`, `license`, and `provenance` so a later multi-user version does not have to invent those fields. v1 has a single owner.
 
+### milind-soni/OpenMausBot
+
+https://github.com/milind-soni/OpenMausBot
+
+License: Apache-2.0 for the open-source tree. Rechecked 2026-11-06 at commit `27b57eff9fc81de649a7c6004579bc0f9c59cfef`. Root `LICENSE` is the Apache License 2.0. `LICENSING.md` keeps `enterprise/` under the OpenMausBot Enterprise License, not Apache-2.0. That folder is not imported.
+
+```
+OpenMausBot
+Copyright 2026 Milind Soni and OpenMausBot contributors
+```
+
+The project was relicensed from MIT to Apache-2.0 with contributor consent. The license text is at https://www.apache.org/licenses/LICENSE-2.0 and in the upstream `LICENSE`. Dawn does not redistribute upstream files in this change, so the upstream `LICENSE` and `NOTICE` are not copied into the tree. Notices in that `NOTICE` for bundled third-party components (T3 Code, Puppeteer, noVNC, and others) do not pertain to Dawn's seam.
+
+What we used from the public contract, not the code: a local machine can list and read a project folder, and a risky action waits. `src/lib/dawn-agents/local-plan.ts` is original Dawn code. It does not call a model, a worker, or a git remote. OpenMausBot does not provide hosted models. The OpenMausBot and MausBot names and the mascot are trademarks of Supamaus Software Private Limited. Apache-2.0 section 6 grants no trademark license. Dawn does not use those names as a product name.
+
+A later PR that vendors an Apache-2.0 file must keep that file's notices and state that Dawn changed it. `enterprise/` stays out.
+
+### code-with-antonio/nightcode
+
+https://github.com/code-with-antonio/nightcode
+
+Checked 2026-11-06 at commit `255883f130d350541e806f2431e7df32369f24bf`. GitHub reports the repo public and `license: null`. The tree has no `LICENSE` file. No source is copied. `packages/cli/src/lib/local-tools.ts` was read only to see that PLAN mode allows read and list tools, and that BUILD mode adds writes and a shell. The server package depends on Clerk, Polar, Prisma, and the OpenAI and Anthropic SDK packages. Dawn keeps its own auth and `src/lib/dawn-agents/spend.ts`.
+
+### code-with-antonio/ai-teammates
+
+Customer archive `ai-teammates-main.tar.gz`, saved at `/home/ubuntu/.cursor/projects/agent-repos-dawn/uploads/ai-teammates-main.tar_ca32.gz`. Root directory `code-with-antonio-ai-teammates-de32f46/`. No `LICENSE`, `NOTICE`, or `COPYING` file, and `package.json` has no `license` field. No source is copied. `lib/sandbox-tools.ts`, `lib/daytona.ts`, and `lib/handoff-tool.ts` were read for the tool and sandbox shape only. The app depends on Clerk, Daytona, Trigger.dev, and Neon.
+
+### code-with-antonio/sandbox
+
+Customer archive `sandbox-main.tar.gz`, saved at `/home/ubuntu/.cursor/projects/agent-repos-dawn/uploads/sandbox-main.tar_7929.gz`. Root directory `code-with-antonio-sandbox-ac18750/`. No `LICENSE`, `NOTICE`, or `COPYING` file, and `package.json` has no `license` field. No source is copied. `lib/games/tools.ts`, `lib/daytona/utils.ts`, and `lib/games/authorize.ts` were read for the path and auth shape only. The app depends on Clerk, Daytona, Trigger.dev, Neon, and Anthropic.
+
 ### Kyle's own sites
 
 Style Recipes (https://recipes-510519.web.app) and the studio letter (https://newsletter-510519.web.app) are ported as behavior and, for recipes, as Kyle's palette, type, and layout data. Those sites are left deployed. Their source was not in the public Artometrics GitHub org, so the port follows the live Style Recipes assets and the letter's public behavior (double opt-in, explicit send, Resend-style transport).
