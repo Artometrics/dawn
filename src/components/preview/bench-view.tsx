@@ -75,7 +75,7 @@ export function BenchView() {
               <img src={item.sprite} alt="" width={40} height={40} />
               <span>
                 <strong>{item.title}</strong>
-                <span>{item.spriteName} sprite. Not speaking.</span>
+                <span>{item.spriteName}</span>
               </span>
             </button>
           </li>
@@ -88,7 +88,6 @@ export function BenchView() {
               <img src={sample.sprite} alt="" width={64} height={64} />
               <div>
                 <h2>{sample.title}</h2>
-                <p className="pv-lead">{sample.detail}</p>
               </div>
             </div>
             <ul className="pv-checks">
@@ -120,14 +119,16 @@ export function BenchView() {
               </button>
             </div>
             {error ? <p className="pv-error" role="alert">{error}</p> : null}
-            {state.verified ? <p className="pv-lead">You checked this sample. No agent confirmed it.</p> : null}
+            {state.verified ? <p className="pv-count">Demo · checked</p> : (
+              <p className="pv-count">Demo · {state.checks.filter((check) => check.done).length} of {state.checks.length}</p>
+            )}
             <ul className="pv-ideas">
-              {state.ideas.length === 0 ? <li>No ideas saved yet.</li> : state.ideas.map((idea) => <li key={idea.id}>{idea.text}</li>)}
+              {state.ideas.length === 0 ? <li>No ideas yet.</li> : state.ideas.map((idea) => <li key={idea.id}>{idea.text}</li>)}
             </ul>
-            <p className="pv-lead"><Link href="/preview/stuck">I&apos;m stuck</Link></p>
+            <p className="pv-lead"><Link className="pv-pill" href="/preview/stuck">Take a short break</Link></p>
           </>
         ) : (
-          <p className="pv-lead">Choose one sample. The other two wait.</p>
+          <p className="pv-lead">Choose a sample.</p>
         )}
       </section>
     </div>

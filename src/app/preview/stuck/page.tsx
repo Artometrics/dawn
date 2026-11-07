@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 export default function StuckPage() {
   return (
     <PreviewShell
-      title="A short round"
-      lead="When a sample stalls, the village has nowhere to go but away. This round is three steps. It does not finish a check for you."
+      title="Take a short break"
+      lead="Three steps, then back to the bench."
       current="/preview/stuck"
     >
       <StuckView />

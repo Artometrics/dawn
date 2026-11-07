@@ -12,7 +12,7 @@ export default function HabitsPage() {
   return (
     <PreviewShell
       title="Today's habits"
-      lead="The village quest is still three generic checks. This page is the missing habit day: one row open, and you are the one who marks it."
+      lead="One at a time."
       current="/preview/habits"
     >
       <HabitsView />

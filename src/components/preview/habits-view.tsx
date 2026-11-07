@@ -49,7 +49,7 @@ export function HabitsView() {
               <img src="/sprites/town/player.png" alt="" width={40} height={40} />
               <span>
                 <strong>{habit.title}</strong>
-                <span>{state.habitDone[habit.id] ? 'Checked by you' : 'Open'}</span>
+                <span>{state.habitDone[habit.id] ? 'Done' : 'Open'}</span>
               </span>
             </button>
           </li>
@@ -59,20 +59,19 @@ export function HabitsView() {
         {open ? (
           <>
             <h2>{open.title}</h2>
-            <p className="pv-lead">{open.detail}</p>
             <label className="pv-field">
               <input
                 type="checkbox"
                 checked={state.habitDone[open.id]}
                 onChange={() => setState(toggleHabit(state, open.id))}
               />
-              I did this sample. No agent watched.
+              Done
             </label>
           </>
         ) : (
-          <p className="pv-lead">Pick one habit. Leave the other two closed.</p>
+          <p className="pv-lead">Choose one habit.</p>
         )}
-        <p className="pv-lead">{doneCount} of {HABITS.length} sample checks. This count is not a streak and not XP.</p>
+        <p className="pv-count">Demo · {doneCount} of {HABITS.length}</p>
       </section>
     </>
   );

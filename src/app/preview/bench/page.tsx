@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 export default function BenchPage() {
   return (
     <PreviewShell
-      title="One sample"
-      lead="Pick one sample. Save an idea in this browser. Mark the checks yourself. Switching samples clears those checks and keeps the ideas."
+      title="Choose a sample"
+      lead="Ideas stay in this browser."
       current="/preview/bench"
     >
       <BenchView />

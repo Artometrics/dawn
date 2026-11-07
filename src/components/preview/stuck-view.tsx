@@ -23,26 +23,38 @@ export function StuckView() {
     sessionStorage.setItem(PREVIEW_KEY, JSON.stringify(state));
   }, [ready, state]);
 
+  useEffect(() => {
+    if (!ready || state.steps >= STUCK_STEPS) return;
+    function onKey(event: KeyboardEvent) {
+      if (event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      setState((current) => ({ ...current, steps: stepRound(current.steps) }));
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [ready, state.steps]);
+
   const done = state.steps >= STUCK_STEPS;
+  const place = Math.min(state.steps, STUCK_STEPS - 1);
 
   function step() {
     setState((current) => ({ ...current, steps: stepRound(current.steps) }));
   }
 
-  if (!ready) return <p className="pv-lead">Opening the round…</p>;
+  if (!ready) return <p className="pv-lead">Opening the board…</p>;
 
   return (
     <section aria-live="polite">
-      <div className="pv-lane" aria-hidden="true">
+      <div className="pv-lane" role="img" aria-label={`Break board, step ${state.steps} of ${STUCK_STEPS}`}>
         {Array.from({ length: STUCK_STEPS }, (_, index) => (
           <div className="pv-tile" data-on={index < state.steps ? 'true' : 'false'} key={index}>
-            {index === Math.max(0, state.steps - 1) && state.steps > 0 ? (
-              <img src="/sprites/town/player.png" alt="" width={48} height={48} />
+            {index === place ? (
+              <img src="/sprites/town/player.png" alt="" width={64} height={64} />
             ) : null}
           </div>
         ))}
       </div>
-      <p className="pv-lead">Step {Math.min(state.steps, STUCK_STEPS)} of {STUCK_STEPS}. The pixel is the town player. It is not an agent.</p>
+      <p className="pv-count">Demo · step {state.steps} of {STUCK_STEPS}</p>
       {done ? (
         <p className="pv-lead"><Link className="pv-pill" href="/preview/bench">Back to the bench</Link></p>
       ) : (

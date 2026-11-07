@@ -23,8 +23,8 @@ export function PreviewShell({
     <div className="dawn-preview">
       <a className="pv-skip" href="#preview-main">Skip to the sample</a>
       <header className="pv-bar">
-        <Link className="pv-word" href="/preview">Dawn</Link>
-        <p className="pv-status">Demonstration. Agents are off. These rows are samples, not a live run.</p>
+        <Link className="pv-word" href="/preview">DAWN</Link>
+        <p className="pv-badge">Demo — agents off</p>
         <nav className="pv-nav" aria-label="Review pages">
           {LINKS.map((link) => (
             <Link key={link.href} href={link.href} aria-current={current === link.href ? 'page' : undefined}>
