@@ -2,6 +2,7 @@ import Link from 'next/link';
 import './preview.css';
 
 const LINKS = [
+  { href: '/preview/village', label: 'Village' },
   { href: '/preview/bench', label: 'Bench' },
   { href: '/preview/habits', label: 'Habits' },
   { href: '/preview/stuck', label: 'Stuck' },
