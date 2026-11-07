@@ -7,10 +7,11 @@ import { AGENTS } from '@/lib/agents';
 import { VillageGame } from '@/components/dawn/village-game';
 import type { VillagePose } from '@/components/dawn/village-scene';
 
+/** Standing demo phrases from the village day plan. Not a live turn. */
 const POSES: VillagePose[] = [
-  { id: 'trinity', gx: 4, gy: 3, caption: 'Sample line' },
-  { id: 'kali', gx: 6, gy: 7, caption: 'Sample line' },
-  { id: 'nimbus', gx: 11, gy: 4, caption: 'Sample line' },
+  { id: 'trinity', gx: 4, gy: 3, caption: 'Writing the recap' },
+  { id: 'kali', gx: 6, gy: 7, caption: 'Sorting notes' },
+  { id: 'nimbus', gx: 11, gy: 4, caption: 'Sharing the build' },
 ];
 
 const TABS = [
@@ -25,12 +26,12 @@ type TabId = (typeof TABS)[number]['id'];
 
 export function VillagePreview() {
   const [tab, setTab] = useState<TabId>('village');
-  const [note, setNote] = useState('Sample line. Agents are off.');
+  const [note, setNote] = useState('Sample. Agents are off.');
 
   return (
     <div className="pv-village" data-preview-village="">
       <header className="pv-village-bar">
-        <p className="pv-word">Dawn</p>
+        <p className="pv-word">DAWN</p>
         <button type="button" className="pv-village-sign" disabled>
           Sign in
         </button>
@@ -42,9 +43,9 @@ export function VillagePreview() {
             poses={POSES}
             onAgent={(id) => {
               const agent = AGENTS.find((item) => item.id === id);
-              setNote(agent ? `${agent.name} is a sprite. Agents are off.` : 'Agents are off.');
+              setNote(agent ? `Sample. ${agent.name} is not running.` : 'Sample. Agents are off.');
             }}
-            onYou={() => setNote('That is the player sprite. Agents are off.')}
+            onYou={() => setNote('Sample. The player sprite is not an agent.')}
           />
         )}
         {tab === 'map' && (
@@ -57,7 +58,7 @@ export function VillagePreview() {
         {tab === 'chat' && (
           <div className="pv-village-panel">
             <h1>Chat</h1>
-            <p>Sample line. Nothing is sent, and no model is called.</p>
+            <p>Sample. Nothing is sent, and no model is called.</p>
           </div>
         )}
         {tab === 'quests' && (
@@ -82,7 +83,7 @@ export function VillagePreview() {
       <div className="pv-village-strip" aria-label="Team">
         <div className="pv-village-strip-row">
           {AGENTS.map((agent) => (
-            <button key={agent.id} type="button" onClick={() => setNote(`${agent.name} is a sprite. Agents are off.`)}>
+            <button key={agent.id} type="button" onClick={() => setNote(`Sample. ${agent.name} is not running.`)}>
               <img src={agent.src} alt="" width={32} height={32} />
               {agent.name}
             </button>
