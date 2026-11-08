@@ -33,6 +33,8 @@ publish('letter');
 publish('credits');
 publish('village');
 publish('desk');
+publish('editor');
+publish('artifacts');
 publish('preview/bench');
 publish('preview/habits');
 publish('preview/stuck');

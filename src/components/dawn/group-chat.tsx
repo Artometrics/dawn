@@ -124,7 +124,7 @@ export function GroupChat() {
   }
 
   if (!user) {
-    return <p className="text-[15px] leading-6 text-[var(--dawn-secondary)]">Sign in, then join a room. Another signed-in person can use the same room name.</p>;
+    return <p className="text-[15px] leading-6 text-[var(--dawn-secondary)]">This is the chat screen. No bot is connected. Joining a room needs Firebase sign-in, which is not available on this static host.</p>;
   }
 
   return (

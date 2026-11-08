@@ -77,9 +77,17 @@ export function AgentsRoot() {
           <div>
             <p className="word">DAWN</p>
             <h1>Agents</h1>
-            <p className="note">One Google account. No password on this page.</p>
+            <p className="note">{needsGoogle ? 'One Google account. No password on this page.' : 'The agent desk is not running on this host.'}</p>
             {error && <p className="error">{error}</p>}
             {needsGoogle && <a className="primary" href={googleSignInHref()} style={{ display: 'inline-flex', alignItems: 'center' }}>Sign in with Google</a>}
+            <nav className="ph-links" aria-label="Dawn" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <a href="/">Town</a>
+              <a href="/village">Village</a>
+              <a href="/atlas">Atlas</a>
+              <a href="/studio">Studio</a>
+              <a href="/letter">Letter</a>
+              <a href="/credits">Credits</a>
+            </nav>
           </div>
         </div>
       </div>

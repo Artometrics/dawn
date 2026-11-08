@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { AgentsRoot } from '@/components/dawn-agents/agents-app';
+import { AgentsEntry } from './entry';
 import './agents.css';
 
 export const metadata: Metadata = {
   title: 'Dawn Agents',
-  description: "Kyle's private agent desk.",
+  description: 'The pinned Dawn characters. The live desk is separate.',
 };
 
 export default function AgentsPage() {
-  return <AgentsRoot />;
+  return <AgentsEntry />;
 }

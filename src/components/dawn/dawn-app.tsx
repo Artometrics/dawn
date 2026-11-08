@@ -45,6 +45,10 @@ function Shell() {
   const dawn = useDawn();
   const town = useTown(dawn.memories, dawn.remember);
   const [section, setSection] = useState<Section>('quests');
+  useEffect(() => {
+    const asked = new URLSearchParams(window.location.search).get('section');
+    if (asked === 'quests' || asked === 'village' || asked === 'atlas' || asked === 'library') setSection(asked);
+  }, []);
   const [drawer, setDrawer] = useState(false);
   const [query, setQuery] = useState('');
   const [youOpen, setYouOpen] = useState(false);
