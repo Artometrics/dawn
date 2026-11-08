@@ -15,7 +15,9 @@ function publish(route) {
   if (existsSync(dir)) {
     for (const name of readdirSync(dir)) {
       const p = join(dir, name);
-      if (statSync(p).isFile() && name !== 'index.html') rmSync(p);
+      // Child routes keep route.html beside this folder (preview/village.html).
+      // Only the RSC text dumps are removed so the directory can hold index.html.
+      if (statSync(p).isFile() && name !== 'index.html' && !name.endsWith('.html')) rmSync(p);
     }
   } else {
     mkdirSync(dir, { recursive: true });
@@ -31,3 +33,8 @@ publish('letter');
 publish('credits');
 publish('village');
 publish('desk');
+publish('preview/bench');
+publish('preview/habits');
+publish('preview/stuck');
+publish('preview/village');
+publish('preview');
