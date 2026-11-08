@@ -19,15 +19,12 @@ export async function probeDesk(fetchImpl: typeof fetch, url: string): Promise<D
 
 export function townAction(href: string, desk: DeskStatus): TownAction {
   const path = href.split('?')[0] || '/';
-  if (path === '/editor') {
-    return { kind: 'blocked', title: 'Dawn Code', reason: 'The editor is not published on this host.' };
-  }
   if (path === '/agents' || path.startsWith('/oauth2')) {
     if (desk === 'ready' || desk === 'signin') return { kind: 'navigate', href };
     return {
       kind: 'blocked',
       title: 'Ask Dawn',
-      reason: 'The agent desk is not running on this host. The map, village, atlas, studio, and letter still open.',
+      reason: 'The agent desk is not running on this host. The map, village, atlas, studio, letter, code, and artifacts still open.',
     };
   }
   return { kind: 'navigate', href };

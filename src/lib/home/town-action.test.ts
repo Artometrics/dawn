@@ -7,8 +7,9 @@ test('a missing gateway is offline and does not offer a fake sign-in', async () 
   assert.equal(status, 'offline');
   const ask = townAction('/agents', status);
   assert.equal(ask.kind, 'blocked');
-  const editor = townAction('/editor', status);
-  assert.equal(editor.kind, 'blocked');
+  assert.equal(townAction('/editor', status).kind, 'navigate');
+  assert.equal(townAction('/artifacts', status).kind, 'navigate');
+  assert.deepEqual(townAction('/letter', status), { kind: 'navigate', href: '/letter' });
   assert.equal(townAction('/village', status).kind, 'navigate');
   assert.equal(townAction('/atlas', status).kind, 'navigate');
 });

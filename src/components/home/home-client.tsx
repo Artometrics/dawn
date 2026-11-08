@@ -11,6 +11,6 @@ const PixelHome = dynamic(() => import('@/components/home/pixel-home').then((mod
   ),
 });
 
-export function HomeClient() {
-  return <PixelHome />;
+export function HomeClient({ initialPanel = false }: { initialPanel?: boolean }) {
+  return <PixelHome initialPanel={initialPanel} />;
 }

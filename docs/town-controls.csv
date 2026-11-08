@@ -1,12 +1,16 @@
 control,expected,before,fix,test
 Search Dawn,Typing a building name lists it and choosing it selects that building,Worked only if the React input event fired; looked idle if the painted search in the art was tapped,Real search stays above the map. Results use the hotspot list.,Local hydration typed Atlas and showed the Atlas result
-Menu ellipsis,Opens the side list and can close it,Opened a drawer whose chats and recents looked real and then died on the offline desk,Drawer still opens. Chats and new chat explain that the desk is offline. Recents say there are none on this host.,Local hydration opened the menu and read No chats on this host
+Menu ellipsis,Opens the side list and can close it,Opened a drawer whose chats and recents looked real and then died on the offline desk,Drawer opens Projects Code and Artifacts. There is no Chats entry and no New chat. Pinned names open that bot's thread. Recents say there are no saved threads unless the gateway returns some.,Local hydration opened the menu. The nav text has no Chats link
 Profile,Switches the sheet to You,Switched, but Sign in and Sign out pointed at oauth routes that 404 on this host,You still opens. Sign in appears only when the gateway returns 401. Offline copy says sign-in is not set up.,town-action.test.ts offline versus 401
 Village chip,Opens /village,Chip did not exist,Added. It is a normal link.,Local click landed on /village and history.back returned to /
 Ask Dawn chip,Opens the desk only when a gateway is actually up,Always went to /agents which then showed a dead gate,Offline stays on the map and says the desk is not running. A 401 or 200 gateway still navigates.,Local click stayed on / and showed the status text
 Agents chip,Opens the side list,Opened the drawer,Unchanged local behavior,Menu hydration
-Editor chip,Opens Dawn Code only if that page exists,Went to /editor which is not a published route,Blocked with The editor is not published on this host.,town-action.test.ts
-Recipes chip,Opens recipes only when the desk is up,Went to /agents?section=recipes and hit the dead gate,Same offline block as Ask Dawn,town-action.test.ts
+Editor chip,Opens the code shell,Went to /editor which was a Next 404,Opens /editor. The page is a local sample and does not run it.,town-action.test.ts plus local /editor
+Recipes chip,Opens the style library,Went to /agents?section=recipes and hit the dead gate,Opens /artifacts. The recipes board renders. A like is not saved.,Local /artifacts text
+Code in the drawer,Opens the code shell,Same missing editor page,Link to /editor,Local click from the menu
+Artifacts in the drawer,Opens the style library,Opened the letter form,Link to /artifacts. The letter stays on Letter.,Local /artifacts is the recipe board
+Pinned bot,Opens that bot's conversation,Pinned rows left the town for atlas editor letter or the offline desk,Each pinned name opens the pixel thread on the town. Send keeps the line in the browser and does not call a model. Workspace link stays available. Agents Desk says the desk is not running.,Local Atlas Scout thread and back
+Projects in the drawer,Opens /studio,Studio columns overflowed on a phone,Link to /studio. Narrow width hides the desktop header and shows Town Chat Computer Project.,Local 472 studio panes
 Letter chip,Opens /letter,Navigated,Unchanged,Route exists in the static export
 Studio chip,Opens /studio,Navigated,Unchanged,Route exists in the static export
 Building tap,Selects that building and the sheet offers Open,Canvas hit testing was easy to miss and the sheet still linked to Ask Dawn,Each building has a hit target. The sheet primary action is Open plus the building name.,Local tap on Atlas showed Open Atlas and followed /atlas

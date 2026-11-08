@@ -69,7 +69,6 @@ import {
 } from 'lucide-react';
 import { Teammate, DEFAULT_TEAMMATES } from '@/types/teammate';
 import { TeammateDialog } from '@/components/teammate-dialog';
-import { streamStudioChat } from '@/lib/studio/client-chat';
 import { ChatAvatar } from '@/components/chat-avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -127,6 +126,9 @@ export default function DawnStudio() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(true);
   const [isComputerAwake, setIsComputerAwake] = useState(false);
+  const [narrow, setNarrow] = useState(false);
+  const [mobilePane, setMobilePane] = useState<'chat' | 'computer' | 'project'>('chat');
+  const [hostNote, setHostNote] = useState('');
 
   // Teammates / Grok Bots
   const [teammates, setTeammates] = useState<Teammate[]>(DEFAULT_TEAMMATES);
@@ -207,6 +209,20 @@ export default function DawnStudio() {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 800px)');
+    const apply = () => {
+      setNarrow(media.matches);
+      if (media.matches) {
+        setIsSidebarOpen(false);
+        setIsRightPanelOpen(false);
+      }
+    };
+    apply();
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
+  }, []);
+
   // Keyboard shortcut for Cmd+K
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -250,60 +266,7 @@ export default function DawnStudio() {
   const handleSendMessage = async (textToSend?: string) => {
     const prompt = textToSend || input;
     if (!prompt.trim() || isLoading) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: prompt.trim(),
-      timestamp: 'Just now',
-    };
-
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
-    setInput('');
-    setIsLoading(true);
-
-    const assistantId = (Date.now() + 1).toString();
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: assistantId,
-        role: 'assistant',
-        authorName: activeTeammate.name,
-        content: '',
-        timestamp: 'Just now',
-      },
-    ]);
-
-    try {
-      await streamStudioChat(
-        {
-          messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
-          model: activeTeammate.model,
-          teammate: activeTeammate,
-          codeContext: {
-            filename: 'page.tsx',
-            language: 'typescript',
-            content: editorCode,
-          },
-        },
-        (accumulated) => {
-          setMessages((prev) =>
-            prev.map((m) => (m.id === assistantId ? { ...m, content: accumulated } : m))
-          );
-        },
-      );
-    } catch (err: any) {
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === assistantId
-            ? { ...m, content: `⚠️ Error connecting to model: ${err.message}` }
-            : m
-        )
-      );
-    } finally {
-      setIsLoading(false);
-    }
+    setHostNote('A model is not connected on this host. Nothing was sent.');
   };
 
   return (
@@ -311,9 +274,9 @@ export default function DawnStudio() {
       {/* ═══════════════════════════════════════════════════════════════
           SLACK-STYLE TOP WINDOW BAR WITH GLOBAL SEARCH (IMAGE 5 STYLE)
       ═════════════════════════════════════════════════════════════════ */}
-      <header className="h-11 bg-[#151312] border-b border-[#2d2926] px-3 flex items-center justify-between shrink-0 z-30">
+      <header className={`${narrow ? 'hidden' : 'h-11 bg-[#151312] border-b border-[#2d2926] px-3 flex items-center justify-between shrink-0 z-30'}`}>
         {/* Left: Window Traffic Lights & Navigation */}
-        <div className="flex items-center gap-3 w-64">
+        <div className="flex items-center gap-3 min-w-0">
           <div className="flex items-center gap-2 group">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -327,9 +290,9 @@ export default function DawnStudio() {
           </div>
 
           <div className="flex items-center gap-1 text-[#8f8880]">
-            <button className="p-1 rounded hover:bg-[#252220] hover:text-[#e8e5e0] cursor-pointer">
+            <a href="/" className="p-1 rounded hover:bg-[#252220] hover:text-[#e8e5e0]" aria-label="Back to town">
               <ArrowLeft className="w-3.5 h-3.5" />
-            </button>
+            </a>
             <button className="p-1 rounded hover:bg-[#252220] hover:text-[#e8e5e0] cursor-pointer">
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
@@ -379,11 +342,26 @@ export default function DawnStudio() {
       {/* ═══════════════════════════════════════════════════════════════
           MAIN APPLICATION WORKSPACE (SLACK RAIL + SIDEBAR + CHAT + COMPUTER)
       ═════════════════════════════════════════════════════════════════ */}
-      <div className="flex-1 flex overflow-hidden">
+      {narrow && (
+        <div className="flex shrink-0 border-b border-[#2d2926] bg-[#151312]">
+          <a href="/" className="px-3 py-3 text-sm text-[#e8e5e0]">Town</a>
+          {(['chat', 'computer', 'project'] as const).map((pane) => (
+            <button
+              key={pane}
+              type="button"
+              onClick={() => setMobilePane(pane)}
+              className={`flex-1 py-3 text-sm capitalize ${mobilePane === pane ? 'text-white' : 'text-[#8f8880]'}`}
+            >
+              {pane === 'project' ? 'Project' : pane === 'computer' ? 'Computer' : 'Chat'}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="flex-1 flex overflow-hidden relative min-w-0">
         {/* ─────────────────────────────────────────────────────────────
             FAR-LEFT SLACK-STYLE VERTICAL ACTIVITY RAIL (MORE ICONS, LESS TEXT)
         ───────────────────────────────────────────────────────────────── */}
-        <nav className="w-14 bg-[#141211] border-r border-[#262320] flex flex-col items-center py-3 justify-between shrink-0 z-20">
+        <nav className={`${narrow ? 'hidden' : 'w-14'} bg-[#141211] border-r border-[#262320] flex flex-col items-center py-3 justify-between shrink-0 z-20`}>
           {/* Top App / Workspace Badge */}
           <div className="flex flex-col items-center gap-3">
             <button 
@@ -498,8 +476,8 @@ export default function DawnStudio() {
         {/* ─────────────────────────────────────────────────────────────
             COLUMN 1: GROK BOTS & CHANNELS SIDEBAR (IMAGE 4 & 5 STYLE)
         ───────────────────────────────────────────────────────────────── */}
-        {isSidebarOpen && (
-          <aside className="w-64 bg-[#1b1917] border-r border-[#2d2926] flex flex-col shrink-0">
+        {(narrow ? mobilePane === 'project' : isSidebarOpen) && (
+          <aside className={`${narrow ? 'absolute inset-0 z-40 w-full' : 'w-64'} bg-[#1b1917] border-r border-[#2d2926] flex flex-col shrink-0`}>
             {/* Claude-style Mode Switcher: [ Home ] vs [ </> Code ] */}
             <div className="p-2.5 border-b border-[#2d2926]">
               <div className="grid grid-cols-2 bg-[#262320] p-0.5 rounded-lg text-xs font-medium text-[#9a938a]">
@@ -626,19 +604,21 @@ export default function DawnStudio() {
                   Pinned
                 </div>
                 <div className="space-y-0.5 mt-1 text-[#9a938a]">
-                  <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#221f1d] cursor-pointer">
-                    <Folder className="w-3.5 h-3.5 text-amber-500" />
-                    <span>Rainfall Health</span>
-                  </div>
-                  <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#221f1d] cursor-pointer">
-                    <FileText className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>Podcast Descriptions</span>
-                  </div>
-                  <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#221f1d] cursor-pointer">
-                    <Radio className="w-3.5 h-3.5 text-rose-400" />
-                    <span>Ask Rainfall Health</span>
-                  </div>
+                  {['Rainfall Health', 'Podcast Descriptions', 'Ask Rainfall Health'].map((name) => (
+                    <button
+                      key={name}
+                      type="button"
+                      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#221f1d] cursor-pointer text-left"
+                      onClick={() => setHostNote(`${name} is a sample name. No project files are stored on this host.`)}
+                    >
+                      {name === 'Rainfall Health' && <Folder className="w-3.5 h-3.5 text-amber-500" />}
+                      {name === 'Podcast Descriptions' && <FileText className="w-3.5 h-3.5 text-cyan-400" />}
+                      {name === 'Ask Rainfall Health' && <Radio className="w-3.5 h-3.5 text-rose-400" />}
+                      <span>{name}</span>
+                    </button>
+                  ))}
                 </div>
+                {hostNote && <p role="status" className="px-2 pt-3 text-[11px] leading-snug text-[#e8e5e0]">{hostNote}</p>}
               </div>
             </div>
 
@@ -665,7 +645,7 @@ export default function DawnStudio() {
         {/* ─────────────────────────────────────────────────────────────
             COLUMN 2: MIDDLE CHAT / CLAUDE "EVENING THOUGHTS" + COMPOSER
         ───────────────────────────────────────────────────────────────── */}
-        <section className="flex-1 flex flex-col min-w-[400px] border-r border-[#2d2926] bg-[#191716] transition-all">
+        <section className={`flex-1 flex flex-col min-w-0 border-r border-[#2d2926] bg-[#191716] transition-all ${narrow && mobilePane !== 'chat' ? 'hidden' : ''}`}>
           {/* Thread Header (Grok / Slack style) */}
           <div className="h-11 px-4 border-b border-[#2d2926] flex items-center justify-between text-xs bg-[#191716]/90 backdrop-blur-md">
             <div className="flex items-center gap-2 font-medium text-[#e8e5e0]">
@@ -720,6 +700,8 @@ export default function DawnStudio() {
 
           {/* Chat Messages Stream */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs select-text">
+            <p role="status" className="text-[#d97746]">Sample transcript. Saved in this page, not a live chat. No model is connected.</p>
+            {hostNote && <p role="status">{hostNote}</p>}
             {/* Claude-style "Evening thoughts" hero title if few messages or starting clean */}
             {messages.length === 0 && (
               <div className="h-full flex flex-col items-center justify-center pb-20 text-center">
@@ -762,13 +744,14 @@ export default function DawnStudio() {
                       {/* Slack-style Reactions & Actions */}
                       <div className="flex items-center gap-2 pt-1 text-[11px] text-[#7d7770]">
                         {m.reactions?.map((r, i) => (
-                          <button
+                          <span
                             key={i}
-                            className="flex items-center gap-1 bg-[#262320] hover:bg-[#302c28] border border-[#36322e] px-2 py-0.5 rounded-full cursor-pointer text-xs"
+                            title="Sample reaction. Not saved."
+                            className="flex items-center gap-1 bg-[#262320] border border-[#36322e] px-2 py-0.5 rounded-full text-xs"
                           >
                             <span>{r.emoji}</span>
                             <span className="font-mono text-[10px] text-[#9a938a]">{r.count}</span>
-                          </button>
+                          </span>
                         ))}
                         <button className="hover:text-white cursor-pointer px-1">
                           <Smile className="w-3.5 h-3.5" />
@@ -833,7 +816,7 @@ export default function DawnStudio() {
 
                   {/* Model indicator */}
                   <div className="flex items-center gap-1 font-mono text-[11px] text-[#9a938a] bg-[#1f1d1b] px-2 py-0.5 rounded border border-[#302c28]">
-                    <span>{activeTeammate.model.includes('3.8') ? 'Sonnet 3.5 / Gemini 3.8' : 'Deep Pro+'}</span>
+                    <span>Sample label. No model is connected.</span>
                   </div>
                 </div>
 
@@ -858,8 +841,8 @@ export default function DawnStudio() {
         {/* ─────────────────────────────────────────────────────────────
             COLUMN 3: RIGHT PANEL (GROK "COMPUTER" & LIVE WEBVIEW / IDE)
         ───────────────────────────────────────────────────────────────── */}
-        {isRightPanelOpen && (
-          <main className="flex-1 flex flex-col bg-[#141211] overflow-hidden min-w-[400px] transition-all border-l border-[#2d2926]">
+        {(narrow ? mobilePane === 'computer' : isRightPanelOpen) && (
+          <main className={`${narrow ? 'absolute inset-0 z-30 w-full' : 'flex-1 min-w-0'} flex flex-col bg-[#141211] overflow-hidden transition-all border-l border-[#2d2926]`}>
             {/* Top Header: Grok Segmented Switcher [ Details ] [ Library ] [ Computer ] [ Editor ] */}
             <div className="h-11 border-b border-[#2d2926] bg-[#171514] px-3 flex items-center justify-between text-xs">
               {/* Grok Segmented Switcher Tabs */}
@@ -969,17 +952,18 @@ export default function DawnStudio() {
                       <Monitor className="w-8 h-8" />
                     </div>
                     <h3 className="text-sm font-semibold text-[#f3f1ee] mb-1">
-                      The computer is asleep.
+                      No computer is connected.
                     </h3>
                     <p className="text-xs text-[#8f8880] mb-5">
-                      Click to wake up TRINITY's screen and inspect the live web app.
+                      This host has no desktop to wake. Nothing here opens a remote screen.
                     </p>
                     <Button
-                      onClick={() => setIsComputerAwake(true)}
-                      className="bg-[#d97746] hover:bg-[#c66337] text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-md cursor-pointer"
+                      onClick={() => setHostNote('No computer is connected on this host. The screen cannot wake.')}
+                      className="bg-[#d97746] hover:bg-[#c66337] text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-md cursor-pointer max-w-full"
                     >
                       Wake Up Screen
                     </Button>
+                    {hostNote && <p role="status" className="text-xs text-[#f3f1ee] mt-4 max-w-sm">{hostNote}</p>}
                   </div>
                 ) : isMobilePreview ? (
                   /* Smartphone Mockup */

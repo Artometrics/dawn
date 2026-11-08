@@ -58,4 +58,23 @@ A pass of the fixtures above is not approval to turn any of them on.
 | SendKit | `code-with-antonio/sendkit` | Telegram bot token. The remote design puts that token in a URL. README MIT badge, LICENSE file absent, GitHub license null. | Not imported. Dawn does not put tokens in URLs or logs. |
 | Personal assistant | `code-with-antonio/ai-personal-assistant` | Telegram or Linq iMessage, Trigger.dev, Daytona, Neon, Firecrawl, Clerk. No channel was requested. | Not connected. |
 
-An autonomous bot still needs a model key, a spend budget the owner names, and a process that is not Firebase Hosting. Cloud Run, Gemini, and Firestore from section 5.2 stay unwired. `LIVE01` is not run.
+An autonomous bot still needs a process that is not Firebase Hosting. `LIVE01` is not run. No model call was made for this check.
+
+## Chat connection, checked 2026-11-08
+
+There is no separate Chats app. A pinned town bot opens its own pixel thread. That thread keeps what you type in the browser and does not call a provider.
+
+What already exists:
+
+| Piece | Where | Status found, no secret values |
+| --- | --- | --- |
+| Firebase client config | `https://dawn-510519.web.app/__/firebase/init.json` returns 200 for project `dawn-510519`. Fields `apiKey` and `appId` are present and non-empty. | This is the public web config. It is not a Gemini or OpenRouter key. |
+| Village Gemini path | `src/lib/guide.ts` uses Firebase AI Logic (`GoogleAIBackend`) only when `bootFirebase()` is `hosted`. Model id in that file is `gemini-flash-latest`. | Not called. The repo treats a missing App Check token as a 401 (`src/lib/gemini-error.ts`). That id is historical code, not an approved default. |
+| Server provider names | `GEMINI_API_KEY` or `GOOGLE_GENERATIVE_AI_API_KEY`, `OPENROUTER_API_KEY`, `XAI_API_KEY` in `.env.example` and `editor/.env.example`. `src/lib/dawn-agents/provider.ts` reports only booleans. | Unset in this environment. No key file in the checkout was read as present. Values were not printed. |
+| Agents gateway on Firebase Hosting | `public/dawn-agents-config.json` and the live file both have `gatewayUrl` empty. `https://dawn-510519.web.app/api/state` is 404. | The static site does not run the gateway. |
+| Named host `2-29-173-68.sslip.io` | `/` currently serves the Dawn town HTML. An unauthenticated `GET /api/state` is redirected to Google sign-in. | The process behind that sign-in was not opened. Key booleans on that host were not read. |
+| `dawn-1` | Not named in this repository. | Nothing here was called `dawn-1`. |
+| Spend cap | `DAWN_SPEND_CAP_USD` is a name in `.env.example`. | Unset here. No cap was applied or invented. |
+| Saved rooms | `GroupChat` still reads Firestore rooms for a signed-in village user. The town drawer no longer links to it. | Room documents were not deleted. |
+
+A bot reply on the public map needs the existing gateway process, or Firebase AI Logic with App Check on project `dawn-510519`, and a provider key that is already configured on that process. This check did not add a key, a backend, or a model call.

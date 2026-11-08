@@ -1,9 +1,11 @@
 path,purpose,workflow,state,auth_setup,test_status,evidence,last_verified_PST
-/,Town map,public entry,static export; live site still the previous deploy until this branch is published,none on the map; desk actions blocked when /api/state is not a gateway,town-action.test.ts; local static hydration at 390 472 and 1280,docs/town-controls.csv,2026-11-08 14:45 PST
+/,Town map and bot threads,public entry,static export; live site still the previous deploy until the parent publishes this branch,none on the map; a bot thread does not call a model; desk actions blocked when /api/state is not a gateway,town-action.test.ts; local static hydration,docs/town-controls.csv,2026-11-08 15:10 PST
 /village,Current village app,Dawn foundation,static export only; not published from this branch,none,build emitted the page; live site not rechecked this run,npm run build 2026-11-08,2026-11-08 14:26 PST
 /atlas,Atlas,Dawn foundation,static export only; not published from this branch,none,build emitted the page,npm run build 2026-11-08,2026-11-08 14:26 PST
-/agents,Agent desk,public entry,static export; offline host shows navigation and does not offer Google sign-in,sign-in link only when /api/state is 401,town-action.test.ts; local /agents screenshot,docs/town-controls.csv,2026-11-08 14:45 PST
-/studio,Studio,Dawn foundation,static export only; not published from this branch,none,build emitted the page,npm run build 2026-11-08,2026-11-08 14:26 PST
+/agents,Town drawer when the gateway is offline,public entry,static export; offline host opens the pinned list; AgentsRoot only when the gateway is ready or returns 401,sign-in link only when /api/state is 401,town-action.test.ts; local /agents drawer,docs/town-controls.csv,2026-11-08 15:10 PST
+/studio,Project workspace,Dawn foundation,static export only; not published from this branch,none; send does not call a model; wake does not open a computer,build emitted the page; local 472 panes,src/app/studio/page.tsx,2026-11-08 15:10 PST
+/editor,Code shell,public entry,static export only; not published from this branch,none; Run does not execute,build emitted out/editor/index.html,src/app/editor/page.tsx,2026-11-08 15:10 PST
+/artifacts,Style recipes,public entry,static export only; not published from this branch,none; likes are not saved; not a Refero or Envato catalog,build emitted out/artifacts/index.html,src/app/artifacts/page.tsx,2026-11-08 15:10 PST
 /letter,Letter,Dawn foundation,static export only; not published from this branch,none,build emitted the page,npm run build 2026-11-08,2026-11-08 14:26 PST
 /credits,Credits,Dawn foundation,static export only; not published from this branch,none,build emitted the page,npm run build 2026-11-08,2026-11-08 14:26 PST
 /preview,Preview index,PR15 pages plus PR16 index copy,static export only; index.html matches preview.html,none,build wrote out/preview/index.html,scripts/fix-static-export.mjs,2026-11-08 14:26 PST

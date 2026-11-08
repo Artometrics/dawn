@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { Box, Code, Folder, Map, MessageCircle, Plus, User } from 'lucide-react';
+import { BotTalk } from '@/components/home/bot-talk';
 import { TOWN_CAST } from '@/lib/credits/town';
 import { api, gatewayBase, googleSignInHref, type Thread } from '@/components/dawn-agents/api';
 import { activeMapLayer, hotspotAt, type MapHotspot, type MapLayer } from '@/lib/home/map-layer';
@@ -16,7 +17,7 @@ const CHIPS: { label: string; href?: string; panel?: boolean }[] = [
   { label: 'Ask Dawn', href: '/agents' },
   { label: 'Agents', panel: true },
   { label: 'Editor', href: '/editor' },
-  { label: 'Recipes', href: '/agents?section=recipes' },
+  { label: 'Recipes', href: '/artifacts' },
   { label: 'Letter', href: '/letter' },
   { label: 'Studio', href: '/studio' },
 ];
@@ -27,7 +28,7 @@ const ART_CONTROLS = [
   { id: 'recenter-b', x: 680, y: 913, label: 'Recenter map' },
 ] as const;
 
-export function PixelHome() {
+export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) {
   const layer = useMemo(() => activeMapLayer(), []);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mapRef = useRef<HTMLImageElement | null>(null);
@@ -39,7 +40,7 @@ export function PixelHome() {
   const [cam, setCam] = useState({ x: 0, y: 0 });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>('explore');
-  const [panel, setPanel] = useState(false);
+  const [panel, setPanel] = useState(initialPanel);
   const [query, setQuery] = useState('');
   const [labels, setLabels] = useState(false);
   const [sheetH, setSheetH] = useState(228);
@@ -47,6 +48,7 @@ export function PixelHome() {
   const [ready, setReady] = useState(false);
   const [desk, setDesk] = useState<DeskStatus>('offline');
   const [notice, setNotice] = useState('');
+  const [talkId, setTalkId] = useState<string | null>(null);
   const panelRef = useRef(false);
   panelRef.current = panel;
 
@@ -135,6 +137,16 @@ export function PixelHome() {
   }, []);
 
   useEffect(() => {
+    const read = () => {
+      const id = new URLSearchParams(window.location.search).get('bot');
+      setTalkId(TOWN_CAST.some((agent) => agent.id === id) ? id : null);
+    };
+    read();
+    window.addEventListener('popstate', read);
+    return () => window.removeEventListener('popstate', read);
+  }, []);
+
+  useEffect(() => {
     if (!panel) return;
     let cancel = false;
     void (async () => {
@@ -155,6 +167,11 @@ export function PixelHome() {
     setSelectedId(spot.id);
     setTab('explore');
     setQuery('');
+    if (spot.id === 'agents') {
+      setPanel(true);
+      setNotice('');
+      return;
+    }
     setPanel(false);
     const frame = frameRef.current;
     const localX = (spot.x - layer.view.x + spot.w / 2) * frame.fit - viewRef.current.w / 2;
@@ -228,6 +245,24 @@ export function PixelHome() {
       setPanel(false);
     }
   }
+
+  function openBot(id: string) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('bot', id);
+    window.history.pushState({ bot: id }, '', `${url.pathname}?${url.searchParams.toString()}`);
+    setTalkId(id);
+    setPanel(false);
+  }
+
+  function closeBot() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('bot');
+    const search = url.searchParams.toString();
+    window.history.pushState({}, '', search ? `${url.pathname}?${search}` : url.pathname);
+    setTalkId(null);
+  }
+
+  const talking = TOWN_CAST.find((agent) => agent.id === talkId) ?? null;
   const place = selected ?? {
     name: 'Dawn Town',
     kind: 'Home',
@@ -366,7 +401,12 @@ export function PixelHome() {
               </div>
             </div>
             {notice && <p className="ph-blurb" role="status">{notice}</p>}
-            {selected ? (
+            {selected?.id === 'agents' ? (
+              <button type="button" className="ph-plan" onClick={() => { setPanel(true); setNotice(''); }}>
+                <span className="ph-plan-title">Open the agent list</span>
+                <span className="ph-blurb">Same menu as the dots button. The live desk is separate and is not running on this host.</span>
+              </button>
+            ) : selected ? (
               townAction(selected.href, desk).kind === 'navigate' ? (
                 <a className="ph-plan" href={selected.href}>
                   <span className="ph-plan-title">Open {selected.name}</span>
@@ -445,32 +485,22 @@ export function PixelHome() {
       <aside id="dawn-menu" className={panel ? 'ph-drawer open' : 'ph-drawer'} aria-label="Dawn" aria-hidden={!panel} inert={!panel}>
         <p className="ph-drawer-mark">Dawn</p>
         <nav className="ph-drawer-nav" aria-label="Dawn">
-          {townAction('/agents', desk).kind === 'navigate'
-            ? <a href="/agents"><MessageCircle aria-hidden /> Chats</a>
-            : <button type="button" onClick={() => explain('/agents')}><MessageCircle aria-hidden /> Chats</button>}
           <a href="/studio"><Folder aria-hidden /> Projects</a>
           {townAction('/editor', desk).kind === 'navigate'
             ? <a href="/editor"><Code aria-hidden /> Code</a>
             : <button type="button" onClick={() => explain('/editor')}><Code aria-hidden /> Code</button>}
-          <a href="/letter"><Box aria-hidden /> Artifacts</a>
+          <a href="/artifacts"><Box aria-hidden /> Artifacts</a>
         </nav>
         <div className="ph-drawer-scroll">
           <p className="ph-drawer-label">Pinned</p>
           {TOWN_CAST.map((agent) => (
-            townAction(agent.href, desk).kind === 'navigate' ? (
-              <a key={agent.id} className="ph-drawer-row" href={agent.href}>
-                <img src={agent.src} alt="" width={28} height={28} />
-                <span>{agent.name}</span>
-              </a>
-            ) : (
-              <button key={agent.id} type="button" className="ph-drawer-row" onClick={() => explain(agent.href)}>
-                <img src={agent.src} alt="" width={28} height={28} />
-                <span>{agent.name}</span>
-              </button>
-            )
+            <button key={agent.id} type="button" className="ph-drawer-row" onClick={() => openBot(agent.id)}>
+              <img src={agent.src} alt="" width={28} height={28} />
+              <span>{agent.name}</span>
+            </button>
           ))}
           <p className="ph-drawer-label">Recents</p>
-          {shownRecents.length === 0 && <p className="ph-blurb">No chats on this host.</p>}
+          {shownRecents.length === 0 && <p className="ph-blurb">No saved threads on this host.</p>}
           {shownRecents.map((thread) => (
             <a key={thread.id} className="ph-drawer-row" href={thread.href}>
               <MessageCircle aria-hidden />
@@ -482,11 +512,9 @@ export function PixelHome() {
           <button type="button" className="ph-drawer-avatar" aria-label="You" onClick={() => { setPanel(false); setTab('you'); }}>
             <User aria-hidden />
           </button>
-          {townAction('/agents?section=edit', desk).kind === 'navigate'
-            ? <a className="ph-newchat" href="/agents?section=edit"><Plus aria-hidden /> New chat</a>
-            : <button type="button" className="ph-newchat" onClick={() => explain('/agents?section=edit')}><Plus aria-hidden /> New chat</button>}
         </div>
       </aside>
+      {talking && <BotTalk bot={talking} desk={desk} onBack={closeBot} />}
     </div>
   );
 }
