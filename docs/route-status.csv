@@ -1,8 +1,8 @@
 path,purpose,workflow,state,auth_setup,test_status,evidence,last_verified_PST
-/,Town map,Dawn foundation,static export only; not published from this branch,none,build emitted the page; live site not rechecked this run,npm run build 2026-11-08,2026-11-08 14:26 PST
+/,Town map,public entry,static export; live site still the previous deploy until this branch is published,none on the map; desk actions blocked when /api/state is not a gateway,town-action.test.ts; local static hydration at 390 472 and 1280,docs/town-controls.csv,2026-11-08 14:45 PST
 /village,Current village app,Dawn foundation,static export only; not published from this branch,none,build emitted the page; live site not rechecked this run,npm run build 2026-11-08,2026-11-08 14:26 PST
 /atlas,Atlas,Dawn foundation,static export only; not published from this branch,none,build emitted the page,npm run build 2026-11-08,2026-11-08 14:26 PST
-/agents,Agent desk,Dawn foundation,static export only; not published from this branch,local gateway owner check for /api,desk.test.ts passed inside npm test,src/lib/dawn-agents/desk.test.ts,2026-11-08 14:26 PST
+/agents,Agent desk,public entry,static export; offline host shows navigation and does not offer Google sign-in,sign-in link only when /api/state is 401,town-action.test.ts; local /agents screenshot,docs/town-controls.csv,2026-11-08 14:45 PST
 /studio,Studio,Dawn foundation,static export only; not published from this branch,none,build emitted the page,npm run build 2026-11-08,2026-11-08 14:26 PST
 /letter,Letter,Dawn foundation,static export only; not published from this branch,none,build emitted the page,npm run build 2026-11-08,2026-11-08 14:26 PST
 /credits,Credits,Dawn foundation,static export only; not published from this branch,none,build emitted the page,npm run build 2026-11-08,2026-11-08 14:26 PST

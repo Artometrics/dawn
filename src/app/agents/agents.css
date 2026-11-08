@@ -47,6 +47,14 @@ a.ghost { display: flex; align-items: center; justify-content: center; text-deco
   place-items: center;
   padding: 24px;
 }
+.login nav { width: min(440px, 100%); }
+.login nav a {
+  color: var(--ink);
+  text-decoration: none;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
 .login form, .sheet, .editor, .cardish {
   width: min(440px, 100%);
   display: flex;

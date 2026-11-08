@@ -44,7 +44,8 @@ export const STAGING_MAP: MapLayer = {
   src: '/maps/dawn-town-staging.png',
   width: 768,
   height: 1376,
-  view: { x: 0, y: 280, w: 768, h: 700 },
+  /** Below the painted chip row. The sheet chrome starts at y=980. */
+  view: { x: 0, y: 330, w: 768, h: 650 },
   hotspots: buildings,
 };
 

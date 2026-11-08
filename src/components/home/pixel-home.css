@@ -36,6 +36,16 @@
   cursor: grabbing;
 }
 
+.ph-hit {
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: transparent;
+}
+
 .ph-label {
   position: absolute;
   z-index: 1;
@@ -362,12 +372,16 @@
 
 .ph-plan {
   display: block;
+  width: 100%;
   margin-top: 12px;
   padding: 12px;
+  border: 0;
   border-radius: 16px;
   background: #141211;
   text-decoration: none;
+  text-align: left;
   color: inherit;
+  font: inherit;
 }
 
 .ph-plan-title {
@@ -533,6 +547,7 @@
 }
 
 .ph-drawer-nav a,
+.ph-drawer-nav button,
 .ph-drawer-row {
   display: flex;
   align-items: center;
@@ -560,6 +575,18 @@
   flex: none;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+}
+
+.ph-drawer-nav button,
+button.ph-drawer-row,
+button.ph-newchat {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
 }
 
 .ph-drawer-row span,

@@ -1,16 +1,18 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
-import { Box, Cloud, Code, Compass, Folder, Layers, Map, MessageCircle, Plus, User } from 'lucide-react';
-import { TOWN_CAST, TOWN_RECENTS } from '@/lib/credits/town';
+import { Box, Code, Folder, Map, MessageCircle, Plus, User } from 'lucide-react';
+import { TOWN_CAST } from '@/lib/credits/town';
 import { api, gatewayBase, googleSignInHref, type Thread } from '@/components/dawn-agents/api';
 import { activeMapLayer, hotspotAt, type MapHotspot, type MapLayer } from '@/lib/home/map-layer';
+import { probeDesk, townAction, type DeskStatus } from '@/lib/home/town-action';
 import { PLAYER_SRC } from '@/lib/home/overworld';
 import './pixel-home.css';
 
 type Tab = 'explore' | 'you' | 'contribute';
 
 const CHIPS: { label: string; href?: string; panel?: boolean }[] = [
+  { label: 'Village', href: '/village' },
   { label: 'Ask Dawn', href: '/agents' },
   { label: 'Agents', panel: true },
   { label: 'Editor', href: '/editor' },
@@ -18,6 +20,12 @@ const CHIPS: { label: string; href?: string; panel?: boolean }[] = [
   { label: 'Letter', href: '/letter' },
   { label: 'Studio', href: '/studio' },
 ];
+
+const ART_CONTROLS = [
+  { id: 'labels', x: 693, y: 393, label: 'Map labels' },
+  { id: 'recenter-a', x: 692, y: 500, label: 'Recenter' },
+  { id: 'recenter-b', x: 680, y: 913, label: 'Recenter map' },
+] as const;
 
 export function PixelHome() {
   const layer = useMemo(() => activeMapLayer(), []);
@@ -37,6 +45,8 @@ export function PixelHome() {
   const [sheetH, setSheetH] = useState(228);
   const [threads, setThreads] = useState<Thread[]>([]);
   const [ready, setReady] = useState(false);
+  const [desk, setDesk] = useState<DeskStatus>('offline');
+  const [notice, setNotice] = useState('');
   const panelRef = useRef(false);
   panelRef.current = panel;
 
@@ -111,6 +121,18 @@ export function PixelHome() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [layer]);
+
+  useEffect(() => {
+    let cancel = false;
+    void (async () => {
+      const base = await gatewayBase();
+      const status = await probeDesk(fetch, `${base}/api/state`);
+      if (!cancel) setDesk(status);
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!panel) return;
@@ -189,14 +211,23 @@ export function PixelHome() {
   }
 
   const frame = frameRef.current;
-  const recents = threads
-    .filter((thread) => (thread.kind === 'direct' || thread.kind === 'group') && !thread.leftAt)
-    .slice()
-    .sort((a, b) => b.updatedAt - a.updatedAt)
-    .slice(0, 8);
-  const shownRecents = recents.length
-    ? recents.map((thread) => ({ id: thread.id, title: thread.title || 'Chat', href: `/agents?thread=${encodeURIComponent(thread.id)}` }))
-    : TOWN_RECENTS.map((item) => ({ id: item.id, title: item.title, href: item.href }));
+  const shownRecents = desk === 'ready'
+    ? threads
+      .filter((thread) => (thread.kind === 'direct' || thread.kind === 'group') && !thread.leftAt)
+      .slice()
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+      .slice(0, 8)
+      .map((thread) => ({ id: thread.id, title: thread.title || 'Chat', href: `/agents?thread=${encodeURIComponent(thread.id)}` }))
+    : [];
+
+  function explain(href: string) {
+    const action = townAction(href, desk);
+    if (action.kind === 'blocked') {
+      setNotice(action.reason);
+      setTab('explore');
+      setPanel(false);
+    }
+  }
   const place = selected ?? {
     name: 'Dawn Town',
     kind: 'Home',
@@ -216,13 +247,49 @@ export function PixelHome() {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
       />
+      {layer.hotspots.map((spot) => {
+        const left = frame.ox + (spot.x - layer.view.x) * frame.fit - cam.x;
+        const top = frame.oy + (spot.y - layer.view.y) * frame.fit - cam.y;
+        return (
+          <button
+            key={spot.id}
+            type="button"
+            className="ph-hit"
+            aria-label={spot.name}
+            style={{ left, top, width: spot.w * frame.fit, height: spot.h * frame.fit }}
+            onClick={() => focusLandmark(spot)}
+          />
+        );
+      })}
+      {ART_CONTROLS.map((control) => {
+        const size = 52 * frame.fit;
+        const left = frame.ox + (control.x - layer.view.x) * frame.fit - cam.x - size / 2;
+        const top = frame.oy + (control.y - layer.view.y) * frame.fit - cam.y - size / 2;
+        return (
+          <button
+            key={control.id}
+            type="button"
+            className="ph-hit"
+            aria-label={control.label}
+            style={{ left, top, width: size, height: size }}
+            onClick={() => {
+              if (control.id === 'labels') setLabels((on) => !on);
+              else {
+                const next = clampCam(layer, 0, 0, viewRef.current.w, viewRef.current.h, frameRef.current.fit);
+                camRef.current = next;
+                setCam(next);
+              }
+            }}
+          />
+        );
+      })}
       {labels &&
         layer.hotspots.map((spot) => {
           const left = frame.ox + (spot.x - layer.view.x + spot.w / 2) * frame.fit - cam.x;
           const top = frame.oy + (spot.y - layer.view.y) * frame.fit - cam.y;
           return (
             <button
-              key={spot.id}
+              key={`${spot.id}-label`}
               type="button"
               className="ph-label"
               style={{ left, top }}
@@ -279,27 +346,12 @@ export function PixelHome() {
         {CHIPS.map((chip) =>
           chip.panel ? (
             <button key={chip.label} type="button" className="ph-chip" onClick={() => setPanel(true)}>{chip.label}</button>
-          ) : (
+          ) : townAction(chip.href || '/', desk).kind === 'navigate' ? (
             <a key={chip.label} className="ph-chip" href={chip.href}>{chip.label}</a>
+          ) : (
+            <button key={chip.label} type="button" className="ph-chip" onClick={() => explain(chip.href || '/')}>{chip.label}</button>
           ),
         )}
-      </div>
-      <div className="ph-fabs" style={{ bottom: `calc(${sheetH}px + 70px + env(safe-area-inset-bottom))` }}>
-        <button type="button" className={labels ? 'ph-fab on' : 'ph-fab'} aria-pressed={labels} aria-label="Map labels" onClick={() => setLabels((on) => !on)}>
-          <Layers />
-        </button>
-        <button
-          type="button"
-          className="ph-fab locate"
-          aria-label="Recenter"
-          onClick={() => {
-            const next = clampCam(layer, 0, 0, viewRef.current.w, viewRef.current.h, frameRef.current.fit);
-            camRef.current = next;
-            setCam(next);
-          }}
-        >
-          <Compass />
-        </button>
       </div>
       <section className="ph-sheet" style={{ height: sheetH }} aria-label="Place">
         <button type="button" className="ph-handle" aria-label="Drag the sheet" onPointerDown={onSheetPointerDown}>
@@ -312,16 +364,33 @@ export function PixelHome() {
                 <h1>{selected ? selected.name : 'Dawn Town'}</h1>
                 {selected && <p className="ph-blurb">{selected.blurb}</p>}
               </div>
-              <div className="ph-weather">
-                <Cloud aria-hidden />
-                <span>68°F</span>
-              </div>
             </div>
-            <a className="ph-plan" href="/agents">
-              <span className="ph-plan-title">Make plans with Ask Dawn</span>
-              <span className="ph-suggest">{place.suggestion}</span>
-            </a>
-            {selected && <a className="ph-open" href={selected.href}>Open {selected.name}</a>}
+            {notice && <p className="ph-blurb" role="status">{notice}</p>}
+            {selected ? (
+              townAction(selected.href, desk).kind === 'navigate' ? (
+                <a className="ph-plan" href={selected.href}>
+                  <span className="ph-plan-title">Open {selected.name}</span>
+                  <span className="ph-blurb">{selected.blurb}</span>
+                </a>
+              ) : (
+                <button type="button" className="ph-plan" onClick={() => explain(selected.href)}>
+                  <span className="ph-plan-title">Open {selected.name}</span>
+                  <span className="ph-blurb">Not available on this host.</span>
+                </button>
+              )
+            ) : (
+              townAction('/agents', desk).kind === 'navigate' ? (
+                <a className="ph-plan" href="/agents">
+                  <span className="ph-plan-title">Make plans with Ask Dawn</span>
+                  <span className="ph-blurb">{place.suggestion}</span>
+                </a>
+              ) : (
+                <button type="button" className="ph-plan" onClick={() => explain('/agents')}>
+                  <span className="ph-plan-title">Make plans with Ask Dawn</span>
+                  <span className="ph-blurb">Not running on this host.</span>
+                </button>
+              )
+            )}
           </>
         )}
         {tab === 'you' && (
@@ -334,11 +403,14 @@ export function PixelHome() {
               </div>
             </div>
             <div className="ph-links">
-              <a href={googleSignInHref()}>Sign in with Google</a>
-              <a href="/agents">Agents</a>
-              <a href="/credits">Credits</a>
+              {desk === 'signin' && <a href={googleSignInHref()}>Sign in with Google</a>}
+              {desk === 'offline' && <p className="ph-blurb">Sign-in is not set up on this host.</p>}
               <a href="/village">Village</a>
-              <a href="/oauth2/sign_out?rd=/">Sign out</a>
+              <a href="/atlas">Atlas</a>
+              <a href="/studio">Studio</a>
+              <a href="/letter">Letter</a>
+              <a href="/credits">Credits</a>
+              {desk !== 'offline' && <a href="/oauth2/sign_out?rd=/">Sign out</a>}
             </div>
           </div>
         )}
@@ -373,20 +445,32 @@ export function PixelHome() {
       <aside id="dawn-menu" className={panel ? 'ph-drawer open' : 'ph-drawer'} aria-label="Dawn" aria-hidden={!panel} inert={!panel}>
         <p className="ph-drawer-mark">Dawn</p>
         <nav className="ph-drawer-nav" aria-label="Dawn">
-          <a href="/agents"><MessageCircle aria-hidden /> Chats</a>
+          {townAction('/agents', desk).kind === 'navigate'
+            ? <a href="/agents"><MessageCircle aria-hidden /> Chats</a>
+            : <button type="button" onClick={() => explain('/agents')}><MessageCircle aria-hidden /> Chats</button>}
           <a href="/studio"><Folder aria-hidden /> Projects</a>
-          <a href="/editor"><Code aria-hidden /> Code</a>
+          {townAction('/editor', desk).kind === 'navigate'
+            ? <a href="/editor"><Code aria-hidden /> Code</a>
+            : <button type="button" onClick={() => explain('/editor')}><Code aria-hidden /> Code</button>}
           <a href="/letter"><Box aria-hidden /> Artifacts</a>
         </nav>
         <div className="ph-drawer-scroll">
           <p className="ph-drawer-label">Pinned</p>
           {TOWN_CAST.map((agent) => (
-            <a key={agent.id} className="ph-drawer-row" href={agent.href}>
-              <img src={agent.src} alt="" width={28} height={28} />
-              <span>{agent.name}</span>
-            </a>
+            townAction(agent.href, desk).kind === 'navigate' ? (
+              <a key={agent.id} className="ph-drawer-row" href={agent.href}>
+                <img src={agent.src} alt="" width={28} height={28} />
+                <span>{agent.name}</span>
+              </a>
+            ) : (
+              <button key={agent.id} type="button" className="ph-drawer-row" onClick={() => explain(agent.href)}>
+                <img src={agent.src} alt="" width={28} height={28} />
+                <span>{agent.name}</span>
+              </button>
+            )
           ))}
           <p className="ph-drawer-label">Recents</p>
+          {shownRecents.length === 0 && <p className="ph-blurb">No chats on this host.</p>}
           {shownRecents.map((thread) => (
             <a key={thread.id} className="ph-drawer-row" href={thread.href}>
               <MessageCircle aria-hidden />
@@ -398,7 +482,9 @@ export function PixelHome() {
           <button type="button" className="ph-drawer-avatar" aria-label="You" onClick={() => { setPanel(false); setTab('you'); }}>
             <User aria-hidden />
           </button>
-          <a className="ph-newchat" href="/agents?section=edit"><Plus aria-hidden /> New chat</a>
+          {townAction('/agents?section=edit', desk).kind === 'navigate'
+            ? <a className="ph-newchat" href="/agents?section=edit"><Plus aria-hidden /> New chat</a>
+            : <button type="button" className="ph-newchat" onClick={() => explain('/agents?section=edit')}><Plus aria-hidden /> New chat</button>}
         </div>
       </aside>
     </div>

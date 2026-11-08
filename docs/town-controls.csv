@@ -1,0 +1,19 @@
+control,expected,before,fix,test
+Search Dawn,Typing a building name lists it and choosing it selects that building,Worked only if the React input event fired; looked idle if the painted search in the art was tapped,Real search stays above the map. Results use the hotspot list.,Local hydration typed Atlas and showed the Atlas result
+Menu ellipsis,Opens the side list and can close it,Opened a drawer whose chats and recents looked real and then died on the offline desk,Drawer still opens. Chats and new chat explain that the desk is offline. Recents say there are none on this host.,Local hydration opened the menu and read No chats on this host
+Profile,Switches the sheet to You,Switched, but Sign in and Sign out pointed at oauth routes that 404 on this host,You still opens. Sign in appears only when the gateway returns 401. Offline copy says sign-in is not set up.,town-action.test.ts offline versus 401
+Village chip,Opens /village,Chip did not exist,Added. It is a normal link.,Local click landed on /village and history.back returned to /
+Ask Dawn chip,Opens the desk only when a gateway is actually up,Always went to /agents which then showed a dead gate,Offline stays on the map and says the desk is not running. A 401 or 200 gateway still navigates.,Local click stayed on / and showed the status text
+Agents chip,Opens the side list,Opened the drawer,Unchanged local behavior,Menu hydration
+Editor chip,Opens Dawn Code only if that page exists,Went to /editor which is not a published route,Blocked with The editor is not published on this host.,town-action.test.ts
+Recipes chip,Opens recipes only when the desk is up,Went to /agents?section=recipes and hit the dead gate,Same offline block as Ask Dawn,town-action.test.ts
+Letter chip,Opens /letter,Navigated,Unchanged,Route exists in the static export
+Studio chip,Opens /studio,Navigated,Unchanged,Route exists in the static export
+Building tap,Selects that building and the sheet offers Open,Canvas hit testing was easy to miss and the sheet still linked to Ask Dawn,Each building has a hit target. The sheet primary action is Open plus the building name.,Local tap on Atlas showed Open Atlas and followed /atlas
+Painted layers and compass,Those pixels are not a second set of buttons,The art includes them and extra HTML buttons sat on top so taps on the art did nothing,Transparent controls sit on the painted buttons and pan with the map. Layers toggles names. Both compasses recenter. The extra fixed buttons are gone.,Buttons Map labels and Recenter are present after hydration
+Sheet weather 68°F,Only show a temperature that comes from a real source,Hardcoded text with no sensor or feed,Removed,Local text no longer contains 68
+Make plans with Ask Dawn,Must not look like a text field that accepts a prompt,The gray pill looked like an input and always opened /agents,It is a button or a link. Offline it explains the desk is down. With a building selected it opens that place.,Local offline sheet text
+Explore You Contribute,Switch the sheet,Worked,Unchanged,Visible in the 390 and 1280 captures
+Arrow keys,Pan the map,Worked while the page was focused,Unchanged,keydown ArrowRight dispatched in the local audit
+Browser back and forward,Return along real links,Ask Dawn replaced the page with a dead gate so back was the only escape,Village to town back and forward works. Ask Dawn no longer leaves the page when offline.,history.back from /village returned to / and forward returned to /village
+/agents while offline,Explain the desk and offer the rest of Dawn,Centered DAWN Agents sign-in copy and The desk is offline with no other links,Keeps the offline sentence. Adds Town Village Atlas Studio Letter and Credits. Google sign-in only after a real 401.,Local /agents text and dawn-agents-offline-390.png
