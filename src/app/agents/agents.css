@@ -36,6 +36,7 @@
   padding: 0 12px;
 }
 .primary { background: var(--blue); border-color: #0038cc; color: #fff; }
+a.ghost { display: flex; align-items: center; justify-content: center; text-decoration: none; margin-top: 8px; box-sizing: border-box; }
 .danger { color: #ffd0e2; }
 .tab { flex: 1; background: transparent; }
 .tab.on { background: #15203a; color: #fff; }

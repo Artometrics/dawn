@@ -105,6 +105,7 @@ export function AgentsRoot() {
               <button type="button" className="ghost" onClick={() => setSection('letter')}>Letter</button>
               <button type="button" className="ghost" onClick={() => setSection('data')}>Data</button>
               <button type="button" className="ghost" onClick={() => setSection('settings')}>Settings</button>
+              <a className="ghost" href="/desk">Bot desk</a>
             </nav>
           </div>
         </aside>

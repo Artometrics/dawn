@@ -39,6 +39,9 @@ yarn-error.log*
 # Dawn Agents gateway store (chats, training rows, subscribers)
 /data/dawn-agents/
 
+# Purchased NightCode adaptation. Keep it outside this public checkout.
+/dawn-nightcode-private/
+
 # vercel
 .vercel
 

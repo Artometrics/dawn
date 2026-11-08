@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { randomBytes } from 'node:crypto';
-import { readdir, readFile } from 'node:fs/promises';
+import { access, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { tokensMatch } from './auth';
 import { emailFromProxyHeaders, firstAllowedEmail, isLoopback, proxyUserAllowed } from './proxy-auth';
@@ -23,6 +23,8 @@ import { eventAllowed, tastePairs, validReaderId, type EngagementEvent } from '.
 import { newId } from './ids';
 import { nextCron } from './cron';
 import { emailProviderFromEnv, markdownToHtml, parseSubscriberCsv, renderLetterHtml, rewriteLinks, slugify, subscribersToCsv, type OutboxMail } from './publish';
+import { latestBotSession, parkedAssignmentId, resumeApprovedWrite, runBotTask, runDeskPreset } from './bot-session';
+import { handoffNote, playableGame } from './connected';
 import { canSpend, formatUsd, monthKey, spentThisMonth } from './spend';
 import { FileStore } from './store';
 import { keyStatus } from './provider';
@@ -169,6 +171,85 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
   async function ownerRoute(req: IncomingMessage, res: ServerResponse, pathname: string) {
     if (req.method === 'GET' && pathname === '/api/state') {
       sendJson(res, 200, await snapshot());
+      return;
+    }
+    if (pathname === '/api/bot-session') {
+      const root = path.dirname(options.storePath);
+      const workspace = path.join(root, 'bot-workspace');
+      const sqlitePath = path.join(root, 'bot-runtime.sqlite');
+      const data = await store.read();
+      const spentUsd = spentThisMonth(data.ledger, Date.now());
+      const capUsd = data.settings.spendCapUsd;
+      if (req.method === 'GET') {
+        const latest = latestBotSession(sqlitePath);
+        sendJson(res, 200, {
+          host: 'local-gateway',
+          model: 'not_called',
+          spentUsd,
+          capUsd,
+          session: latest,
+        });
+        return;
+      }
+      if (req.method === 'POST') {
+        const body = await readJson(req);
+        const action = typeof body.action === 'string' ? body.action : 'plan';
+        await mkdir(workspace, { recursive: true });
+        const readme = path.join(workspace, 'readme.txt');
+        try {
+          await access(readme);
+        } catch {
+          await writeFile(readme, 'Dawn desk note.\n', 'utf8');
+        }
+        const limits = { sqlitePath, workspace, spentUsd, capUsd };
+        if (action === 'approve') {
+          const assignmentId = parkedAssignmentId(sqlitePath);
+          const session = assignmentId
+            ? await resumeApprovedWrite({ ...limits, assignmentId })
+            : { ok: false, model: 'not_called', reason: 'Nothing is waiting for approval.', events: [], tools: [] };
+          sendJson(res, 200, { host: 'local-gateway', model: 'not_called', execution: 'model-free-fixture', spentUsd, capUsd, session });
+          return;
+        }
+        if (action === 'game' || action === 'revise') {
+          const game = playableGame(action === 'revise' ? 'collect 4 coins' : 'collect 3 coins');
+          const session = await runBotTask({
+            ...limits,
+            mode: 'build',
+            level: 'edits',
+            calls: [{ tool: 'writeFile', path: 'game.html', content: game.html }],
+          });
+          sendJson(res, 200, { host: 'local-gateway', model: 'not_called', execution: 'model-free-fixture', spentUsd, capUsd, session: { ...session, gameHtml: game.html, signature: game.signature } });
+          return;
+        }
+        if (action === 'observe') {
+          const fixture = path.join(workspace, 'fixture.html');
+          try {
+            await access(fixture);
+          } catch {
+            await writeFile(fixture, '<p id="clue">The fixture says north.</p>\n', 'utf8');
+          }
+          const session = await runBotTask({
+            ...limits,
+            mode: 'plan',
+            level: 'ask',
+            botId: 'dawn-observer',
+            brief: JSON.stringify({ provenance: 'local fixture.html', outbound: false }),
+            calls: [{ tool: 'readFile', path: 'fixture.html' }],
+          });
+          sendJson(res, 200, { host: 'local-gateway', model: 'not_called', execution: 'model-free-fixture', spentUsd, capUsd, session });
+          return;
+        }
+        if (action === 'handoff') {
+          const result = await handoffNote({ ...limits, note: 'Meet at the studio.' });
+          sendJson(res, 200, { host: 'local-gateway', model: 'not_called', execution: 'model-free-fixture', spentUsd, capUsd, session: result.reader, memory: result.memory });
+          return;
+        }
+        const preset = action === 'build' || action === 'ask' ? action : 'plan';
+        const session = await runDeskPreset({ ...limits, action: preset });
+        sendJson(res, 200, { host: 'local-gateway', model: 'not_called', execution: 'model-free-fixture', spentUsd, capUsd, session });
+        return;
+      }
+      sendJson(res, 405, { error: 'Use GET or POST.' });
       return;
     }
     if (req.method === 'POST' && pathname === '/api/agents') {

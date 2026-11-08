@@ -1,0 +1,83 @@
+.bot-desk {
+  --bg: #07080f;
+  --panel: #0c1018;
+  --field: #141824;
+  --line: #2a3148;
+  --ink: #f4f6fb;
+  --muted: #9aa6c3;
+  --blue: #0047ff;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), "Geist", sans-serif;
+}
+.bot-desk * { box-sizing: border-box; }
+.bot-desk a { color: inherit; }
+.bot-desk :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.bot-desk button, .bot-desk pre { font: inherit; color: inherit; }
+.bot-desk button { cursor: pointer; }
+.desk-shell {
+  width: min(880px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 20px 0 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 100dvh;
+}
+.desk-top, .desk-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.desk-word {
+  font-family: var(--font-pixel), monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.desk-top a, .desk-foot span { color: var(--muted); text-decoration: none; }
+.desk-top h1 { margin: 0; font-size: 28px; font-weight: 560; }
+.desk-lead { margin: 0; color: var(--muted); max-width: 62ch; }
+.desk-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.desk-actions button, .desk-badge {
+  border: 1px solid var(--line);
+  background: var(--field);
+  border-radius: 10px;
+  min-height: 44px;
+  padding: 0 14px;
+}
+.desk-actions button[aria-pressed="true"], .desk-badge {
+  background: var(--blue);
+  border-color: #0038cc;
+  color: #fff;
+}
+.desk-panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 14px;
+}
+.desk-panel h2 { margin: 0 0 8px; font-size: 16px; }
+.desk-events, .desk-tools { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.desk-events li, .desk-tools li {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--field);
+}
+.desk-k { color: var(--muted); font-size: 13px; }
+.desk-pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 13px;
+}
+.desk-warn { color: #ffd0e2; }
+.desk-foot { margin-top: auto; color: var(--muted); font-size: 14px; }
+@media (max-width: 640px) {
+  .desk-shell { width: min(100% - 24px, 880px); padding-top: 16px; }
+  .desk-top h1 { font-size: 24px; }
+  .desk-actions button { flex: 1 1 140px; }
+}

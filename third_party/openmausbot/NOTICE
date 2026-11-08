@@ -1,0 +1,25 @@
+OpenMausBot
+Copyright 2026 Milind Soni and OpenMausBot contributors
+
+This directory is a subset of the Apache-2.0 tree of
+https://github.com/milind-soni/OpenMausBot at commit
+97b4b57e11910676c7c89e70e888a5aab3378e23 (package version 0.1.149).
+
+Included: server/runtime (the host-imported job runtime), shared/approval-mode.ts,
+shared/redact.ts, and server/notes.ts. enterprise/ is not included. The desktop
+host, Electron app, browser driver, phone companion, and billing code are not
+included.
+
+Dawn changed server/runtime/envelope.ts so its note helpers come from
+server/notes.ts. Those helpers are the upstream text from
+server/peer-provenance.ts, server/provenance-label.ts, and the clip helper in
+server/peer-roster.ts, with the imports of shared/wire.ts, shared/routines.ts,
+and the desktop roster removed. See DAWN-CHANGES.md.
+
+The upstream NOTICE also covers third-party components that are not in this
+subset (T3 Code, Puppeteer, noVNC, and others). Those notices do not pertain
+to the files copied here.
+
+OpenMausBot and MausBot are trademarks of Supamaus Software Private Limited.
+The Apache License does not grant trademark rights. Dawn does not use those
+names as its product name.
