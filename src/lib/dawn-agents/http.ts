@@ -173,6 +173,30 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       sendJson(res, 200, await snapshot());
       return;
     }
+    if (pathname === '/api/local-drafts') {
+      const { appendChat, draftSend, readChat, readSends } = await import('../integrations/local-desk.ts');
+      const deskRoot = path.join(path.dirname(options.storePath), 'local-desk');
+      if (req.method === 'GET') {
+        const personId = new URL(req.url || '/', 'http://127.0.0.1').searchParams.get('person') || '';
+        sendJson(res, 200, { chat: personId ? await readChat(deskRoot, personId) : [], sends: await readSends(deskRoot) });
+        return;
+      }
+      if (req.method === 'POST') {
+        const body = await readJson(req);
+        if (body.kind === 'chat') {
+          const saved = await appendChat(deskRoot, String(body.personId || ''), String(body.text || ''));
+          sendJson(res, 201, saved);
+          return;
+        }
+        if (body.kind === 'send') {
+          const saved = await draftSend(deskRoot, String(body.to || ''), String(body.body || ''));
+          sendJson(res, 201, saved);
+          return;
+        }
+        sendJson(res, 400, { error: 'Use chat or send. Nothing is delivered.' });
+        return;
+      }
+    }
     if (pathname === '/api/bot-session') {
       const root = path.dirname(options.storePath);
       const workspace = path.join(root, 'bot-workspace');
