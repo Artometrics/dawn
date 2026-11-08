@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
-import { googleSignInHref, type Thread } from '@/components/dawn-agents/api';
-import { ChatWallpaper } from '@/components/dawn-agents/chat-wallpaper';
-import { townAction, type DeskStatus } from '@/lib/home/town-action';
+import type { SavedLine } from '@/components/home/bot-talk-types';
+
+export type { SavedLine } from '@/components/home/bot-talk-types';
 
 export type TownBot = {
   id: string;
@@ -13,81 +13,76 @@ export type TownBot = {
   href: string;
 };
 
-export type SavedLine = {
-  threadId: string;
-  role: 'user' | 'assistant';
-  content: string;
-  createdAt: number;
-};
-
 /**
- * Saved desk messages for this bot, plus the village room.
- * Nothing typed here is stored, and nothing is sent to a model.
+ * iMessage-style preview for one town person.
+ * Lines typed here are a labelled preview. Saved desk rows, when the desk
+ * actually returned them, stay separate and are not rewritten.
  */
 export function BotTalk({
   bot,
-  desk,
-  threads,
-  messages,
+  people,
+  preview,
+  saved,
+  onOpen,
+  onPreview,
   onBack,
 }: {
   bot: TownBot;
-  desk: DeskStatus;
-  threads: Thread[];
-  messages: SavedLine[];
+  people: TownBot[];
+  preview: string[];
+  saved: SavedLine[];
+  onOpen: (id: string) => void;
+  onPreview: (text: string) => void;
   onBack: () => void;
 }) {
   const [draft, setDraft] = useState('');
-  const [localNote, setLocalNote] = useState<string | null>(null);
-  const note = localNote ?? deskNote(desk);
-  const place = townAction(bot.href, desk);
-  useEffect(() => {
-    setLocalNote(null);
-    setDraft('');
-  }, [bot.id]);
-  const mine = threads.filter((thread) => thread.title.trim().toLowerCase() === bot.name.trim().toLowerCase());
-  const ids = new Set(mine.map((thread) => thread.id));
-  const saved = messages
-    .filter((message) => ids.has(message.threadId) && message.content.trim())
-    .slice()
-    .sort((a, b) => a.createdAt - b.createdAt);
-
   return (
-    <div className="ph-talk" role="dialog" aria-label={`${bot.name} conversation`}>
-      <ChatWallpaper scene="town" />
-      <header className="ph-talk-top">
-        <button type="button" className="ph-talk-back" onClick={onBack}>
+    <div className="ph-im" role="dialog" aria-label={`${bot.name} preview`}>
+      <header className="ph-im-top">
+        <button type="button" className="ph-im-back" onClick={onBack}>
           <ChevronLeft aria-hidden />
-          Back
+          Town
         </button>
         <img src={bot.src} alt="" width={36} height={36} />
-        <div className="ph-talk-who">
+        <div className="ph-im-who">
           <strong>{bot.name}</strong>
-          {place.kind === 'navigate' ? (
-            <a href={place.href}>Open the workspace</a>
-          ) : (
-            <button type="button" onClick={() => setLocalNote(place.reason)}>Desk is not running</button>
-          )}
+          <span>Preview. Not a saved chat.</span>
         </div>
       </header>
-      <div className="ph-talk-scroll">
-        <p className="ph-talk-note" role="status">{note}</p>
-        {desk === 'signin' && <a className="ph-talk-link" href={googleSignInHref()}>Sign in with Google</a>}
-        <a className="ph-talk-link" href="/village?section=library">Village history</a>
-        {saved.length === 0 && <p className="ph-talk-note">No saved messages for {bot.name}.</p>}
+      <div className="ph-im-people" aria-label="People">
+        {people.map((person) => (
+          <button
+            key={person.id}
+            type="button"
+            aria-pressed={person.id === bot.id}
+            onClick={() => onOpen(person.id)}
+          >
+            <img src={person.src} alt="" width={28} height={28} />
+            {person.name}
+          </button>
+        ))}
+      </div>
+      <div className="ph-im-scroll">
+        {saved.length > 0 && <p className="ph-im-label">Saved on the desk</p>}
         {saved.map((line) => (
-          <p key={`${line.threadId}-${line.createdAt}-${line.role}`} className={line.role === 'user' ? 'ph-talk-me' : 'ph-talk-them'}>
+          <p key={`${line.threadId}-${line.createdAt}-${line.role}`} className={line.role === 'user' ? 'ph-im-me' : 'ph-im-them'}>
             {line.content}
           </p>
         ))}
+        <p className="ph-im-label">Preview for this visit</p>
+        {preview.length === 0 && <p className="ph-im-empty">No preview lines yet.</p>}
+        {preview.map((line, index) => (
+          <p key={`${index}-${line.slice(0, 12)}`} className="ph-im-me">{line}</p>
+        ))}
       </div>
       <form
-        className="ph-talk-compose"
+        className="ph-im-compose"
         onSubmit={(event) => {
           event.preventDefault();
-          if (!draft.trim()) return;
+          const text = draft.trim();
+          if (!text) return;
           setDraft('');
-          setLocalNote('Not sent. This box is not a saved thread.');
+          onPreview(text);
         }}
       >
         <label className="sr-only" htmlFor="bot-draft">Message {bot.name}</label>
@@ -102,10 +97,4 @@ export function BotTalk({
       </form>
     </div>
   );
-}
-
-function deskNote(desk: DeskStatus): string {
-  if (desk === 'ready') return 'Saved messages come from the desk. This page does not call a model.';
-  if (desk === 'signin') return 'Saved threads are behind Google sign-in.';
-  return 'The desk is not running on this host, so its history is not loaded.';
 }

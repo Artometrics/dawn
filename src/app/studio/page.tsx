@@ -364,8 +364,9 @@ export default function DawnStudio() {
           </div>
 
           <div className="flex items-center gap-1 text-[#8f8880]">
-            <a href="/" className="p-1 rounded hover:bg-[#252220] hover:text-[#e8e5e0]" aria-label="Back to town">
+            <a href="/" className="p-1 rounded hover:bg-[#252220] hover:text-[#e8e5e0] inline-flex items-center gap-1 text-xs" aria-label="Back to town">
               <ArrowLeft className="w-3.5 h-3.5" />
+              Town
             </a>
             <button className="p-1 rounded hover:bg-[#252220] hover:text-[#e8e5e0] cursor-pointer">
               <ArrowRight className="w-3.5 h-3.5" />
