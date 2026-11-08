@@ -1,0 +1,15 @@
+path,purpose,workflow,state,auth_setup,test_status,evidence,last_verified_PST
+/,Town map,Dawn foundation,static export only; not published from this branch,none,build emitted the page; live site not rechecked this run,npm run build 2026-11-08,2026-11-08 14:26 PST
+/village,Current village app,Dawn foundation,static export only; not published from this branch,none,build emitted the page; live site not rechecked this run,npm run build 2026-11-08,2026-11-08 14:26 PST
+/atlas,Atlas,Dawn foundation,static export only; not published from this branch,none,build emitted the page,npm run build 2026-11-08,2026-11-08 14:26 PST
+/agents,Agent desk,Dawn foundation,static export only; not published from this branch,local gateway owner check for /api,desk.test.ts passed inside npm test,src/lib/dawn-agents/desk.test.ts,2026-11-08 14:26 PST
+/studio,Studio,Dawn foundation,static export only; not published from this branch,none,build emitted the page,npm run build 2026-11-08,2026-11-08 14:26 PST
+/letter,Letter,Dawn foundation,static export only; not published from this branch,none,build emitted the page,npm run build 2026-11-08,2026-11-08 14:26 PST
+/credits,Credits,Dawn foundation,static export only; not published from this branch,none,build emitted the page,npm run build 2026-11-08,2026-11-08 14:26 PST
+/preview,Preview index,PR15 pages plus PR16 index copy,static export only; index.html matches preview.html,none,build wrote out/preview/index.html,scripts/fix-static-export.mjs,2026-11-08 14:26 PST
+/preview/village,Contained pixel village,PR15 fit plus PR16 index copy,static export only; index.html matches the html file,none,village-fit.test.ts passed at 390 and 1280,src/lib/preview/village-fit.test.ts,2026-11-08 14:26 PST
+/preview/bench,Browser-only bench demo,PR15,static export only,none,board.test.ts passed; page emitted,src/lib/preview/board.test.ts,2026-11-08 14:26 PST
+/preview/habits,Browser-only habits demo,PR15,static export only,none,board.test.ts passed; page emitted,src/lib/preview/board.test.ts,2026-11-08 14:26 PST
+/preview/stuck,Browser-only break demo,PR15,static export only,none,board.test.ts passed; page emitted,src/lib/preview/board.test.ts,2026-11-08 14:26 PST
+/desk,Bot desk,WF01 WF02 WF03 WF04 SAFE,static page only; buttons do nothing without the local gateway,owner email header on loopback; anonymous POST is 401,connected.test.ts 5 passed; model-free fixture,src/lib/dawn-agents/connected.test.ts,2026-11-08 14:26 PST
+/api/bot-session,Local bot task gateway,WF01 WF02 WF03 WF04 SAFE,not in the static export; 127.0.0.1 process only,owner email header; no loopback-owner flag in the auth test,anonymous 401 and owner 200 in connected.test.ts,src/lib/dawn-agents/connected.test.ts,2026-11-08 14:26 PST

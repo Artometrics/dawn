@@ -20,9 +20,11 @@ type Session = {
 type Payload = {
   host: string;
   model: string;
+  execution?: string;
   spentUsd: number;
   capUsd: number;
-  session: Session | null;
+  memory?: string;
+  session: (Session & { diff?: string; gameHtml?: string; signature?: string; idempotent?: boolean }) | null;
 };
 
 export function BotDesk() {
@@ -43,7 +45,7 @@ export function BotDesk() {
     });
   }, []);
 
-  async function run(action: 'plan' | 'build' | 'ask') {
+  async function run(action: 'plan' | 'build' | 'ask' | 'approve' | 'game' | 'revise' | 'observe' | 'handoff') {
     setBusy(true);
     setNotice('');
     try {
@@ -77,7 +79,12 @@ export function BotDesk() {
         <div className="desk-actions">
           <button type="button" disabled={busy} onClick={() => run('plan')}>Read the note</button>
           <button type="button" disabled={busy} onClick={() => run('ask')}>Ask before writing</button>
+          <button type="button" disabled={busy} onClick={() => run('approve')}>Approve</button>
           <button type="button" disabled={busy} onClick={() => run('build')}>Save a line</button>
+          <button type="button" disabled={busy} onClick={() => run('game')}>Make a game</button>
+          <button type="button" disabled={busy} onClick={() => run('revise')}>Revise the game</button>
+          <button type="button" disabled={busy} onClick={() => run('observe')}>Read the fixture</button>
+          <button type="button" disabled={busy} onClick={() => run('handoff')}>Hand off the note</button>
           <span className="desk-badge">Model not called</span>
         </div>
         {notice && <p className="desk-warn">{notice === 'Failed to fetch' ? 'This host is the static site. The bot runtime is the local gateway, not Firebase.' : notice}</p>}
@@ -92,6 +99,9 @@ export function BotDesk() {
           {session?.question && <p>{session.question}</p>}
           {session?.reason && <p className="desk-warn">{session.reason}</p>}
           {session?.result && <p>{session.result}</p>}
+          {session?.diff && <pre className="desk-pre">{session.diff}</pre>}
+          {payload?.memory && <pre className="desk-pre">{payload.memory}</pre>}
+          {session?.gameHtml && <iframe title="Game preview" sandbox="allow-scripts" srcDoc={session.gameHtml} style={{ width: '100%', height: 180, border: '1px solid #2a3148', borderRadius: 10, background: '#fff' }} />}
         </section>
         <section className="desk-panel">
           <h2>Events</h2>

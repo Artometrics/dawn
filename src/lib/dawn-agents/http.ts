@@ -23,7 +23,8 @@ import { eventAllowed, tastePairs, validReaderId, type EngagementEvent } from '.
 import { newId } from './ids';
 import { nextCron } from './cron';
 import { emailProviderFromEnv, markdownToHtml, parseSubscriberCsv, renderLetterHtml, rewriteLinks, slugify, subscribersToCsv, type OutboxMail } from './publish';
-import { latestBotSession, runDeskPreset } from './bot-session';
+import { latestBotSession, parkedAssignmentId, resumeApprovedWrite, runBotTask, runDeskPreset } from './bot-session';
+import { handoffNote, playableGame } from './connected';
 import { canSpend, formatUsd, monthKey, spentThisMonth } from './spend';
 import { FileStore } from './store';
 import { keyStatus } from './provider';
@@ -192,7 +193,7 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       }
       if (req.method === 'POST') {
         const body = await readJson(req);
-        const action = body.action === 'build' || body.action === 'ask' ? body.action : 'plan';
+        const action = typeof body.action === 'string' ? body.action : 'plan';
         await mkdir(workspace, { recursive: true });
         const readme = path.join(workspace, 'readme.txt');
         try {
@@ -200,8 +201,52 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
         } catch {
           await writeFile(readme, 'Dawn desk note.\n', 'utf8');
         }
-        const session = await runDeskPreset({ sqlitePath, workspace, action, spentUsd, capUsd });
-        sendJson(res, 200, { host: 'local-gateway', model: 'not_called', spentUsd, capUsd, session });
+        const limits = { sqlitePath, workspace, spentUsd, capUsd };
+        if (action === 'approve') {
+          const assignmentId = parkedAssignmentId(sqlitePath);
+          const session = assignmentId
+            ? await resumeApprovedWrite({ ...limits, assignmentId })
+            : { ok: false, model: 'not_called', reason: 'Nothing is waiting for approval.', events: [], tools: [] };
+          sendJson(res, 200, { host: 'local-gateway', model: 'not_called', execution: 'model-free-fixture', spentUsd, capUsd, session });
+          return;
+        }
+        if (action === 'game' || action === 'revise') {
+          const game = playableGame(action === 'revise' ? 'collect 4 coins' : 'collect 3 coins');
+          const session = await runBotTask({
+            ...limits,
+            mode: 'build',
+            level: 'edits',
+            calls: [{ tool: 'writeFile', path: 'game.html', content: game.html }],
+          });
+          sendJson(res, 200, { host: 'local-gateway', model: 'not_called', execution: 'model-free-fixture', spentUsd, capUsd, session: { ...session, gameHtml: game.html, signature: game.signature } });
+          return;
+        }
+        if (action === 'observe') {
+          const fixture = path.join(workspace, 'fixture.html');
+          try {
+            await access(fixture);
+          } catch {
+            await writeFile(fixture, '<p id="clue">The fixture says north.</p>\n', 'utf8');
+          }
+          const session = await runBotTask({
+            ...limits,
+            mode: 'plan',
+            level: 'ask',
+            botId: 'dawn-observer',
+            brief: JSON.stringify({ provenance: 'local fixture.html', outbound: false }),
+            calls: [{ tool: 'readFile', path: 'fixture.html' }],
+          });
+          sendJson(res, 200, { host: 'local-gateway', model: 'not_called', execution: 'model-free-fixture', spentUsd, capUsd, session });
+          return;
+        }
+        if (action === 'handoff') {
+          const result = await handoffNote({ ...limits, note: 'Meet at the studio.' });
+          sendJson(res, 200, { host: 'local-gateway', model: 'not_called', execution: 'model-free-fixture', spentUsd, capUsd, session: result.reader, memory: result.memory });
+          return;
+        }
+        const preset = action === 'build' || action === 'ask' ? action : 'plan';
+        const session = await runDeskPreset({ ...limits, action: preset });
+        sendJson(res, 200, { host: 'local-gateway', model: 'not_called', execution: 'model-free-fixture', spentUsd, capUsd, session });
         return;
       }
       sendJson(res, 405, { error: 'Use GET or POST.' });

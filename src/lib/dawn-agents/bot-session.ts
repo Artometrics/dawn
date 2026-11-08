@@ -7,12 +7,12 @@
  * not written. Tools stay inside the workspace passed by the caller.
  */
 
-import { existsSync, mkdirSync, realpathSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { openRuntimeStore, Runtime, type AssignmentEvent, type RunResult, type TurnRunner } from '../../../third_party/openmausbot/server/runtime/index.ts';
-import { dawnTools, type ToolCall, type ToolMode, type ToolOutcome } from './bot-tools';
+import { dawnTools, runDawnTool, type ToolCall, type ToolMode, type ToolOutcome } from './bot-tools';
 import { canSpend } from './spend';
 
 export type BotLevel = 'ask' | 'edits';
@@ -104,6 +104,9 @@ export async function runBotTask(input: {
   calls: ToolCall[];
   spentUsd: number;
   capUsd: number;
+  botId?: string;
+  brief?: string;
+  proposal?: { path: string; content: string };
 }): Promise<BotSessionView> {
   const tools = await loadTools();
   const capAllows = canSpend(input.spentUsd, input.capUsd);
@@ -195,8 +198,8 @@ export async function runBotTask(input: {
   const admitted = runtime.enqueue({
     origin: { kind: 'person', source: 'chat', quote: 'desk task' },
     requester: { kind: 'person' },
-    assignee: { botId: 'dawn-desk', destination: { kind: 'work_thread', threadId: 'desk' } },
-    brief: `${input.mode} task`,
+    assignee: { botId: input.botId ?? 'dawn-desk', destination: { kind: 'work_thread', threadId: input.botId ?? 'desk' } },
+    brief: input.brief ?? (input.proposal ? JSON.stringify({ proposal: input.proposal }) : `${input.mode} task`),
     levels: { own: input.level },
     mode: 'work',
   });
@@ -290,6 +293,7 @@ export async function runDeskPreset(input: {
       spentUsd: input.spentUsd,
       capUsd: input.capUsd,
       calls: [{ tool: 'writeFile', path: 'desk-line.txt', content: 'This line should wait.\n' }],
+      proposal: { path: 'desk-line.txt', content: 'This line should wait.\n' },
     });
   }
   return runBotTask({
@@ -301,4 +305,131 @@ export async function runDeskPreset(input: {
     capUsd: input.capUsd,
     calls: [{ tool: 'writeFile', path: 'desk-line.txt', content: 'A line saved from the desk.\n' }],
   });
+}
+
+export function textDiff(filePath: string, before: string, after: string): string {
+  if (before === after) return '';
+  const minus = before.length ? before.split('\n').map((line) => `-${line}`).join('\n') : '';
+  const plus = after.split('\n').map((line) => `+${line}`).join('\n');
+  return `--- a/${filePath}\n+++ b/${filePath}\n${minus}${minus ? '\n' : ''}${plus}\n`;
+}
+
+function proposalFromBrief(brief: string): { path: string; content: string } | null {
+  try {
+    const parsed = JSON.parse(brief) as { proposal?: { path?: string; content?: string } };
+    if (!parsed.proposal || typeof parsed.proposal.path !== 'string' || typeof parsed.proposal.content !== 'string') return null;
+    return { path: parsed.proposal.path, content: parsed.proposal.content };
+  } catch {
+    return null;
+  }
+}
+
+export async function resumeApprovedWrite(input: {
+  sqlitePath: string;
+  workspace: string;
+  assignmentId: string;
+  spentUsd: number;
+  capUsd: number;
+}): Promise<BotSessionView & { diff: string; idempotent: boolean }> {
+  const capAllows = canSpend(input.spentUsd, input.capUsd);
+  const empty: BotSessionView & { diff: string; idempotent: boolean } = {
+    ok: false,
+    runtime: 'openmausbot',
+    revision: '97b4b57e11910676c7c89e70e888a5aab3378e23',
+    model: 'not_called',
+    toolSource: 'dawn',
+    mode: 'build',
+    level: 'edits',
+    events: [],
+    tools: [],
+    usage: { ledgerWrites: 0, estimatedUsd: 0, capChecked: true, capAllows },
+    workspace: input.workspace,
+    diff: '',
+    idempotent: false,
+    assignmentId: input.assignmentId,
+  };
+  if (!capAllows) return { ...empty, reason: 'The spend cap is already reached.' };
+  if (!existsSync(input.sqlitePath)) return { ...empty, reason: 'There is no saved session.' };
+  const store = openRuntimeStore(input.sqlitePath);
+  const existing = store.get(input.assignmentId);
+  if (!existing) {
+    store.close();
+    return { ...empty, reason: 'That task is not in the session.' };
+  }
+  const proposal = proposalFromBrief(existing.brief);
+  const filePath = path.join(input.workspace, proposal?.path ?? '');
+  const before = proposal && existsSync(filePath) ? readFileSync(filePath, 'utf8') : '';
+  if (existing.status === 'completed') {
+    const events = store.events(existing.id).map((event) => ({ kind: event.kind, detail: event.detail }));
+    store.close();
+    return { ...empty, ok: true, status: 'completed', idempotent: true, diff: proposal ? textDiff(proposal.path, '', before) : '', events, result: existing.result };
+  }
+  if (existing.status !== 'needs_input') {
+    store.close();
+    return { ...empty, status: existing.status, reason: 'That task is not waiting for approval.' };
+  }
+  if (!proposal) {
+    store.close();
+    return { ...empty, reason: 'The parked task has no file to write.' };
+  }
+  let toolsRun: SessionTool[] = [];
+  const { runner, done } = hostRunner(async () => {
+    const outcome = await runDawnTool(input.workspace, 'build', { tool: 'writeFile', path: proposal.path, content: proposal.content });
+    toolsRun = [{ tool: 'writeFile', ok: outcome.ok, reason: outcome.ok ? undefined : outcome.reason, result: outcome.ok ? outcome.result : undefined }];
+    if (!outcome.ok) return { kind: 'failed', outcome: 'denied', text: outcome.reason };
+    return { kind: 'completed', text: 'The approved file is in the workspace.', evidence: { toolCalls: 1, okToolCalls: 1, filesChanged: [proposal.path], summary: 'Approved write.' } };
+  });
+  const runtime = new Runtime(store, runner, { log: () => undefined });
+  runtime.open();
+  const answered = runtime.answer(input.assignmentId, 'approve');
+  if (!answered) {
+    store.close();
+    return { ...empty, reason: 'The task could not be approved.' };
+  }
+  runtime.tick();
+  await done();
+  await new Promise((resolve) => setImmediate(resolve));
+  const assignment = runtime.status(input.assignmentId)?.assignment;
+  const events = store.events(input.assignmentId).map((event) => ({ kind: event.kind, detail: event.detail }));
+  const after = existsSync(filePath) ? readFileSync(filePath, 'utf8') : '';
+  store.close();
+  return {
+    ...empty,
+    ok: assignment?.status === 'completed' && after === proposal.content,
+    status: assignment?.status,
+    result: assignment?.result,
+    reason: assignment?.status === 'failed' ? assignment.result : undefined,
+    events,
+    tools: toolsRun,
+    diff: textDiff(proposal.path, before, after),
+    idempotent: false,
+  };
+}
+
+export function parkedAssignmentId(sqlitePath: string): string | null {
+  if (!existsSync(sqlitePath)) return null;
+  const store = openRuntimeStore(sqlitePath);
+  const parked = store.all({ nonTerminal: true }).filter((row) => row.status === 'needs_input');
+  const id = parked.at(-1)?.id ?? null;
+  store.close();
+  return id;
+}
+
+export function cancelParked(sqlitePath: string, assignmentId: string): { status?: string } {
+  if (!existsSync(sqlitePath)) return {};
+  const store = openRuntimeStore(sqlitePath);
+  const runtime = new Runtime(store, {
+    validate: () => undefined,
+    canStart: () => true,
+    run: async () => ({ kind: 'failed', outcome: 'provider_error', text: 'Cancelled tasks do not run.' }),
+    park: () => undefined,
+    report: () => undefined,
+    changed: () => undefined,
+    names: () => ({ requester: 'Person', assignee: 'dawn-desk' }),
+  }, { log: () => undefined });
+  runtime.open();
+  runtime.cancel(assignmentId, 'Stopped by the person');
+  const status = store.get(assignmentId)?.status;
+  store.close();
+  return { status };
 }
