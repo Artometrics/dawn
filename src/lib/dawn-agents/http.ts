@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { randomBytes } from 'node:crypto';
-import { readdir, readFile } from 'node:fs/promises';
+import { access, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { tokensMatch } from './auth';
 import { emailFromProxyHeaders, firstAllowedEmail, isLoopback, proxyUserAllowed } from './proxy-auth';
@@ -23,6 +23,7 @@ import { eventAllowed, tastePairs, validReaderId, type EngagementEvent } from '.
 import { newId } from './ids';
 import { nextCron } from './cron';
 import { emailProviderFromEnv, markdownToHtml, parseSubscriberCsv, renderLetterHtml, rewriteLinks, slugify, subscribersToCsv, type OutboxMail } from './publish';
+import { latestBotSession, runDeskPreset } from './bot-session';
 import { canSpend, formatUsd, monthKey, spentThisMonth } from './spend';
 import { FileStore } from './store';
 import { keyStatus } from './provider';
@@ -169,6 +170,41 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
   async function ownerRoute(req: IncomingMessage, res: ServerResponse, pathname: string) {
     if (req.method === 'GET' && pathname === '/api/state') {
       sendJson(res, 200, await snapshot());
+      return;
+    }
+    if (pathname === '/api/bot-session') {
+      const root = path.dirname(options.storePath);
+      const workspace = path.join(root, 'bot-workspace');
+      const sqlitePath = path.join(root, 'bot-runtime.sqlite');
+      const data = await store.read();
+      const spentUsd = spentThisMonth(data.ledger, Date.now());
+      const capUsd = data.settings.spendCapUsd;
+      if (req.method === 'GET') {
+        const latest = latestBotSession(sqlitePath);
+        sendJson(res, 200, {
+          host: 'local-gateway',
+          model: 'not_called',
+          spentUsd,
+          capUsd,
+          session: latest,
+        });
+        return;
+      }
+      if (req.method === 'POST') {
+        const body = await readJson(req);
+        const action = body.action === 'build' || body.action === 'ask' ? body.action : 'plan';
+        await mkdir(workspace, { recursive: true });
+        const readme = path.join(workspace, 'readme.txt');
+        try {
+          await access(readme);
+        } catch {
+          await writeFile(readme, 'Dawn desk note.\n', 'utf8');
+        }
+        const session = await runDeskPreset({ sqlitePath, workspace, action, spentUsd, capUsd });
+        sendJson(res, 200, { host: 'local-gateway', model: 'not_called', spentUsd, capUsd, session });
+        return;
+      }
+      sendJson(res, 405, { error: 'Use GET or POST.' });
       return;
     }
     if (req.method === 'POST' && pathname === '/api/agents') {

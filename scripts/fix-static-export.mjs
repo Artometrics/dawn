@@ -30,3 +30,4 @@ publish('agents');
 publish('letter');
 publish('credits');
 publish('village');
+publish('desk');
