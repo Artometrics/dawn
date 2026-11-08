@@ -62,7 +62,7 @@ An autonomous bot still needs a process that is not Firebase Hosting. `LIVE01` i
 
 ## Chat connection, checked 2026-11-08
 
-There is no separate Chats app. A pinned town bot opens its own pixel thread. That thread keeps what you type in the browser and does not call a provider.
+There is no separate Chats app. A pinned town bot opens its workspace. Saved lines are the desk thread with that bot's name, when the desk answers, and the village room at `/village?section=library`. Typing in the town sheet is not stored and does not call a provider. A browser `redirect: 'manual'` response with `type: opaqueredirect` is sign-in. Status 0 with any other type stays offline.
 
 What already exists:
 
@@ -75,6 +75,6 @@ What already exists:
 | Named host `2-29-173-68.sslip.io` | `/` currently serves the Dawn town HTML. An unauthenticated `GET /api/state` is redirected to Google sign-in. | The process behind that sign-in was not opened. Key booleans on that host were not read. |
 | `dawn-1` | Not named in this repository. | Nothing here was called `dawn-1`. |
 | Spend cap | `DAWN_SPEND_CAP_USD` is a name in `.env.example`. | Unset here. No cap was applied or invented. |
-| Saved rooms | `GroupChat` still reads Firestore rooms for a signed-in village user. The town drawer no longer links to it. | Room documents were not deleted. |
+| Saved rooms | `GroupChat` still reads Firestore rooms for a signed-in village user. The drawer links to that page as Village history. | Room documents were not deleted. |
 
 A bot reply on the public map needs the existing gateway process, or Firebase AI Logic with App Check on project `dawn-510519`, and a provider key that is already configured on that process. This check did not add a key, a backend, or a model call.

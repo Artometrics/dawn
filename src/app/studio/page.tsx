@@ -22,7 +22,6 @@ import {
   GitBranch,
   FolderGit2,
   Folder,
-  FileText,
   Flame,
   Globe,
   ArrowLeft,
@@ -64,12 +63,16 @@ import {
   Moon,
   Sun,
   Headphones,
-  Home,
-  Radio
+  Home
 } from 'lucide-react';
 import { Teammate, DEFAULT_TEAMMATES } from '@/types/teammate';
 import { TeammateDialog } from '@/components/teammate-dialog';
 import { ChatAvatar } from '@/components/chat-avatar';
+import { api, gatewayBase } from '@/components/dawn-agents/api';
+import { bootFirebase } from '@/lib/firebase-client';
+import { probeDesk } from '@/lib/home/town-action';
+import { streamStudioChat } from '@/lib/studio/client-chat';
+import { studioSendMode } from '@/lib/studio/send-mode';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
@@ -129,6 +132,7 @@ export default function DawnStudio() {
   const [narrow, setNarrow] = useState(false);
   const [mobilePane, setMobilePane] = useState<'chat' | 'computer' | 'project'>('chat');
   const [hostNote, setHostNote] = useState('');
+  const [projects, setProjects] = useState<{ id: string; title: string }[] | null>(null);
 
   // Teammates / Grok Bots
   const [teammates, setTeammates] = useState<Teammate[]>(DEFAULT_TEAMMATES);
@@ -210,6 +214,27 @@ export default function DawnStudio() {
   }, [messages, isLoading]);
 
   useEffect(() => {
+    let cancel = false;
+    void (async () => {
+      const base = await gatewayBase();
+      const status = await probeDesk(fetch, `${base}/api/state`);
+      if (status !== 'ready') {
+        if (!cancel) setProjects([]);
+        return;
+      }
+      try {
+        const state = await api<{ articles?: { id: string; title: string }[] }>(base, '/api/state');
+        if (!cancel) setProjects((state.articles ?? []).filter((item) => item.title.trim()));
+      } catch {
+        if (!cancel) setProjects([]);
+      }
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, []);
+
+  useEffect(() => {
     const media = window.matchMedia('(max-width: 800px)');
     const apply = () => {
       setNarrow(media.matches);
@@ -266,7 +291,56 @@ export default function DawnStudio() {
   const handleSendMessage = async (textToSend?: string) => {
     const prompt = textToSend || input;
     if (!prompt.trim() || isLoading) return;
-    setHostNote('A model is not connected on this host. Nothing was sent.');
+    const boot = await bootFirebase();
+    if (studioSendMode(boot.mode) !== 'provider' || !boot.app) {
+      setHostNote('A model is not connected on this host. Nothing was sent.');
+      return;
+    }
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: prompt.trim(),
+      timestamp: 'Just now',
+    };
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    setInput('');
+    setIsLoading(true);
+    setHostNote('');
+    const assistantId = (Date.now() + 1).toString();
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: assistantId,
+        role: 'assistant',
+        authorName: activeTeammate.name,
+        content: '',
+        timestamp: 'Just now',
+      },
+    ]);
+    try {
+      await streamStudioChat(
+        {
+          messages: newMessages.map((item) => ({ role: item.role, content: item.content })),
+          model: activeTeammate.model,
+          teammate: activeTeammate,
+          codeContext: {
+            filename: 'page.tsx',
+            language: 'typescript',
+            content: editorCode,
+          },
+        },
+        (accumulated) => {
+          setMessages((prev) => prev.map((item) => (item.id === assistantId ? { ...item, content: accumulated } : item)));
+        },
+      );
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'The model did not answer.';
+      setMessages((prev) => prev.map((item) => (item.id === assistantId ? { ...item, content: message } : item)));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -604,17 +678,17 @@ export default function DawnStudio() {
                   Pinned
                 </div>
                 <div className="space-y-0.5 mt-1 text-[#9a938a]">
-                  {['Rainfall Health', 'Podcast Descriptions', 'Ask Rainfall Health'].map((name) => (
+                  {projects === null && <p className="px-2 py-1.5 text-[11px]">Checking the desk…</p>}
+                  {projects?.length === 0 && <p className="px-2 py-1.5 text-[11px] leading-snug">No project files are stored on this host.</p>}
+                  {projects?.map((project) => (
                     <button
-                      key={name}
+                      key={project.id}
                       type="button"
                       className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#221f1d] cursor-pointer text-left"
-                      onClick={() => setHostNote(`${name} is a sample name. No project files are stored on this host.`)}
+                      onClick={() => setHostNote(`${project.title} is on the desk. This page does not copy the file.`)}
                     >
-                      {name === 'Rainfall Health' && <Folder className="w-3.5 h-3.5 text-amber-500" />}
-                      {name === 'Podcast Descriptions' && <FileText className="w-3.5 h-3.5 text-cyan-400" />}
-                      {name === 'Ask Rainfall Health' && <Radio className="w-3.5 h-3.5 text-rose-400" />}
-                      <span>{name}</span>
+                      <Folder className="w-3.5 h-3.5 text-amber-500" />
+                      <span>{project.title}</span>
                     </button>
                   ))}
                 </div>

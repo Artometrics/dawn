@@ -5,6 +5,7 @@ import { Box, Code, Folder, Map, MessageCircle, Plus, User } from 'lucide-react'
 import { BotTalk } from '@/components/home/bot-talk';
 import { TOWN_CAST } from '@/lib/credits/town';
 import { api, gatewayBase, googleSignInHref, type Thread } from '@/components/dawn-agents/api';
+import type { SavedLine } from '@/components/home/bot-talk';
 import { activeMapLayer, hotspotAt, type MapHotspot, type MapLayer } from '@/lib/home/map-layer';
 import { probeDesk, townAction, type DeskStatus } from '@/lib/home/town-action';
 import { PLAYER_SRC } from '@/lib/home/overworld';
@@ -45,6 +46,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
   const [labels, setLabels] = useState(false);
   const [sheetH, setSheetH] = useState(228);
   const [threads, setThreads] = useState<Thread[]>([]);
+  const [savedMessages, setSavedMessages] = useState<SavedLine[]>([]);
   const [ready, setReady] = useState(false);
   const [desk, setDesk] = useState<DeskStatus>('offline');
   const [notice, setNotice] = useState('');
@@ -147,21 +149,30 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
   }, []);
 
   useEffect(() => {
-    if (!panel) return;
+    if (desk !== 'ready') {
+      setThreads([]);
+      setSavedMessages([]);
+      return;
+    }
     let cancel = false;
     void (async () => {
       try {
         const base = await gatewayBase();
-        const state = await api<{ threads: Thread[] }>(base, '/api/state');
-        if (!cancel) setThreads(state.threads);
+        const state = await api<{ threads?: Thread[]; messages?: SavedLine[] }>(base, '/api/state');
+        if (cancel) return;
+        setThreads(state.threads ?? []);
+        setSavedMessages(state.messages ?? []);
       } catch {
-        if (!cancel) setThreads([]);
+        if (!cancel) {
+          setThreads([]);
+          setSavedMessages([]);
+        }
       }
     })();
     return () => {
       cancel = true;
     };
-  }, [panel]);
+  }, [desk]);
 
   function focusLandmark(spot: MapHotspot) {
     setSelectedId(spot.id);
@@ -500,13 +511,16 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
             </button>
           ))}
           <p className="ph-drawer-label">Recents</p>
-          {shownRecents.length === 0 && <p className="ph-blurb">No saved threads on this host.</p>}
+          {desk === 'signin' && <a className="ph-drawer-row" href={googleSignInHref()}>Sign in to see saved threads</a>}
+          {desk === 'offline' && shownRecents.length === 0 && <p className="ph-blurb">No saved threads on this host.</p>}
+          {desk === 'ready' && shownRecents.length === 0 && <p className="ph-blurb">No saved threads on this desk.</p>}
           {shownRecents.map((thread) => (
             <a key={thread.id} className="ph-drawer-row" href={thread.href}>
               <MessageCircle aria-hidden />
               <span>{thread.title}</span>
             </a>
           ))}
+          <a className="ph-drawer-row" href="/village?section=library">Village history</a>
         </div>
         <div className="ph-drawer-foot">
           <button type="button" className="ph-drawer-avatar" aria-label="You" onClick={() => { setPanel(false); setTab('you'); }}>
@@ -514,7 +528,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
           </button>
         </div>
       </aside>
-      {talking && <BotTalk bot={talking} desk={desk} onBack={closeBot} />}
+      {talking && <BotTalk bot={talking} desk={desk} threads={threads} messages={savedMessages} onBack={closeBot} />}
     </div>
   );
 }

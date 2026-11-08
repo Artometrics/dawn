@@ -6,12 +6,24 @@ export type TownAction =
   | { kind: 'navigate'; href: string }
   | { kind: 'blocked'; title: string; reason: string };
 
+/** A redirect response the browser will actually hand to script. Node keeps 302/303. Chrome's redirect:'manual' hides them as type opaqueredirect and status 0. */
+export type DeskResponse = {
+  status: number;
+  ok: boolean;
+  type?: string;
+};
+
+export function classifyDesk(response: DeskResponse): DeskStatus {
+  if (response.type === 'opaqueredirect') return 'signin';
+  if (response.status === 401 || response.status === 302 || response.status === 303) return 'signin';
+  if (response.ok && response.type !== 'error' && response.type !== 'opaque') return 'ready';
+  return 'offline';
+}
+
 export async function probeDesk(fetchImpl: typeof fetch, url: string): Promise<DeskStatus> {
   try {
-    const response = await fetchImpl(url, { method: 'GET', redirect: 'manual' });
-    if (response.status === 401 || response.status === 302 || response.status === 303) return 'signin';
-    if (response.ok) return 'ready';
-    return 'offline';
+    const response = await fetchImpl(url, { method: 'GET', redirect: 'manual', credentials: 'include' });
+    return classifyDesk(response);
   } catch {
     return 'offline';
   }

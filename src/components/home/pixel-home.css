@@ -754,17 +754,36 @@ button.ph-newchat {
   text-align: center;
 }
 
-.ph-talk-me {
-  align-self: flex-end;
+.ph-talk-me,
+.ph-talk-them {
   max-width: min(86%, 440px);
   margin: 0;
   padding: 10px 12px;
   border-radius: 18px;
-  background: #0a84ff;
-  color: #fff;
   font-size: 16px;
   line-height: 1.35;
   overflow-wrap: anywhere;
+}
+
+.ph-talk-me {
+  align-self: flex-end;
+  background: #0a84ff;
+  color: #fff;
+}
+
+.ph-talk-them {
+  align-self: flex-start;
+  background: rgba(18, 16, 16, 0.46);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.ph-talk-link {
+  align-self: center;
+  color: #fff;
+  font-size: 15px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .ph-talk-compose {

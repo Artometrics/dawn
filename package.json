@@ -9,7 +9,7 @@
     "lint": "eslint",
     "agents": "node --import ./server/register.mjs --experimental-strip-types server/dawn-agents.mjs",
     "worker": "node worker/dawn-worker.mjs",
-    "test": "node --import ./server/register.mjs --experimental-strip-types --test src/lib/models.test.ts src/lib/proposals.test.ts src/lib/gemini-error.test.ts src/lib/town/loop.test.ts src/lib/town/schedule.test.ts src/lib/atlas/quest.test.ts src/lib/dawn-agents/desk.test.ts src/lib/dawn-agents/group-thread.test.ts src/lib/dawn-agents/proxy-auth.test.ts src/lib/dawn-agents/gateway-url.test.ts src/lib/dawn-agents/local-plan.test.ts src/lib/dawn-agents/bot-session.test.ts src/lib/dawn-agents/connected.test.ts src/lib/preview/board.test.ts src/lib/preview/village-fit.test.ts src/lib/home/map-layer.test.ts src/lib/home/town-action.test.ts src/lib/credits/credits.test.ts",
+    "test": "node --import ./server/register.mjs --experimental-strip-types --test src/lib/models.test.ts src/lib/proposals.test.ts src/lib/gemini-error.test.ts src/lib/town/loop.test.ts src/lib/town/schedule.test.ts src/lib/atlas/quest.test.ts src/lib/dawn-agents/desk.test.ts src/lib/dawn-agents/group-thread.test.ts src/lib/dawn-agents/proxy-auth.test.ts src/lib/dawn-agents/gateway-url.test.ts src/lib/dawn-agents/local-plan.test.ts src/lib/dawn-agents/bot-session.test.ts src/lib/dawn-agents/connected.test.ts src/lib/preview/board.test.ts src/lib/preview/village-fit.test.ts src/lib/home/map-layer.test.ts src/lib/home/town-action.test.ts src/lib/home/desk-redirect.browser.test.ts src/lib/studio/send-mode.test.ts src/lib/credits/credits.test.ts",
     "test:rules": "npx -y firebase-tools@latest emulators:exec --only firestore --project dawn-510519 \"node tests/rules.mjs\""
   },
   "dependencies": {

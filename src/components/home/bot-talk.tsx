@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ChevronLeft } from 'lucide-react';
+import { googleSignInHref, type Thread } from '@/components/dawn-agents/api';
 import { ChatWallpaper } from '@/components/dawn-agents/chat-wallpaper';
 import { townAction, type DeskStatus } from '@/lib/home/town-action';
 
@@ -12,44 +13,44 @@ export type TownBot = {
   href: string;
 };
 
-const DRAFT_KEY = 'dawn-bot-draft';
+export type SavedLine = {
+  threadId: string;
+  role: 'user' | 'assistant';
+  content: string;
+  createdAt: number;
+};
 
 /**
- * The approved pixel chat, one thread per town bot.
- * Typing stays in this browser. Nothing here calls Gemini, OpenRouter, or the gateway.
+ * Saved desk messages for this bot, plus the village room.
+ * Nothing typed here is stored, and nothing is sent to a model.
  */
 export function BotTalk({
   bot,
   desk,
+  threads,
+  messages,
   onBack,
 }: {
   bot: TownBot;
   desk: DeskStatus;
+  threads: Thread[];
+  messages: SavedLine[];
   onBack: () => void;
 }) {
-  const [lines, setLines] = useState<string[]>([]);
   const [draft, setDraft] = useState('');
-  const [note, setNote] = useState('No reply is connected. This page does not call a model.');
+  const [localNote, setLocalNote] = useState<string | null>(null);
+  const note = localNote ?? deskNote(desk);
   const place = townAction(bot.href, desk);
-
   useEffect(() => {
-    setLines(readDrafts()[bot.id] ?? []);
+    setLocalNote(null);
     setDraft('');
-    setNote('No reply is connected. This page does not call a model.');
   }, [bot.id]);
-
-  function keep(text: string) {
-    const next = [...lines, text].slice(-40);
-    setLines(next);
-    const saved = readDrafts();
-    saved[bot.id] = next;
-    try {
-      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(saved));
-    } catch {
-      // The lines still show for this visit.
-    }
-    setNote('Kept in this browser only. Nothing was sent.');
-  }
+  const mine = threads.filter((thread) => thread.title.trim().toLowerCase() === bot.name.trim().toLowerCase());
+  const ids = new Set(mine.map((thread) => thread.id));
+  const saved = messages
+    .filter((message) => ids.has(message.threadId) && message.content.trim())
+    .slice()
+    .sort((a, b) => a.createdAt - b.createdAt);
 
   return (
     <div className="ph-talk" role="dialog" aria-label={`${bot.name} conversation`}>
@@ -65,24 +66,28 @@ export function BotTalk({
           {place.kind === 'navigate' ? (
             <a href={place.href}>Open the workspace</a>
           ) : (
-            <button type="button" onClick={() => setNote(place.reason)}>Desk is not running</button>
+            <button type="button" onClick={() => setLocalNote(place.reason)}>Desk is not running</button>
           )}
         </div>
       </header>
       <div className="ph-talk-scroll">
         <p className="ph-talk-note" role="status">{note}</p>
-        {lines.map((line, index) => (
-          <p key={`${index}-${line.slice(0, 12)}`} className="ph-talk-me">{line}</p>
+        {desk === 'signin' && <a className="ph-talk-link" href={googleSignInHref()}>Sign in with Google</a>}
+        <a className="ph-talk-link" href="/village?section=library">Village history</a>
+        {saved.length === 0 && <p className="ph-talk-note">No saved messages for {bot.name}.</p>}
+        {saved.map((line) => (
+          <p key={`${line.threadId}-${line.createdAt}-${line.role}`} className={line.role === 'user' ? 'ph-talk-me' : 'ph-talk-them'}>
+            {line.content}
+          </p>
         ))}
       </div>
       <form
         className="ph-talk-compose"
         onSubmit={(event) => {
           event.preventDefault();
-          const text = draft.trim();
-          if (!text) return;
+          if (!draft.trim()) return;
           setDraft('');
-          keep(text);
+          setLocalNote('Not sent. This box is not a saved thread.');
         }}
       >
         <label className="sr-only" htmlFor="bot-draft">Message {bot.name}</label>
@@ -99,14 +104,8 @@ export function BotTalk({
   );
 }
 
-function readDrafts(): Record<string, string[]> {
-  try {
-    const raw = sessionStorage.getItem(DRAFT_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as unknown;
-    if (!parsed || typeof parsed !== 'object') return {};
-    return parsed as Record<string, string[]>;
-  } catch {
-    return {};
-  }
+function deskNote(desk: DeskStatus): string {
+  if (desk === 'ready') return 'Saved messages come from the desk. This page does not call a model.';
+  if (desk === 'signin') return 'Saved threads are behind Google sign-in.';
+  return 'The desk is not running on this host, so its history is not loaded.';
 }
