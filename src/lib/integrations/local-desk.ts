@@ -70,6 +70,35 @@ export async function readLocalPage(root: string, name: string): Promise<string>
   return readFile(inside(home, path.join('sandbox', name)), 'utf8');
 }
 
+const FILE_NAME = /^[a-z0-9][a-z0-9.-]{0,40}$/;
+
+export async function writeProjectFile(root: string, name: string, text: string): Promise<void> {
+  if (!FILE_NAME.test(name) || name.includes('..')) throw new Error('Use a plain file name.');
+  const home = await initLocalDesk(root);
+  await mkdir(path.join(home, 'files'), { recursive: true });
+  await writeFile(inside(home, path.join('files', name)), text.slice(0, 20_000), 'utf8');
+}
+
+export async function readProjectFile(root: string, name: string): Promise<string> {
+  if (!FILE_NAME.test(name) || name.includes('..')) throw new Error('Use a plain file name.');
+  const home = await initLocalDesk(root);
+  return readFile(inside(home, path.join('files', name)), 'utf8');
+}
+
+export async function listProjectFiles(root: string): Promise<string[]> {
+  const home = await initLocalDesk(root);
+  const { readdir } = await import('node:fs/promises');
+  return readdir(path.join(home, 'files')).catch(() => []);
+}
+
+/** Reads one sandbox file. A URL or an escaped path is refused and nothing is fetched. */
+export async function runBrowserJob(root: string, target: string): Promise<string> {
+  if (/^[a-z]+:/i.test(target) || target.includes('..') || target.includes('/') || target.includes('\\')) {
+    throw new Error('Remote pages and escaped paths are refused.');
+  }
+  return readLocalPage(root, target);
+}
+
 function inside(root: string, target: string): string {
   const resolved = path.resolve(root, target);
   if (resolved !== root && !resolved.startsWith(root + path.sep)) throw new Error('Outside the desk.');

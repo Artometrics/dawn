@@ -34,7 +34,7 @@ const buildings: MapHotspot[] = [
   { id: 'editor', name: 'Code workshop', kind: 'Editor', blurb: 'Dawn Code, on this host.', href: '/editor', suggestion: 'Open the editor', x: 420, y: 370, w: 280, h: 180 },
   { id: 'recipes', name: 'Recipes boutique', kind: 'Recipes', blurb: 'Style recipes you can look at on this host. Saving a like needs the gateway.', href: '/artifacts', suggestion: 'Open the styles library', x: 40, y: 580, w: 300, h: 180 },
   { id: 'letter', name: 'Letter post office', kind: 'Letter', blurb: 'The public letter. Sending still waits for a click.', href: '/letter', suggestion: 'Read the letter', x: 400, y: 560, w: 340, h: 160 },
-  { id: 'studio', name: 'Studio', kind: 'Studio', blurb: 'The studio chat.', href: '/studio', suggestion: 'Ask in the studio', x: 30, y: 770, w: 310, h: 190 },
+  { id: 'studio', name: 'Studio', kind: 'Studio', blurb: 'Project files for this town.', href: '/projects', suggestion: 'Open project files', x: 30, y: 770, w: 310, h: 190 },
   { id: 'atlas', name: 'Atlas', kind: 'Atlas', blurb: 'A day on the Stanford walk.', href: '/atlas', suggestion: 'Walk the atlas', x: 400, y: 750, w: 330, h: 220 },
 ];
 

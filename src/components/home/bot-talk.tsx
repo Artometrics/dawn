@@ -23,17 +23,25 @@ export function BotTalk({
   people,
   preview,
   saved,
+  stored = [],
+  jobNote = '',
   onOpen,
   onPreview,
   onBack,
+  onFile,
+  onDraft,
 }: {
   bot: TownBot;
   people: TownBot[];
   preview: string[];
   saved: SavedLine[];
+  stored?: string[];
+  jobNote?: string;
   onOpen: (id: string) => void;
   onPreview: (text: string) => void;
   onBack: () => void;
+  onFile?: () => void;
+  onDraft?: () => void;
 }) {
   const [draft, setDraft] = useState('');
   return (
@@ -63,6 +71,10 @@ export function BotTalk({
         ))}
       </div>
       <div className="ph-im-scroll">
+        {stored.length > 0 && <p className="ph-im-label">Saved on this desk</p>}
+        {stored.map((line, index) => (
+          <p key={`desk-${index}-${line.slice(0, 12)}`} className="ph-im-me">{line}</p>
+        ))}
         {saved.length > 0 && <p className="ph-im-label">Saved on the desk</p>}
         {saved.map((line) => (
           <p key={`${line.threadId}-${line.createdAt}-${line.role}`} className={line.role === 'user' ? 'ph-im-me' : 'ph-im-them'}>
@@ -95,6 +107,13 @@ export function BotTalk({
         />
         <button type="submit" disabled={!draft.trim()}>Send</button>
       </form>
+      {(onFile || onDraft) && (
+        <div className="ph-im-jobs">
+          {onFile && <button type="button" onClick={onFile}>Save project note</button>}
+          {onDraft && <button type="button" onClick={onDraft}>Hold a draft</button>}
+          {jobNote && <p role="status">{jobNote}</p>}
+        </div>
+      )}
     </div>
   );
 }

@@ -21,6 +21,9 @@ const server = await startAgentsServer({
   editorToken: process.env.DAWN_EDITOR_TOKEN || '',
   spendCapUsd: process.env.DAWN_SPEND_CAP_USD ? Number(process.env.DAWN_SPEND_CAP_USD) : 20,
   host: process.env.DAWN_AGENTS_HOST || '127.0.0.1',
+  trustedOrigins: process.env.DAWN_TRUSTED_ORIGINS
+    ? process.env.DAWN_TRUSTED_ORIGINS.split(',').map((item) => item.trim()).filter(Boolean)
+    : undefined,
   port,
   schedule: true,
 });

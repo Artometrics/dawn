@@ -37,7 +37,7 @@ export default function EditorPage() {
           <a href="/">Town</a>
           <a href="/village">Village</a>
           <a href="/atlas">Atlas</a>
-          <a href="/studio">Projects</a>
+          <a href="/projects">Projects</a>
           <a href="/artifacts">Artifacts</a>
           <a href="/village?section=library">Village history</a>
         </nav>

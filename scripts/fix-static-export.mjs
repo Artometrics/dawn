@@ -34,6 +34,7 @@ publish('credits');
 publish('village');
 publish('desk');
 publish('editor');
+publish('projects');
 publish('artifacts');
 publish('preview/bench');
 publish('preview/habits');
