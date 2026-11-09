@@ -37,6 +37,7 @@ import type { AgentRecord, ChatChannel, ComputerKind, MessageRecord, PixelAvatar
 import { TRAINING_PROVIDER_IDS } from './types';
 import { validAvatar } from './avatar';
 import { spriteById } from '../credits/sprites';
+import { DEFAULT_TRUSTED_ORIGINS, ownerMutationDecision } from './request-provenance';
 import { WorkerHub } from './worker-hub';
 import type { WorkerKind } from './types';
 
@@ -57,6 +58,8 @@ export type ServerOptions = {
   port?: number;
   schedule?: boolean;
   fetchImpl?: typeof fetch;
+  /** Exact browser Origins allowed to call owner mutations. Host is not used. */
+  trustedOrigins?: readonly string[];
 };
 
 export type RunningServer = {
@@ -82,6 +85,7 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
   };
   const ownerEmail = options.ownerEmail.trim().toLowerCase();
   const allowLoopbackOwner = options.allowLoopbackOwner === true;
+  const trustedOrigins = options.trustedOrigins ?? DEFAULT_TRUSTED_ORIGINS;
 
   const server = createServer(async (req, res) => {
     try {
@@ -126,9 +130,14 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
     const url = new URL(req.url || '/', 'http://127.0.0.1');
     const pathname = url.pathname.replace(/\/$/, '') || '/';
     if (req.method === 'OPTIONS') {
-      cors(res);
-      res.writeHead(204);
-      res.end();
+      if (pathname.startsWith('/api/public/')) {
+        cors(res);
+        res.writeHead(204);
+        res.end();
+        return;
+      }
+      res.writeHead(403, { 'content-type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ error: 'Preflight is not granted.' }));
       return;
     }
     if (req.method === 'GET' && pathname === '/api/health') {
@@ -169,6 +178,15 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
   }
 
   async function ownerRoute(req: IncomingMessage, res: ServerResponse, pathname: string) {
+    const decision = ownerMutationDecision(req.method || 'GET', {
+      origin: headerOne(req, 'origin'),
+      secFetchSite: headerOne(req, 'sec-fetch-site'),
+      contentType: headerOne(req, 'content-type'),
+    }, trustedOrigins);
+    if (!decision.allow) {
+      sendJson(res, decision.status, { error: decision.error });
+      return;
+    }
     if (req.method === 'GET' && pathname === '/api/state') {
       sendJson(res, 200, await snapshot());
       return;
@@ -1420,9 +1438,13 @@ function cors(res: ServerResponse) {
   res.setHeader('access-control-allow-methods', 'GET, POST, PATCH, DELETE, OPTIONS');
 }
 
+function headerOne(req: IncomingMessage, name: string): string {
+  const value = req.headers[name];
+  return (Array.isArray(value) ? value[0] : value || '').trim();
+}
+
 function sendJson(res: ServerResponse, status: number, body: unknown) {
   if (res.writableEnded || res.headersSent) return;
-  cors(res);
   res.writeHead(status, { 'content-type': 'application/json; charset=utf-8' });
   res.end(JSON.stringify(body));
 }
