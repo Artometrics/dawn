@@ -1,12 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { isTownPath, pathCell, TOWN_DOORS } from './town-ground.ts';
+import { isPaintedPlayerPixel, isTownPath, isTownWalkable, pathCell, TOWN_DOORS } from './town-ground.ts';
 
 test('dirt path is walkable and grass, roofs, and trees are not', () => {
   assert.equal(isTownPath(180, 140, 90), true);
-  assert.equal(isTownPath(70, 150, 80), false);
-  assert.equal(isTownPath(200, 60, 55), false);
-  assert.equal(isTownPath(40, 70, 40), false);
+  assert.equal(isTownWalkable(88, 169, 102), true);
+  assert.equal(isTownWalkable(200, 60, 55), false);
+  assert.equal(isTownWalkable(20, 30, 20), false);
+  assert.equal(isPaintedPlayerPixel(200, 50, 48), true);
+  assert.equal(isPaintedPlayerPixel(88, 169, 102), false);
 });
 
 test('a step onto a blocked cell is refused and a path cell is kept', () => {

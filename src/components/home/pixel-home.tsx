@@ -8,7 +8,7 @@ import { api, gatewayBase, googleSignInHref, type Thread } from '@/components/da
 import type { SavedLine } from '@/components/home/bot-talk';
 import { searchTown, type SearchHit } from '@/lib/home/town-search';
 import { stepHero } from '@/lib/home/town-walk';
-import { isTownPath, PAINTED_PLAYER, PATH_PATCH, pathCell, TOWN_DOORS } from '@/lib/home/town-ground';
+import { isPaintedPlayerPixel, isTownWalkable, PAINTED_PLAYER, pathCell, TOWN_DOORS } from '@/lib/home/town-ground';
 import { activeMapLayer, hotspotAt, type MapHotspot, type MapLayer } from '@/lib/home/map-layer';
 import { probeDesk, townAction, type DeskStatus } from '@/lib/home/town-action';
 import { PLAYER_SRC } from '@/lib/home/overworld';
@@ -61,6 +61,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
   const peopleRef = useRef(new globalThis.Map<string, HTMLImageElement>());
   const gridRef = useRef<Uint8Array | null>(null);
   const colsRef = useRef(0);
+  const plateRef = useRef<HTMLCanvasElement | null>(null);
   const [stored, setStored] = useState<Record<string, string[]>>({});
   const [jobNote, setJobNote] = useState('');
   const [ready, setReady] = useState(false);
@@ -81,6 +82,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
       if (built) {
         gridRef.current = built.grid;
         colsRef.current = built.cols;
+        plateRef.current = built.plate;
       }
       setReady(true);
     };
@@ -120,7 +122,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
       const next = clampCam(layer, (layer.view.w * frame.fit - w) / 2, 0, w, h, frame.fit);
       camRef.current = next;
       setCam(next);
-      paint(canvas, layer, mapRef.current, next, frame, heroRef.current, playerRef.current);
+      paint(canvas, layer, plateRef.current ?? mapRef.current, next, frame, heroRef.current, playerRef.current);
     };
     fit();
     const observer = new ResizeObserver(fit);
@@ -133,7 +135,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
     if (!canvas || !ready) return;
     const frame = frameFor(layer, viewRef.current.w, viewRef.current.h);
     frameRef.current = frame;
-    paint(canvas, layer, mapRef.current, cam, frame, hero, playerRef.current);
+    paint(canvas, layer, plateRef.current ?? mapRef.current, cam, frame, hero, playerRef.current);
   }, [ready, cam, layer, hero]);
 
   useEffect(() => {
@@ -752,14 +754,15 @@ function savedFor(name: string, threads: Thread[], messages: SavedLine[]): Saved
 function paint(
   canvas: HTMLCanvasElement,
   mapLayer: MapLayer,
-  map: HTMLImageElement | null,
+  map: CanvasImageSource | null,
   cam: { x: number; y: number },
   frame: { fit: number; ox: number; oy: number },
   hero: { x: number; y: number },
   player: HTMLImageElement | null,
 ) {
   const ctx = canvas.getContext('2d');
-  if (!ctx || !map || !map.complete || !map.naturalWidth) return;
+  const sourceWidth = map instanceof HTMLImageElement ? map.naturalWidth : map instanceof HTMLCanvasElement ? map.width : 0;
+  if (!ctx || !map || !sourceWidth) return;
   ctx.imageSmoothingEnabled = false;
   ctx.fillStyle = '#3f8f34';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -775,7 +778,6 @@ function paint(
     Math.round(view.w * frame.fit),
     Math.round(view.h * frame.fit),
   );
-  ctx.drawImage(map, PATH_PATCH.x, PATH_PATCH.y, PATH_PATCH.w, PATH_PATCH.h, Math.round(frame.ox + (PAINTED_PLAYER.x - view.x) * frame.fit - cam.x), Math.round(frame.oy + (PAINTED_PLAYER.y - view.y) * frame.fit - cam.y), Math.round(PAINTED_PLAYER.w * frame.fit), Math.round(PAINTED_PLAYER.h * frame.fit));
   if (player && player.complete && player.naturalWidth) {
     const size = 32 * frame.fit;
     const left = frame.ox + (hero.x - view.x) * frame.fit - cam.x - size / 2;
@@ -807,13 +809,52 @@ function buildWalkGrid(map: HTMLImageElement, layerView = { x: 0, y: 330, w: 768
           if (x >= layerView.w || y >= layerView.h) continue;
           const index = (y * layerView.w + x) * 4;
           seen += 1;
-          if (isTownPath(image.data[index], image.data[index + 1], image.data[index + 2])) ok += 1;
+          if (isTownWalkable(image.data[index], image.data[index + 1], image.data[index + 2])) ok += 1;
         }
       }
       if (seen && ok * 2 >= seen) grid[cy * cols + cx] = 1;
     }
   }
-  return { grid, cols };
+  const { x, y, w, h } = PAINTED_PLAYER;
+  const pad = 2;
+  const block = ctx.getImageData(x - pad, y - pad, w + pad * 2, h + pad * 2);
+  const width = w + pad * 2;
+  const height = h + pad * 2;
+  const painted = new Uint8Array(width * height);
+  for (let i = 0; i < painted.length; i += 1) {
+    const offset = i * 4;
+    if (isPaintedPlayerPixel(block.data[offset], block.data[offset + 1], block.data[offset + 2])) painted[i] = 1;
+  }
+  for (let pass = 0; pass < width + height; pass += 1) {
+    let changed = false;
+    const next = painted.slice();
+    const copy = block.data.slice();
+    for (let i = 0; i < painted.length; i += 1) {
+      if (!painted[i]) continue;
+      const px = i % width;
+      const py = Math.floor(i / width);
+      const neighbors = [i - 1, i + 1, i - width, i + width];
+      for (const neighbor of neighbors) {
+        const nx = neighbor % width;
+        const ny = Math.floor(neighbor / width);
+        if (neighbor < 0 || neighbor >= painted.length || Math.abs(nx - px) > 1 || ny < 0 || ny >= height || painted[neighbor]) continue;
+        const to = i * 4;
+        const from = neighbor * 4;
+        copy[to] = block.data[from];
+        copy[to + 1] = block.data[from + 1];
+        copy[to + 2] = block.data[from + 2];
+        copy[to + 3] = 255;
+        next[i] = 0;
+        changed = true;
+        break;
+      }
+    }
+    block.data.set(copy);
+    painted.set(next);
+    if (!changed) break;
+  }
+  ctx.putImageData(block, x - pad, y - pad);
+  return { grid, cols, plate: canvas };
 }
 
 function frameFor(mapLayer: MapLayer, viewW: number, viewH: number) {

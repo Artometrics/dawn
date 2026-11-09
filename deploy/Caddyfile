@@ -48,7 +48,7 @@
 	}
 
 	# Village, atlas, studio, credits, and static files stay public.
-	@public path / /atlas /atlas/* /studio /studio/* /credits /credits/* /sprites/* /tiles/* /_next/* /dawn-agents-config.json /favicon.ico
+	@public path / /atlas /atlas/* /studio /studio/* /projects /projects/* /artifacts /artifacts/* /village /village/* /credits /credits/* /sprites/* /tiles/* /maps/* /_next/* /dawn-agents-config.json /favicon.ico
 	handle @public {
 		root * {$DAWN_STATIC_ROOT}
 		try_files {path} {path}.html {path}/index.html
@@ -68,6 +68,10 @@
 		reverse_proxy 127.0.0.1:3000
 	}
 
+	# /editor stays on OpenVSCode at 127.0.0.1:3000. It is not the static page.
+	# oauth2-proxy's copy_headers replaces X-Auth-Request-Email. The gateway
+	# trusts that header only from loopback, so 8787 must not be a public bind
+	# and DAWN_ALLOW_LOOPBACK_OWNER must stay unset here.
 	handle /api/* {
 		import dawn_auth
 		reverse_proxy 127.0.0.1:8787
