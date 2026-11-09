@@ -40,7 +40,7 @@ test('same-origin owner desk persists chat, a file, a draft, and a local booth',
     assert.ok(result.moved > 40, `walker only moved ${result.moved}`);
     assert.equal(result.reload, true);
     assert.equal(result.file, true);
-    assert.match(result.booth, /Local booth/);
+    assert.match(result.booth, /not a browser/);
     assert.match(result.remote, /refused/i);
     assert.match(result.draft, /review/i);
   } finally {

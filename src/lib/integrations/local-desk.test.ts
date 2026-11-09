@@ -3,7 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { appendChat, approveSend, deliverSend, draftSend, readChat, readLocalPage, readProjectFile, readSends, runBrowserJob, runSandboxFile, writeProjectFile, writeSandboxPage } from './local-desk.ts';
+import { acceptMockMail, appendChat, approveSend, deliverSend, draftSend, readChat, readLocalPage, readMockMail, readProjectFile, readSends, runSandboxFile, writeProjectFile, writeSandboxPage } from './local-desk.ts';
 
 test('chat and a send draft survive a reopen and nothing is delivered', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'dawn-local-desk-'));
@@ -24,15 +24,22 @@ test('chat and a send draft survive a reopen and nothing is delivered', async ()
     await writeProjectFile(root, 'note.txt', 'kept');
     assert.equal(await readProjectFile(root, 'note.txt'), 'kept');
     await writeSandboxPage(root, 'booth.html', '<p>local</p>');
-    assert.match(await runBrowserJob(root, 'booth.html'), /local/);
-    await assert.rejects(() => runBrowserJob(root, 'https://example.com'), /refused/);
+    assert.match(await readLocalPage(root, 'booth.html'), /local/);
     await assert.rejects(() => writeProjectFile(root, '../note.txt', 'no'), /plain file/);
-    await writeSandboxPage(root, 'fixture.js', "'ran'");
-    assert.equal(await runSandboxFile(root, 'fixture.js'), 'ran');
+    await writeSandboxPage(root, 'fixture.js', 'process.exit(1)');
+    await assert.rejects(() => runSandboxFile(root, 'fixture.js'), /not a security boundary/);
     const held = await draftSend(root, 'review@localhost', 'hold');
     const approved = await approveSend(root, held.id);
     assert.equal(approved.status, 'approved');
-    assert.deepEqual(deliverSend(approved), { delivered: false, reason: 'Outbound is off.' });
+    assert.equal(deliverSend(approved).delivered, false);
+    assert.equal(deliverSend(approved).transport, 'off');
+    const mock = await acceptMockMail(root, approved);
+    assert.equal(mock.transport, 'mock');
+    assert.equal(mock.delivered, false);
+    assert.match(mock.note, /Nothing was sent/);
+    const mailbox = await readMockMail(root);
+    assert.equal(mailbox.length, 1);
+    assert.equal(mailbox[0].body, 'hold');
   } finally {
     await rm(root, { recursive: true, force: true });
   }

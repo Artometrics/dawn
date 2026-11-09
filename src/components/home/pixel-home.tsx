@@ -8,7 +8,7 @@ import { api, gatewayBase, googleSignInHref, type Thread } from '@/components/da
 import type { SavedLine } from '@/components/home/bot-talk';
 import { searchTown, type SearchHit } from '@/lib/home/town-search';
 import { stepHero } from '@/lib/home/town-walk';
-import { isTownWalkable, pathCell, TOWN_DOORS } from '@/lib/home/town-ground';
+import { coverPaintedFigure, isTownWalkable, pathCell, TOWN_DOORS } from '@/lib/home/town-ground';
 import { activeMapLayer, hotspotAt, type MapHotspot, type MapLayer } from '@/lib/home/map-layer';
 import { probeDesk, townAction, type DeskStatus } from '@/lib/home/town-action';
 import { PLAYER_SRC } from '@/lib/home/overworld';
@@ -815,6 +815,9 @@ function buildWalkGrid(map: HTMLImageElement, layerView = { x: 0, y: 330, w: 768
       if (seen && ok * 2 >= seen) grid[cy * cols + cx] = 1;
     }
   }
+  const plate = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  coverPaintedFigure(canvas.width, plate.data);
+  ctx.putImageData(plate, 0, 0);
   return { grid, cols, plate: canvas };
 }
 
