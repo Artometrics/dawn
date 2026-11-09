@@ -309,14 +309,39 @@
   overflow: auto;
 }
 
+.ph-sheetbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .ph-handle {
-  width: 100%;
+  flex: 1;
   border: 0;
   background: transparent;
   color: inherit;
   padding: 6px 0 8px;
   cursor: grab;
   touch-action: none;
+}
+
+.ph-sheet-close,
+.ph-reopen {
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 16px;
+  background: #f4f1ec;
+  color: #171614;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.ph-reopen {
+  position: absolute;
+  z-index: 6;
+  left: 12px;
+  bottom: calc(74px + env(safe-area-inset-bottom));
 }
 
 .ph-handle span {
@@ -671,10 +696,60 @@ button.ph-newchat {
   height: 16px;
 }
 
+.ph-door {
+  position: absolute;
+  z-index: 3;
+  width: 72px;
+  height: 36px;
+  transform: translate(-36px, -28px);
+}
+
+.ph-door img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 28px;
+  height: 28px;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.ph-door button {
+  position: absolute;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+}
+
+.ph-door button:first-of-type { left: 0; }
+.ph-door button:last-of-type { left: 36px; }
+
+.ph-im-jobs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 12px 12px;
+  background: #141211;
+}
+
+.ph-im-jobs button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 12px;
+  background: #2a2623;
+  color: #fff;
+}
+
+.ph-im-jobs p { flex: 1 0 100%; margin: 0; color: #c4b8a8; font-size: 13px; }
+
 .ph-pad {
   position: absolute;
   z-index: 6;
-  left: 12px;
+  right: 12px;
+  left: auto;
   display: grid;
   grid-template-columns: 44px 44px;
   gap: 6px;

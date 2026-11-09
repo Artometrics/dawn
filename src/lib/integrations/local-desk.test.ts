@@ -3,7 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { appendChat, draftSend, readChat, readLocalPage, readSends, writeSandboxPage } from './local-desk.ts';
+import { appendChat, draftSend, readChat, readLocalPage, readProjectFile, readSends, runBrowserJob, writeProjectFile, writeSandboxPage } from './local-desk.ts';
 
 test('chat and a send draft survive a reopen and nothing is delivered', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'dawn-local-desk-'));
@@ -21,6 +21,12 @@ test('chat and a send draft survive a reopen and nothing is delivered', async ()
     assert.match(await readLocalPage(root, 'booth.html'), /Collect/);
     await assert.rejects(() => readLocalPage(root, 'https://example.com'), /local sandbox/);
     await assert.rejects(() => writeSandboxPage(root, '../escape.html', 'no'), /short html/);
+    await writeProjectFile(root, 'note.txt', 'kept');
+    assert.equal(await readProjectFile(root, 'note.txt'), 'kept');
+    await writeSandboxPage(root, 'booth.html', '<p>local</p>');
+    assert.match(await runBrowserJob(root, 'booth.html'), /local/);
+    await assert.rejects(() => runBrowserJob(root, 'https://example.com'), /refused/);
+    await assert.rejects(() => writeProjectFile(root, '../note.txt', 'no'), /plain file/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

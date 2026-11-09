@@ -174,26 +174,58 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       return;
     }
     if (pathname === '/api/local-drafts') {
-      const { appendChat, draftSend, readChat, readSends } = await import('../integrations/local-desk.ts');
+      const desk = await import('../integrations/local-desk.ts');
       const deskRoot = path.join(path.dirname(options.storePath), 'local-desk');
       if (req.method === 'GET') {
-        const personId = new URL(req.url || '/', 'http://127.0.0.1').searchParams.get('person') || '';
-        sendJson(res, 200, { chat: personId ? await readChat(deskRoot, personId) : [], sends: await readSends(deskRoot) });
+        const params = new URL(req.url || '/', 'http://127.0.0.1').searchParams;
+        const personId = params.get('person') || '';
+        const file = params.get('file') || '';
+        if (file) {
+          try {
+            sendJson(res, 200, { name: file, text: await desk.readProjectFile(deskRoot, file) });
+          } catch (error) {
+            sendJson(res, 400, { error: error instanceof Error ? error.message : 'Refused.' });
+          }
+          return;
+        }
+        sendJson(res, 200, {
+          chat: personId ? await desk.readChat(deskRoot, personId) : [],
+          sends: await desk.readSends(deskRoot),
+          files: await desk.listProjectFiles(deskRoot),
+        });
         return;
       }
       if (req.method === 'POST') {
         const body = await readJson(req);
-        if (body.kind === 'chat') {
-          const saved = await appendChat(deskRoot, String(body.personId || ''), String(body.text || ''));
-          sendJson(res, 201, saved);
+        try {
+          if (body.kind === 'chat') {
+            sendJson(res, 201, await desk.appendChat(deskRoot, String(body.personId || ''), String(body.text || '')));
+            return;
+          }
+          if (body.kind === 'send') {
+            sendJson(res, 201, await desk.draftSend(deskRoot, String(body.to || ''), String(body.body || '')));
+            return;
+          }
+          if (body.kind === 'file') {
+            await desk.writeProjectFile(deskRoot, String(body.name || ''), String(body.text || ''));
+            sendJson(res, 201, { name: body.name, saved: true });
+            return;
+          }
+          if (body.kind === 'sandbox') {
+            await desk.writeSandboxPage(deskRoot, String(body.name || ''), String(body.html || ''));
+            sendJson(res, 201, { name: body.name, saved: true });
+            return;
+          }
+          if (body.kind === 'browser') {
+            const html = await desk.runBrowserJob(deskRoot, String(body.target || ''));
+            sendJson(res, 200, { html });
+            return;
+          }
+        } catch (error) {
+          sendJson(res, 400, { error: error instanceof Error ? error.message : 'Refused.' });
           return;
         }
-        if (body.kind === 'send') {
-          const saved = await draftSend(deskRoot, String(body.to || ''), String(body.body || ''));
-          sendJson(res, 201, saved);
-          return;
-        }
-        sendJson(res, 400, { error: 'Use chat or send. Nothing is delivered.' });
+        sendJson(res, 400, { error: 'Use chat, send, file, sandbox, or browser. Nothing is delivered.' });
         return;
       }
     }

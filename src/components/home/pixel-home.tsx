@@ -8,6 +8,7 @@ import { api, gatewayBase, googleSignInHref, type Thread } from '@/components/da
 import type { SavedLine } from '@/components/home/bot-talk';
 import { searchTown, type SearchHit } from '@/lib/home/town-search';
 import { stepHero } from '@/lib/home/town-walk';
+import { isTownPath, PAINTED_PLAYER, PATH_PATCH, pathCell, TOWN_DOORS } from '@/lib/home/town-ground';
 import { activeMapLayer, hotspotAt, type MapHotspot, type MapLayer } from '@/lib/home/map-layer';
 import { probeDesk, townAction, type DeskStatus } from '@/lib/home/town-action';
 import { PLAYER_SRC } from '@/lib/home/overworld';
@@ -22,7 +23,7 @@ const CHIPS: { label: string; href?: string; panel?: boolean }[] = [
   { label: 'Editor', href: '/editor' },
   { label: 'Recipes', href: '/artifacts' },
   { label: 'Letter', href: '/letter' },
-  { label: 'Studio', href: '/studio' },
+  { label: 'Studio', href: '/projects' },
 ];
 
 const ART_CONTROLS = [
@@ -47,13 +48,21 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
   const [query, setQuery] = useState('');
   const [labels, setLabels] = useState(false);
   const [sheetH, setSheetH] = useState(228);
+  const [sheetOpen, setSheetOpen] = useState(true);
+  const sheetRef = useRef(true);
+  sheetRef.current = sheetOpen;
   const [threads, setThreads] = useState<Thread[]>([]);
   const [savedMessages, setSavedMessages] = useState<SavedLine[]>([]);
   const [previews, setPreviews] = useState<Record<string, string[]>>({});
-  const heroStart = { x: layer.view.x + Math.round(layer.view.w / 2), y: layer.view.y + Math.round(layer.view.h / 2) };
+  const heroStart = { x: 540, y: 715 };
   const heroRef = useRef(heroStart);
   const [hero, setHero] = useState(heroStart);
   const playerRef = useRef<HTMLImageElement | null>(null);
+  const peopleRef = useRef(new globalThis.Map<string, HTMLImageElement>());
+  const gridRef = useRef<Uint8Array | null>(null);
+  const colsRef = useRef(0);
+  const [stored, setStored] = useState<Record<string, string[]>>({});
+  const [jobNote, setJobNote] = useState('');
   const [ready, setReady] = useState(false);
   const [desk, setDesk] = useState<DeskStatus>('offline');
   const [notice, setNotice] = useState('');
@@ -67,7 +76,14 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
 
   useEffect(() => {
     const map = new Image();
-    map.onload = () => setReady(true);
+    map.onload = () => {
+      const built = buildWalkGrid(map, layer.view);
+      if (built) {
+        gridRef.current = built.grid;
+        colsRef.current = built.cols;
+      }
+      setReady(true);
+    };
     map.src = layer.src;
     mapRef.current = map;
     const player = new Image();
@@ -76,6 +92,14 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
       setHero((current) => ({ ...current }));
     };
     player.src = PLAYER_SRC;
+    for (const person of TOWN_CAST) {
+      const face = new Image();
+      face.onload = () => {
+        peopleRef.current.set(person.id, face);
+        setHero((current) => ({ ...current }));
+      };
+      face.src = person.src;
+    }
   }, [layer.src]);
 
   useEffect(() => {
@@ -116,6 +140,10 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
     const onKey = (event: KeyboardEvent) => {
       if (panelRef.current) {
         if (event.key === 'Escape') setPanel(false);
+        return;
+      }
+      if (event.key === 'Escape') {
+        if (sheetRef.current) setSheetOpen(false);
         return;
       }
       const tag = (event.target as HTMLElement | null)?.tagName;
@@ -159,6 +187,22 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
     window.addEventListener('popstate', read);
     return () => window.removeEventListener('popstate', read);
   }, []);
+
+  useEffect(() => {
+    if (desk !== 'ready' || !talkId) return;
+    let cancel = false;
+    void (async () => {
+      try {
+        const response = await fetch(`/api/local-drafts?person=${encodeURIComponent(talkId)}`, { credentials: 'include', redirect: 'manual' });
+        if (response.type === 'opaqueredirect' || !response.ok) return;
+        const data = await response.json() as { chat?: { text: string }[] };
+        if (!cancel) setStored((current) => ({ ...current, [talkId]: (data.chat ?? []).map((line) => line.text) }));
+      } catch {
+        /* the visit preview still works */
+      }
+    })();
+    return () => { cancel = true; };
+  }, [desk, talkId]);
 
   useEffect(() => {
     if (desk !== 'ready') {
@@ -224,6 +268,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
   function onPointerUp(event: ReactPointerEvent<HTMLCanvasElement>) {
     const drag = dragRef.current;
     dragRef.current = null;
+    if (sheetRef.current) setSheetOpen(false);
     if (!drag || drag.moved) return;
     const rect = event.currentTarget.getBoundingClientRect();
     const frame = frameRef.current;
@@ -237,17 +282,27 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
   function onSheetPointerDown(event: ReactPointerEvent<HTMLButtonElement>) {
     const startY = event.clientY;
     const startH = sheetH;
+    let moved = false;
+    let latest = startH;
     const move = (ev: PointerEvent) => {
-      const next = Math.min(window.innerHeight * 0.72, Math.max(150, startH + (startY - ev.clientY)));
-      setSheetH(next);
+      if (Math.abs(ev.clientY - startY) > 8) moved = true;
+      latest = Math.min(window.innerHeight * 0.72, Math.max(0, startH + (startY - ev.clientY)));
+      setSheetH(latest);
     };
     const up = () => {
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', up);
-      setSheetH((current) => (current < 190 ? 168 : current > 360 ? Math.min(520, window.innerHeight * 0.62) : 250));
+      window.removeEventListener('pointercancel', up);
+      if (!moved || latest < 120) {
+        setSheetOpen(false);
+        setSheetH(228);
+        return;
+      }
+      setSheetH(latest > 360 ? Math.min(520, window.innerHeight * 0.62) : 228);
     };
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', up);
   }
 
   const frame = frameRef.current;
@@ -293,7 +348,9 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
       maxX: layer.view.x + layer.view.w - 24,
       maxY: layer.view.y + layer.view.h - 24,
     };
-    const next = stepHero(heroRef.current, { x: dx, y: dy }, bounds, 28);
+    const next = stepHero(heroRef.current, { x: dx, y: dy }, bounds, 16);
+    const grid = gridRef.current;
+    if (grid && !pathCell(grid, colsRef.current, next.x, next.y, layer.view.y, 8)) return;
     heroRef.current = next;
     setHero(next);
     const frame = frameRef.current;
@@ -325,9 +382,63 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
 
   const hits = searchTown(
     query,
-    layer.hotspots.map((spot) => ({ id: spot.id, name: spot.name, kind: spot.kind, href: spot.href })),
+    [
+      ...layer.hotspots.map((spot) => ({ id: spot.id, name: spot.name, kind: spot.kind, href: spot.id === 'studio' ? '/projects' : spot.href })),
+      { id: 'projects', name: 'Projects', kind: 'Files', href: '/projects' },
+    ],
     TOWN_CAST.map((person) => ({ id: person.id, name: person.name })),
   );
+
+  async function deskPost(body: Record<string, string>): Promise<Response | null> {
+    try {
+      const response = await fetch('/api/local-drafts', {
+        method: 'POST',
+        credentials: 'include',
+        redirect: 'manual',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (response.type === 'opaqueredirect' || response.status === 401) return null;
+      return response;
+    } catch {
+      return null;
+    }
+  }
+
+  async function keepLine(personId: string, text: string) {
+    if (desk === 'ready') {
+      const response = await deskPost({ kind: 'chat', personId, text });
+      if (response?.ok) {
+        setStored((current) => ({ ...current, [personId]: [...(current[personId] ?? []), text].slice(-40) }));
+        setJobNote('Saved on this desk.');
+        return;
+      }
+    }
+    setPreviews((current) => ({ ...current, [personId]: [...(current[personId] ?? []), text].slice(-40) }));
+    setJobNote(desk === 'ready' ? 'The desk refused that line.' : '');
+  }
+
+  async function keepFile() {
+    const response = await deskPost({ kind: 'file', name: 'note.txt', text: 'A project note kept on this desk.' });
+    setJobNote(response?.ok ? 'note.txt is on this desk.' : 'The file was not saved.');
+  }
+
+  async function keepDraft(name: string) {
+    const response = await deskPost({ kind: 'send', to: 'review@localhost', body: `Note for ${name}. Held for review.` });
+    setJobNote(response?.ok ? 'Draft held for review. Nothing was sent.' : 'The draft was not saved.');
+  }
+
+  function openDoor(href: string, id: string) {
+    const spot = layer.hotspots.find((item) => item.id === id);
+    if (spot) focusLandmark(spot);
+    const action = townAction(href, desk);
+    if (id === 'agents') {
+      if (action.kind === 'navigate') window.location.assign(action.href);
+      else { setPanel(true); setNotice(''); }
+      return;
+    }
+    if (action.kind === 'navigate') window.location.assign(action.href);
+  }
 
   function chooseHit(hit: SearchHit) {
     setQuery('');
@@ -362,18 +473,16 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
       />
-      {layer.hotspots.map((spot) => {
-        const left = frame.ox + (spot.x - layer.view.x) * frame.fit - cam.x;
-        const top = frame.oy + (spot.y - layer.view.y) * frame.fit - cam.y;
+      {TOWN_DOORS.map((door) => {
+        const person = TOWN_CAST.find((item) => item.id === door.person);
+        const left = frame.ox + (door.x - layer.view.x) * frame.fit - cam.x;
+        const top = frame.oy + (door.y - layer.view.y) * frame.fit - cam.y;
         return (
-          <button
-            key={spot.id}
-            type="button"
-            className="ph-hit"
-            aria-label={spot.name}
-            style={{ left, top, width: spot.w * frame.fit, height: spot.h * frame.fit }}
-            onClick={() => focusLandmark(spot)}
-          />
+          <span key={door.id} className="ph-door" style={{ left, top }}>
+            {person && <img src={person.src} alt="" width={28} height={28} />}
+            <button type="button" aria-label={`Talk to ${person?.name ?? door.name}`} onClick={() => openBot(door.person)} />
+            <button type="button" aria-label={`Enter ${door.name}`} onClick={() => openDoor(door.href, door.id)} />
+          </span>
         );
       })}
       {ART_CONTROLS.map((control) => {
@@ -460,12 +569,14 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
           ))}
         </ul>
       )}
-      <div className="ph-pad" aria-label="Walk" style={{ bottom: sheetH + 78 }}>
+      {!sheetOpen && (
+      <div className="ph-pad" aria-label="Walk" style={{ bottom: 86 }}>
         <button type="button" aria-label="Walk up" onPointerDown={() => holdWalk(0, -1)}>↑</button>
         <button type="button" aria-label="Walk left" onPointerDown={() => holdWalk(-1, 0)}>←</button>
         <button type="button" aria-label="Walk down" onPointerDown={() => holdWalk(0, 1)}>↓</button>
         <button type="button" aria-label="Walk right" onPointerDown={() => holdWalk(1, 0)}>→</button>
       </div>
+      )}
       <p className="sr-only" aria-live="polite" data-hero={`${hero.x},${hero.y}`}>Walker {hero.x}, {hero.y}</p>
       <div className="ph-chips">
         {CHIPS.map((chip) =>
@@ -478,10 +589,14 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
           ),
         )}
       </div>
+      {sheetOpen ? (
       <section className="ph-sheet" style={{ height: sheetH }} aria-label="Place">
-        <button type="button" className="ph-handle" aria-label="Drag the sheet" onPointerDown={onSheetPointerDown}>
-          <span />
-        </button>
+        <div className="ph-sheetbar">
+          <button type="button" className="ph-handle" aria-label="Drag the sheet" onPointerDown={onSheetPointerDown}>
+            <span />
+          </button>
+          <button type="button" className="ph-sheet-close" onClick={() => setSheetOpen(false)}>Close</button>
+        </div>
         {tab === 'explore' && (
           <>
             <div className="ph-placehead">
@@ -537,7 +652,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
               {desk === 'offline' && <p className="ph-blurb">Sign-in is not set up on this host.</p>}
               <a href="/village">Village</a>
               <a href="/atlas">Atlas</a>
-              <a href="/studio">Studio</a>
+              <a href="/projects">Projects</a>
               <a href="/letter">Letter</a>
               <a href="/credits">Credits</a>
               {desk !== 'offline' && <a href="/oauth2/sign_out?rd=/">Sign out</a>}
@@ -556,6 +671,9 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
           </div>
         )}
       </section>
+      ) : (
+        <button type="button" className="ph-reopen" onClick={() => { setSheetOpen(true); setSheetH(228); }}>Open Dawn Town</button>
+      )}
       {panel && <button type="button" className="ph-peek" aria-label="Close menu" onClick={() => setPanel(false)} />}
       <nav className="ph-tabs" aria-label="Primary">
         <button type="button" className={tab === 'explore' ? 'ph-tab on' : 'ph-tab'} onClick={() => setTab('explore')}>
@@ -575,7 +693,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
       <aside id="dawn-menu" className={panel ? 'ph-drawer open' : 'ph-drawer'} aria-label="Dawn" aria-hidden={!panel} inert={!panel}>
         <p className="ph-drawer-mark">Dawn</p>
         <nav className="ph-drawer-nav" aria-label="Dawn">
-          <a href="/studio"><Folder aria-hidden /> Projects</a>
+          <a href="/projects"><Folder aria-hidden /> Projects</a>
           {townAction('/editor', desk).kind === 'navigate'
             ? <a href="/editor"><Code aria-hidden /> Code</a>
             : <button type="button" onClick={() => explain('/editor')}><Code aria-hidden /> Code</button>}
@@ -614,7 +732,11 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
           preview={previews[talking.id] ?? []}
           saved={savedFor(talking.name, threads, savedMessages)}
           onOpen={openBot}
-          onPreview={(text) => setPreviews((current) => ({ ...current, [talking.id]: [...(current[talking.id] ?? []), text].slice(-40) }))}
+          onPreview={(text) => { void keepLine(talking.id, text); }}
+          stored={stored[talking.id] ?? []}
+          jobNote={jobNote}
+          onFile={() => { void keepFile(); }}
+          onDraft={() => { void keepDraft(talking.name); }}
           onBack={closeBot}
         />
       )}
@@ -653,12 +775,45 @@ function paint(
     Math.round(view.w * frame.fit),
     Math.round(view.h * frame.fit),
   );
+  ctx.drawImage(map, PATH_PATCH.x, PATH_PATCH.y, PATH_PATCH.w, PATH_PATCH.h, Math.round(frame.ox + (PAINTED_PLAYER.x - view.x) * frame.fit - cam.x), Math.round(frame.oy + (PAINTED_PLAYER.y - view.y) * frame.fit - cam.y), Math.round(PAINTED_PLAYER.w * frame.fit), Math.round(PAINTED_PLAYER.h * frame.fit));
   if (player && player.complete && player.naturalWidth) {
     const size = 32 * frame.fit;
     const left = frame.ox + (hero.x - view.x) * frame.fit - cam.x - size / 2;
     const top = frame.oy + (hero.y - view.y) * frame.fit - cam.y - size;
     ctx.drawImage(player, Math.round(left), Math.round(top), Math.round(size), Math.round(size));
   }
+}
+
+function buildWalkGrid(map: HTMLImageElement, layerView = { x: 0, y: 330, w: 768, h: 650 }) {
+  const canvas = document.createElement('canvas');
+  canvas.width = map.naturalWidth;
+  canvas.height = map.naturalHeight;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return null;
+  ctx.drawImage(map, 0, 0);
+  const cell = 8;
+  const cols = Math.ceil(layerView.w / cell);
+  const rows = Math.ceil(layerView.h / cell);
+  const image = ctx.getImageData(layerView.x, layerView.y, layerView.w, layerView.h);
+  const grid = new Uint8Array(cols * rows);
+  for (let cy = 0; cy < rows; cy += 1) {
+    for (let cx = 0; cx < cols; cx += 1) {
+      let ok = 0;
+      let seen = 0;
+      for (let dy = 1; dy < cell; dy += 3) {
+        for (let dx = 1; dx < cell; dx += 3) {
+          const x = cx * cell + dx;
+          const y = cy * cell + dy;
+          if (x >= layerView.w || y >= layerView.h) continue;
+          const index = (y * layerView.w + x) * 4;
+          seen += 1;
+          if (isTownPath(image.data[index], image.data[index + 1], image.data[index + 2])) ok += 1;
+        }
+      }
+      if (seen && ok * 2 >= seen) grid[cy * cols + cx] = 1;
+    }
+  }
+  return { grid, cols };
 }
 
 function frameFor(mapLayer: MapLayer, viewW: number, viewH: number) {
