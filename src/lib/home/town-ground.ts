@@ -1,6 +1,23 @@
-/** Path colors sampled from public/maps/dawn-town-staging.png. Buildings, trees, and roofs fail this test. */
+/** Path colors sampled from public/maps/dawn-town-staging.png. */
 export function isTownPath(r: number, g: number, b: number): boolean {
   return r > 120 && g > 70 && b < 150 && r > b + 15 && Math.abs(r - g) < 90 && g + 15 > b && !(g > r + 25);
+}
+
+/** Grass and dirt are walkable. Roofs, dark trees, and shadows are not. */
+export function isTownWalkable(r: number, g: number, b: number): boolean {
+  if (isTownPath(r, g, b)) return true;
+  if (r + g + b < 220) return false;
+  if (r > 155 && g < 115 && b < 120 && r > g + 30) return false;
+  return g > r + 10 && g > b && g > 100 && g < 220 && r < 170;
+}
+
+/** Hat, shirt, skin, and pants of the figure painted into the plate. */
+export function isPaintedPlayerPixel(r: number, g: number, b: number): boolean {
+  const hat = r > 160 && g < 110 && b < 110 && r > g + 40;
+  const shirt = b > 140 && b > r + 30 && r < 140;
+  const skin = r > 190 && g > 120 && g < 190 && b > 90 && b < 170 && r > b;
+  const pants = r > 70 && r < 140 && g > 35 && g < 90 && b < 60 && r > g + 15;
+  return hat || shirt || skin || pants;
 }
 
 /** Painted red-cap figure in the source plate, in image pixels. Covered when the walker is drawn so two players do not stack. */
