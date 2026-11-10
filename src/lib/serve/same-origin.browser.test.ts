@@ -159,7 +159,13 @@ async function drive(webSocketUrl: string) {
   const file = Boolean(await ev(`document.body.innerText.includes('note.txt')`));
   await call('Page.navigate', { url: 'http://127.0.0.1:3000/editor' });
   await new Promise((resolve) => setTimeout(resolve, 800));
-  await ev(`document.querySelector('button') && [...document.querySelectorAll('button')].find(el=>el.textContent.includes('Open local booth'))?.click()`);
+  await ev(`(() => { const area=document.getElementById('file-body'); const set=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set; set.call(area,'export const page = 1'); area.dispatchEvent(new Event('input',{bubbles:true})); [...document.querySelectorAll('button')].find(el=>el.textContent.trim()==='Save page.txt')?.click(); })()`);
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  await call('Page.reload');
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  const editorFile = String(await ev(`document.getElementById('file-body')?.value || ''`));
+  if (!editorFile.includes('export const page')) throw new Error(`editor readback ${editorFile}`);
+  await ev(`[...document.querySelectorAll('button')].find(el=>el.textContent.includes('Open local booth'))?.click()`);
   await new Promise((resolve) => setTimeout(resolve, 400));
   const booth = String(await ev(`document.body.innerText`) || '');
   await ev(`[...document.querySelectorAll('button')].find(el=>el.textContent.includes('Try a remote page'))?.click()`);

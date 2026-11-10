@@ -144,6 +144,12 @@
     "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react-dom"
   },
   {
+    "name": "@types/three",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/three"
+  },
+  {
     "name": "@xyflow/react",
     "kind": "dawn",
     "license": "MIT",
@@ -276,6 +282,12 @@
     "url": "https://playwright.dev"
   },
   {
+    "name": "puppeteer-core",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://github.com/puppeteer/puppeteer/tree/main/packages/puppeteer-core"
+  },
+  {
     "name": "react",
     "kind": "dawn",
     "license": "MIT",
@@ -346,6 +358,12 @@
     "kind": "dawn",
     "license": "MIT",
     "url": "https://tailwindcss.com"
+  },
+  {
+    "name": "three",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://threejs.org"
   },
   {
     "name": "tokenlens",

@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { AGENTS } from '@/lib/agents';
 import { COLS, ROWS, TILE, buildHq } from '@/lib/hq-map';
+import type { AgentSlot } from '@/lib/forge/catalog';
+import type { AgentLook } from '@/lib/forge/roster';
 
 export type VillagePose = {
   id: string;
@@ -14,6 +16,8 @@ export type VillageHandlers = {
   onYou: () => void;
   avatar: number;
   poses: () => VillagePose[];
+  /** Character Maker looks. An agent without one keeps its tile sprite. */
+  looks: () => Partial<Record<AgentSlot, AgentLook>>;
 };
 
 type Walker = {
@@ -25,6 +29,8 @@ type Walker = {
   gy: number;
   caption: string;
   moving: boolean;
+  sprite: Phaser.GameObjects.Sprite;
+  look: string;
 };
 
 export function mountVillage(parent: HTMLElement, handlers: VillageHandlers): Phaser.Game {
@@ -33,6 +39,7 @@ export function mountVillage(parent: HTMLElement, handlers: VillageHandlers): Ph
   class VillageScene extends Phaser.Scene {
     private walkers: Walker[] = [];
     private youSprite?: Phaser.GameObjects.Sprite;
+    private lookSeq = 0;
 
     constructor() {
       super('village');
@@ -76,6 +83,8 @@ export function mountVillage(parent: HTMLElement, handlers: VillageHandlers): Ph
         this.youSprite.setTexture(key);
       }
 
+      this.syncLooks();
+
       for (const pose of handlers.poses()) {
         const walker = this.walkers.find((item) => item.id === pose.id);
         if (!walker) continue;
@@ -98,6 +107,38 @@ export function mountVillage(parent: HTMLElement, handlers: VillageHandlers): Ph
           },
         });
       }
+    }
+
+    private syncLooks() {
+      const looks = handlers.looks();
+      for (const walker of this.walkers) {
+        if (walker.kind !== 'agent') continue;
+        const wanted = looks[walker.id as AgentSlot]?.sprite ?? '';
+        if (walker.look === wanted) continue;
+        walker.look = wanted;
+        if (!wanted) {
+          walker.sprite.setTexture(walker.id).setScale(1);
+          this.markLooks();
+          continue;
+        }
+        const key = `look-${walker.id}-${(this.lookSeq += 1)}`;
+        const apply = () => {
+          if (walker.look !== wanted || !walker.sprite.scene) return;
+          walker.sprite.setTexture(key);
+          walker.sprite.setDisplaySize(26, 26);
+          this.markLooks();
+        };
+        this.textures.once(`addtexture-${key}`, apply);
+        this.textures.addBase64(key, wanted);
+      }
+    }
+
+    /** Lets a browser check read which agents are drawn from a character. */
+    private markLooks() {
+      const drawn = this.walkers
+        .filter((walker) => walker.kind === 'agent' && walker.sprite.texture.key.startsWith('look-'))
+        .map((walker) => walker.id);
+      this.game.canvas.dataset.looks = drawn.join(',');
     }
 
     private makeWalker(
@@ -128,7 +169,7 @@ export function mountVillage(parent: HTMLElement, handlers: VillageHandlers): Ph
         else handlers.onAgent(id);
       });
       if (kind === 'you') this.youSprite = sprite;
-      return { id, kind, body, label: name, gx, gy, caption: label, moving: false };
+      return { id, kind, body, label: name, gx, gy, caption: label, moving: false, sprite, look: '' };
     }
   }
 

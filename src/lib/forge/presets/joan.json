@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "id": "joan",
+  "name": "Joan of Arc",
+  "epithet": "The Maid of Orléans",
+  "body": { "height": 0.5, "build": 0.5 },
+  "colors": {
+    "skin": "#d7a37a",
+    "hair": "#2a1a12",
+    "cloth": "#e4dcc8",
+    "trim": "#c6a24a"
+  },
+  "parts": {
+    "head": "oval",
+    "face": "determined",
+    "hair": "cropped",
+    "outfit": "plate",
+    "accessory": "banner"
+  },
+  "paintOverlay": true
+}

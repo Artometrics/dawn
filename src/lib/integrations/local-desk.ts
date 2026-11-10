@@ -1,8 +1,9 @@
 import { appendFile, mkdir, readFile, realpath, writeFile } from 'node:fs/promises';
+import { runInNewContext } from 'node:vm';
 import path from 'node:path';
 
 export type ChatLine = { personId: string; text: string; at: number };
-export type SendDraft = { id: string; to: string; body: string; status: 'review' };
+export type SendDraft = { id: string; to: string; body: string; status: 'review' | 'approved' };
 
 /**
  * Dawn-owned desk files. Chat lines and send drafts stay on disk.
@@ -56,9 +57,27 @@ export async function readSends(root: string): Promise<SendDraft[]> {
   return raw.split('\n').filter(Boolean).map((row) => JSON.parse(row) as SendDraft);
 }
 
+/** Marks a draft approved. Does not deliver it. */
+export async function approveSend(root: string, id: string): Promise<SendDraft> {
+  const home = await initLocalDesk(root);
+  const sends = await readSends(home);
+  const found = sends.find((item) => item.id === id);
+  if (!found) throw new Error('Draft not found.');
+  found.status = 'approved';
+  await writeFile(inside(home, 'sends.jsonl'), sends.map((item) => JSON.stringify(item)).join('\n') + '\n', 'utf8');
+  return found;
+}
+
+/** Outbound stays off unless DAWN_ALLOW_OUTBOUND=1. Tests do not set that. */
+export function deliverSend(draft: SendDraft): { delivered: false; reason: string } {
+  if (draft.status !== 'approved') return { delivered: false, reason: 'Approve the draft first.' };
+  if (process.env.DAWN_ALLOW_OUTBOUND !== '1') return { delivered: false, reason: 'Outbound is off.' };
+  return { delivered: false, reason: 'No sender is configured.' };
+}
+
 export async function writeSandboxPage(root: string, name: string, html: string): Promise<string> {
   const home = await initLocalDesk(root);
-  if (!/^[a-z0-9-]{1,40}\.html$/.test(name)) throw new Error('Use a short html file name.');
+  if (!/^[a-z0-9-]{1,40}\.(html|js)$/.test(name)) throw new Error('Use a short html or js file name.');
   const file = inside(home, path.join('sandbox', name));
   await writeFile(file, html, 'utf8');
   return file;
@@ -92,6 +111,19 @@ export async function listProjectFiles(root: string): Promise<string[]> {
 }
 
 /** Reads one sandbox file. A URL or an escaped path is refused and nothing is fetched. */
+/** Runs a persisted sandbox file in a fresh context. No process, network, or filesystem. */
+export async function runSandboxFile(root: string, name: string): Promise<string> {
+  const code = await readLocalPage(root, name);
+  if (code.length > 4000) throw new Error('Fixture is too large.');
+  if (/\b(process|require|fetch|import|Function|constructor)\b/.test(code)) throw new Error('Fixture is refused.');
+  try {
+    const value = runInNewContext(code, Object.create(null), { timeout: 200 });
+    return String(value).slice(0, 500);
+  } catch {
+    throw new Error('Fixture stopped.');
+  }
+}
+
 export async function runBrowserJob(root: string, target: string): Promise<string> {
   if (/^[a-z]+:/i.test(target) || target.includes('..') || target.includes('/') || target.includes('\\')) {
     throw new Error('Remote pages and escaped paths are refused.');
