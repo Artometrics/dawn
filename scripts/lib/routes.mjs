@@ -26,6 +26,13 @@ export const ROUTES = [
   { path: '/preview/style-guide', name: 'preview-style-guide', title: 'Preview: style guide' },
 ];
 
+// Forge, the Character Maker, is a section of /village rather than a page of its own. These are the
+// addresses that open it and the village drawing its characters. They share the /village HTML file.
+export const FORGE_ROUTES = [
+  { path: '/village/?section=characters', name: 'village-characters', title: 'Forge: Character Maker' },
+  { path: '/village/?section=village', name: 'village-forge-avatars', title: 'Village with Forge avatars' },
+];
+
 // Linked from older notes and tests but not emitted by the export.
 export const MISSING_ROUTES = [{ path: '/chats', name: 'chats', title: 'Chats (not built)' }];
 

@@ -1,0 +1,141 @@
+/*
+ * Layout for the Forge Character Maker (/village/?section=characters).
+ * Colour, type, spacing and shape come from tokens.css; buttons, fields, cards, sliders, swatches and the
+ * stage come from dawn-ui.css. This file only arranges them.
+ *
+ * The page answers to the width of its own scroll area, not the window, because the docked menu takes
+ * 280px of a desktop window. Wide: stage on the left, controls on the right. Narrow: the stage stays pinned
+ * at the top while the controls scroll under it, so the character is always in view.
+ */
+.dw-forge {
+  position: relative;
+  container-type: inline-size;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scroll-padding-top: calc(clamp(180px, 26dvh, 260px) + 120px);
+}
+
+.dw-forge-page {
+  padding: var(--dawn-space-2) var(--dawn-space-4) calc(var(--dawn-space-10) + env(safe-area-inset-bottom));
+  --dw-stage-h: clamp(180px, 26dvh, 260px);
+}
+
+.dw-forge-grid {
+  width: min(100%, var(--dawn-measure-wide));
+  margin: 0 auto;
+  display: grid;
+  gap: var(--dawn-space-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.dw-forge-stage {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-2);
+  min-width: 0;
+  padding: var(--dawn-space-2) 0;
+  background: var(--dawn-bg);
+}
+
+.dw-forge-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-6);
+  min-width: 0;
+}
+
+.dw-forge-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-2);
+  min-width: 0;
+}
+
+.dw-forge-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-3);
+}
+
+.dw-forge-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dawn-space-4);
+}
+
+.dw-forge-save {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-3);
+}
+
+.dw-forge-status {
+  margin: 0;
+  min-height: var(--dawn-space-5);
+}
+
+.dw-forge-roster {
+  width: min(100%, var(--dawn-measure-wide));
+  margin: var(--dawn-space-8) auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-3);
+}
+
+.dw-forge-roster-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dw-forge-entry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-3);
+}
+
+.dw-forge-entry-head {
+  display: flex;
+  align-items: center;
+  gap: var(--dawn-space-3);
+}
+
+.dw-forge-entry-head .dw-card-title {
+  margin: 0;
+}
+
+.dw-forge-portrait {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--dawn-radius-row);
+  background: var(--dawn-chip);
+  object-fit: cover;
+}
+
+@container (min-width: 768px) {
+  .dw-forge-page {
+    --dw-stage-h: clamp(220px, calc(100dvh - 176px), 560px);
+    padding-top: var(--dawn-space-3);
+  }
+
+  .dw-forge-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
+    gap: var(--dawn-space-6);
+    align-items: start;
+  }
+
+  .dw-forge-stage {
+    padding: 0;
+    background: transparent;
+  }
+}

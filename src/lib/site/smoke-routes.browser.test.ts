@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
 import { chromium, type Browser } from 'playwright-core';
-import { MISSING_ROUTES, ROUTES } from '../../../scripts/lib/routes.mjs';
+import { FORGE_ROUTES, MISSING_ROUTES, ROUTES } from '../../../scripts/lib/routes.mjs';
 import { serveOut } from '../../../scripts/lib/static-server.mjs';
 import { SITE_ROUTES } from './nav.ts';
 
@@ -27,7 +27,7 @@ test('every exported route renders cleanly on desktop and phone', { skip, timeou
   const site = await serveOut(outDir);
   const browser: Browser = await chromium.launch({ executablePath: chromeBin, headless: true, args: ['--no-sandbox'] });
   try {
-    for (const route of ROUTES as { path: string }[]) {
+    for (const route of [...ROUTES, ...FORGE_ROUTES] as { path: string }[]) {
       for (const viewport of VIEWPORTS) {
         await t.test(`${route.path} (${viewport.name})`, async () => {
           const context = await browser.newContext({ viewport });

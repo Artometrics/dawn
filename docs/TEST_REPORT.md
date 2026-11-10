@@ -187,6 +187,110 @@ checks, and the Forge schema, bones and codec tests), `npm run test:rules` ok, `
 1440 and 390 (3D view drew, no sideways scroll, no browser errors). Screenshots of the restyled panel:
 `docs/process/design/after/characters-1440.png` and `characters-390.png`.
 
+## Forge design pass
+
+PR #29 styled the Forge character maker's buttons and fields. This pass looked at every Forge page and state
+and made the whole of it, including the part of the app shell it sits in, follow the same style guide
+(`/preview/style-guide`, `src/styles/tokens.css`, `src/styles/dawn-ui.css`). The art is untouched.
+Engine code under `src/lib/forge/` is untouched.
+
+### How I audited it
+
+`scripts/forge-audit.mjs` drives headless Chrome through 16 states at 1440x900, 390x844 and 844x390:
+empty, editing, posing, name error, saving, saved, exporting (JSON, PNG, glTF), refused import, roster,
+menu drawer, You panel, village, agent sheet, no WebGL, storage refused and a full roster. For each one it
+records the page measurements from `scripts/lib/measure.mjs` (overflow, tap targets, text size, contrast,
+fonts, radii, button looks, broken images, unlabelled controls), where the 3D view is, whether the document
+itself scrolls, and console and network errors. The same script ran on `main` and on this branch.
+
+| | Before | After |
+| --- | --- | --- |
+| Document scrolls under the app shell (1440 / 390 / 844 wide) | 506 / 1546 / 1356 px | 0 / 0 / 0 px |
+| 3D view, phone landscape | 128x300 | 408x220 |
+| 3D view, phone portrait | 358x460, scrolls away while editing | 358x219, pinned |
+| 3D view, desktop | 620x560 | 636x560 |
+| Console errors with no WebGL | 1 per viewport | 0 |
+| Distinct button looks / corner radii on Forge pages | 9 / 4 | 8 / 3 |
+| Horizontal scroll, text under 12px, contrast failures, broken images, 404s | 0 | 0 |
+| Controls under 44px on phones | 0 | 0 |
+
+### What I found
+
+1. The whole page scrolled under the fixed shell: the visually hidden JSON import input was positioned
+   against the page, outside the scroll area's clip, so the document grew by 506 to 1546px. On a phone that
+   was a second scrollbar under the menu bar.
+2. At 844x390 the 280px docked menu left Forge a 128x300 3D view. The shell chose between docked and drawer by
+   width only.
+3. On phones the 3D view scrolled out of sight as soon as you chose a part, so you could not see what the part
+   did.
+4. Chip rows stretched into two columns on phones. The roster remove button was a full-width bar. "Avatar for"
+   was squashed.
+5. The Characters page showed the shared footer: an inert Search field, a "New quest" button floating over the
+   Save button and a second "Credits & licenses" link. In landscape the footer took 72px of 334.
+6. No WebGL: three.js logged a console error, and the message said "Your characters still save", but saving
+   needs WebGL for the portrait.
+7. A refused storage write reported "in your roster" and "no room left" together.
+8. Errors and status messages were bare small text. Nothing told you the portrait was being drawn.
+9. Forge and its shell used one-off values: text sizes in px (13, 14, 15, 16, 17, 34), `#a8a199`, `#2a2a27`,
+   12px and 16px and 18px corners, raw shadows, `bg-black/55`, and hand made round buttons for Menu, Close,
+   Back, You, the village chips, New quest, Add, Join, Sign in, Sign out, and the agent sheet's Close, Ask,
+   Approve and No.
+10. The drawer did not scroll, so the account row was cut off at 390px tall. The atlas menu button used
+    `#2a2a27` and `md:hidden`.
+11. The empty roster was one line of grey text.
+
+No off-system fonts (no Times fallback), no stray palettes, no contrast failures, no text under 12px, no
+sideways scroll, no 404s and no phone tap targets under 44px were found, apart from the items above.
+There is no "Rainfall" text anywhere in the repo, in the built site or on any Forge page.
+
+### What I fixed
+
+- `src/styles/forge-ui.css` (new, imported after `dawn-ui.css`): the Forge layout. A single column on phones
+  with the 3D view pinned above the controls, two columns when the Forge area itself is 768px wide (a
+  container query, so it follows the area, not the window).
+- `src/styles/dawn-ui.css`: shared `dw-slider`, `dw-swatch`, `dw-stage`, `dw-stage-message`, a chip row that
+  keeps chip width on phones, and `dw-dock-hide`. All are on the style guide page under "Pickers, sliders and
+  stages".
+- `src/components/forge/character-maker.tsx`, `forge-viewport.tsx`: rebuilt on the shared classes. Errors are
+  `dw-alert`, status is `dw-note`. "Drawing the portrait..." and "Making the glTF file..." show while busy.
+  A failed save no longer claims success. No WebGL is detected up front (`webgl.ts`), so there is no console
+  error, and saving a portrait says plainly that this browser cannot draw it. JSON import and export still
+  work. All `data-forge-*` hooks and engine calls are as before.
+- `src/components/dawn/dawn-app.tsx`, `agent-sheet.tsx`, `atlas/vector-campus.tsx`: the menu docks only at
+  768px wide and 520px tall (`dock:` variant), so phones in landscape get the drawer. The drawer scrolls.
+  Every button is a `dw-btn` variant. Sizes, corners, shadows and the scrim use tokens. The footer is not
+  shown on the Characters page.
+- Tests: `src/lib/forge/forge-layout.browser.test.ts` (new, in `npm run test:app`). At 1440, 390 and 844x390,
+  through every state above, it asserts: no horizontal scroll, no page-level vertical scroll, tap size 44px
+  (36px only for desktop chips), no controls off screen or without a name, only Geist and Source Serif 4,
+  only token colours, no text under 12px, no contrast failure, no broken images, no "Rainfall" text, no page
+  error, console error or non-`/api/` 4xx, and a 3D view that is on screen, at least 280x160 and at most 75%
+  of the window height. `smoke-routes.browser.test.ts` now also covers `/village/?section=characters` and
+  `/village/?section=village` (`FORGE_ROUTES` in `scripts/lib/routes.mjs`).
+- A portrait and a village sprite saved from the old and new build hash identically for Napoleon Bonaparte
+  and Sun Tzu, so the render is unchanged.
+
+### Screenshots
+
+Full page, header to footer: `docs/process/design/forge/before/<state>-<desktop|mobile|landscape>.png` and
+`docs/process/design/forge/after/...`. Side by side: `docs/process/design/forge/COMPARE_*.png`. The state list
+is in `docs/process/design/forge/README.md`. Raw numbers: `docs/process/test/forge-before/audit.json` and
+`docs/process/test/forge-after/audit.json`.
+
+### What remains
+
+- Desktop chips are 36px high. That is the PR #29 rule (44px under 768px and on touch). I left it.
+- The agent sheet header still shows the pixel sprite, not the Forge portrait. The portrait shows in the
+  menu and village chips. That is a feature, not chrome.
+- On a phone, the village "New quest" button can sit over the village status text. That is the village, not
+  Forge, and I left it.
+- The 3D view was only drawn with software WebGL (SwiftShader) in headless Chrome. No real GPU, Safari or
+  Firefox. The container query and `dvh` rely on Safari 16 or later.
+- Signed-in saving of the roster to Firestore is not covered by a test.
+- The older Forge screenshots under `docs/process/forge-integration/` were not regenerated.
+- `npm test`: 170 of 172 pass, 2 skipped because OpenVSCode and `editor/dist/gateway.cjs` are not built
+  here. Same two on `main`.
+
 ## What is still not connected
 
 - Everything behind `/api/*`: the desk, bot tasks, saved threads, kit checks, NightCode sessions, letters,
@@ -225,5 +329,6 @@ npm ci --legacy-peer-deps && npm run build
 node scripts/site-audit.mjs --serve out --out docs/process/test/local --label local
 node scripts/contact-sheet.mjs --dir docs/process/design/after --suffix desktop --out /tmp/sheet.png
 node scripts/style-guide.mjs
+node scripts/forge-audit.mjs --serve out --out docs/process/test/forge-after --shots docs/process/design/forge/after --label after
 npm test
 ```

@@ -70,37 +70,37 @@ export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => vo
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-3 bg-[var(--dawn-bg)] p-3">
       <div className="flex items-center gap-2">
-        <img src={agent.src} alt="" width={36} height={36} className="h-9 w-9 rounded-lg bg-[var(--dawn-chip)] [image-rendering:pixelated]" />
+        <img src={agent.src} alt="" width={36} height={36} className="h-9 w-9 rounded-[var(--dawn-radius-tile)] bg-[var(--dawn-chip)] [image-rendering:pixelated]" />
         <div className="min-w-0 flex-1">
-          <p className="text-[16px] font-medium">{agent.name}</p>
-          <p className="truncate text-[13px] text-[var(--dawn-muted)]">{agent.title}</p>
+          <p className="text-[length:var(--dawn-fs-body)] font-medium">{agent.name}</p>
+          <p className="truncate text-[length:var(--dawn-fs-label)] text-[var(--dawn-muted)]">{agent.title}</p>
         </div>
-        <button type="button" className="min-h-11 px-3 text-[15px]" onClick={onClose}>Close</button>
+        <button type="button" className="dw-btn dw-btn--ghost" onClick={onClose}>Close</button>
       </div>
-      {source === 'gemini' && <p className="text-[13px] text-[var(--dawn-accent)]">Gemini</p>}
+      {source === 'gemini' && <p className="text-[length:var(--dawn-fs-label)] text-[var(--dawn-accent)]">Gemini</p>}
       {error && (
-        <p role="alert" className="rounded-2xl bg-[var(--dawn-elev)] px-3 py-2 text-[15px] leading-snug">
+        <p role="alert" className="rounded-[var(--dawn-radius-panel)] bg-[var(--dawn-elev)] px-3 py-2 text-[length:var(--dawn-fs-support)] leading-snug">
           {error} Showing a stand-in reply.
         </p>
       )}
-      {mine.length > 0 && <p className="text-[13px] text-[var(--dawn-muted)]">Remembers: {mine.at(-1)?.text}</p>}
-      <div ref={scroller} className="flex min-h-16 flex-1 flex-col gap-2 overflow-y-auto text-[16px]">
+      {mine.length > 0 && <p className="text-[length:var(--dawn-fs-label)] text-[var(--dawn-muted)]">Remembers: {mine.at(-1)?.text}</p>}
+      <div ref={scroller} className="flex min-h-16 flex-1 flex-col gap-2 overflow-y-auto text-[length:var(--dawn-fs-body)]">
         {lines.map((line, index) => (
           <p
             key={`${line.role}-${index}`}
             className={line.role === 'user'
-              ? 'ml-8 rounded-2xl bg-[var(--dawn-chip)] px-3 py-2'
-              : 'mr-8 rounded-2xl bg-[var(--dawn-elev)] px-3 py-2'}
+              ? 'ml-8 rounded-[var(--dawn-radius-panel)] bg-[var(--dawn-chip)] px-3 py-2'
+              : 'mr-8 rounded-[var(--dawn-radius-panel)] bg-[var(--dawn-elev)] px-3 py-2'}
           >
             {line.text}
           </p>
         ))}
-        {busy && <p className="text-[14px] text-[var(--dawn-muted)]">Thinking…</p>}
+        {busy && <p className="text-[length:var(--dawn-fs-action)] text-[var(--dawn-muted)]">Thinking…</p>}
       </div>
       {pending.map((item) => (
         <ApprovalRow key={item.id} item={item} onDecide={decide} />
       ))}
-      {note && <p className="text-[13px] text-[var(--dawn-accent)]">{note}</p>}
+      {note && <p className="text-[length:var(--dawn-fs-label)] text-[var(--dawn-accent)]">{note}</p>}
       <form
         className="flex shrink-0 gap-2"
         onSubmit={(event) => {
@@ -119,7 +119,7 @@ export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => vo
         <button
           type="submit"
           disabled={busy || !input.trim()}
-          className="inline-flex min-h-11 min-w-16 items-center justify-center rounded-full bg-[var(--dawn-pill)] px-4 text-[14px] font-medium text-[var(--dawn-ink)] disabled:opacity-40"
+          className="dw-btn dw-btn--primary"
         >
           Ask
         </button>
@@ -137,13 +137,13 @@ function ApprovalRow({
 }) {
   const agent = agentById(item.agentId);
   return (
-    <div className="rounded-2xl bg-[var(--dawn-elev)] p-3 text-[15px]">
+    <div className="rounded-[var(--dawn-radius-panel)] bg-[var(--dawn-elev)] p-3 text-[length:var(--dawn-fs-support)]">
       <p>{agent?.name} drafted a {actionLabel(item.kind)}: {item.summary}</p>
       <div className="mt-3 flex gap-2">
-        <button type="button" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[var(--dawn-pill)] text-[14px] font-medium text-[var(--dawn-ink)]" onClick={() => void onDecide(item.id, 'approved')}>
+        <button type="button" className="dw-btn dw-btn--primary flex-1" onClick={() => void onDecide(item.id, 'approved')}>
           Approve
         </button>
-        <button type="button" className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[var(--dawn-chip)] text-[14px]" onClick={() => void onDecide(item.id, 'declined')}>
+        <button type="button" className="dw-btn flex-1" onClick={() => void onDecide(item.id, 'declined')}>
           No
         </button>
       </div>

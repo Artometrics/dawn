@@ -150,6 +150,37 @@ export default function StyleGuidePage() {
         </div>
       </section>
 
+      <section className="sg-section" aria-labelledby="sg-forge">
+        <h2 id="sg-forge" className="dw-h2">Pickers, sliders and stages</h2>
+        <p className="dw-note">The Forge character maker is built from these. Choices are chips that keep their own width; a slider row and a colour swatch are 44px tall; the stage is a framed drawing surface; errors are alerts and progress is a quiet note.</p>
+        <div className="sg-pair">
+          <div className="dw-card">
+            <h3 className="dw-card-title">Choice chips</h3>
+            <div className="dw-actions dw-actions--chips" role="group" aria-label="Sample choices">
+              <button type="button" className="dw-btn dw-btn--chip is-on">Plate</button>
+              <button type="button" className="dw-btn dw-btn--chip">Tunic</button>
+              <button type="button" className="dw-btn dw-btn--chip">Greatcoat</button>
+              <button type="button" className="dw-btn dw-btn--chip">Robe</button>
+            </div>
+          </div>
+          <div className="dw-card">
+            <h3 className="dw-card-title">Slider and swatches</h3>
+            <label className="dw-slider"><span>Height</span><input type="range" min={0} max={1} step={0.01} defaultValue={0.5} /><output>0.50</output></label>
+            <div className="dw-actions dw-actions--chips">
+              <label className="dw-swatch"><input type="color" defaultValue="#d97746" />Trim</label>
+              <label className="dw-swatch"><input type="color" defaultValue="#f3f1ec" />Cloth</label>
+            </div>
+          </div>
+          <div className="dw-stage" style={{ ['--dw-stage-h' as string]: '140px' }}>
+            <p className="dw-stage-message">Stage. The 3D view draws here; if the browser cannot, this message does.</p>
+          </div>
+          <div className="dw-form">
+            <p className="dw-note" role="status">Napoleon Bonaparte is in your roster.</p>
+            <p className="dw-alert" role="alert">Unknown hair &quot;mohawk&quot;. Expected cropped, bob, queue, long, topknot, none.</p>
+          </div>
+        </div>
+      </section>
+
       <section className="sg-section" aria-labelledby="sg-header">
         <h2 id="sg-header" className="dw-h2">Header, nav and footer</h2>
         <p className="dw-note">This is the bar at the top of this page: the pixel DAWN mark, then one chip per page. The current page is clay.</p>

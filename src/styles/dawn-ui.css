@@ -309,6 +309,11 @@
   gap: var(--dawn-space-2);
 }
 
+/* A row of choices. Chips keep their own width, even on phones where action rows stretch. */
+.dw-actions.dw-actions--chips .dw-btn {
+  flex: 0 0 auto;
+}
+
 /* Cards, rows, lists ------------------------------------------------------ */
 
 .dw-card {
@@ -566,6 +571,98 @@ textarea.dw-field {
   font-size: inherit;
 }
 
+/* Sliders and swatches ------------------------------------------------------ */
+
+.dw-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--dawn-space-3);
+  min-height: var(--dawn-tap);
+  font-size: var(--dawn-fs-support);
+  color: var(--dawn-text);
+}
+
+.dw-slider > span:first-child {
+  flex: none;
+  width: 4rem;
+}
+
+.dw-slider input[type="range"] {
+  flex: 1 1 0;
+  min-width: 0;
+  height: var(--dawn-tap);
+  accent-color: var(--dawn-accent);
+}
+
+.dw-slider output {
+  flex: none;
+  width: 2.5rem;
+  text-align: right;
+  font-size: var(--dawn-fs-label);
+  font-variant-numeric: tabular-nums;
+  color: var(--dawn-muted);
+}
+
+.dw-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--dawn-space-1);
+  font-size: var(--dawn-fs-label);
+  color: var(--dawn-secondary);
+}
+
+.dw-swatch input[type="color"] {
+  width: var(--dawn-tap);
+  height: var(--dawn-tap);
+  padding: 0;
+  border: 0;
+  border-radius: var(--dawn-radius-full);
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  box-shadow: inset 0 0 0 1px var(--dawn-line-strong);
+}
+
+.dw-swatch input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.dw-swatch input[type="color"]::-webkit-color-swatch,
+.dw-swatch input[type="color"]::-moz-color-swatch {
+  border: 0;
+  border-radius: var(--dawn-radius-full);
+}
+
+/* A framed drawing surface, such as the 3D character stage. Height comes from --dw-stage-h. */
+.dw-stage {
+  position: relative;
+  width: 100%;
+  height: var(--dw-stage-h, 360px);
+  overflow: hidden;
+  border-radius: var(--dawn-radius-panel);
+  background: var(--dawn-elev);
+}
+
+.dw-stage > canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+}
+
+.dw-stage-message {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--dawn-space-6);
+  text-align: center;
+  font-size: var(--dawn-fs-action);
+  line-height: 1.55;
+  color: var(--dawn-secondary);
+}
+
 /* Footer ------------------------------------------------------------------ */
 
 .dw-footer {
@@ -645,6 +742,13 @@ textarea.dw-field {
 @media (prefers-reduced-motion: reduce) {
   .dw-btn {
     transition: none;
+  }
+}
+
+/* The Dawn app shell docks its side menu only on a wide, tall window. Phones turned sideways keep the drawer. */
+@media (min-width: 768px) and (min-height: 520px) {
+  .dw-dock-hide {
+    display: none;
   }
 }
 
