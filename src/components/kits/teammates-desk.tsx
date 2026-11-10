@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { PageShell } from '@/components/site/page-shell';
 
 type Line = { id: string; speaker: string; body: string; handoffTo: string };
 type Room = { id: string; active: string; messages: Line[]; teammates: { id: string; name: string }[] };
@@ -49,31 +50,32 @@ export function TeammatesDesk() {
   }
 
   return (
-    <main className="dawn-agents" style={{ minHeight: '100dvh', padding: '20px 16px 32px' }}>
-      <div style={{ width: 'min(720px, 100%)', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <p className="word">DAWN</p>
-        <h1>AI Teammates</h1>
-        <p><a href="/kits">All kits</a> · <a href="/">Town</a></p>
-        <p className="note">Adapted from Antonio&apos;s handoff tool. Clerk, Neon, Trigger.dev, and Daytona are not used. Builder starts. Hand the turn to Reviewer with the button or with <code>handoff reviewer your note</code>.</p>
-        <button type="button" className="primary" onClick={() => { void start(); }}>New group chat</button>
-        {room && (
-          <>
-            <p role="status">Speaking: {room.active}</p>
-            <ol style={{ paddingLeft: 18 }}>
-              {room.messages.map((line) => (
-                <li key={line.id}><strong>{line.speaker}</strong> {line.handoffTo ? `(handoff ${line.handoffTo}) ` : ''}{line.body}</li>
-              ))}
-            </ol>
-            <form onSubmit={(event) => { void send(event); }} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <input value={text} onChange={(event) => setText(event.target.value)} aria-label="Message the team" style={{ flex: '1 1 220px', fontSize: 16 }} />
-              <button type="submit" className="primary">Send</button>
-              <button type="button" onClick={() => { setText('handoff reviewer Check the note'); }}>Hand to Reviewer</button>
-              <button type="button" onClick={() => { setText('handoff builder Your turn'); }}>Hand to Builder</button>
-            </form>
-          </>
-        )}
-        <p role="status">{note}</p>
+    <PageShell
+      title="AI Teammates"
+      current="/kits"
+      lead={<>Adapted from Antonio&apos;s handoff tool. Clerk, Neon, Trigger.dev, and Daytona are not used. Builder starts. Hand the turn to Reviewer with the button or with <code>handoff reviewer your note</code>.</>}
+    >
+      <div className="dw-actions">
+        <a className="dw-btn dw-btn--chip" href="/kits">All kits</a>
+        <button type="button" className="dw-btn dw-btn--primary" onClick={() => { void start(); }}>New group chat</button>
       </div>
-    </main>
+      {room && (
+        <>
+          <p className="dw-alert" role="status">Speaking: {room.active}</p>
+          <ol className="dw-list">
+            {room.messages.map((line) => (
+              <li key={line.id} className="dw-card dw-card--stone"><strong>{line.speaker}</strong> {line.handoffTo ? `(handoff ${line.handoffTo}) ` : ''}{line.body}</li>
+            ))}
+          </ol>
+          <form className="dw-actions" onSubmit={(event) => { void send(event); }}>
+            <input className="dw-field" value={text} onChange={(event) => setText(event.target.value)} aria-label="Message the team" style={{ flex: '1 1 240px' }} />
+            <button type="submit" className="dw-btn dw-btn--primary">Send</button>
+            <button type="button" className="dw-btn" onClick={() => { setText('handoff reviewer Check the note'); }}>Hand to Reviewer</button>
+            <button type="button" className="dw-btn" onClick={() => { setText('handoff builder Your turn'); }}>Hand to Builder</button>
+          </form>
+        </>
+      )}
+      <p className="dw-alert" role="status">{note}</p>
+    </PageShell>
   );
 }

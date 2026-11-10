@@ -1,0 +1,671 @@
+/*
+ * Shared Dawn component styles. Every standalone page (Code, Projects, Recipes, Letter, Credits,
+ * Desk, Kits, Preview, 404) is built from these. Values come from tokens.css only.
+ */
+
+.dw-page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--dawn-bg);
+  color: var(--dawn-text);
+  font-family: var(--dawn-font-ui);
+  font-size: var(--dawn-fs-body);
+  line-height: 1.5;
+  caret-color: var(--dawn-accent);
+  scrollbar-color: var(--dawn-grip) transparent;
+  overflow-x: clip;
+}
+
+.dw-page ::selection {
+  background: var(--dawn-accent);
+  color: var(--dawn-ink);
+}
+
+.dw-page :focus-visible {
+  outline: var(--dawn-focus);
+  outline-offset: 2px;
+}
+
+.dw-page :where(button, input, textarea, select) {
+  font: inherit;
+  color: inherit;
+}
+
+.dw-skip {
+  position: absolute;
+  left: var(--dawn-space-3);
+  top: var(--dawn-space-3);
+  z-index: 40;
+  transform: translateY(-160%);
+  background: var(--dawn-pill);
+  color: var(--dawn-ink);
+  border-radius: var(--dawn-radius-full);
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--dawn-tap);
+  padding: 0 16px;
+  font-size: var(--dawn-fs-action);
+  font-weight: 500;
+}
+
+.dw-skip:focus {
+  transform: none;
+}
+
+/* Header ---------------------------------------------------------------- */
+
+.dw-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--dawn-bg) 92%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--dawn-line);
+  padding-top: env(safe-area-inset-top);
+}
+
+.dw-header-bar {
+  width: min(100%, var(--dawn-measure-wide));
+  margin: 0 auto;
+  min-height: var(--dawn-header-h);
+  padding: 0 var(--dawn-space-4);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--dawn-space-2) var(--dawn-space-3);
+}
+
+.dw-brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--dawn-tap);
+  font-family: var(--dawn-font-pixel);
+  font-size: var(--dawn-fs-micro);
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: var(--dawn-text);
+  text-decoration: none;
+}
+
+.dw-spacer {
+  flex: 1 1 0;
+}
+
+.dw-nav {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--dawn-space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0;
+}
+
+.dw-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.dw-nav a {
+  flex: none;
+}
+
+/* Page body ------------------------------------------------------------- */
+
+.dw-main {
+  flex: 1 0 auto;
+  width: min(100%, var(--dawn-measure-narrow));
+  margin: 0 auto;
+  padding: var(--dawn-space-8) var(--dawn-space-4) var(--dawn-space-10);
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-4);
+  min-width: 0;
+}
+
+.dw-main--wide {
+  width: min(100%, var(--dawn-measure-wide));
+}
+
+.dw-main--flush {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.dw-h1 {
+  margin: 0;
+  font-family: var(--dawn-font-display);
+  font-size: var(--dawn-fs-h1);
+  font-weight: 560;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.dw-h2,
+.dw-main h2:not([class]) {
+  margin: var(--dawn-space-6) 0 0;
+  font-size: var(--dawn-fs-heading);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.dw-h3,
+.dw-main h3:not([class]) {
+  margin: var(--dawn-space-4) 0 0;
+  font-size: var(--dawn-fs-title);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.dw-eyebrow {
+  margin: 0;
+  font-size: var(--dawn-fs-label);
+  color: var(--dawn-muted);
+}
+
+.dw-lead {
+  margin: 0;
+  max-width: 62ch;
+  font-size: var(--dawn-fs-support);
+  line-height: 1.6;
+  color: var(--dawn-secondary);
+}
+
+.dw-main p,
+.dw-main li {
+  overflow-wrap: anywhere;
+}
+
+.dw-note {
+  margin: 0;
+  font-size: var(--dawn-fs-label);
+  line-height: 1.5;
+  color: var(--dawn-muted);
+}
+
+.dw-link,
+.dw-main a:not([class]) {
+  color: var(--dawn-secondary);
+  text-decoration: underline;
+  text-decoration-color: var(--dawn-grip);
+  text-underline-offset: 3px;
+}
+
+.dw-link:hover,
+.dw-main a:not([class]):hover {
+  color: var(--dawn-text);
+  text-decoration-color: var(--dawn-accent);
+}
+
+.dw-main ul:not([class]),
+.dw-main ol:not([class]) {
+  margin: 0;
+  padding-left: var(--dawn-space-5);
+}
+
+.dw-main p:not([class]) {
+  margin: 0;
+  color: var(--dawn-secondary);
+  line-height: 1.6;
+}
+
+/* Buttons --------------------------------------------------------------- */
+
+.dw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--dawn-space-2);
+  min-height: var(--dawn-tap);
+  padding: 0 var(--dawn-space-4);
+  border: 0;
+  border-radius: var(--dawn-radius-full);
+  background: var(--dawn-chip);
+  color: var(--dawn-text);
+  font-family: var(--dawn-font-ui);
+  font-size: var(--dawn-fs-action);
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms ease-out, color 120ms ease-out, opacity 120ms ease-out;
+}
+
+.dw-btn:hover {
+  background: var(--dawn-chip-hover);
+}
+
+.dw-btn:active {
+  transform: translateY(1px);
+}
+
+.dw-btn svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.dw-btn--primary {
+  background: var(--dawn-pill);
+  color: var(--dawn-ink);
+}
+
+.dw-btn--primary:hover {
+  background: var(--dawn-pill-hover);
+}
+
+.dw-btn--ghost {
+  background: transparent;
+  color: var(--dawn-secondary);
+}
+
+.dw-btn--ghost:hover {
+  background: var(--dawn-elev);
+  color: var(--dawn-text);
+}
+
+.dw-btn--danger {
+  color: var(--dawn-accent-strong);
+}
+
+.dw-btn--icon {
+  width: var(--dawn-tap);
+  padding: 0;
+}
+
+.dw-btn--chip {
+  min-height: 36px;
+  padding: 0 var(--dawn-space-3);
+}
+
+.dw-btn--chip[aria-pressed="true"],
+.dw-btn--chip[aria-selected="true"],
+.dw-btn--chip[aria-current="page"],
+.dw-btn--chip.is-on {
+  background: var(--dawn-accent);
+  color: var(--dawn-ink);
+}
+
+.dw-btn--block {
+  width: 100%;
+}
+
+.dw-btn:disabled,
+.dw-btn[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.dw-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dawn-space-2);
+}
+
+/* Cards, rows, lists ------------------------------------------------------ */
+
+.dw-card {
+  background: var(--dawn-elev);
+  border-radius: var(--dawn-radius-panel);
+  padding: var(--dawn-space-4);
+  min-width: 0;
+}
+
+.dw-card > :first-child {
+  margin-top: 0;
+}
+
+.dw-card > :last-child {
+  margin-bottom: 0;
+}
+
+.dw-card--stone {
+  background: var(--dawn-chip);
+}
+
+.dw-card--stone .dw-note {
+  color: var(--dawn-secondary);
+}
+
+.dw-card--stone .dw-badge:not(.dw-badge--accent) {
+  background: var(--dawn-grip);
+}
+
+.dw-panel {
+  background: var(--dawn-sheet);
+  border: 1px solid var(--dawn-line);
+  border-radius: var(--dawn-radius-panel);
+  padding: var(--dawn-space-4);
+  min-width: 0;
+}
+
+.dw-card-title {
+  margin: 0 0 var(--dawn-space-2);
+  font-size: var(--dawn-fs-body);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.dw-alert {
+  margin: 0;
+  background: var(--dawn-elev);
+  border-radius: var(--dawn-radius-panel);
+  padding: var(--dawn-space-3) var(--dawn-space-4);
+  font-size: var(--dawn-fs-action);
+  line-height: 1.55;
+  color: var(--dawn-secondary);
+}
+
+.dw-alert strong,
+.dw-alert b {
+  color: var(--dawn-accent);
+  font-weight: 600;
+}
+
+.dw-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-1);
+}
+
+.dw-row {
+  display: flex;
+  align-items: center;
+  gap: var(--dawn-space-3);
+  width: 100%;
+  min-height: 56px;
+  padding: var(--dawn-space-2) var(--dawn-space-3);
+  border: 0;
+  border-radius: var(--dawn-radius-row);
+  background: transparent;
+  color: var(--dawn-text);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.dw-row:hover {
+  background: var(--dawn-elev);
+}
+
+.dw-row small,
+.dw-row .dw-note {
+  display: block;
+}
+
+.dw-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: var(--dawn-space-3);
+}
+
+.dw-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 var(--dawn-space-3);
+  border-radius: var(--dawn-radius-full);
+  background: var(--dawn-chip);
+  color: var(--dawn-secondary);
+  font-size: var(--dawn-fs-label);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.dw-badge--accent {
+  background: var(--dawn-accent);
+  color: var(--dawn-ink);
+}
+
+/* Fields ------------------------------------------------------------------ */
+
+.dw-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-3);
+}
+
+.dw-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--dawn-fs-label);
+  color: var(--dawn-secondary);
+}
+
+.dw-field {
+  width: 100%;
+  min-height: var(--dawn-tap);
+  padding: 0 var(--dawn-space-4);
+  border: 0;
+  border-radius: var(--dawn-radius-full);
+  background: var(--dawn-field);
+  color: var(--dawn-text);
+  font-family: var(--dawn-font-ui);
+  font-size: var(--dawn-fs-body);
+}
+
+textarea.dw-field {
+  min-height: 120px;
+  padding: var(--dawn-space-3) var(--dawn-space-4);
+  border-radius: var(--dawn-radius-panel);
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.dw-field::placeholder {
+  color: var(--dawn-placeholder);
+}
+
+.dw-field:focus-visible {
+  outline: var(--dawn-focus);
+  outline-offset: 2px;
+}
+
+.dw-field[readonly] {
+  color: var(--dawn-secondary);
+}
+
+/* Empty state ------------------------------------------------------------- */
+
+.dw-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--dawn-space-3);
+  padding: var(--dawn-space-10) var(--dawn-space-4);
+}
+
+.dw-empty img,
+.dw-empty .dw-sprite {
+  width: 72px;
+  height: 72px;
+  image-rendering: pixelated;
+}
+
+.dw-empty h2,
+.dw-empty .dw-empty-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  max-width: 28ch;
+}
+
+.dw-empty p {
+  margin: 0;
+  max-width: 40ch;
+  color: var(--dawn-secondary);
+  font-size: var(--dawn-fs-support);
+  line-height: 1.6;
+}
+
+.dw-sprite {
+  image-rendering: pixelated;
+  background: var(--dawn-field);
+  border-radius: var(--dawn-radius-tile);
+}
+
+/* Tables and code ----------------------------------------------------------- */
+
+.dw-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--dawn-radius-row);
+}
+
+.dw-main table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--dawn-fs-label);
+}
+
+.dw-main th,
+.dw-main td {
+  text-align: left;
+  vertical-align: top;
+  padding: var(--dawn-space-2) var(--dawn-space-3) var(--dawn-space-2) 0;
+  border-bottom: 1px solid var(--dawn-line);
+}
+
+.dw-main th {
+  color: var(--dawn-muted);
+  font-weight: 500;
+}
+
+.dw-main code,
+.dw-main pre,
+.dw-code {
+  font-family: var(--dawn-font-mono);
+  font-size: var(--dawn-fs-label);
+}
+
+.dw-main pre,
+.dw-code {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--dawn-field);
+  color: var(--dawn-secondary);
+  border-radius: var(--dawn-radius-row);
+  padding: var(--dawn-space-3) var(--dawn-space-4);
+}
+
+.dw-main pre code {
+  font-size: inherit;
+}
+
+/* Footer ------------------------------------------------------------------ */
+
+.dw-footer {
+  border-top: 1px solid var(--dawn-line);
+  padding: var(--dawn-space-4) var(--dawn-space-4) calc(var(--dawn-space-4) + env(safe-area-inset-bottom));
+}
+
+.dw-footer-bar {
+  width: min(100%, var(--dawn-measure-wide));
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--dawn-space-2) var(--dawn-space-4);
+  font-size: var(--dawn-fs-label);
+  color: var(--dawn-muted);
+}
+
+.dw-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--dawn-tap);
+  min-width: var(--dawn-tap);
+  justify-content: center;
+  color: var(--dawn-secondary);
+  text-decoration: none;
+}
+
+.dw-footer a:hover {
+  color: var(--dawn-text);
+}
+
+.dw-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Phones: chips and small controls grow to the 44px target. -------------------- */
+
+@media (max-width: 767px), (pointer: coarse) {
+  .dw-btn--chip {
+    min-height: var(--dawn-tap);
+    min-width: var(--dawn-tap);
+  }
+
+  .dw-main td a,
+  .dw-main li > a,
+  .dw-main li a:only-child {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--dawn-tap);
+  }
+
+  .dw-main {
+    padding-top: var(--dawn-space-6);
+  }
+
+  .dw-h1 {
+    font-size: 28px;
+  }
+
+  .dw-nav {
+    flex-basis: 100%;
+    order: 3;
+    padding-bottom: var(--dawn-space-2);
+  }
+
+  .dw-actions .dw-btn {
+    flex: 1 1 140px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dw-btn {
+    transition: none;
+  }
+}
+
+/* Studio is a dense desktop-style shell; keep it on the type floor and give touch users full-size targets. */
+.dawn-studio .text-\[9px\],
+.dawn-studio .text-\[10px\],
+.dawn-studio .text-\[11px\] {
+  font-size: var(--dawn-fs-micro);
+}
+
+@media (max-width: 767px), (pointer: coarse) {
+  .dawn-studio button,
+  .dawn-studio [role="tab"] {
+    min-width: var(--dawn-tap);
+    min-height: var(--dawn-tap);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dawn-studio form button[type="submit"] {
+    border-radius: var(--dawn-radius-full);
+  }
+}

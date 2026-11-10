@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { BotDesk } from '@/components/desk/bot-desk';
-import './desk.css';
 
 export const metadata: Metadata = {
   title: 'Dawn bot desk',

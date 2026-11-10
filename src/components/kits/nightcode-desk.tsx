@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { PageShell } from '@/components/site/page-shell';
 
 type Message = { id: string; role: 'user' | 'assistant'; body: string; tool: string };
 type Session = {
@@ -87,59 +88,59 @@ export function NightcodeDesk() {
     setNote(data.reason || 'Turn stored. The tool list followed the mode. No model was called.');
   }
 
-  const border = mode === 'plan' ? '#c4b5fd' : '#34d399';
+  const border = mode === 'plan' ? 'var(--dawn-muted)' : 'var(--dawn-accent)';
 
   return (
-    <main className="dawn-agents" style={{ minHeight: '100dvh', padding: '20px 16px 32px' }}>
-      <div style={{ width: 'min(960px, 100%)', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <p className="word">DAWN</p>
-        <h1>NightCode</h1>
-        <p><a href="/kits">All kits</a> · <a href="/">Town</a></p>
-        <p className="note">Plan mode only offers readFile, listDirectory, glob, and grep. Build mode adds writeFile, editFile, and bash. The process also refuses a plan-mode write. Press Tab in the input to toggle. Sessions open from a search dialog, not a chat sidebar.</p>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button type="button" className="primary" onClick={() => { void start(); }}>New session</button>
-          <button type="button" onClick={() => { setDialog(true); void loadList(query); }}>Sessions</button>
-        </div>
-        {dialog && (
-          <div role="dialog" aria-label="Sessions" style={{ border: '1px solid #444', borderRadius: 12, padding: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <input value={query} onChange={(event) => { setQuery(event.target.value); void loadList(event.target.value); }} aria-label="Search sessions" placeholder="Search sessions" style={{ fontSize: 16 }} />
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              {sessions.map((session) => (
-                <li key={session.id}><button type="button" onClick={() => { void open(session.id); }}>{session.title} · {session.mode}</button></li>
-              ))}
-            </ul>
-            <button type="button" onClick={() => setDialog(false)}>Close</button>
-          </div>
-        )}
-        {current && (
-          <>
-            <p role="status" style={{ margin: 0 }}>Mode {mode} · model mock · tools {current.tools?.join(', ')}</p>
-            <p className="note">{current.prompt}</p>
-            <ol style={{ paddingLeft: 18 }}>
-              {current.messages.map((message) => (
-                <li key={message.id}><strong>{message.role}</strong> {message.tool ? `(${message.tool}) ` : ''}{message.body}</li>
-              ))}
-            </ol>
-            <p className="note">Files restored with the session: {current.files.length ? current.files.join(', ') : 'none yet'}</p>
-            <form onSubmit={(event) => { void send(event); }} style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <input
-                value={text}
-                onChange={(event) => setText(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Tab') {
-                    event.preventDefault();
-                    setMode((currentMode) => currentMode === 'plan' ? 'build' : 'plan');
-                  }
-                }}
-                aria-label="NightCode message"
-                style={{ flex: '1 1 240px', fontSize: 16, border: `2px solid ${border}`, borderRadius: 8, padding: 8 }}
-              />
-              <button type="submit" className="primary">Send</button>
-            </form>
-          </>
-        )}
-        <p role="status">{note}</p>
+    <PageShell
+      title="NightCode"
+      current="/kits"
+      lead="Plan mode only offers readFile, listDirectory, glob, and grep. Build mode adds writeFile, editFile, and bash. The process also refuses a plan-mode write. Press Tab in the input to toggle. Sessions open from a search dialog, not a chat sidebar."
+    >
+      <div className="dw-actions">
+        <a className="dw-btn dw-btn--chip" href="/kits">All kits</a>
+        <button type="button" className="dw-btn dw-btn--primary" onClick={() => { void start(); }}>New session</button>
+        <button type="button" className="dw-btn" onClick={() => { setDialog(true); void loadList(query); }}>Sessions</button>
       </div>
-    </main>
+      {dialog && (
+        <div role="dialog" aria-label="Sessions" className="dw-card dw-form">
+          <input className="dw-field" value={query} onChange={(event) => { setQuery(event.target.value); void loadList(event.target.value); }} aria-label="Search sessions" placeholder="Search sessions" />
+          <ul className="dw-list">
+            {sessions.map((session) => (
+              <li key={session.id}><button type="button" className="dw-row" onClick={() => { void open(session.id); }}>{session.title} · {session.mode}</button></li>
+            ))}
+          </ul>
+          <button type="button" className="dw-btn" onClick={() => setDialog(false)}>Close</button>
+        </div>
+      )}
+      {current && (
+        <>
+          <p className="dw-alert" role="status">Mode {mode} · model mock · tools {current.tools?.join(', ')}</p>
+          <p className="dw-note">{current.prompt}</p>
+          <ol className="dw-list">
+            {current.messages.map((message) => (
+              <li key={message.id} className="dw-card dw-card--stone"><strong>{message.role}</strong> {message.tool ? `(${message.tool}) ` : ''}{message.body}</li>
+            ))}
+          </ol>
+          <p className="dw-note">Files restored with the session: {current.files.length ? current.files.join(', ') : 'none yet'}</p>
+          <form className="dw-actions" onSubmit={(event) => { void send(event); }}>
+            <input
+              className="dw-field"
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Tab') {
+                  event.preventDefault();
+                  setMode((currentMode) => currentMode === 'plan' ? 'build' : 'plan');
+                }
+              }}
+              aria-label="NightCode message"
+              style={{ flex: '1 1 240px', boxShadow: `inset 0 0 0 2px ${border}` }}
+            />
+            <button type="submit" className="dw-btn dw-btn--primary">Send</button>
+          </form>
+        </>
+      )}
+      <p className="dw-alert" role="status">{note}</p>
+    </PageShell>
   );
 }

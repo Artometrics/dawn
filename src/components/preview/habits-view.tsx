@@ -33,7 +33,7 @@ export function HabitsView() {
   const open = HABITS.find((habit) => habit.id === state.habitId) ?? null;
   const doneCount = HABITS.filter((habit) => state.habitDone[habit.id]).length;
 
-  if (!ready) return <p className="pv-lead">Opening the sample day…</p>;
+  if (!ready) return <p className="dw-lead">Opening the sample day…</p>;
 
   return (
     <>
@@ -69,7 +69,7 @@ export function HabitsView() {
             </label>
           </>
         ) : (
-          <p className="pv-lead">Choose one habit.</p>
+          <p className="dw-lead">Choose one habit.</p>
         )}
         <p className="pv-count">Demo · {doneCount} of {HABITS.length}</p>
       </section>

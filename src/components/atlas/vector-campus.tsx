@@ -517,7 +517,7 @@ export function VectorCampus({
               type="button"
               aria-pressed={filter === id}
               onClick={() => setFilter(id)}
-              className={`inline-flex h-9 shrink-0 items-center rounded-full px-3 text-[14px] ${filter === id ? 'bg-[var(--dawn-accent)] text-[var(--dawn-ink)]' : 'bg-[var(--dawn-chip)] text-[var(--dawn-text)]'}`}
+              className={`inline-flex h-11 min-w-11 shrink-0 items-center justify-center rounded-full px-3 text-[14px] ${filter === id ? 'bg-[var(--dawn-accent)] text-[var(--dawn-ink)]' : 'bg-[var(--dawn-chip)] text-[var(--dawn-text)]'}`}
             >
               {label}
             </button>
@@ -526,16 +526,16 @@ export function VectorCampus({
             type="button"
             aria-pressed={layer === 'here'}
             onClick={() => setLayer((current) => (current === 'here' ? 'campus' : 'here'))}
-            className={`inline-flex h-9 shrink-0 items-center rounded-full px-3 text-[14px] ${layer === 'here' ? 'bg-[var(--dawn-accent)] text-[var(--dawn-ink)]' : 'bg-[var(--dawn-chip)] text-[var(--dawn-text)]'}`}
+            className={`inline-flex h-11 min-w-11 shrink-0 items-center justify-center rounded-full px-3 text-[14px] ${layer === 'here' ? 'bg-[var(--dawn-accent)] text-[var(--dawn-ink)]' : 'bg-[var(--dawn-chip)] text-[var(--dawn-text)]'}`}
           >
             Here
           </button>
         </div>
         <div className="mt-2 flex shrink-0 gap-2 px-4" role="group" aria-label="Who you are today">
-          <button type="button" aria-pressed={role === 'student'} onClick={() => onRole('student')} className={`inline-flex h-9 items-center rounded-full px-3 text-[14px] ${role === 'student' ? 'bg-[var(--dawn-accent)] text-[var(--dawn-ink)]' : 'bg-[var(--dawn-chip)]'}`}>
+          <button type="button" aria-pressed={role === 'student'} onClick={() => onRole('student')} className={`inline-flex h-11 items-center rounded-full px-3 text-[14px] ${role === 'student' ? 'bg-[var(--dawn-accent)] text-[var(--dawn-ink)]' : 'bg-[var(--dawn-chip)]'}`}>
             Student
           </button>
-          <button type="button" aria-pressed={role === 'researcher'} onClick={() => onRole('researcher')} className={`inline-flex h-9 items-center rounded-full px-3 text-[14px] ${role === 'researcher' ? 'bg-[var(--dawn-accent)] text-[var(--dawn-ink)]' : 'bg-[var(--dawn-chip)]'}`}>
+          <button type="button" aria-pressed={role === 'researcher'} onClick={() => onRole('researcher')} className={`inline-flex h-11 items-center rounded-full px-3 text-[14px] ${role === 'researcher' ? 'bg-[var(--dawn-accent)] text-[var(--dawn-ink)]' : 'bg-[var(--dawn-chip)]'}`}>
             Researcher
           </button>
         </div>

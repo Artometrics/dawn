@@ -78,7 +78,7 @@ export const DEFAULT_TEAMMATES: Teammate[] = [
     avatarSeed: 'nimbus-bot',
     memory: ['Cloud infrastructure and domain routing'],
     accentColor: '#3b82f6',
-    statusText: 'Draft: hi. are you able to access the rainfallhealth...',
+    statusText: 'Draft: hi. are you able to access the staging project...',
   },
   {
     id: 'bali',

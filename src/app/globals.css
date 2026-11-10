@@ -1,11 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "../styles/tokens.css";
+@import "../styles/dawn-ui.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
     --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
+    --font-sans: var(--font-geist-sans), "Geist", system-ui, sans-serif;
+    --font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -82,37 +85,37 @@
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+    --background: var(--dawn-bg);
+    --foreground: var(--dawn-text);
+    --card: var(--dawn-elev);
+    --card-foreground: var(--dawn-text);
+    --popover: var(--dawn-elev);
+    --popover-foreground: var(--dawn-text);
+    --primary: var(--dawn-pill);
+    --primary-foreground: var(--dawn-ink);
+    --secondary: var(--dawn-chip);
+    --secondary-foreground: var(--dawn-text);
+    --muted: var(--dawn-field);
+    --muted-foreground: var(--dawn-muted);
+    --accent: var(--dawn-chip);
+    --accent-foreground: var(--dawn-text);
+    --destructive: var(--dawn-accent-strong);
+    --border: var(--dawn-line);
+    --input: var(--dawn-line-strong);
+    --ring: var(--dawn-accent);
+    --chart-1: var(--dawn-accent);
+    --chart-2: var(--dawn-secondary);
+    --chart-3: var(--dawn-muted);
+    --chart-4: var(--dawn-grip);
+    --chart-5: var(--dawn-chip);
+    --sidebar: var(--dawn-bg);
+    --sidebar-foreground: var(--dawn-text);
+    --sidebar-primary: var(--dawn-accent);
+    --sidebar-primary-foreground: var(--dawn-ink);
+    --sidebar-accent: var(--dawn-chip);
+    --sidebar-accent-foreground: var(--dawn-text);
+    --sidebar-border: var(--dawn-line);
+    --sidebar-ring: var(--dawn-accent);
 }
 
 .font-pixel {
@@ -133,31 +136,15 @@
 
 /* Dawn phone shell. Scoped so Studio keeps its own tokens. */
 .dawn-root {
-  --dawn-bg: #0e0e0c;
-  --dawn-elev: #171715;
-  --dawn-field: #1c1c1a;
-  --dawn-chip: #2a2a27;
-  --dawn-text: #f3f1ec;
-  --dawn-secondary: #c4bdb3;
-  --dawn-muted: #8f887f;
-  --dawn-accent: #d97746;
-  --dawn-pill: #f7f4ef;
-  --dawn-ink: #141210;
-  --dawn-marker: #1a3358;
-  --dawn-map: #161816;
-  --dawn-road: #3a413c;
-  --dawn-neon-orange: #ff7a2f;
-  --dawn-neon-green: #3ee08a;
-  --dawn-neon-blue: #4cb7ff;
   color: var(--dawn-text);
   background: var(--dawn-bg);
   color-scheme: dark;
   caret-color: var(--dawn-accent);
-  scrollbar-color: #3a3834 transparent;
+  scrollbar-color: var(--dawn-grip) transparent;
 }
 
 .dawn-wordmark {
-  font-family: var(--font-serif), "Iowan Old Style", Palatino, serif;
+  font-family: var(--dawn-font-display);
   font-weight: 560;
   letter-spacing: -0.03em;
 }
@@ -188,7 +175,7 @@
 }
 
 .dawn-field::placeholder {
-  color: #a8a199;
+  color: var(--dawn-placeholder);
 }
 
 .dawn-mark {

@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import type { Metadata } from 'next';
 import { Markdown } from '@/components/credits/markdown';
 import './credits.css';
+import { PageShell } from '@/components/site/page-shell';
 import { BUNDLED_ASSETS, BUNDLED_FONTS } from '@/lib/credits/assets';
 import { AGENT_SPRITES } from '@/lib/credits/sprites';
 import { TOWN_CAST } from '@/lib/credits/town';
@@ -16,15 +17,14 @@ export default function CreditsPage() {
   const thirdParty = readFileSync('THIRD_PARTY.md', 'utf8');
   const notices = readFileSync('THIRD_PARTY_NOTICES.md', 'utf8');
   return (
-    <main className="credits">
-      <p className="kicker">Dawn</p>
-      <h1>Credits & licenses</h1>
-      <p className="lead">
-        One owner today. The fields below are the record for a later commercial release: who made each piece, where it came from, and which license covers it.
-      </p>
-      <p><a href="/">Back to Dawn</a> · <a href="/agents">Agents</a></p>
+    <PageShell
+      title="Credits & licenses"
+      wide
+      className="credits"
+      lead="One owner today. The fields below are the record for a later commercial release: who made each piece, where it came from, and which license covers it."
+    >
 
-      <h2>Agent sprites</h2>
+      <h2 className="dw-h2">Agent sprites</h2>
       <p>
         These 16×16 characters are frames from Kenney’s Tiny Dungeon sheet. The license is CC0, which allows a commercial product later.
       </p>
@@ -43,7 +43,7 @@ export default function CreditsPage() {
         ))}
       </ul>
 
-      <h2>Dawn Town</h2>
+      <h2 className="dw-h2">Dawn Town</h2>
       <p>
         The home map, the player, and these six agents are original pixel art made for Dawn. They are not from Pokémon or any other game.
       </p>
@@ -61,8 +61,8 @@ export default function CreditsPage() {
         ))}
       </ul>
 
-      <h2>Other bundled art and files</h2>
-      <table>
+      <h2 className="dw-h2">Other bundled art and files</h2>
+      <div className="dw-table-wrap"><table>
         <thead>
           <tr>
             <th>File</th>
@@ -83,9 +83,9 @@ export default function CreditsPage() {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></div>
 
-      <h2>Fonts bundled with the app</h2>
+      <h2 className="dw-h2">Fonts bundled with the app</h2>
       <p>Loaded through Next.js font files, not stored as loose font files in the repo.</p>
       <ul>
         {BUNDLED_FONTS.map((font) => (
@@ -95,9 +95,9 @@ export default function CreditsPage() {
         ))}
       </ul>
 
-      <h2>Open-source libraries</h2>
+      <h2 className="dw-h2">Open-source libraries</h2>
       <p>Direct dependencies of Dawn and Dawn Code. Transitive packages stay in the lockfiles.</p>
-      <table>
+      <div className="dw-table-wrap"><table>
         <thead>
           <tr>
             <th>Package</th>
@@ -116,13 +116,13 @@ export default function CreditsPage() {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></div>
 
-      <h2>THIRD_PARTY.md</h2>
+      <h2 className="dw-h2">THIRD_PARTY.md</h2>
       <Markdown source={thirdParty} />
 
-      <h2>THIRD_PARTY_NOTICES.md</h2>
+      <h2 className="dw-h2">THIRD_PARTY_NOTICES.md</h2>
       <Markdown source={notices} />
-    </main>
+    </PageShell>
   );
 }

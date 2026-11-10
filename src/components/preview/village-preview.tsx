@@ -65,7 +65,7 @@ export function VillagePreview() {
           <div className="pv-village-panel">
             <h1>Quests</h1>
             <p>The live quest is still three generic checks. The bench is the sample for one goal at a time.</p>
-            <a className="pv-pill" href="/preview/bench">Open the bench</a>
+            <a className="dw-btn" href="/preview/bench">Open the bench</a>
           </div>
         )}
         {tab === 'team' && (
