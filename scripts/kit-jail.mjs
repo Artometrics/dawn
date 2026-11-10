@@ -11,6 +11,15 @@ import path from 'node:path';
 const jail = path.resolve(process.argv[2] || '');
 const request = JSON.parse(process.argv[3] || '{}');
 
+try {
+await run();
+} catch (error) {
+  process.stderr.write(error instanceof Error ? error.message : 'The jail process stopped.');
+  process.exit(1);
+}
+
+async function run() {
+
 function inside(target) {
   const resolved = path.resolve(jail, target);
   const rel = path.relative(jail, resolved);
@@ -64,3 +73,4 @@ if (request.tool === 'writeFile') {
 }
 
 process.stdout.write(JSON.stringify({ ok: true, result }));
+}

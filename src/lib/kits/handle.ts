@@ -1,5 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import path from 'node:path';
 import { KITS, kitById, type KitId } from './registry.ts';
+import { NightcodeDesk } from './nightcode-agent.ts';
 import { runKit } from './runners.ts';
 
 type SendJson = (res: ServerResponse, status: number, body: unknown) => void;
@@ -28,6 +30,10 @@ export async function handleKits(
     });
     return;
   }
+  if (pathname.startsWith('/api/kits/nightcode/')) {
+    await nightcodeRoute(req, res, pathname, _dataRoot, sendJson);
+    return;
+  }
   const id = pathname.slice('/api/kits/'.length);
   const kit = kitById(id);
   if (!kit || req.method !== 'POST') {
@@ -51,6 +57,59 @@ export async function handleKits(
     sendJson(res, 200, { ...result, title: kit.title, source: kit.source, replaced: kit.replaced });
   } catch (error) {
     sendJson(res, 400, { error: error instanceof Error ? error.message : 'The check failed.', delivered: false, model: 'mock' });
+  }
+}
+
+async function nightcodeRoute(
+  req: IncomingMessage,
+  res: ServerResponse,
+  pathname: string,
+  dataRoot: string,
+  sendJson: SendJson,
+): Promise<void> {
+  const desk = new NightcodeDesk(path.join(dataRoot, 'nightcode.sqlite'));
+  const model = desk.modelState();
+  if (req.method === 'GET' && pathname === '/api/kits/nightcode/sessions') {
+    sendJson(res, 200, { sessions: desk.listSessions(), ...model });
+    return;
+  }
+  if (req.method === 'POST' && pathname === '/api/kits/nightcode/sessions') {
+    const created = desk.createSession();
+    sendJson(res, 201, { ...desk.getSession(created.id), ...model });
+    return;
+  }
+  const message = pathname.match(/^\/api\/kits\/nightcode\/sessions\/([^/]+)(?:\/messages)?$/);
+  if (!message) {
+    sendJson(res, 404, { error: 'Unknown NightCode route.' });
+    return;
+  }
+  const id = decodeURIComponent(message[1]);
+  if (req.method === 'GET') {
+    try {
+      sendJson(res, 200, { ...desk.getSession(id), ...model });
+    } catch (error) {
+      sendJson(res, 404, { error: error instanceof Error ? error.message : 'Session not found' });
+    }
+    return;
+  }
+  if (req.method !== 'POST' || !pathname.endsWith('/messages')) {
+    sendJson(res, 404, { error: 'Unknown NightCode route.' });
+    return;
+  }
+  const raw = await readBody(req);
+  let body: { text?: string; mode?: string } = {};
+  try {
+    body = JSON.parse(raw) as { text?: string; mode?: string };
+  } catch {
+    sendJson(res, 400, { error: 'JSON is required.' });
+    return;
+  }
+  const mode = body.mode === 'build' ? 'build' : 'plan';
+  try {
+    const session = await desk.postMessage(id, String(body.text || ''), mode);
+    sendJson(res, 200, { ...session, ...model });
+  } catch (error) {
+    sendJson(res, 400, { error: error instanceof Error ? error.message : 'The turn stopped.', ...model });
   }
 }
 

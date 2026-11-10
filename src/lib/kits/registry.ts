@@ -61,9 +61,9 @@ export const KITS: KitInfo[] = [
   {
     id: 'nightcode',
     title: 'NightCode',
-    source: 'code-with-antonio/nightcode packages/cli/src/lib/local-tools.ts plan and build modes',
-    adapted: 'Plan mode can read and list. Build mode can write inside the project directory.',
-    replaced: 'Clerk, Neon, Polar, and Bun. Bash stays off because this host cannot create a network namespace.',
+    source: 'code-with-antonio/nightcode packages/server/src/routes/chat.ts and packages/cli/src/lib/local-tools.ts',
+    adapted: 'A session chat stores turns in SQLite and runs plan or build tools in a child process.',
+    replaced: 'Clerk, Neon, Prisma, and Polar. Gemini stays off until a spend cap is set. Bash stays off.',
     href: '/kits/nightcode',
     liveUrl: `${HOST}/kits/nightcode`,
   },
