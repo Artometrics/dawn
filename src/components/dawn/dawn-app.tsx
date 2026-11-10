@@ -24,7 +24,7 @@ import { useTown } from '@/components/dawn/use-town';
 
 const VillageGame = dynamic(() => import('@/components/dawn/village-game').then((mod) => mod.VillageGame), { ssr: false });
 const CharacterMaker = dynamic(() => import('@/components/forge/character-maker').then((mod) => mod.CharacterMaker), { ssr: false });
-const CampusAtlas = dynamic(() => import('@/components/atlas/campus-atlas').then((mod) => mod.CampusAtlas), { ssr: false });
+const AtlasApp = dynamic(() => import('@/features/atlas/components/atlas-app').then((mod) => mod.AtlasApp), { ssr: false });
 
 type Section = 'quests' | 'village' | 'characters' | 'atlas' | 'library';
 
@@ -281,7 +281,7 @@ function Shell() {
           )}
           {section === 'atlas' && (
             <div className="absolute inset-0">
-              <CampusAtlas framed="shell" onMenu={() => setDrawer(true)} avatar={dawn.avatar} />
+              <AtlasApp framed="shell" onMenu={() => setDrawer(true)} avatar={dawn.avatar} />
             </div>
           )}
           {section === 'library' && (

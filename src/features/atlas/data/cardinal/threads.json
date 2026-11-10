@@ -1,0 +1,422 @@
+{
+ "_meta": {
+  "repo": "Artometrics/cardinal-quest",
+  "commit": "ff16ac46624e77c9904118487080f7bef48f40ea",
+  "note": "Ported field for field. Story text, sources, quiz answers, route lines and notes are unchanged. Nothing here is a new historical claim."
+ },
+ "dailyNote": "Daily Hunt picks 3 landmarks per Pacific-time day from a fixed seed; clues are the existing sourced quiz questions.",
+ "threads": [
+  {
+   "id": "rail",
+   "name": "The Railroad Fortune",
+   "icon": "🚂",
+   "color": "#5b3a1e",
+   "book": "Ledger / Toll / Octopus (draft mapping)",
+   "description": "Where the money came from: one man's railroad, and the fortune that became a university.",
+   "stops": [
+    "cantor",
+    "quad",
+    "memchu",
+    "maus"
+   ],
+   "facts": [
+    {
+     "text": "Leland Stanford was president of the Central Pacific Railroad, the western half of the first transcontinental line, and a former governor of California.",
+     "sources": [
+      {
+       "title": "NPS: Golden Spike National Historic Site",
+       "url": "https://www.nps.gov/articles/goldenspike.htm"
+      },
+      {
+       "title": "Stanford University: Our History",
+       "url": "https://www.stanford.edu/about/history/"
+      }
+     ]
+    },
+    {
+     "text": "The Central Pacific recruited more than 11,000 workers from China. Stanford himself said that without them it would have been impossible to finish the western portion of the line.",
+     "sources": [
+      {
+       "title": "NPS: Golden Spike National Historic Site",
+       "url": "https://www.nps.gov/articles/goldenspike.htm"
+      }
+     ]
+    },
+    {
+     "text": "On May 10, 1869, at Promontory Summit, Utah, Stanford received the two golden spikes at the ceremony that joined the Central Pacific and Union Pacific tracks.",
+     "sources": [
+      {
+       "title": "NPS: Golden Spike National Historic Site",
+       "url": "https://www.nps.gov/articles/goldenspike.htm"
+      }
+     ]
+    },
+    {
+     "text": "The real Golden Spike is now in the Cantor Arts Center collection. David Hewes, who commissioned it, took it home after the ceremony and gave it to Stanford in 1892.",
+     "sources": [
+      {
+       "title": "NPS Golden Spike NHP: FAQ",
+       "url": "https://www.nps.gov/gosp/faqs.htm"
+      }
+     ]
+    },
+    {
+     "text": "After Leland died in 1893 the university faced severe money shortages, and Jane Stanford kept it going by selling many of her remaining assets, including a jewelry collection that fetched $500,000.",
+     "sources": [
+      {
+       "title": "Stanford University: Our History",
+       "url": "https://www.stanford.edu/about/history/"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "son",
+   "name": "A Memorial to a Son",
+   "icon": "🕊️",
+   "color": "#8c1515",
+   "book": "The Boy and the Farm (draft mapping)",
+   "description": "A university built out of grief, in the name of a 15-year-old boy.",
+   "stops": [
+    "maus",
+    "angel",
+    "cactus",
+    "quad",
+    "memchu"
+   ],
+   "facts": [
+    {
+     "text": "Leland Stanford Jr., the Stanfords' only child, died of typhoid fever in 1884 at age 15. His parents founded the university in 1885 as his memorial, resolving that “the children of California shall be our children.”",
+     "sources": [
+      {
+       "title": "Stanford University: Our History",
+       "url": "https://www.stanford.edu/about/history/"
+      }
+     ]
+    },
+    {
+     "text": "Its legal name is still Leland Stanford Junior University. It opened on October 1, 1891.",
+     "sources": [
+      {
+       "title": "Stanford University: Our History",
+       "url": "https://www.stanford.edu/about/history/"
+      }
+     ]
+    },
+    {
+     "text": "The Stanfords wanted it nonsectarian, coeducational and affordable, combining the liberal arts with training in science and engineering.",
+     "sources": [
+      {
+       "title": "Stanford University: Our History",
+       "url": "https://www.stanford.edu/about/history/"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "farm",
+   "name": "The Farm",
+   "icon": "🐎",
+   "color": "#3b7a3b",
+   "book": "The Boy and the Farm (draft mapping)",
+   "description": "Before the university there was a horse farm, and you can still walk across it.",
+   "stops": [
+    "barn",
+    "lagunita",
+    "cactus",
+    "oval"
+   ],
+   "facts": [
+    {
+     "text": "The university was built on the Stanford family's Palo Alto stock farm, an 8,180-acre property.",
+     "sources": [
+      {
+       "title": "Stanford University: Our History",
+       "url": "https://www.stanford.edu/about/history/"
+      }
+     ]
+    },
+    {
+     "text": "At the farm in 1878–79, Eadweard Muybridge's battery of cameras proved that a galloping horse lifts all four hooves off the ground (see the Red Barn card).",
+     "sources": [
+      {
+       "title": "Stanford Red Barn: History",
+       "url": "https://redbarn.stanford.edu/history"
+      }
+     ]
+    },
+    {
+     "text": "Farm laborers, many of them Chinese workers, dug Lagunita in the late 1870s as a reservoir for the farm (see the Lake Lagunita card).",
+     "sources": [
+      {
+       "title": "Stanford Conservation Program: Lagunita",
+       "url": "https://conservation.stanford.edu/education-outreach/lagunita-interpretation/interpretive-signs"
+      }
+     ]
+    },
+    {
+     "text": "The free Marguerite campus shuttle is named after a 19th-century horse that pulled a jitney between campus and Palo Alto.",
+     "sources": [
+      {
+       "title": "Stanford University: Our History",
+       "url": "https://www.stanford.edu/about/history/"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "valley",
+   "name": "Terman & the Valley",
+   "icon": "💻",
+   "color": "#0047ff",
+   "book": "The Engineer's Century / Park (draft mapping)",
+   "description": "How an engineering professor, a garage company and a leased industrial park seeded Silicon Valley.",
+   "stops": [
+    "dish",
+    "gates"
+   ],
+   "facts": [
+    {
+     "text": "Engineering professor Frederick Terman, later dean and provost and dubbed the “Father of Silicon Valley,” encouraged students to develop and commercialize their ideas.",
+     "sources": [
+      {
+       "title": "Stanford University: Our History",
+       "url": "https://www.stanford.edu/about/history/"
+      }
+     ]
+    },
+    {
+     "text": "With Terman's encouragement, Stanford graduates Bill Hewlett and Dave Packard founded Hewlett-Packard on January 1, 1939. Their first product was the 200A audio oscillator.",
+     "sources": [
+      {
+       "title": "HP History: 1930s timeline",
+       "url": "https://www.hp.com/hpinfo/abouthp/histnfacts/timeline/hist_30s.html"
+      },
+      {
+       "title": "Stanford University: Our History",
+       "url": "https://www.stanford.edu/about/history/"
+      }
+     ]
+    },
+    {
+     "text": "In 1951 Stanford opened what is now Stanford Research Park on its own land, the brainchild of Terman. Varian Associates became the first tenant.",
+     "sources": [
+      {
+       "title": "Stanford University: Our History",
+       "url": "https://www.stanford.edu/about/history/"
+      },
+      {
+       "title": "Stanford Research Park: About",
+       "url": "https://stanfordresearchpark.com/about/"
+      }
+     ]
+    },
+    {
+     "text": "The Cold War gave rise to the Dish, and in 1998 Larry Page and Sergey Brin founded Google (see the Dish and Gates cards).",
+     "sources": [
+      {
+       "title": "Stanford University: Our History",
+       "url": "https://www.stanford.edu/about/history/"
+      },
+      {
+       "title": "NSF: On the Origins of Google",
+       "url": "https://www.nsf.gov/impacts/google"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "land",
+   "name": "One Piece of Land",
+   "icon": "🏞️",
+   "color": "#1565c0",
+   "book": "The Octopus / The Boy and the Farm (draft mapping)",
+   "description": "One piece of land, told forward in time: the horse farm, the reservoir dug for it, the garden of a mansion never built, the family's grave, and the Quad where the garden's palms ended up.",
+   "stops": [
+    "barn",
+    "lagunita",
+    "cactus",
+    "maus",
+    "angel",
+    "quad"
+   ],
+   "facts": [
+    {
+     "text": "In 1876 Leland Stanford bought Mayfield Grange (about 650 acres along San Francisquito Creek) and kept buying until he held over 8,000 acres. At its height the Palo Alto Stock Farm employed 150 workers and boarded 600 horses. The Victorian Red Barn, built 1878–1880, was its training stable.",
+     "sources": [
+      {
+       "title": "Stanford Red Barn: History",
+       "url": "https://redbarn.stanford.edu/history"
+      }
+     ]
+    },
+    {
+     "text": "In June 1878, a dozen cameras triggered by wires across the track photographed a Stanford trotter in sequence, showing a running horse fully aloft, a first step toward motion pictures.",
+     "sources": [
+      {
+       "title": "STANFORD magazine: The Man Who Stopped Time",
+       "url": "https://stanfordmag.org/contents/the-man-who-stopped-time"
+      },
+      {
+       "title": "Library of Congress: The Horse in Motion",
+       "url": "https://www.loc.gov/resource/ppmsca.23778/"
+      }
+     ]
+    },
+    {
+     "text": "The farm closed in 1903; President Donald Tresidder reopened the barn for riding in 1946.",
+     "sources": [
+      {
+       "title": "Stanford Red Barn: History",
+       "url": "https://redbarn.stanford.edu/history"
+      }
+     ]
+    },
+    {
+     "text": "Lake Lagunita was built in 1878 as a stock pond and water reservoir for the Palo Alto Stock Farm and vineyard.",
+     "sources": [
+      {
+       "title": "Stanford 125: Lagunita",
+       "url": "https://125.stanford.edu/lagunita/"
+      },
+      {
+       "title": "Stanford Habitat Conservation Plan, ch. 3",
+       "url": "https://hcp.stanford.edu/2013HCP/HCP%20March%202013/Stanford%20HCP%20Ch%203%20August%202013%20approved%20%28Rev%203%2023%202016%29.pdf"
+      }
+     ]
+    },
+    {
+     "text": "The earthen berm is 16 ft tall and 2,500 ft long, and the porous lakebed loses about 500 gallons a minute.",
+     "sources": [
+      {
+       "title": "Stanford Habitat Conservation Plan, ch. 3",
+       "url": "https://hcp.stanford.edu/2013HCP/HCP%20March%202013/Stanford%20HCP%20Ch%203%20August%202013%20approved%20%28Rev%203%2023%202016%29.pdf"
+      }
+     ]
+    },
+    {
+     "text": "When the university opened in 1891, Stanford let students row there. Boating ran until 2000, and the lake always dried out by summer.",
+     "sources": [
+      {
+       "title": "Stanford 125: Lagunita",
+       "url": "https://125.stanford.edu/lagunita/"
+      },
+      {
+       "title": "Stanford Conservation Program: historic maps and photos of Lagunita",
+       "url": "https://conservation.stanford.edu/education-outreach/lagunita-interpretation/historic-maps-and-photos-lagunita"
+      }
+     ]
+    },
+    {
+     "text": "The Big Game bonfire on the lakebed ended in 1993 after it was found to be a breeding ground for the endangered California tiger salamander.",
+     "sources": [
+      {
+       "title": "Stanford 125: Lagunita",
+       "url": "https://125.stanford.edu/lagunita/"
+      }
+     ]
+    },
+    {
+     "text": "The Arizona Cactus Garden was designed for Jane and Leland Stanford by landscape gardener Rudolph Ulrich in the early 1880s, beside the site of a country mansion they planned.",
+     "sources": [
+      {
+       "title": "Pacific Horticulture: Rudolph Ulrich's Arizona Gardens",
+       "url": "https://pacifichorticulture.org/articles/rudolph-ulrichs-arizona-gardens/"
+      }
+     ]
+    },
+    {
+     "text": "Stanford sent Ulrich to the Sonoran Desert, where he collected specimens by horse-drawn wagon and shipped them back by rail.",
+     "sources": [
+      {
+       "title": "Stanford Report, 2003",
+       "url": "https://news.stanford.edu/stories/2003/01/sun-shines-century-old-cactus-garden"
+      }
+     ]
+    },
+    {
+     "text": "After Leland Jr. died in 1884 the mansion was abandoned; the garden and the Arboretum are the only remnants of that estate plan.",
+     "sources": [
+      {
+       "title": "Pacific Horticulture: Rudolph Ulrich's Arizona Gardens",
+       "url": "https://pacifichorticulture.org/articles/rudolph-ulrichs-arizona-gardens/"
+      }
+     ]
+    },
+    {
+     "text": "It was maintained until the 1920s, partly by two former Stanford family staff, Chung and Ah Wah, then largely neglected.",
+     "sources": [
+      {
+       "title": "Stanford Report, 2003",
+       "url": "https://news.stanford.edu/stories/2003/01/sun-shines-century-old-cactus-garden"
+      }
+     ]
+    },
+    {
+     "text": "Leland Stanford Jr. died of typhoid fever in Florence on March 13, 1884, at age 15. His parents turned their fortune into a university in his name and built this granite and marble tomb, completed in 1889 for more than $100,000. Leland Jr.'s casket was moved here on June 29, 1893, five days after his father's burial; Jane joined them after her death in 1905.",
+     "sources": [
+      {
+       "title": "Stanford Founders' Celebration: Mausoleum area (PDF)",
+       "url": "https://founders.stanford.edu/sites/g/files/sbiybj15291/files/media/file/mausoleumarea_final.pdf"
+      },
+      {
+       "title": "Stanford & the 1906 Earthquake: Entrance and Palm Drive",
+       "url": "https://quake06.stanford.edu/entrance-and-palm-drive"
+      },
+      {
+       "title": "Stanford & the 1906 Earthquake: timeline",
+       "url": "https://quake06.stanford.edu/timeline-events"
+      }
+     ]
+    },
+    {
+     "text": "This marble angel is a memorial to Henry Clay Lathrop, Jane Stanford's youngest brother. It copies The Angel of Grief, the sculpture William Wetmore Story made in 1894 for his wife's grave in Rome. Jane commissioned the first copy in 1901.",
+     "sources": [
+      {
+       "title": "Stanford Founders' Celebration: Mausoleum area (PDF)",
+       "url": "https://founders.stanford.edu/sites/g/files/sbiybj15291/files/media/file/mausoleumarea_final.pdf"
+      },
+      {
+       "title": "Stanford & the 1906 Earthquake: Entrance and Palm Drive",
+       "url": "https://quake06.stanford.edu/entrance-and-palm-drive"
+      },
+      {
+       "title": "Wikipedia (secondary)",
+       "url": "https://en.wikipedia.org/wiki/Angel_of_Grief"
+      }
+     ]
+    },
+    {
+     "text": "Leland and Jane Stanford laid the cornerstone on May 14, 1887, the day their son Leland Jr. would have turned 19. When the university opened on October 1, 1891, the Inner Quad welcomed more than 500 students and 15 faculty.",
+     "sources": [
+      {
+       "title": "Stanford & the 1906 Earthquake: timeline",
+       "url": "https://quake06.stanford.edu/timeline-events"
+      },
+      {
+       "title": "Stanford Digital Repository: 1888 campus plan (Shepley, Rutan & Coolidge; F.L. & J.C. Olmsted)",
+       "url": "https://purl.stanford.edu/wf779fg7366"
+      },
+      {
+       "title": "Wikipedia (secondary): Main Quad",
+       "url": "https://en.wikipedia.org/wiki/Main_Quad_(Stanford_University)"
+      }
+     ]
+    },
+    {
+     "text": "Thirty palms were dug up from the garden and replanted in the Main Quad's circles when the university was built.",
+     "sources": [
+      {
+       "title": "Pacific Horticulture: Rudolph Ulrich's Arizona Gardens",
+       "url": "https://pacifichorticulture.org/articles/rudolph-ulrichs-arizona-gardens/"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

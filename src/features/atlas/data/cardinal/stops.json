@@ -1,0 +1,1128 @@
+{
+ "_meta": {
+  "repo": "Artometrics/cardinal-quest",
+  "commit": "ff16ac46624e77c9904118487080f7bef48f40ea",
+  "note": "Ported field for field. Story text, sources, quiz answers, route lines and notes are unchanged. Nothing here is a new historical claim."
+ },
+ "stops": [
+  {
+   "id": "quad",
+   "name": "Main Quad",
+   "icon": "🏛️",
+   "lat": 37.42749,
+   "lng": -122.17179,
+   "years": "1887–1906",
+   "sortYear": 1887,
+   "addedIn": "v0",
+   "coordinateSource": "OSM",
+   "locationId": "main-quad",
+   "story": "Leland and Jane Stanford laid the cornerstone on May 14, 1887, the day their son Leland Jr. would have turned 19. The Boston firm Shepley, Rutan & Coolidge designed the sandstone arcades and red-tile roofs inside a general plan agreed with landscape architect Frederick Law Olmsted in 1888. When the university opened on October 1, 1891, the Inner Quad welcomed more than 500 students and 15 faculty. Finished in 1906, the Quad was damaged that April by the great earthquake, which also destroyed the Memorial Arch at its front, and again, less severely, in 1989.",
+   "facts": [
+    "Cornerstone laid May 14, 1887",
+    "Architects: Shepley, Rutan & Coolidge; plan with F. L. Olmsted",
+    "Opened Oct. 1, 1891; Memorial Arch lost in 1906"
+   ],
+   "sources": [
+    {
+     "title": "Stanford & the 1906 Earthquake: timeline",
+     "url": "https://quake06.stanford.edu/timeline-events"
+    },
+    {
+     "title": "Stanford Digital Repository: 1888 campus plan (Shepley, Rutan & Coolidge; F.L. & J.C. Olmsted)",
+     "url": "https://purl.stanford.edu/wf779fg7366"
+    },
+    {
+     "title": "Wikipedia (secondary): Main Quad",
+     "url": "https://en.wikipedia.org/wiki/Main_Quad_(Stanford_University)"
+    }
+   ],
+   "quiz": {
+    "question": "Why was the cornerstone laid on May 14, 1887?",
+    "answers": [
+     "It would have been Leland Jr.'s 19th birthday",
+     "It was Jane Stanford's birthday",
+     "The railroad reached Palo Alto that day"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "memchu",
+   "name": "Memorial Church",
+   "icon": "⛪",
+   "lat": 37.42692,
+   "lng": -122.17051,
+   "years": "1903",
+   "sortYear": 1903,
+   "addedIn": "v0",
+   "coordinateSource": "OSM",
+   "locationId": "memorial-church",
+   "story": "Jane Stanford built Memorial Church in memory of her husband, Leland, who died in 1893. Designed by Charles A. Coolidge and inspired by the churches of Venice and Ravenna, it was dedicated on January 25, 1903, as a non-sectarian church; a rabbi from San Francisco read the first Bible lesson. The 1906 earthquake felled its spire and wrecked the chancel mosaics, and the church was rebuilt without the spire. The 1989 Loma Prieta quake damaged it again, and that restoration was finished in 1992. Today it houses five pipe organs, including the Baroque-style Fisk-Nanney.",
+   "facts": [
+    "Dedicated Jan. 25, 1903",
+    "Architect: Charles A. Coolidge",
+    "1906 quake toppled the spire, which was never rebuilt"
+   ],
+   "sources": [
+    {
+     "title": "Stanford Facts: Memorial Church",
+     "url": "https://facts.stanford.edu/about"
+    },
+    {
+     "title": "Stanford ORSL: Memorial Church organs",
+     "url": "https://orsl.stanford.edu/memorial-church-organs"
+    },
+    {
+     "title": "Stanford & the 1906 Earthquake: timeline",
+     "url": "https://quake06.stanford.edu/timeline-events"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Stanford_Memorial_Church"
+    }
+   ],
+   "quiz": {
+    "question": "What did the 1906 earthquake destroy that was never rebuilt?",
+    "answers": [
+     "The church's spire",
+     "The front mosaic",
+     "The organ loft"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "hoover",
+   "name": "Hoover Tower",
+   "icon": "🗼",
+   "lat": 37.42762,
+   "lng": -122.16699,
+   "years": "1941",
+   "sortYear": 1941,
+   "addedIn": "v0",
+   "coordinateSource": "OSM (corrected)",
+   "locationId": "hoover-tower",
+   "story": "Herbert Hoover, a member of Stanford's first \"Pioneer Class,\" commissioned this 285-foot tower to hold the library on war, revolution and peace he had collected. Designed by Arthur Brown Jr. and inspired by the tower of Salamanca's New Cathedral, it was dedicated on June 20, 1941, for Stanford's 50th anniversary. Its carillon began as 35 Belgian bells from the 1939 New York World's Fair and now has 48. The largest bell, the bourdon, is inscribed in Latin \"Una pro pace sono\": \"For Peace Alone Do I Ring.\"",
+   "facts": [
+    "Dedicated June 20, 1941",
+    "Architect: Arthur Brown Jr.; 285 ft",
+    "Carillon: 35 bells from the 1939 World's Fair, now 48"
+   ],
+   "sources": [
+    {
+     "title": "Hoover Institution: Visit Hoover Tower",
+     "url": "https://www.hoover.org/visit-us-hoover-tower"
+    },
+    {
+     "title": "Hoover Institution: Timeline",
+     "url": "https://www.hoover.org/about/hoover-story/timeline"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Hoover_Tower"
+    }
+   ],
+   "quiz": {
+    "question": "Where did the tower's first carillon bells ring before Stanford?",
+    "answers": [
+     "The Belgian Pavilion at the 1939 New York World's Fair",
+     "Notre-Dame in Paris",
+     "San Francisco's 1915 Panama-Pacific Exposition"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "oval",
+   "name": "The Oval",
+   "icon": "🌳",
+   "lat": 37.43006,
+   "lng": -122.16941,
+   "years": "1888 plan",
+   "sortYear": 1888,
+   "addedIn": "v0",
+   "coordinateSource": "OSM",
+   "locationId": null,
+   "story": "Palm Drive and the Oval were late additions to the campus plan. In April 1888, almost a year after the cornerstone was laid, Frederick Law Olmsted sent Leland Stanford drawings adding a grand approach through an arboretum that ended in an oval-shaped drive in front of the Quad. The Stanfords had asked architect Charles Coolidge for an \"enormously large approach\" in 1887. Today the Oval's lawn is the campus's front yard at the end of the palm-lined, mile-long Palm Drive. The ornate entrance gates at the far end collapsed in 1906.",
+   "facts": [
+    "Added to Olmsted's plan in April 1888",
+    "Ends the mile-long Palm Drive",
+    "Palm Drive entrance gates collapsed in 1906"
+   ],
+   "sources": [
+    {
+     "title": "Stanford & the 1906 Earthquake: Entrance and Palm Drive",
+     "url": "https://quake06.stanford.edu/entrance-and-palm-drive"
+    },
+    {
+     "title": "Stanford Digital Repository: 1888 campus plan (Shepley, Rutan & Coolidge; F.L. & J.C. Olmsted)",
+     "url": "https://purl.stanford.edu/wf779fg7366"
+    }
+   ],
+   "quiz": {
+    "question": "Who drew the plans that added Palm Drive and the Oval?",
+    "answers": [
+     "Frederick Law Olmsted",
+     "Frank Lloyd Wright",
+     "Arthur Brown Jr."
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "maus",
+   "name": "Stanford Mausoleum",
+   "icon": "🕯️",
+   "lat": 37.43651,
+   "lng": -122.16994,
+   "years": "1889",
+   "sortYear": 1889,
+   "addedIn": "v0",
+   "coordinateSource": "OSM",
+   "locationId": "stanford-mausoleum",
+   "story": "Leland Stanford Jr. died of typhoid fever in Florence on March 13, 1884, at age 15. His parents turned their fortune into a university in his name and built this granite and marble tomb, completed in 1889 for more than $100,000. Leland Jr.'s casket was moved here on June 29, 1893, five days after his father's burial; Jane joined them after her death in 1905. At Jane's insistence, the original female sphinxes were moved to the back and male sphinxes put in front. The tomb came through the 1906 earthquake undamaged.",
+   "facts": [
+    "Completed 1889, cost over $100,000",
+    "Leland Jr. moved here June 29, 1893",
+    "Undamaged in 1906"
+   ],
+   "sources": [
+    {
+     "title": "Stanford Founders' Celebration: Mausoleum area (PDF)",
+     "url": "https://founders.stanford.edu/sites/g/files/sbiybj15291/files/media/file/mausoleumarea_final.pdf"
+    },
+    {
+     "title": "Stanford & the 1906 Earthquake: Entrance and Palm Drive",
+     "url": "https://quake06.stanford.edu/entrance-and-palm-drive"
+    },
+    {
+     "title": "Stanford & the 1906 Earthquake: timeline",
+     "url": "https://quake06.stanford.edu/timeline-events"
+    }
+   ],
+   "quiz": {
+    "question": "How old was Leland Stanford Jr. when he died?",
+    "answers": [
+     "15",
+     "19",
+     "21"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "angel",
+   "name": "Angel of Grief",
+   "icon": "👼",
+   "lat": 37.43737,
+   "lng": -122.1688,
+   "years": "1901 / 1908",
+   "sortYear": 1901,
+   "addedIn": "v0",
+   "coordinateSource": "OSM",
+   "locationId": "angel-of-grief",
+   "story": "This marble angel is a memorial to Henry Clay Lathrop, Jane Stanford's youngest brother. It copies The Angel of Grief, the sculpture William Wetmore Story made in 1894 for his wife's grave in Rome. Jane commissioned the first copy in 1901. In the 1906 earthquake its marble canopy collapsed onto the angel, and souvenir hunters later broke off a hand. A replacement was put up in 1908, this time without the canopy, and the Angel and the Mausoleum were both restored in 2001.",
+   "facts": [
+    "Memorial to Henry Clay Lathrop",
+    "Copy of W. W. Story's 1894 sculpture",
+    "Wrecked in 1906, replaced 1908, restored 2001"
+   ],
+   "sources": [
+    {
+     "title": "Stanford Founders' Celebration: Mausoleum area (PDF)",
+     "url": "https://founders.stanford.edu/sites/g/files/sbiybj15291/files/media/file/mausoleumarea_final.pdf"
+    },
+    {
+     "title": "Stanford & the 1906 Earthquake: Entrance and Palm Drive",
+     "url": "https://quake06.stanford.edu/entrance-and-palm-drive"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Angel_of_Grief"
+    }
+   ],
+   "quiz": {
+    "question": "Whom does Stanford's Angel of Grief honor?",
+    "answers": [
+     "Henry Clay Lathrop, Jane's brother",
+     "Leland Stanford Jr.",
+     "David Starr Jordan"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "cantor",
+   "name": "Cantor Arts Center",
+   "icon": "🖼️",
+   "lat": 37.43301,
+   "lng": -122.17088,
+   "years": "1894",
+   "sortYear": 1894,
+   "addedIn": "v0",
+   "coordinateSource": "OSM",
+   "locationId": "cantor-arts-center",
+   "story": "The Leland Stanford Jr. Museum opened in 1894 to share the family's world-spanning collections and to honor Leland Jr., himself an avid collector. By 1900 it was the largest privately owned museum building in the world. The 1906 earthquake devastated it, and after Jane Stanford's death the unendowed museum fell into neglect until it reopened in 1954. The 1989 Loma Prieta quake closed it again. Restored and expanded with a new wing, it reopened in 1999 as the Iris & B. Gerald Cantor Center for Visual Arts. Admission is free.",
+   "facts": [
+    "Opened 1894 as the Leland Stanford Jr. Museum",
+    "Devastated in 1906; reopened 1954",
+    "Reopened 1999 as the Cantor Center"
+   ],
+   "sources": [
+    {
+     "title": "Cantor Arts Center: History",
+     "url": "https://museum.stanford.edu/about/history"
+    },
+    {
+     "title": "Stanford & the 1906 Earthquake: timeline",
+     "url": "https://quake06.stanford.edu/timeline-events"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Cantor_Arts_Center"
+    }
+   ],
+   "quiz": {
+    "question": "What was the museum originally called?",
+    "answers": [
+     "Leland Stanford Jr. Museum",
+     "Hoover Gallery",
+     "Palo Alto Art Hall"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "rodin",
+   "name": "Rodin Sculpture Garden",
+   "icon": "🗿",
+   "lat": 37.43233,
+   "lng": -122.171,
+   "years": "1985",
+   "sortYear": 1985,
+   "addedIn": "v0",
+   "coordinateSource": "OSM",
+   "locationId": null,
+   "story": "The B. Gerald Cantor Rodin Sculpture Garden opened in May 1985 with 20 monumental bronzes by Auguste Rodin. Its centerpiece is The Gates of Hell, cast in 1981 at the Coubertin Foundry using the lost-wax process Rodin preferred, and given to Stanford by Cantor in 1985. Altogether the Cantor holds about 199 works by Rodin, one of the largest collections outside Paris. More Rodins, figures from The Burghers of Calais, stand in Memorial Court at the front of the Main Quad.",
+   "facts": [
+    "Opened May 1985",
+    "Centerpiece: The Gates of Hell (1981 cast)",
+    "About 199 Rodin works in the collection"
+   ],
+   "sources": [
+    {
+     "title": "Cantor Arts Center: Rodin Sculpture Garden",
+     "url": "https://museum.stanford.edu/exhibitions/b-gerald-cantor-rodin-sculpture-garden"
+    },
+    {
+     "title": "Cantor collection: The Gates of Hell",
+     "url": "https://cantorcollection.stanford.edu/objects-1/info/1619"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Cantor_Arts_Center"
+    }
+   ],
+   "quiz": {
+    "question": "What is the garden's centerpiece?",
+    "answers": [
+     "The Gates of Hell",
+     "A lone cast of The Thinker",
+     "A copy of the Venus de Milo"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "green",
+   "name": "Green Library",
+   "icon": "📚",
+   "lat": 37.42676,
+   "lng": -122.16728,
+   "years": "1919",
+   "sortYear": 1919,
+   "addedIn": "v0",
+   "coordinateSource": "OSM",
+   "locationId": null,
+   "story": "Stanford's first library was a single room in the Inner Quad. A grand new library begun before 1906 was destroyed by the earthquake before it could be used. Its replacement, designed by Bakewell & Brown and approved in 1913, opened in 1919; it is now the Bing Wing. In 1980 a large annex was added and the library was renamed for Cecil H. Green. Damaged in the 1989 Loma Prieta quake, the Bing Wing was repaired and reopened in October 1999. Green holds about 4 million volumes.",
+   "facts": [
+    "Original building opened 1919 (now the Bing Wing)",
+    "Renamed for Cecil H. Green in 1980",
+    "Bing Wing reopened Oct. 1999 after Loma Prieta"
+   ],
+   "sources": [
+    {
+     "title": "Stanford & the 1906 Earthquake: timeline",
+     "url": "https://quake06.stanford.edu/timeline-events"
+    },
+    {
+     "title": "Stanford Historical Society: trivia (Bakewell & Brown)",
+     "url": "https://historicalsociety.stanford.edu/trivia"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Cecil_H._Green_Library"
+    }
+   ],
+   "quiz": {
+    "question": "What happened to the library under construction in 1906?",
+    "answers": [
+     "The earthquake destroyed it before it was used",
+     "It became Memorial Church",
+     "It was moved to San Francisco"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "encina",
+   "name": "Encina Hall",
+   "icon": "🏠",
+   "lat": 37.42728,
+   "lng": -122.1646,
+   "years": "1891",
+   "sortYear": 1891,
+   "addedIn": "v0",
+   "coordinateSource": "OSM (corrected)",
+   "locationId": "encina-hall",
+   "story": "Encina Hall was Stanford's first men's dormitory. It opened with the university in October 1891, and with Roble Hall for women it housed the first students. Bert Fesler served as its first master. David Starr Jordan, Stanford's first president, later wrote that Herbert Hoover of the Pioneer Class was the first student he assigned a room in Encina, No. 38. Historians treat that story with some caution, but it remains campus lore. The hall is now home to the Freeman Spogli Institute for International Studies.",
+   "facts": [
+    "Opened Oct. 1891 as the first men's dorm",
+    "First master: Bert Fesler",
+    "Lore: Hoover was assigned Room 38"
+   ],
+   "sources": [
+    {
+     "title": "OAC: Guide to the Encina Hall Records (Stanford Univ. Archives)",
+     "url": "https://oac.cdlib.org/findaid/ark:/13030/kt6q2nf6b0/"
+    },
+    {
+     "title": "Stanford & the 1906 Earthquake: timeline",
+     "url": "https://quake06.stanford.edu/timeline-events"
+    },
+    {
+     "title": "STANFORD magazine: Palm Pilots",
+     "url": "https://stanfordmag.org/contents/palm-pilots"
+    }
+   ],
+   "quiz": {
+    "question": "Which future U.S. president is said to have been Encina's first assigned resident?",
+    "answers": [
+     "Herbert Hoover",
+     "William Howard Taft",
+     "John F. Kennedy"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "white",
+   "name": "White Plaza & The Claw",
+   "icon": "⛲",
+   "lat": 37.42497,
+   "lng": -122.16939,
+   "years": "1964",
+   "sortYear": 1964,
+   "addedIn": "v0",
+   "coordinateSource": "Wikipedia (fountain)",
+   "locationId": null,
+   "story": "White Plaza is the roughly 200,000-square-foot crossroads linking the Main Quad to Tresidder Union, home to rallies, career fairs and club tables. Its centerpiece is White Memorial Fountain, which everyone calls \"The Claw.\" Sculptor Aristides Demetrios won a national competition and installed the 16-foot bronze-and-copper fountain in 1964. It honors brothers William N. White and John B. White II, Class of 1949, who died in separate accidents before they could graduate. Before Big Game, students stage the \"Bearial\" of a Cal bear here.",
+   "facts": [
+    "The Claw installed 1964",
+    "Sculptor: Aristides Demetrios",
+    "Honors the White brothers, Class of 1949"
+   ],
+   "sources": [
+    {
+     "title": "Stanford Visitor Center: self-guided tour map (PDF)",
+     "url": "https://visit.stanford.edu/sites/g/files/sbiybj35161/files/media/file/general_campus_self-guided_tour_map.pdf"
+    },
+    {
+     "title": "Stanford Report: Demetrios obituary (2022)",
+     "url": "https://news.stanford.edu/stories/2022/01/sculptor-aristides-aris-demetrios-maker-memclaw-dies-89"
+    },
+    {
+     "title": "Wikipedia (secondary): White Memorial Fountain",
+     "url": "https://en.wikipedia.org/wiki/White_Memorial_Fountain"
+    }
+   ],
+   "quiz": {
+    "question": "Who designed The Claw?",
+    "answers": [
+     "Aristides Demetrios",
+     "Auguste Rodin",
+     "Thomas Church"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "frost",
+   "name": "Frost Amphitheater",
+   "icon": "🎵",
+   "lat": 37.43056,
+   "lng": -122.16583,
+   "years": "1937",
+   "sortYear": 1937,
+   "addedIn": "v0",
+   "coordinateSource": "Wikipedia (corrected)",
+   "locationId": null,
+   "story": "Laurence Frost Amphitheater opened in 1937, a gift from Mr. and Mrs. Howard Frost in memory of their son, John Laurence Frost, Class of 1935, who died that year. Landscape architect Thomas Church and architect Leslie Kiler shaped a natural grassy bowl so the slopes carry the sound. Commencement was held here from 1938 to 1984, and Ella Fitzgerald, Duke Ellington and the Grateful Dead, who played 14 shows in the 1980s, all took its stage. A renovation finished in 2019 brought it back as a major venue.",
+   "facts": [
+    "Opened 1937",
+    "Design: Thomas Church & Leslie Kiler",
+    "Commencement site 1938–1984"
+   ],
+   "sources": [
+    {
+     "title": "Stanford Live: The History of Frost",
+     "url": "https://live.stanford.edu/news/the-history-of-frost/"
+    },
+    {
+     "title": "Stanford Digital Repository: Rediscovering Frost",
+     "url": "https://purl.stanford.edu/fk240dg3818"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Frost_Amphitheater"
+    }
+   ],
+   "quiz": {
+    "question": "Whose memory is Frost Amphitheater named for?",
+    "answers": [
+     "A Stanford student who died in 1935",
+     "The poet Robert Frost",
+     "Stanford's first football coach"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "stadium",
+   "name": "Stanford Stadium",
+   "icon": "🏈",
+   "lat": 37.43453,
+   "lng": -122.16199,
+   "years": "1921 / 2006",
+   "sortYear": 1921,
+   "addedIn": "v0",
+   "coordinateSource": "OSM",
+   "locationId": null,
+   "story": "Stanford Stadium was built in a matter of months in 1921 and opened on November 19 with the Big Game against Cal. A crowd of 62,740 watched Cal win 42–7. The original earthen horseshoe seated 60,000, second in size only to the Yale Bowl at the time. Minutes after the last home game of 2005, crews began tearing out the field. The rebuilt stadium, with about 50,000 seats, opened on September 16, 2006. It is home to Cardinal football and hosts commencement.",
+   "facts": [
+    "Opened Nov. 19, 1921 with the Big Game",
+    "Original capacity 60,000",
+    "Rebuilt; reopened Sept. 16, 2006"
+   ],
+   "sources": [
+    {
+     "title": "GoStanford: Stanford Stadium",
+     "url": "https://gostanford.com/facilities/stanford-stadium"
+    },
+    {
+     "title": "STANFORD magazine: A Short History of Stanford Stadium",
+     "url": "https://stanfordmag.org/contents/a-short-history-of-stanford-stadium"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Stanford_Stadium"
+    }
+   ],
+   "quiz": {
+    "question": "Who won the first game in Stanford Stadium in 1921?",
+    "answers": [
+     "Cal, 42–7",
+     "Stanford, 14–10",
+     "It ended in a tie"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "dish",
+   "name": "The Dish",
+   "icon": "📡",
+   "lat": 37.4083,
+   "lng": -122.179,
+   "years": "1961",
+   "sortYear": 1961,
+   "addedIn": "v0",
+   "coordinateSource": "Wikipedia (corrected)",
+   "locationId": null,
+   "story": "The 150-foot Dish was built in 1961 by the Stanford Research Institute (now SRI International) for about $4.5 million, paid for by the U.S. Air Force. In the 1960s it picked up Soviet radar signals bounced off the Moon. Later it talked to satellites and spacecraft, including the Voyager probes. It is still used for research. The foothills around it are one of the Bay Area's favorite hikes: a 3.5-mile loop open in daylight, shared with grazing cattle.",
+   "facts": [
+    "Built 1961 by SRI, funded by the U.S. Air Force",
+    "150-foot steerable antenna",
+    "Signaled the Voyager spacecraft"
+   ],
+   "sources": [
+    {
+     "title": "SRI: The Dish radio antenna",
+     "url": "https://www.sri.com/hoi/dish-radio-antenna/"
+    },
+    {
+     "title": "Stanford Dish Area (official)",
+     "url": "https://dish.stanford.edu/"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Stanford_Dish_(Stanford_Radio_Telescope)"
+    }
+   ],
+   "quiz": {
+    "question": "Who built the Dish in 1961?",
+    "answers": [
+     "SRI, with Air Force funding",
+     "NASA",
+     "Hewlett-Packard"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "cactus",
+   "name": "Arizona Cactus Garden",
+   "icon": "🌵",
+   "lat": 37.43592,
+   "lng": -122.17112,
+   "years": "1881–83",
+   "sortYear": 1881,
+   "addedIn": "v0.2",
+   "coordinateSource": "Wikipedia",
+   "locationId": "arizona-cactus-garden",
+   "story": "Before there was a university, there was this garden. Landscape architect Rudolph Ulrich designed it for Leland and Jane Stanford between 1881 and 1883, in what was meant to be the backyard of their country mansion. \"Arizona\" meant arid: it is a garden of cacti and succulents. After Leland Jr. died in 1884, the mansion was never built and the estate became the university. The gardeners Chung Wah and Ah Wah tended it until 1925. Volunteers began restoring it in 1997, and some original plants survive.",
+   "facts": [
+    "Designed 1881–83 by Rudolph Ulrich",
+    "Meant for the Stanfords' unbuilt mansion",
+    "Volunteer restoration since 1997"
+   ],
+   "sources": [
+    {
+     "title": "Stanford Founders' Celebration: Mausoleum area (PDF)",
+     "url": "https://founders.stanford.edu/sites/g/files/sbiybj15291/files/media/file/mausoleumarea_final.pdf"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Arizona_Cactus_Garden"
+    }
+   ],
+   "quiz": {
+    "question": "What does \"Arizona\" mean in the garden's name?",
+    "answers": [
+     "Plants for an arid climate",
+     "The Stanfords' home state",
+     "Sandstone from Arizona"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "barn",
+   "name": "Red Barn",
+   "icon": "🐎",
+   "lat": 37.42472,
+   "lng": -122.18444,
+   "years": "c. 1878–80",
+   "sortYear": 1878,
+   "addedIn": "v0.2",
+   "coordinateSource": "Wikipedia/OSM",
+   "locationId": "red-barn",
+   "story": "Leland Stanford's Palo Alto Stock Farm bred and trained champion trotting horses, and this Victorian barn, built around 1878–1880, was its training stable. Here in 1878–79 the photographer Eadweard Muybridge used a battery of 24 cameras to prove that a galloping horse lifts all four hooves off the ground. The work was a forerunner of motion pictures and is honored as California Historical Landmark No. 834. On the National Register of Historic Places since 1985, the barn is home to Stanford's equestrian team.",
+   "facts": [
+    "Built c. 1878–80 for the Palo Alto Stock Farm",
+    "Muybridge's horse-in-motion photos, 1878–79",
+    "NRHP-listed 1985"
+   ],
+   "sources": [
+    {
+     "title": "Stanford Red Barn: History",
+     "url": "https://redbarn.stanford.edu/history"
+    },
+    {
+     "title": "Library of Congress: The Horse in Motion",
+     "url": "https://www.loc.gov/item/2005684184/"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Palo_Alto_Stock_Farm_Horse_Barn"
+    }
+   ],
+   "quiz": {
+    "question": "What did Muybridge prove at the Stock Farm?",
+    "answers": [
+     "A galloping horse has all four hooves off the ground at once",
+     "Horses can see in color",
+     "Trotters are faster than gallopers"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "toyon",
+   "name": "Toyon Hall",
+   "icon": "🏰",
+   "lat": 37.42611,
+   "lng": -122.16361,
+   "years": "1923",
+   "sortYear": 1923,
+   "addedIn": "v0.2",
+   "coordinateSource": "Wikipedia",
+   "locationId": null,
+   "story": "Toyon Hall was designed by the San Francisco firm Bakewell & Brown, also behind Green Library, Old Union and Memorial Auditorium, and completed in 1923. Built in a Romanesque and Mediterranean Revival style, it originally housed 150 men. For decades Toyon residents ran the Stanford Eating Clubs, which closed in 2009. After a seismic renovation in 2000, it became a co-ed upperclass residence whose grand lounge hosts a cappella shows and talks.",
+   "facts": [
+    "Completed 1923",
+    "Architects: Bakewell & Brown",
+    "Originally housed 150 men"
+   ],
+   "sources": [
+    {
+     "title": "Stanford R&DE: Toyon Hall",
+     "url": "https://rde.stanford.edu/studenthousing/toyon-hall"
+    },
+    {
+     "title": "PCAD: Toyon Hall",
+     "url": "https://pcad.lib.washington.edu/building/21500/"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Toyon_Hall"
+    }
+   ],
+   "quiz": {
+    "question": "Which architecture firm designed Toyon Hall?",
+    "answers": [
+     "Bakewell & Brown",
+     "Ennead Architects",
+     "Shepley, Rutan & Coolidge"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "bing",
+   "name": "Bing Concert Hall",
+   "icon": "🎻",
+   "lat": 37.432,
+   "lng": -122.16612,
+   "years": "2013",
+   "sortYear": 2013,
+   "addedIn": "v0.2",
+   "coordinateSource": "OSM",
+   "locationId": null,
+   "story": "Bing Concert Hall opened in January 2013, and Stanford Live's first season there began on January 11. Richard Olcott of Ennead Architects designed it, and Yasuhisa Toyota of Nagata Acoustics, who also worked on LA's Walt Disney Concert Hall, did the acoustics. Its oval \"vineyard\" hall seats 842 in terraces wrapped around the stage, with every seat within 75 feet of the conductor. It is named for Peter and Helen Bing, whose $50 million lead gift launched it.",
+   "facts": [
+    "Opened January 2013",
+    "Architect: Richard Olcott (Ennead)",
+    "842 vineyard-style seats"
+   ],
+   "sources": [
+    {
+     "title": "Stanford Live: Bing Concert Hall history",
+     "url": "https://live.stanford.edu/plan-your-visit/venues/bing-concert-hall/history"
+    },
+    {
+     "title": "Stanford Arts: inaugural season",
+     "url": "https://arts.stanford.edu/stanford-lives-inaugural-season-at-bing-concert-hall-begins-january-11-2013/"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Bing_Concert_Hall"
+    }
+   ],
+   "quiz": {
+    "question": "How many seats does the Bing hall have?",
+    "answers": [
+     "842",
+     "2,000",
+     "8,000"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "union",
+   "name": "Old Union",
+   "icon": "🏫",
+   "lat": 37.42519,
+   "lng": -122.17045,
+   "years": "1915–23",
+   "sortYear": 1915,
+   "addedIn": "v0.2",
+   "coordinateSource": "OSM",
+   "locationId": null,
+   "story": "The three buildings of the Old Union complex went up between 1915 and 1923 as dormitories for women and as Stanford's first student union. Bakewell & Brown gave them their Spanish Colonial look. When Tresidder Memorial Union was finished in 1960 it took over as the main student center, and this one became the \"Old\" Union. A $24 million renovation in 2005–2007 made it a hub again, and it faces White Plaza and the bookstore.",
+   "facts": [
+    "Built 1915–1923",
+    "Architects: Bakewell & Brown",
+    "Superseded by Tresidder in 1960; renovated 2005–07"
+   ],
+   "sources": [
+    {
+     "title": "Stanford Historical Society: trivia",
+     "url": "https://historicalsociety.stanford.edu/trivia"
+    },
+    {
+     "title": "Stanford: Old Union Complex",
+     "url": "https://tresidder.stanford.edu/old-union-complex"
+    },
+    {
+     "title": "PCAD: Old Union",
+     "url": "https://pcad.lib.washington.edu/building/10385/"
+    }
+   ],
+   "quiz": {
+    "question": "Which building replaced Old Union as the main student center in 1960?",
+    "answers": [
+     "Tresidder Memorial Union",
+     "Bing Concert Hall",
+     "Toyon Hall"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "memaud",
+   "name": "Memorial Auditorium",
+   "icon": "🎭",
+   "lat": 37.42889,
+   "lng": -122.16639,
+   "years": "1937",
+   "sortYear": 1937,
+   "addedIn": "v0.2",
+   "coordinateSource": "Wikipedia",
+   "locationId": null,
+   "story": "Memorial Auditorium was built in 1937 to honor the Stanford students and faculty who died in World War I, paid for largely by student contributions. Arthur Brown Jr., the architect of Hoover Tower, designed it with Bakewell & Weihe. Its hall of about 1,700 seats is Stanford's largest indoor stage. Martin Luther King Jr. gave his \"The Other America\" speech here on April 14, 1967. Each fall Ram's Head stages Gaieties, its Big Game week musical, here before the game.",
+   "facts": [
+    "Built 1937 as a World War I memorial",
+    "Architect: Arthur Brown Jr. with Bakewell & Weihe",
+    "MLK's \"The Other America,\" April 14, 1967"
+   ],
+   "sources": [
+    {
+     "title": "Ram's Head: History",
+     "url": "https://ramshead.stanford.edu/history"
+    },
+    {
+     "title": "Stanford Daily: 130 years of Gaieties",
+     "url": "https://stanforddaily.com/2023/12/06/raising-the-curtain-unveiling-the-130-year-history-of-gaieties/"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Stanford_Memorial_Auditorium"
+    }
+   ],
+   "quiz": {
+    "question": "Which Big Game week student musical plays here?",
+    "answers": [
+     "Gaieties",
+     "The Axe Revue",
+     "Cardinal Follies"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "hanna",
+   "name": "Hanna–Honeycomb House",
+   "icon": "🐝",
+   "lat": 37.41601,
+   "lng": -122.16355,
+   "years": "1937",
+   "sortYear": 1937,
+   "addedIn": "v0.2",
+   "coordinateSource": "Wikipedia/OSM",
+   "locationId": "hanna-house",
+   "story": "This was Frank Lloyd Wright's first work in the San Francisco region, begun in 1937 for the educators Paul and Jean Hanna. Its plan is built on a hexagonal \"honeycomb\" grid of 120-degree angles, used in the rooms, terraces and even the built-in furniture. It was expanded with Wright's help over 25 years. The Hannas gave the house to Stanford in 1974. Badly damaged in the 1989 earthquake, it was restored over about 10 years. It is a National Historic Landmark and is not open to the public, so view it from the road.",
+   "facts": [
+    "Frank Lloyd Wright, begun 1937",
+    "Hexagonal \"honeycomb\" plan",
+    "Given to Stanford in 1974; National Historic Landmark"
+   ],
+   "sources": [
+    {
+     "title": "National Park Service: Hanna-Honeycomb House",
+     "url": "https://www.nps.gov/places/hanna-honeycomb-house.htm"
+    },
+    {
+     "title": "Frank Lloyd Wright Foundation: Hanna House",
+     "url": "https://franklloydwright.org/site/hanna-house/"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Hanna–Honeycomb_House"
+    }
+   ],
+   "quiz": {
+    "question": "What shape is the house's floor grid built on?",
+    "answers": [
+     "Hexagons",
+     "Squares",
+     "Circles"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "gates",
+   "name": "Gates Computer Science",
+   "icon": "💻",
+   "lat": 37.43014,
+   "lng": -122.17353,
+   "years": "1996",
+   "sortYear": 1996,
+   "addedIn": "v0.3",
+   "coordinateSource": "OSM",
+   "locationId": "gates-computer-science",
+   "story": "Named for Microsoft co-founder Bill Gates, who gave $6 million toward it, the Gates Computer Science Building was completed in January 1996 and dedicated on January 30 that year. Robert A. M. Stern Associates and Fong and Chan designed it to encourage interaction. That same year, graduate students Larry Page and Sergey Brin built a search engine here called BackRub, which ranked web pages by the links pointing to them, the idea behind PageRank. In September 1997, in office 360, Page and his officemates settled on a new name, a misspelling of \"googol\": Google. In 1998 the project moved off campus and incorporated.",
+   "facts": [
+    "Completed January 1996; $6M gift from Bill Gates",
+    "Architects: Robert A. M. Stern Associates with Fong and Chan",
+    "Google began here as BackRub (1996); named in room 360 (1997)"
+   ],
+   "sources": [
+    {
+     "title": "Stanford CS: Gates Computer Science Building",
+     "url": "https://www.cs.stanford.edu/about/gates-computer-science-building"
+    },
+    {
+     "title": "NSF: On the Origins of Google",
+     "url": "https://www.nsf.gov/impacts/google"
+    },
+    {
+     "title": "Stanford Graphics (D. Koller): Origin of the name Google",
+     "url": "https://graphics.stanford.edu/~dk/google_name_origin.html"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Gates_Computer_Science_Building,_Stanford"
+    }
+   ],
+   "quiz": {
+    "question": "What was Google called when Page and Brin built it here?",
+    "answers": [
+     "BackRub",
+     "Googolplex",
+     "Yahoo!"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "hoovhouse",
+   "name": "Lou Henry Hoover House",
+   "icon": "🏡",
+   "lat": 37.4177,
+   "lng": -122.16886,
+   "years": "1919–20",
+   "sortYear": 1919,
+   "addedIn": "v0.3",
+   "coordinateSource": "OSM",
+   "locationId": null,
+   "story": "Lou Henry Hoover, who met Herbert in a Stanford geology lab, designed this house herself. Stanford art professor Arthur B. Clark agreed to be the architect only if she did the design, with Clark, his son Birge and draftsman Charles Davis advising. Herbert's one demand was that it be fireproof, so the walls are hollow tile. Its flat-roofed cubes step down San Juan Hill. Built in 1919–20, it was the couple's only permanent home, and here Hoover awaited the returns when he won the presidency in 1928 and lost it in 1932. After Lou died in 1944, he gave the house to Stanford. It is now the university president's home and is not open to the public, so view it from the road.",
+   "facts": [
+    "Designed by Lou Henry Hoover; built 1919–20",
+    "Hoover heard his 1928 election win here",
+    "Given to Stanford after 1944; now the president's home"
+   ],
+   "sources": [
+    {
+     "title": "National Park Service: Lou Henry and Herbert Hoover House",
+     "url": "https://www.nps.gov/places/the-lou-henry-and-herbert-hoover-house.htm"
+    },
+    {
+     "title": "California Office of Historic Preservation: Landmark No. 913",
+     "url": "https://ohp.parks.ca.gov/ListedResources/Detail/913"
+    },
+    {
+     "title": "Stanford University Press: Mrs. Hoover's Pueblo Walls",
+     "url": "https://www.sup.org/books/art-and-visual-culture/mrs-hoovers-pueblo-walls"
+    },
+    {
+     "title": "Wikipedia (secondary)",
+     "url": "https://en.wikipedia.org/wiki/Lou_Henry_and_Herbert_Hoover_House"
+    }
+   ],
+   "quiz": {
+    "question": "Who designed the Hoover House?",
+    "answers": [
+     "Lou Henry Hoover",
+     "Frank Lloyd Wright",
+     "Arthur Brown Jr."
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "png",
+   "name": "Papua New Guinea Sculpture Garden",
+   "icon": "🪵",
+   "lat": 37.4247,
+   "lng": -122.17377,
+   "years": "1994",
+   "sortYear": 1994,
+   "addedIn": "v0.3",
+   "coordinateSource": "OSM",
+   "locationId": null,
+   "story": "In 1994, ten master carvers from the Iatmul and Kwoma peoples of Papua New Guinea's Sepik River region spent months in this oak grove turning wood and stone into figures from their myths and legends. The idea came from two artists, Naui Saunambui and Yati Latai, who proposed a project in the United States to Stanford anthropology student Jim Mason during his fieldwork. The center of the garden follows the floor plan of a Sepik spirit house, and its roughly 40 works include carved poles, figures and garamut slit drums. The artists came back in 1996 for a sunrise-to-sunset drum and dance ceremony that officially opened the garden.",
+   "facts": [
+    "Carved on site in 1994 by 10 Sepik River artists",
+    "About 40 wood and stone works",
+    "Officially opened with a 1996 drum and dance ceremony"
+   ],
+   "sources": [
+    {
+     "title": "Stanford Report: Secrets of the PNG Sculpture Garden (2024)",
+     "url": "https://news.stanford.edu/stories/2024/02/papua-new-guinea-sculpture-garden"
+    },
+    {
+     "title": "Stanford Visitor Center: Explore Campus",
+     "url": "https://visit.stanford.edu/explore-campus"
+    },
+    {
+     "title": "STANFORD magazine: What You Don't Know About the PNG Sculpture Garden",
+     "url": "https://stanfordmag.org/contents/what-you-don-t-know-about-the-papua-new-guinea-sculpture-garden"
+    }
+   ],
+   "quiz": {
+    "question": "Where did the garden's carvers come from?",
+    "answers": [
+     "The Sepik River region of Papua New Guinea",
+     "Hawaii",
+     "New Zealand"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "lagunita",
+   "name": "Lake Lagunita",
+   "icon": "💧",
+   "lat": 37.42242,
+   "lng": -122.17605,
+   "years": "late 1870s",
+   "sortYear": 1878,
+   "addedIn": "v0.3",
+   "coordinateSource": "OSM",
+   "locationId": "lake-lagunita",
+   "story": "Lagunita is older than the university. Laborers on Leland Stanford's Palo Alto Stock Farm, many of them Chinese workers, dug it out of an existing wetland in the late 1870s as a reservoir for the farm's horses, orchards and alfalfa fields. From 1893 to 2000, Stanford filled it in wet years for boating, and it became a center of student life: the Water Carnival, swimming, sailing and Big Game bonfires. On May 6, 1938, the boathouse collapsed under the weight of spectators at the Water Carnival. The porous basin always dried out by summer. Today it serves for flood control and as habitat for the endangered California tiger salamander.",
+   "facts": [
+    "Dug in the late 1870s for the Palo Alto Stock Farm",
+    "Filled for boating in wet years, 1893–2000",
+    "Now habitat for the California tiger salamander"
+   ],
+   "sources": [
+    {
+     "title": "Stanford Conservation Program: Lagunita interpretive signs",
+     "url": "https://conservation.stanford.edu/education-outreach/lagunita-interpretation/interpretive-signs"
+    },
+    {
+     "title": "Stanford Conservation Program: Historic maps and photos of Lagunita",
+     "url": "https://conservation.stanford.edu/education-outreach/lagunita-interpretation/historic-maps-and-photos-lagunita"
+    },
+    {
+     "title": "Stanford Report: When Lake Lagunita had water (2020)",
+     "url": "https://news.stanford.edu/stories/2020/02/stanfords-lake-lagunita-water"
+    }
+   ],
+   "quiz": {
+    "question": "Why was Lagunita first dug?",
+    "answers": [
+     "To water the Stock Farm's horses and crops",
+     "As a rowing course for the university",
+     "As a fire reservoir after 1906"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "knoll",
+   "name": "The Knoll",
+   "icon": "🎹",
+   "lat": 37.42098,
+   "lng": -122.17266,
+   "years": "1918",
+   "sortYear": 1918,
+   "addedIn": "v0.3",
+   "coordinateSource": "OSM",
+   "locationId": null,
+   "story": "Set on a hill lined up with Memorial Church and Palm Drive, the Knoll was built as the home of Ray Lyman Wilbur, Stanford's third president. Architect Louis Christian Mullgardt designed a three-story Spanish Gothic fortress whose wings angle out to embrace the hill, and it was finished in 1918. Herbert Hoover once likened it to an \"insane asylum.\" The Wilburs lived there until 1943, and in 1946 it became home to the Music Department. Since 1986 it has housed CCRMA (pronounced \"karma\"), the Center for Computer Research in Music and Acoustics. The 1989 earthquake left the third floor condemned for almost 15 years, until a renovation finished in August 2005.",
+   "facts": [
+    "Built 1918 for President Ray Lyman Wilbur",
+    "Architect: Louis Christian Mullgardt",
+    "Home of CCRMA since 1986"
+   ],
+   "sources": [
+    {
+     "title": "CCRMA: Knoll Renovation",
+     "url": "https://ccrma.stanford.edu/about/knoll/knoll-renovation"
+    },
+    {
+     "title": "STANFORD magazine: Grounds for Sound",
+     "url": "https://stanfordmag.org/contents/grounds-for-sound"
+    },
+    {
+     "title": "Stanford Libraries: Music Library history",
+     "url": "https://library.stanford.edu/news/music-library-mission-history"
+    },
+    {
+     "title": "Palo Alto Stanford Heritage: The Knoll",
+     "url": "https://www.pastheritage.org/Articles/Knoll.html"
+    }
+   ],
+   "quiz": {
+    "question": "Who was the Knoll built for?",
+    "answers": [
+     "Stanford president Ray Lyman Wilbur",
+     "Herbert Hoover",
+     "Jane Stanford"
+    ],
+    "correct": 0
+   }
+  },
+  {
+   "id": "burghers",
+   "name": "Memorial Court & The Burghers",
+   "icon": "🗝️",
+   "lat": 37.428,
+   "lng": -122.16997,
+   "years": "1884 / 1974",
+   "sortYear": 1974,
+   "addedIn": "v0.3",
+   "coordinateSource": "OSM (artwork)",
+   "locationId": null,
+   "story": "Memorial Court is the Main Quad's front entrance. The great Memorial Arch stood here until the 1906 earthquake brought it down, and it was never rebuilt. Today the court holds life-size bronzes of Auguste Rodin's The Burghers of Calais. The city of Calais commissioned the work in 1884 to honor six leading citizens who, at the end of the siege of 1346–47, walked out barefoot with ropes around their necks to hand the keys of the city to England's king. Rodin shows each man alone, facing death. Stanford's Rodins began with a gift of 89 works from B. Gerald and Iris Cantor in February 1974, which grew into the largest collection outside the Musée Rodin in Paris.",
+   "facts": [
+    "Site of the Memorial Arch, lost in 1906",
+    "Rodin's Burghers of Calais, commissioned 1884",
+    "Cantors' first gift: 89 Rodins, Feb. 1974"
+   ],
+   "sources": [
+    {
+     "title": "Cantor Arts Center: Rodin Sculpture Garden (Burghers in Memorial Court)",
+     "url": "https://museum.stanford.edu/exhibitions/b-gerald-cantor-rodin-sculpture-garden"
+    },
+    {
+     "title": "Musée Rodin: Monument to the Burghers of Calais",
+     "url": "https://www.musee-rodin.fr/en/musee/collections/oeuvres/monument-burghers-calais-0"
+    },
+    {
+     "title": "STANFORD magazine: 89 Rodins Find a New Home",
+     "url": "https://stanfordmag.org/contents/89-rodins-find-a-new-home"
+    },
+    {
+     "title": "Stanford Report: Lagunita photos (1906 toppled steeple and Memorial Arch)",
+     "url": "https://news.stanford.edu/stories/2020/02/stanfords-lake-lagunita-water"
+    }
+   ],
+   "quiz": {
+    "question": "What did the six burghers carry out to England's king?",
+    "answers": [
+     "The keys of the city",
+     "A ransom in gold",
+     "A peace treaty"
+    ],
+    "correct": 0
+   }
+  }
+ ]
+}

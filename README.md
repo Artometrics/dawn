@@ -12,7 +12,7 @@ The home shell is a night phone, in the grain of the Claude and Grok screens Kyl
 
 That replaces the espresso pixel header and the five-tab bar as the way you move. The village, the approval gate, group chat, the team card, and Studio stay. Chat, the team card, and Studio live in Library so the drawer stays at four rows. From 768px wide the drawer stays open.
 
-Atlas is a flat drawing of the campus place list: charcoal ground, lighter roads, neon only on the walked path, the live zone, and the next goal. Stops are dark-blue pills. Minor names fade as you zoom out. The sheet drags and the chips filter the list. The 8/16-bit character still walks the Cardinal Quest. The Here chip is the geolocation map on OpenStreetMap, darkened, with the OpenStreetMap credit. A dark tile host we tried drew an API-key watermark, so it is not used.
+Atlas is a flat night map of real places with the 8/16-bit character on it: charcoal ground, lighter roads, neon only on the walked path, the live zone, and the next leg. Stops are dark-blue pills. Minor names fade as you zoom out. On a phone the sheet drags to 26, 46 and 78 percent; on a desktop it is a side panel. Cardinal, the Stanford story, is the first region. The Here chip is the geolocation map on OpenStreetMap tiles, darkened, with the OpenStreetMap credit.
 
 Quest checks are a hollow or filled mark in a fixed cell. The clay accent marks the open section, a waiting approval, and a selected chip. The one filled action on a screen is the white pill.
 
@@ -30,7 +30,7 @@ Instead of paying for multiple isolated SaaS subscriptions and battling fragment
 Firebase Hosting serves the static export in `out/` (`output: "export"` in `next.config.ts`).
 The village and Studio chat call Gemini through **Firebase AI Logic** in the browser — no API keys on the page.
 
-**Atlas** is a Stanford campus day at `/atlas`. A 16-bit character walks the Cardinal Quest (El Palo Alto, Stanford Red Barn, Arizona Garden, Lake Lagunita, Hanna House). Each stop shows “Cardinal note coming soon”. Embed it on the Cardinal site with `/atlas?embed=1`. Tiles are [OpenStreetMap](https://www.openstreetmap.org/copyright) (`© OpenStreetMap`). The place list in `data/atlas/stanford-places.json` is name, latitude, and longitude only, collected from Google Maps via Apify on 2026-10-30 (about $0.30).
+**Atlas** is a map of real places at `/atlas`, with Cardinal (Stanford, from Kyle's Cardinal book and podcast) as its first region. It opens on the Founders' Walk with the pixel character at the first stop. It has 27 story stops with sources and a quiz, 12 more catalog places with notes and flags, five walking tours with real foot-routing lines, five book threads, a ten-event timeline, ranks, era stamps and a daily hunt. Progress stays in `localStorage` on the device. There is no sign-in, no API key and no new server path: the basemap is OpenStreetMap data baked into `public/maps/atlas/cardinal-basemap.json` (© OpenStreetMap contributors, ODbL), and the page is static. Embed it with `/atlas?embed=1`. Code, data and tests are in `src/features/atlas/` (see its README). The plan and mockups are in `docs/atlas/`. `data/atlas/stanford-places.json` (the old Apify name list) is no longer read.
 The old `/api/chat` server handler is kept at `src/lib/studio/chat-route.ts` for a future Cloud Function if you want OpenRouter/Grok on the host again.
 
 ## Dawn Agents

@@ -12,7 +12,7 @@ Kyle and the Artometrics team, usually on a phone. (Inferred from the repo and t
 
 ## Product Purpose
 
-Dawn is a pixel-art village of agents, plus a studio and a model gateway. Trinity, Kali, and Nimbus can draft a send, spend, hire, or post. Nothing leaves until a person taps Approve. Quests are short goals. Atlas is a walkable Stanford day. The older studio stays at `/studio`.
+Dawn is a pixel-art village of agents, plus a studio and a model gateway. Trinity, Kali, and Nimbus can draft a send, spend, hire, or post. Nothing leaves until a person taps Approve. Quests are short goals. Atlas is a map of real places with Dawn's pixel character on it, and Cardinal (Stanford) is its first region. The older studio stays at `/studio`.
 
 Success means those jobs still work after the restyle, on a phone first.
 
@@ -22,11 +22,11 @@ Agents draft outgoing actions and a person is the gate. Atlas is a day you walk 
 
 ## Operating Context
 
-Phone-first web app. Join with a local name on emulators, Google on the Firebase host, or stay “on this phone” with no account. Village memory, quests, and approvals persist locally or in Firestore. Campus walk progress stays in session storage. Studio chat calls Gemini through Firebase AI Logic in the browser. Atlas can be embedded with `/atlas?embed=1`.
+Phone-first web app. Join with a local name on emulators, Google on the Firebase host, or stay “on this phone” with no account. Village memory, quests, and approvals persist locally or in Firestore. Atlas progress stays in localStorage on the device. Studio chat calls Gemini through Firebase AI Logic in the browser. Atlas can be embedded with `/atlas?embed=1`.
 
 ## Capabilities and Constraints
 
-Keep working, and reachable: the village scene, agent conversations and the approval gate, group chat, quests (add and check milestones), the team card (name, look, share, save, clear desk), the personal geolocation map, the Cardinal Quest walk (student and researcher, stops, “Cardinal note coming soon”), `/atlas?embed=1`, and `/studio`.
+Keep working, and reachable: the village scene, agent conversations and the approval gate, group chat, quests (add and check milestones), the team card (name, look, share, save, clear desk), the personal geolocation map, Atlas with the Cardinal region (27 story stops, five tours, threads, timeline, progress), `/atlas?embed=1`, and `/studio`.
 
 Do not add secrets, delete files, change domain or DNS, or deploy publicly. Open a pull request against `main`. Checks must pass.
 
@@ -47,7 +47,7 @@ The Oct 31 brief makes these binding:
 
 - `README.md`, `ROADMAP.md`, and `codex/manuals/ui-design-system.md` describe the product. They are not customer proof.
 - Agent and player sprites live in `public/tiles/`.
-- Campus places are names and coordinates in `data/atlas/stanford-places.json`.
+- Atlas content is data in `src/features/atlas/data/cardinal/`, ported from Cardinal Quest. The basemap is OpenStreetMap data baked into one static file. A second region is another data folder.
 - Style references are the four attached screenshots (Claude drawer, chat list, connect catalog, code empty state).
 - Do not invent testimonials, customer counts, or pricing.
 

@@ -1,0 +1,99 @@
+{
+ "_meta": {
+  "repo": "Artometrics/cardinal-quest",
+  "commit": "ff16ac46624e77c9904118487080f7bef48f40ea",
+  "note": "Ported field for field. Story text, sources, quiz answers, route lines and notes are unchanged. Nothing here is a new historical claim."
+ },
+ "events": [
+  {
+   "year": 1876,
+   "text": "Leland Stanford's Palo Alto Stock Farm begins (it runs until 1903)",
+   "stopId": "barn",
+   "source": {
+    "title": "Stanford Conservation Program: Lagunita",
+    "url": "https://conservation.stanford.edu/education-outreach/lagunita-interpretation/interpretive-signs"
+   }
+  },
+  {
+   "year": 1884,
+   "text": "March 13: Leland Stanford Jr. dies of typhoid in Florence, age 15",
+   "stopId": "maus",
+   "source": {
+    "title": "Stanford & the 1906 Earthquake: timeline",
+    "url": "https://quake06.stanford.edu/timeline-events"
+   }
+  },
+  {
+   "year": 1885,
+   "text": "November 11: Leland and Jane Stanford sign the Founding Grant",
+   "stopId": null,
+   "source": {
+    "title": "Stanford & the 1906 Earthquake: timeline",
+    "url": "https://quake06.stanford.edu/timeline-events"
+   }
+  },
+  {
+   "year": 1891,
+   "text": "October 1: Opening Day. More than 500 students and 15 faculty; David Starr Jordan is president",
+   "stopId": "quad",
+   "source": {
+    "title": "Stanford & the 1906 Earthquake: timeline",
+    "url": "https://quake06.stanford.edu/timeline-events"
+   }
+  },
+  {
+   "year": 1893,
+   "text": "June 21: Leland Stanford dies, plunging the university into financial crisis",
+   "stopId": "maus",
+   "source": {
+    "title": "Stanford & the 1906 Earthquake: timeline",
+    "url": "https://quake06.stanford.edu/timeline-events"
+   }
+  },
+  {
+   "year": 1905,
+   "text": "February 28: Jane Stanford dies in Honolulu",
+   "stopId": "maus",
+   "source": {
+    "title": "Stanford & the 1906 Earthquake: timeline",
+    "url": "https://quake06.stanford.edu/timeline-events"
+   }
+  },
+  {
+   "year": 1906,
+   "text": "April 18, 5:12 AM: The great earthquake (magnitude 7.7–7.9) strikes; the arch, spire and new library fall",
+   "stopId": "burghers",
+   "source": {
+    "title": "Stanford & the 1906 Earthquake: timeline",
+    "url": "https://quake06.stanford.edu/timeline-events"
+   }
+  },
+  {
+   "year": 1928,
+   "text": "Herbert Hoover, Pioneer Class, hears he has won the U.S. presidency at his Stanford home",
+   "stopId": "hoovhouse",
+   "source": {
+    "title": "National Park Service: Hoover House",
+    "url": "https://www.nps.gov/places/the-lou-henry-and-herbert-hoover-house.htm"
+   }
+  },
+  {
+   "year": 1989,
+   "text": "The Loma Prieta earthquake strikes; Memorial Church, Green Library and the museum need years of repair",
+   "stopId": "memchu",
+   "source": {
+    "title": "Stanford & the 1906 Earthquake: timeline",
+    "url": "https://quake06.stanford.edu/timeline-events"
+   }
+  },
+  {
+   "year": 1998,
+   "text": "Google, born in the Gates building, moves off campus and incorporates",
+   "stopId": "gates",
+   "source": {
+    "title": "NSF: On the Origins of Google",
+    "url": "https://www.nsf.gov/impacts/google"
+   }
+  }
+ ]
+}

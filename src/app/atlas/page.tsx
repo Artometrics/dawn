@@ -1,11 +1,16 @@
 import type { Metadata } from 'next';
-import { CampusAtlas } from '@/components/atlas/campus-atlas';
+import { AtlasApp } from '@/features/atlas/components/atlas-app';
 
 export const metadata: Metadata = {
   title: 'Atlas · Dawn',
-  description: 'Walk a day on the Stanford campus. Cardinal notes are still to come.',
+  description: 'A map of real places with your pixel character on it. Cardinal, the Stanford story, is the first region.',
 };
 
 export default function AtlasPage() {
-  return <main style={{ display: 'contents' }}><h1 className="dw-sr-only">Atlas</h1><CampusAtlas /></main>;
+  return (
+    <main style={{ display: 'contents' }}>
+      <h1 className="dw-sr-only">Atlas</h1>
+      <AtlasApp />
+    </main>
+  );
 }
