@@ -1,5 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { randomBytes } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { access, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { tokensMatch } from './auth';
@@ -239,9 +240,43 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
             sendJson(res, 201, { name: body.name, saved: true });
             return;
           }
+          if (body.kind === 'page') {
+            const html = await desk.readLocalPage(deskRoot, String(body.name || ''));
+            sendJson(res, 200, { html, kind: 'file' });
+            return;
+          }
           if (body.kind === 'browser') {
-            const html = await desk.runBrowserJob(deskRoot, String(body.target || ''));
-            sendJson(res, 200, { html });
+            sendJson(res, 400, { error: 'Reading a file is not browser automation. Use browse.' });
+            return;
+          }
+          if (body.kind === 'browse') {
+            const browse = await import('../integrations/browser-job.ts');
+            if (body.mode === 'fixture') {
+              const chrome = ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium'].find((item) => existsSync(item));
+              if (!chrome) {
+                sendJson(res, 501, { error: 'Chrome is not installed. Nothing was opened.' });
+                return;
+              }
+              sendJson(res, 200, await browse.runFixtureBrowser(chrome));
+              return;
+            }
+            const allow = (process.env.DAWN_BROWSER_ALLOW || '').split(',').map((item) => item.trim()).filter(Boolean);
+            const decision = browse.decideBrowserTarget(String(body.url || ''), allow);
+            if (!decision.allow) {
+              sendJson(res, 403, { error: decision.reason, opened: false });
+              return;
+            }
+            sendJson(res, 403, { error: 'External browsing is not enabled. Nothing was opened.', opened: false });
+            return;
+          }
+          if (body.kind === 'script') {
+            sendJson(res, 501, { error: 'Untrusted code is not run. node:vm is not a security boundary, and this host has no OS sandbox.' });
+            return;
+          }
+          if (body.kind === 'approve') {
+            const draft = await desk.approveSend(deskRoot, String(body.id || ''));
+            const mockMail = await desk.acceptMockMail(deskRoot, draft);
+            sendJson(res, 200, { draft, delivery: desk.deliverSend(draft), mockMail });
             return;
           }
           if (body.kind === 'script') {

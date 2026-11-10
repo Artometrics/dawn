@@ -34,7 +34,7 @@ test('a signed-in desk stores chat and refuses a remote page, and a stranger can
       headers: owner,
       body: JSON.stringify({ kind: 'send', to: 'review@localhost', body: 'hold this' }),
     });
-    const held = await draft.json() as { status: string };
+    const held = await draft.json() as { id: string; status: string };
     assert.equal(held.status, 'review');
     await fetch(`${server.url}/api/local-drafts`, {
       method: 'POST',
@@ -44,16 +44,39 @@ test('a signed-in desk stores chat and refuses a remote page, and a stranger can
     const remote = await fetch(`${server.url}/api/local-drafts`, {
       method: 'POST',
       headers: owner,
-      body: JSON.stringify({ kind: 'browser', target: 'https://example.com' }),
+      body: JSON.stringify({ kind: 'browse', url: 'https://example.com' }),
     });
-    assert.equal(remote.status, 400);
-    const local = await fetch(`${server.url}/api/local-drafts`, {
+    assert.equal(remote.status, 403);
+    const fileRead = await fetch(`${server.url}/api/local-drafts`, {
       method: 'POST',
       headers: owner,
       body: JSON.stringify({ kind: 'browser', target: 'booth.html' }),
     });
-    const page = await local.json() as { html: string };
+    assert.equal(fileRead.status, 400);
+    const local = await fetch(`${server.url}/api/local-drafts`, {
+      method: 'POST',
+      headers: owner,
+      body: JSON.stringify({ kind: 'page', name: 'booth.html' }),
+    });
+    const page = await local.json() as { html: string; kind: string };
+    assert.equal(page.kind, 'file');
     assert.match(page.html, /booth/);
+    const script = await fetch(`${server.url}/api/local-drafts`, {
+      method: 'POST',
+      headers: owner,
+      body: JSON.stringify({ kind: 'script', name: 'fixture.js' }),
+    });
+    assert.equal(script.status, 501);
+    const approved = await fetch(`${server.url}/api/local-drafts`, {
+      method: 'POST',
+      headers: owner,
+      body: JSON.stringify({ kind: 'approve', id: held.id }),
+    });
+    const mailed = await approved.json() as { delivery: { delivered: boolean }; mockMail: { transport: string; delivered: boolean; note: string } };
+    assert.equal(mailed.delivery.delivered, false);
+    assert.equal(mailed.mockMail.transport, 'mock');
+    assert.equal(mailed.mockMail.delivered, false);
+    assert.match(mailed.mockMail.note, /Nothing was sent/);
     await server.close();
     const again = await startAgentsServer({
       storePath: path.join(home, 'store.json'),

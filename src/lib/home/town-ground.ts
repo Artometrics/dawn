@@ -20,8 +20,39 @@ export function isPaintedPlayerPixel(r: number, g: number, b: number): boolean {
   return hat || shirt || skin || pants;
 }
 
-/** Painted red-cap figure in the source plate, in image pixels. Covered when the walker is drawn so two players do not stack. */
-export const PAINTED_PLAYER = { x: 358, y: 648, w: 52, h: 60 };
+/** Grass in the staging plate. Used only to find the painted figure, not as a walk rule. */
+export function isTownGrass(r: number, g: number, b: number): boolean {
+  return g > r + 12 && g > b && g > 110 && r < 150 && b < 170;
+}
+
+/** Painted red-cap figure in the source plate, in image pixels. The PNG file stays as it is. */
+export const PAINTED_PLAYER = { x: 348, y: 636, w: 74, h: 96 };
+
+/** A grass patch to the right of the figure. Copied only onto the figure pixels. */
+export const GRASS_DONOR = { x: 452, y: 660 };
+
+/**
+ * Replace only non-grass pixels inside the painted figure with the grass patch
+ * at the same offset. Grass and the rest of the plate are left unchanged.
+ * Returns how many pixels were covered.
+ */
+export function coverPaintedFigure(width: number, pixels: Uint8Array | Uint8ClampedArray): number {
+  const { x, y, w, h } = PAINTED_PLAYER;
+  let covered = 0;
+  for (let row = y; row < y + h; row += 1) {
+    for (let col = x; col < x + w; col += 1) {
+      const index = (row * width + col) * 4;
+      if (isTownGrass(pixels[index], pixels[index + 1], pixels[index + 2])) continue;
+      const donor = ((GRASS_DONOR.y + (row - y)) * width + (GRASS_DONOR.x + (col - x))) * 4;
+      if (donor < 0 || donor + 2 >= pixels.length || !isTownGrass(pixels[donor], pixels[donor + 1], pixels[donor + 2])) continue;
+      pixels[index] = pixels[donor];
+      pixels[index + 1] = pixels[donor + 1];
+      pixels[index + 2] = pixels[donor + 2];
+      covered += 1;
+    }
+  }
+  return covered;
+}
 
 /** A path patch used to fill the painted figure. */
 export const PATH_PATCH = { x: 300, y: 668, w: 52, h: 60 };

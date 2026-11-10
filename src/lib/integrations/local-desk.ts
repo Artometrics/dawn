@@ -1,5 +1,4 @@
 import { appendFile, mkdir, readFile, realpath, writeFile } from 'node:fs/promises';
-import { runInNewContext } from 'node:vm';
 import path from 'node:path';
 
 export type ChatLine = { personId: string; text: string; at: number };
@@ -68,11 +67,41 @@ export async function approveSend(root: string, id: string): Promise<SendDraft> 
   return found;
 }
 
-/** Outbound stays off unless DAWN_ALLOW_OUTBOUND=1. Tests do not set that. */
-export function deliverSend(draft: SendDraft): { delivered: false; reason: string } {
-  if (draft.status !== 'approved') return { delivered: false, reason: 'Approve the draft first.' };
-  if (process.env.DAWN_ALLOW_OUTBOUND !== '1') return { delivered: false, reason: 'Outbound is off.' };
-  return { delivered: false, reason: 'No sender is configured.' };
+/** The real transport stays off. delivered false is not a finished SendKit delivery. */
+export function deliverSend(draft: SendDraft): { delivered: false; transport: 'off'; reason: string } {
+  if (draft.status !== 'approved') return { delivered: false, transport: 'off', reason: 'Approve the draft first.' };
+  return { delivered: false, transport: 'off', reason: 'No sender is configured. This is not a delivered message.' };
+}
+
+export type MockMail = {
+  id: string;
+  to: string;
+  body: string;
+  transport: 'mock';
+  delivered: false;
+  note: string;
+};
+
+/** Records the approved draft in a mock mailbox. Nothing is sent. */
+export async function acceptMockMail(root: string, draft: SendDraft): Promise<MockMail> {
+  if (draft.status !== 'approved') throw new Error('Approve the draft first.');
+  const home = await initLocalDesk(root);
+  const record: MockMail = {
+    id: draft.id,
+    to: draft.to,
+    body: draft.body,
+    transport: 'mock',
+    delivered: false,
+    note: 'Mock mailbox only. Nothing was sent.',
+  };
+  await appendFile(inside(home, 'mock-mail.jsonl'), `${JSON.stringify(record)}\n`, 'utf8');
+  return record;
+}
+
+export async function readMockMail(root: string): Promise<MockMail[]> {
+  const home = await initLocalDesk(root);
+  const raw = await readFile(inside(home, 'mock-mail.jsonl'), 'utf8').catch(() => '');
+  return raw.split('\n').filter(Boolean).map((row) => JSON.parse(row) as MockMail);
 }
 
 export async function writeSandboxPage(root: string, name: string, html: string): Promise<string> {
@@ -110,25 +139,9 @@ export async function listProjectFiles(root: string): Promise<string[]> {
   return readdir(path.join(home, 'files')).catch(() => []);
 }
 
-/** Reads one sandbox file. A URL or an escaped path is refused and nothing is fetched. */
-/** Runs a persisted sandbox file in a fresh context. No process, network, or filesystem. */
-export async function runSandboxFile(root: string, name: string): Promise<string> {
-  const code = await readLocalPage(root, name);
-  if (code.length > 4000) throw new Error('Fixture is too large.');
-  if (/\b(process|require|fetch|import|Function|constructor)\b/.test(code)) throw new Error('Fixture is refused.');
-  try {
-    const value = runInNewContext(code, Object.create(null), { timeout: 200 });
-    return String(value).slice(0, 500);
-  } catch {
-    throw new Error('Fixture stopped.');
-  }
-}
-
-export async function runBrowserJob(root: string, target: string): Promise<string> {
-  if (/^[a-z]+:/i.test(target) || target.includes('..') || target.includes('/') || target.includes('\\')) {
-    throw new Error('Remote pages and escaped paths are refused.');
-  }
-  return readLocalPage(root, target);
+/** This host has no OS sandbox. node:vm is not a boundary, so the file is not executed. */
+export async function runSandboxFile(_root: string, _name: string): Promise<never> {
+  throw new Error('Untrusted code is not run. node:vm is not a security boundary, and this host has no OS sandbox.');
 }
 
 function inside(root: string, target: string): string {
