@@ -192,6 +192,11 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       sendJson(res, 200, await snapshot());
       return;
     }
+    if (pathname === '/api/kits' || pathname.startsWith('/api/kits/')) {
+      const kits = await import('../kits/handle.ts');
+      await kits.handleKits(req, res, pathname, path.dirname(options.storePath), sendJson);
+      return;
+    }
     if (pathname === '/api/local-drafts') {
       const desk = await import('../integrations/local-desk.ts');
       const deskRoot = path.join(path.dirname(options.storePath), 'local-desk');
@@ -272,6 +277,16 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
             const draft = await desk.approveSend(deskRoot, String(body.id || ''));
             const mockMail = await desk.acceptMockMail(deskRoot, draft);
             sendJson(res, 200, { draft, delivery: desk.deliverSend(draft), mockMail });
+            return;
+          }
+          if (body.kind === 'script') {
+            const result = await desk.runSandboxFile(deskRoot, String(body.name || ''));
+            sendJson(res, 200, { result });
+            return;
+          }
+          if (body.kind === 'approve') {
+            const draft = await desk.approveSend(deskRoot, String(body.id || ''));
+            sendJson(res, 200, { draft, delivery: desk.deliverSend(draft) });
             return;
           }
         } catch (error) {

@@ -6,6 +6,8 @@ The village still uses [Kenney Tiny Town](https://kenney.nl/assets/tiny-town), a
 
 The live home map is a staging plate, `public/maps/dawn-town-staging.png`: the approved Dawn Town comp, cropped to the map and panned under the chrome. It is not a ripped game map. A Tiled `.tmj` file can replace that layer later. The six pinned agents in `public/sprites/town/` are original Dawn pixel art, listed on the Credits page.
 
+The Character Maker (`src/lib/forge/`) draws with [three.js](https://threejs.org), MIT. It contains a copy of the Pantheon Forge source (Artometrics/pantheon, PR #15, `tools/forge/`), adapted to TypeScript. `src/lib/forge/README.md` lists each copied file and `src/lib/forge/CREDITS.md` is Forge's own asset statement.
+
 Other notices, including AI Town (MIT) and Stanford Generative Agents, stay in `THIRD_PARTY_NOTICES.md`.
 
 ## Dawn Agents

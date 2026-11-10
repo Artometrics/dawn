@@ -7,6 +7,7 @@ import {
   Castle,
   ChevronLeft,
   Flag,
+  Hammer,
   Map as MapIcon,
   Menu,
   Plus,
@@ -22,13 +23,15 @@ import { relativeWhen } from '@/components/dawn/relative-when';
 import { useTown } from '@/components/dawn/use-town';
 
 const VillageGame = dynamic(() => import('@/components/dawn/village-game').then((mod) => mod.VillageGame), { ssr: false });
+const CharacterMaker = dynamic(() => import('@/components/forge/character-maker').then((mod) => mod.CharacterMaker), { ssr: false });
 const CampusAtlas = dynamic(() => import('@/components/atlas/campus-atlas').then((mod) => mod.CampusAtlas), { ssr: false });
 
-type Section = 'quests' | 'village' | 'atlas' | 'library';
+type Section = 'quests' | 'village' | 'characters' | 'atlas' | 'library';
 
 const NAV: { id: Section; label: string; icon: typeof Flag }[] = [
   { id: 'quests', label: 'Quests', icon: Flag },
   { id: 'village', label: 'Village', icon: Castle },
+  { id: 'characters', label: 'Characters', icon: Hammer },
   { id: 'atlas', label: 'Atlas', icon: MapIcon },
   { id: 'library', label: 'Library', icon: BookOpen },
 ];
@@ -47,7 +50,7 @@ function Shell() {
   const [section, setSection] = useState<Section>('quests');
   useEffect(() => {
     const asked = new URLSearchParams(window.location.search).get('section');
-    if (asked === 'quests' || asked === 'village' || asked === 'atlas' || asked === 'library') setSection(asked);
+    if (asked === 'quests' || asked === 'village' || asked === 'characters' || asked === 'atlas' || asked === 'library') setSection(asked);
   }, []);
   const [drawer, setDrawer] = useState(false);
   const [query, setQuery] = useState('');
@@ -152,7 +155,7 @@ function Shell() {
                   onClick={() => { setAgent(item); setDrawer(false); }}
                   className="flex min-h-11 w-full items-center gap-3 text-left text-[16px]"
                 >
-                  <img src={item.src} alt="" width={22} height={22} className="h-[22px] w-[22px] [image-rendering:pixelated]" />
+                  <AgentPortrait agent={item} size={22} />
                   {item.name}
                 </button>
               </li>
@@ -225,6 +228,7 @@ function Shell() {
               <div className="relative z-0 min-h-[200px] flex-1 overflow-hidden">
                 <VillageGame
                   avatar={dawn.avatar}
+                  looks={dawn.roster.looks}
                   poses={town.poses}
                   onAgent={(id) => setAgent(AGENTS.find((item) => item.id === id) ?? null)}
                   onYou={() => openSection('library')}
@@ -238,7 +242,7 @@ function Shell() {
                     onClick={() => setAgent(item)}
                     className="flex min-h-11 items-center gap-2 rounded-full bg-[var(--dawn-chip)] px-3 text-[14px]"
                   >
-                    <img src={item.src} alt="" width={28} height={28} className="h-7 w-7 [image-rendering:pixelated]" />
+                    <AgentPortrait agent={item} size={28} />
                     {item.name}
                   </button>
                 ))}
@@ -268,6 +272,9 @@ function Shell() {
                 </button>
               )}
             </div>
+          )}
+          {section === 'characters' && (
+            <CharacterMaker onOpenVillage={() => openSection('village')} />
           )}
           {section === 'atlas' && (
             <div className="absolute inset-0">
@@ -325,6 +332,21 @@ function Shell() {
         )}
       </div>
     </div>
+  );
+}
+
+function AgentPortrait({ agent, size }: { agent: Agent; size: number }) {
+  const { roster } = useDawn();
+  const look = roster.looks[agent.id];
+  return (
+    <img
+      src={look?.portrait || agent.src}
+      alt=""
+      width={size}
+      height={size}
+      style={{ width: size, height: size }}
+      className={look?.portrait ? 'rounded-full object-cover' : '[image-rendering:pixelated]'}
+    />
   );
 }
 
