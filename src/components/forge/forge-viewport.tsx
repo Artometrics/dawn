@@ -2,20 +2,32 @@
 
 import { useEffect, useRef, useState, type MutableRefObject } from 'react';
 import type { ForgeCharacter } from '@/lib/forge/schema';
+import type { PoseName } from '@/lib/forge/engine/bones';
 import type { ForgeStage } from '@/lib/forge/engine/stage';
 
 export function ForgeViewport({
   character,
+  pose,
+  turntable,
+  onTurntable,
   skeleton,
   stageRef,
 }: {
   character: ForgeCharacter;
+  pose: PoseName;
+  turntable: boolean;
+  onTurntable: (on: boolean) => void;
   skeleton: boolean;
   stageRef: MutableRefObject<ForgeStage | null>;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [stage, setStage] = useState<ForgeStage | null>(null);
   const [failed, setFailed] = useState(false);
+  const turnRef = useRef(onTurntable);
+  const startTurn = useRef(turntable);
+  useEffect(() => {
+    turnRef.current = onTurntable;
+  }, [onTurntable]);
 
   useEffect(() => {
     const element = canvas.current;
@@ -26,7 +38,10 @@ export function ForgeViewport({
       .then(({ ForgeStage: Stage }) => {
         if (dead) return;
         const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        made = new Stage(element, { reducedMotion: reduced });
+        made = new Stage(element, {
+          reducedMotion: reduced || !startTurn.current,
+          onTurntable: (on) => turnRef.current(on),
+        });
         stageRef.current = made;
         setStage(made);
       })
@@ -44,6 +59,14 @@ export function ForgeViewport({
   useEffect(() => {
     stage?.setCharacter(character);
   }, [stage, character]);
+
+  useEffect(() => {
+    stage?.setPose(pose);
+  }, [stage, pose, character]);
+
+  useEffect(() => {
+    stage?.setTurntable(turntable);
+  }, [stage, turntable]);
 
   useEffect(() => {
     stage?.setSkeletonVisible(skeleton);

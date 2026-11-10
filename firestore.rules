@@ -163,12 +163,18 @@ service cloud.firestore {
         && data.id.size() < 80
         && data.name is string
         && data.name.size() > 0
-        && data.name.size() <= 40
+        && data.name.size() <= 48
         && data.spec is map
-        && data.spec.schema == 'dawn.forge.character/1'
+        && data.spec.version == 1
         && data.spec.name == data.name
+        && data.spec.id is string
+        && data.spec.epithet is string
+        && data.spec.epithet.size() <= 64
+        && data.spec.body is map
         && data.spec.colors is map
-        && pngOrEmpty(data.portrait, 60000)
+        && data.spec.parts is map
+        && data.spec.paintOverlay is bool
+        && pngOrEmpty(data.portrait, 90000)
         && pngOrEmpty(data.sprite, 20000)
         && data.agentId in ['', 'trinity', 'kali', 'nimbus']
         && freshMillis(data.createdAt)

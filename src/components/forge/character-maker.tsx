@@ -5,24 +5,16 @@ import { Castle, Download, FileUp, ImageDown, Trash2 } from 'lucide-react';
 import { AGENTS } from '@/lib/agents';
 import { useDawn } from '@/components/dawn/dawn-provider';
 import { ForgeViewport } from '@/components/forge/forge-viewport';
-import {
-  BUILD_RANGE,
-  CLIPS,
-  COLOR_SLOTS,
-  HEIGHT_RANGE,
-  NAME_MAX,
-  PARTS,
-  PART_SLOTS,
-  ROSTER_MAX,
-  type AgentSlot,
-  type PartSlot,
-} from '@/lib/forge/catalog';
-import { exportCharacterJson, fileSafeName, importCharacterJson } from '@/lib/forge/codec';
-import { PRESETS } from '@/lib/forge/presets';
-import { blankCharacter, type ForgeCharacter } from '@/lib/forge/schema';
+import { EPITHET_MAX, NAME_MAX, ROSTER_MAX, type AgentSlot } from '@/lib/forge/catalog';
+import { exportCharacterJson, fileSafeName, importCharacterJson, slugFromName } from '@/lib/forge/codec';
+import { blankCharacter, PRESETS } from '@/lib/forge/presets';
+import { CATALOG, validateCharacter, type ColorKey, type ForgeCharacter, type PartGroup } from '@/lib/forge/schema';
+import { POSES, type PoseName } from '@/lib/forge/engine/bones';
 import type { ForgeStage } from '@/lib/forge/engine/stage';
 
-const SLOT_LABEL: Record<PartSlot, string> = {
+const PART_GROUPS = Object.keys(CATALOG) as PartGroup[];
+
+const SLOT_LABEL: Record<PartGroup, string> = {
   head: 'Head',
   face: 'Face',
   hair: 'Hair',
@@ -30,6 +22,9 @@ const SLOT_LABEL: Record<PartSlot, string> = {
   accessory: 'Accessory',
 };
 
+const COLOR_LABEL: Record<ColorKey, string> = { skin: 'Skin', hair: 'Hair', cloth: 'Cloth', trim: 'Trim' };
+const COLOR_KEYS = Object.keys(COLOR_LABEL) as ColorKey[];
+const POSE_LABEL: Record<PoseName, string> = { idle: 'Idle', guard: 'Guard' };
 function Chip({ on, onClick, children }: { on?: boolean; onClick: () => void; children: ReactNode }) {
   return (
     <button
@@ -69,26 +64,35 @@ function download(name: string, blob: Blob) {
   setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
-function dataUrlToBlob(url: string): Blob {
-  const [, base64 = ''] = url.split(',');
-  const bytes = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
-  return new Blob([bytes], { type: 'image/png' });
-}
-
 export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void }) {
   const { roster } = useDawn();
-  const [draft, setDraft] = useState<ForgeCharacter>(() => ({ ...PRESETS[0].character, colors: { ...PRESETS[0].character.colors } }));
+  const [draft, setDraft] = useState<ForgeCharacter>(() => structuredClone(PRESETS[0]));
   const [draftId, setDraftId] = useState<string | null>(null);
+  const [pose, setPose] = useState<PoseName>('idle');
+  const [turntable, setTurntable] = useState(true);
   const [skeleton, setSkeleton] = useState(false);
   const [busy, setBusy] = useState<'save' | 'png' | 'glb' | null>(null);
   const [message, setMessage] = useState<{ text: string; bad: boolean } | null>(null);
   const stageRef = useRef<ForgeStage | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const full = roster.characters.length >= ROSTER_MAX && !roster.characters.some((item) => item.id === draftId);
+  const checked = useMemo(() => validateCharacter(draft), [draft]);
 
-  function patch(next: Partial<ForgeCharacter>) {
-    setDraft((current) => ({ ...current, ...next }));
+  function edit(change: (next: ForgeCharacter) => void) {
+    setDraft((current) => {
+      const next = structuredClone(current);
+      change(next);
+      return next;
+    });
     setMessage(null);
+  }
+
+  function rename(name: string) {
+    edit((next) => {
+      const followsName = next.id === 'new-character' || next.id === slugFromName(next.name);
+      next.name = name;
+      if (followsName) next.id = slugFromName(name);
+    });
   }
 
   function say(text: string, bad = false) {
@@ -96,25 +100,26 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
   }
 
   function load(character: ForgeCharacter, id: string | null) {
-    setDraft({ ...character, colors: { ...character.colors } });
+    setDraft(structuredClone(character));
     setDraftId(id);
+    setPose('idle');
     setMessage(null);
   }
 
   async function save() {
-    if (busy) return;
+    if (busy || !checked.ok) return;
     setBusy('save');
     try {
       const { renderShots } = await import('@/lib/forge/engine/outputs');
-      const shots = renderShots(draft);
+      const shots = await renderShots(checked.character);
       const id = draftId ?? crypto.randomUUID();
-      const result = roster.saveCharacter({ id, character: draft, portrait: shots.portrait, sprite: shots.sprite });
+      const result = roster.saveCharacter({ id, character: checked.character, portrait: shots.portrait, sprite: shots.sprite });
       if (!result.ok) {
         say(result.error, true);
         return;
       }
       setDraftId(id);
-      say(`${draft.name} is in your roster.`);
+      say(`${checked.character.name} is in your roster.`);
     } catch {
       say('Could not draw the portrait on this browser.', true);
     } finally {
@@ -123,11 +128,11 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
   }
 
   async function savePng() {
-    if (busy) return;
+    if (busy || !checked.ok) return;
     setBusy('png');
     try {
-      const { renderPortraitPng } = await import('@/lib/forge/engine/outputs');
-      download(`${fileSafeName(draft.name)}-portrait.png`, dataUrlToBlob(renderPortraitPng(draft, 512)));
+      const { renderPortraitBlob } = await import('@/lib/forge/engine/outputs');
+      download(`${fileSafeName(checked.character)}-portrait.png`, await renderPortraitBlob(checked.character));
       say('Portrait saved.');
     } catch {
       say('Could not draw the portrait on this browser.', true);
@@ -137,13 +142,13 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
   }
 
   async function saveGlb() {
-    if (busy) return;
+    if (busy || !checked.ok) return;
     setBusy('glb');
     try {
       const { exportGlb } = await import('@/lib/forge/engine/outputs');
-      const buffer = await exportGlb(draft);
-      download(`${fileSafeName(draft.name)}.glb`, new Blob([buffer], { type: 'model/gltf-binary' }));
-      say('glTF saved.');
+      const buffer = await exportGlb(checked.character);
+      download(`${fileSafeName(checked.character)}.glb`, new Blob([buffer], { type: 'model/gltf-binary' }));
+      say('glTF saved with the idle and guard clips.');
     } catch {
       say('Could not make the glTF file.', true);
     } finally {
@@ -152,7 +157,8 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
   }
 
   function saveJson() {
-    download(`${fileSafeName(draft.name)}.forge.json`, new Blob([exportCharacterJson(draft)], { type: 'application/json' }));
+    if (!checked.ok) return;
+    download(`${fileSafeName(checked.character)}.json`, new Blob([exportCharacterJson(checked.character)], { type: 'application/json' }));
     say('JSON saved.');
   }
 
@@ -163,8 +169,8 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
       say(parsed.error, true);
       return;
     }
-    load(parsed.value, null);
-    say(`${parsed.value.name} is loaded. Save it to keep it.`);
+    load(parsed.character, null);
+    say(`${parsed.character.name} is loaded. Save it to keep it.`);
   }
 
   const heldBy = useMemo(() => {
@@ -178,14 +184,22 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
       <div className="mx-auto grid w-full max-w-5xl gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
         <div className="min-w-0 md:sticky md:top-0 md:self-start">
           <div className="h-[min(56dvh,460px)] min-h-[300px] md:h-[min(64dvh,560px)]">
-            <ForgeViewport character={draft} skeleton={skeleton} stageRef={stageRef} />
+            <ForgeViewport
+              character={draft}
+              pose={pose}
+              turntable={turntable}
+              onTurntable={setTurntable}
+              skeleton={skeleton}
+              stageRef={stageRef}
+            />
           </div>
           <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Pose and view">
-            {CLIPS.map((clip) => (
-              <Chip key={clip.id} on={draft.clip === clip.id} onClick={() => patch({ clip: clip.id })}>
-                {clip.label}
+            {POSES.map((name) => (
+              <Chip key={name} on={pose === name} onClick={() => setPose(name)}>
+                {POSE_LABEL[name]}
               </Chip>
             ))}
+            <Chip on={turntable} onClick={() => setTurntable((on) => !on)}>Turntable</Chip>
             <Chip on={skeleton} onClick={() => setSkeleton((on) => !on)}>Skeleton</Chip>
             <Chip onClick={() => stageRef.current?.resetView()}>Reset view</Chip>
           </div>
@@ -196,8 +210,8 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
             <h2 id="forge-start" className="text-[13px] text-[var(--dawn-muted)]">Start from</h2>
             <div className="mt-2 flex flex-wrap gap-2">
               {PRESETS.map((preset) => (
-                <Chip key={preset.id} on={draftId === null && draft.name === preset.character.name} onClick={() => load(preset.character, null)}>
-                  {preset.character.name}
+                <Chip key={preset.id} on={draftId === null && draft.id === preset.id} onClick={() => load(preset, null)}>
+                  {preset.name}
                 </Chip>
               ))}
               <Chip onClick={() => load(blankCharacter(), null)}>Blank</Chip>
@@ -210,18 +224,27 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
               id="forge-name-input"
               value={draft.name}
               maxLength={NAME_MAX}
-              onChange={(event) => patch({ name: event.target.value })}
+              onChange={(event) => rename(event.target.value)}
+              className="dawn-field mt-2"
+              autoComplete="off"
+            />
+            <label htmlFor="forge-epithet-input" className="mt-4 block text-[13px] text-[var(--dawn-muted)]">Epithet</label>
+            <input
+              id="forge-epithet-input"
+              value={draft.epithet}
+              maxLength={EPITHET_MAX}
+              onChange={(event) => edit((next) => { next.epithet = event.target.value; })}
               className="dawn-field mt-2"
               autoComplete="off"
             />
           </section>
 
-          {PART_SLOTS.map((slot) => (
-            <section key={slot} className="mt-6" aria-labelledby={`forge-${slot}`}>
-              <h2 id={`forge-${slot}`} className="text-[13px] text-[var(--dawn-muted)]">{SLOT_LABEL[slot]}</h2>
+          {PART_GROUPS.map((group) => (
+            <section key={group} className="mt-6" aria-labelledby={`forge-${group}`}>
+              <h2 id={`forge-${group}`} className="text-[13px] text-[var(--dawn-muted)]">{SLOT_LABEL[group]}</h2>
               <div className="mt-2 flex flex-wrap gap-2">
-                {PARTS[slot].map((option) => (
-                  <Chip key={option.id} on={draft[slot] === option.id} onClick={() => patch({ [slot]: option.id } as Partial<ForgeCharacter>)}>
+                {CATALOG[group].map((option) => (
+                  <Chip key={option.id} on={draft.parts[group] === option.id} onClick={() => edit((next) => { next.parts[group] = option.id; })}>
                     {option.label}
                   </Chip>
                 ))}
@@ -231,46 +254,40 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
 
           <section className="mt-6">
             <h2 className="text-[13px] text-[var(--dawn-muted)]">Body</h2>
-            <label className="mt-2 flex min-h-11 items-center gap-3 text-[15px]">
-              <span className="w-16 shrink-0">Height</span>
-              <input
-                type="range"
-                min={HEIGHT_RANGE.min}
-                max={HEIGHT_RANGE.max}
-                step={0.01}
-                value={draft.height}
-                onChange={(event) => patch({ height: Number(event.target.value) })}
-                className="h-11 min-w-0 flex-1 accent-[var(--dawn-accent)]"
-              />
-            </label>
-            <label className="flex min-h-11 items-center gap-3 text-[15px]">
-              <span className="w-16 shrink-0">Build</span>
-              <input
-                type="range"
-                min={BUILD_RANGE.min}
-                max={BUILD_RANGE.max}
-                step={0.01}
-                value={draft.build}
-                onChange={(event) => patch({ build: Number(event.target.value) })}
-                className="h-11 min-w-0 flex-1 accent-[var(--dawn-accent)]"
-              />
-            </label>
+            {(['height', 'build'] as const).map((key) => (
+              <label key={key} className="mt-2 flex min-h-11 items-center gap-3 text-[15px] first:mt-2">
+                <span className="w-16 shrink-0 capitalize">{key}</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  value={draft.body[key]}
+                  onChange={(event) => edit((next) => { next.body[key] = Number(event.target.value); })}
+                  className="h-11 min-w-0 flex-1 accent-[var(--dawn-accent)]"
+                />
+                <span className="w-10 shrink-0 text-right text-[13px] tabular-nums text-[var(--dawn-muted)]">{draft.body[key].toFixed(2)}</span>
+              </label>
+            ))}
           </section>
 
           <section className="mt-6">
             <h2 className="text-[13px] text-[var(--dawn-muted)]">Color</h2>
             <div className="mt-2 flex flex-wrap gap-4">
-              {COLOR_SLOTS.map((slot) => (
-                <label key={slot.id} className="flex flex-col items-center gap-1 text-[13px] text-[var(--dawn-secondary)]">
+              {COLOR_KEYS.map((key) => (
+                <label key={key} className="flex flex-col items-center gap-1 text-[13px] text-[var(--dawn-secondary)]">
                   <input
                     type="color"
-                    value={draft.colors[slot.id]}
-                    onChange={(event) => patch({ colors: { ...draft.colors, [slot.id]: event.target.value.toLowerCase() } })}
+                    value={draft.colors[key]}
+                    onChange={(event) => edit((next) => { next.colors[key] = event.target.value.toLowerCase(); })}
                     className="h-11 w-11 cursor-pointer appearance-none rounded-full border-0 bg-transparent p-0 [&::-moz-color-swatch]:rounded-full [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0"
                   />
-                  {slot.label}
+                  {COLOR_LABEL[key]}
                 </label>
               ))}
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Chip on={draft.paintOverlay} onClick={() => edit((next) => { next.paintOverlay = !next.paintOverlay; })}>Brush texture</Chip>
             </div>
           </section>
 
@@ -278,17 +295,18 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
             <button
               type="button"
               onClick={() => void save()}
-              disabled={busy !== null || full || !draft.name.trim()}
+              disabled={busy !== null || full || !checked.ok}
               className="inline-flex h-11 w-full items-center justify-center rounded-full bg-[var(--dawn-pill)] px-4 text-[14px] font-medium text-[var(--dawn-ink)] disabled:opacity-40"
             >
               {busy === 'save' ? 'Saving…' : draftId ? 'Save changes' : 'Save to roster'}
             </button>
+            {!checked.ok && <p className="mt-2 text-[13px] text-[var(--dawn-accent)]">{checked.errors[0]}</p>}
             {full && <p className="mt-2 text-[13px] text-[var(--dawn-accent)]">The roster holds {ROSTER_MAX} characters. Remove one to add another.</p>}
             <div className="mt-3 flex flex-wrap gap-2">
-              <Secondary onClick={saveJson}><Download className="h-4 w-4" aria-hidden />JSON</Secondary>
+              <Secondary onClick={saveJson} disabled={!checked.ok}><Download className="h-4 w-4" aria-hidden />JSON</Secondary>
               <Secondary onClick={() => fileRef.current?.click()}><FileUp className="h-4 w-4" aria-hidden />Import</Secondary>
-              <Secondary onClick={() => void savePng()} disabled={busy !== null}><ImageDown className="h-4 w-4" aria-hidden />PNG</Secondary>
-              <Secondary onClick={() => void saveGlb()} disabled={busy !== null}><Download className="h-4 w-4" aria-hidden />glTF</Secondary>
+              <Secondary onClick={() => void savePng()} disabled={busy !== null || !checked.ok}><ImageDown className="h-4 w-4" aria-hidden />PNG</Secondary>
+              <Secondary onClick={() => void saveGlb()} disabled={busy !== null || !checked.ok}><Download className="h-4 w-4" aria-hidden />glTF</Secondary>
             </div>
             <input
               ref={fileRef}
@@ -328,7 +346,7 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[16px] leading-5">{entry.character.name}</p>
                   <p className="truncate text-[13px] leading-5 text-[var(--dawn-muted)]">
-                    {entry.agentId ? `Village avatar for ${heldBy.get(entry.agentId) ?? entry.agentId}` : entry.character.title || 'Not in the village yet'}
+                    {entry.agentId ? `Village avatar for ${heldBy.get(entry.agentId) ?? entry.agentId}` : entry.character.epithet || 'Not in the village yet'}
                   </p>
                 </div>
                 <button

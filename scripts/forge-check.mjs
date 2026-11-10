@@ -135,18 +135,19 @@ for (const viewport of VIEWPORTS) {
 
     await clickText(page, 'button', 'Napoleon');
     await sleep(400);
-    assert.equal(await page.$eval('#forge-name-input', (input) => input.value), 'Napoleon');
+    assert.equal(await page.$eval('#forge-name-input', (input) => input.value), 'Napoleon Bonaparte');
     await clickText(page, 'button', 'Guard');
     await sleep(400);
     assert.ok((await canvasHasPixels(page)) > 0.03, 'view went blank after a pose change');
     log('ok preset and pose swap');
 
-    await clickText(page, 'button', 'Sly');
+    await clickText(page, 'button', 'Stern');
     await clickText(page, 'button', 'Robe');
-    await clickText(page, 'button', 'Crown');
+    await clickText(page, 'button', 'Laurel');
+    await clickText(page, 'button', 'Turntable');
     await page.$eval('input[type="range"]', (input) => {
       const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-      setter.call(input, '1.1');
+      setter.call(input, '0.9');
       input.dispatchEvent(new Event('input', { bubbles: true }));
     });
     await sleep(300);
@@ -157,51 +158,57 @@ for (const viewport of VIEWPORTS) {
     await page.waitForFunction(() => document.querySelector('[data-forge-status]')?.textContent.includes('in your roster'), { timeout: 15000 });
     const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('dawn.forge.roster.v1') || '[]'));
     assert.equal(stored.length, 1);
-    assert.equal(stored[0].character.name, 'Napoleon');
+    assert.equal(stored[0].character.name, 'Napoleon Bonaparte');
+    assert.equal(stored[0].character.parts.accessory, 'laurel');
     assert.ok(stored[0].portrait.startsWith('data:image/png;base64,'), 'no portrait stored');
     assert.ok(stored[0].sprite.startsWith('data:image/png;base64,'), 'no sprite stored');
     log(`ok saved to the roster (portrait ${stored[0].portrait.length} chars, sprite ${stored[0].sprite.length} chars)`);
 
     await page.evaluate(() => (document.querySelector('[data-forge-import]').value = ''));
-    const sunTzu = JSON.stringify({
-      format: 'dawn.forge.file/1',
-      character: { schema: 'dawn.forge.character/1', name: 'Imported Sage', title: 'From a file', head: 'long', face: 'smile', hair: 'topknot', outfit: 'robe', accessory: 'scroll', height: 1.05, build: 0.3, clip: 'idle', colors: { skin: '#d9ab82', hair: '#1d1a18', primary: '#2d5e55', secondary: '#c8a24b', accent: '#6b3b2a' } },
-    });
+    const sunTzu = await readFile(path.resolve('src/lib/forge/presets/sun-tzu.json'), 'utf8');
     const importPath = path.join(downloads, 'import.json');
     await writeFile(importPath, sunTzu);
     const input = await page.$('[data-forge-import]');
     await input.uploadFile(importPath);
-    await page.waitForFunction(() => document.querySelector('#forge-name-input')?.value === 'Imported Sage', { timeout: 5000 });
-    log('ok JSON import');
+    await page.waitForFunction(() => document.querySelector('#forge-name-input')?.value === 'Sun Tzu', { timeout: 5000 });
+    log("ok Pantheon's sun-tzu.json imports as it is");
     const badPath = path.join(downloads, 'bad.json');
-    await writeFile(badPath, '{"schema":"dawn.forge.character/1","name":"Bad","hair":"mohawk"}');
+    const bad = JSON.parse(await readFile(path.resolve('src/lib/forge/presets/joan.json'), 'utf8'));
+    bad.parts.hair = 'mohawk';
+    await writeFile(badPath, JSON.stringify(bad));
     await input.uploadFile(badPath);
     await page.waitForFunction(() => document.querySelector('[data-forge-status]')?.textContent.includes('Unknown'), { timeout: 5000 });
-    assert.equal(await page.$eval('#forge-name-input', (el) => el.value), 'Imported Sage');
+    assert.equal(await page.$eval('#forge-name-input', (el) => el.value), 'Sun Tzu');
     log('ok a bad JSON file is refused and the draft is kept');
 
     await clickText(page, 'button', 'Save to roster');
     await page.waitForFunction(() => document.querySelectorAll('[data-forge-roster] > li').length === 2, { timeout: 15000 });
 
+    const epithet = await page.$eval('#forge-epithet-input', (input) => input.value);
+    assert.equal(epithet, 'The Strategist', 'epithet did not load');
     for (const label of ['JSON', 'PNG', 'glTF']) {
       await clickText(page, 'button', label);
       await sleep(label === 'JSON' ? 600 : 2500);
     }
     const files = (await readdir(downloads)).filter((file) => file !== 'import.json' && file !== 'bad.json' && !file.endsWith('.crdownload'));
     const byExt = (ext) => files.find((file) => file.endsWith(ext));
-    assert.ok(byExt('.forge.json'), `no json in ${files}`);
+    assert.ok(byExt('sun-tzu.json'), `no json in ${files}`);
     assert.ok(byExt('-portrait.png'), `no png in ${files}`);
     assert.ok(byExt('.glb'), `no glb in ${files}`);
+    const exported = JSON.parse(await readFile(path.join(downloads, 'sun-tzu.json'), 'utf8'));
+    assert.deepEqual(exported, JSON.parse(sunTzu), 'exported JSON differs from the Pantheon file');
+    log('ok exported JSON equals the Pantheon file it came from');
     const png = await readFile(path.join(downloads, byExt('-portrait.png')));
     assert.equal(png.subarray(1, 4).toString(), 'PNG');
+    assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [900, 1200], 'portrait is not 900 x 1200');
     const glb = await readFile(path.join(downloads, byExt('.glb')));
     assert.equal(glb.subarray(0, 4).toString(), 'glTF');
     const jsonLength = glb.readUInt32LE(12);
     const gltf = JSON.parse(glb.subarray(20, 20 + jsonLength).toString());
     const names = new Set(gltf.nodes.map((node) => node.name));
-    assert.ok(names.has('hips') && names.has('hand_r') && names.has('head'), 'glTF is missing bones');
+    assert.ok(['hips', 'handR', 'head', 'footL'].every((name) => names.has(name)), 'glTF is missing bones');
     assert.deepEqual(gltf.animations.map((clip) => clip.name).sort(), ['guard', 'idle']);
-    assert.ok(!gltf.nodes.some((node) => node.name === 'outline'), 'ink hulls leaked into the glTF');
+    assert.ok(!gltf.nodes.some((node) => /_ol$/.test(node.name || '')), 'ink hulls leaked into the glTF');
     log(`ok exports: ${files.join(', ')} (glTF: ${gltf.nodes.length} nodes, clips ${gltf.animations.map((clip) => clip.name)})`);
 
     await page.evaluate(() => {
@@ -212,13 +219,13 @@ for (const viewport of VIEWPORTS) {
     await sleep(300);
     const pressed = await page.evaluate(() => [...document.querySelectorAll('[data-forge-roster] button[aria-pressed="true"]')].map((button) => button.textContent.trim()));
     assert.deepEqual(pressed, ['Trinity']);
-    log('ok Napoleon assigned to Trinity');
+    log('ok Napoleon Bonaparte assigned to Trinity');
     await fullPage(page, viewport, '[data-forge-scroll]', `characters-${viewport.name}.png`);
 
     await page.reload({ waitUntil: 'load' });
     await page.waitForSelector('[data-forge-roster] > li', { timeout: 20000 });
     const after = await page.$$eval('[data-forge-roster] > li', (items) => items.map((item) => item.querySelector('p').textContent));
-    assert.deepEqual(after.sort(), ['Imported Sage', 'Napoleon']);
+    assert.deepEqual(after.sort(), ['Napoleon Bonaparte', 'Sun Tzu']);
     log('ok the roster survives a reload');
 
     // Village view

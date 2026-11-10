@@ -1,8 +1,8 @@
 import { AGENT_SLOTS, ROSTER_MAX, type AgentSlot } from './catalog';
-import { parseCharacter, type ForgeCharacter } from './schema';
+import { validateCharacter, type ForgeCharacter } from './schema';
 
 export const ROSTER_KEY = 'dawn.forge.roster.v1';
-export const PORTRAIT_MAX = 60000;
+export const PORTRAIT_MAX = 90000;
 export const SPRITE_MAX = 20000;
 
 export type RosterEntry = {
@@ -34,7 +34,7 @@ export function parseEntry(input: unknown): RosterEntry | null {
   if (!input || typeof input !== 'object') return null;
   const raw = input as Record<string, unknown>;
   if (typeof raw.id !== 'string' || raw.id.length < 8 || raw.id.length > 80) return null;
-  const character = parseCharacter(raw.character);
+  const character = validateCharacter(raw.character);
   if (!character.ok) return null;
   const portrait = raw.portrait ?? '';
   const sprite = raw.sprite ?? '';
@@ -44,7 +44,7 @@ export function parseEntry(input: unknown): RosterEntry | null {
   const createdAt = typeof raw.createdAt === 'number' ? raw.createdAt : 0;
   const updatedAt = typeof raw.updatedAt === 'number' ? raw.updatedAt : createdAt;
   if (!(createdAt > 1700000000000) || updatedAt < createdAt) return null;
-  return { id: raw.id, character: character.value, portrait, sprite, agentId, createdAt, updatedAt };
+  return { id: raw.id, character: character.character, portrait, sprite, agentId, createdAt, updatedAt };
 }
 
 export function parseRoster(input: unknown): RosterEntry[] {
@@ -102,8 +102,8 @@ export function upsertEntry(
   next: { id: string; character: ForgeCharacter; portrait: string; sprite: string },
   now: number,
 ): UpsertResult {
-  const parsed = parseCharacter(next.character);
-  if (!parsed.ok) return { ok: false, error: parsed.error };
+  const parsed = validateCharacter(next.character);
+  if (!parsed.ok) return { ok: false, error: parsed.errors[0] ?? 'That character is not valid.' };
   if (!validImage(next.portrait, PORTRAIT_MAX) || !validImage(next.sprite, SPRITE_MAX)) {
     return { ok: false, error: 'The portrait is too large to keep.' };
   }
@@ -113,7 +113,7 @@ export function upsertEntry(
   }
   const entry: RosterEntry = {
     id: next.id,
-    character: parsed.value,
+    character: parsed.character,
     portrait: next.portrait,
     sprite: next.sprite,
     agentId: existing?.agentId ?? '',

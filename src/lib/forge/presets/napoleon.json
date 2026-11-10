@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "id": "napoleon",
+  "name": "Napoleon Bonaparte",
+  "epithet": "The Emperor",
+  "body": { "height": 0.5, "build": 0.56 },
+  "colors": {
+    "skin": "#e0b08a",
+    "hair": "#1c140e",
+    "cloth": "#1e3f86",
+    "trim": "#e0b84a"
+  },
+  "parts": {
+    "head": "square",
+    "face": "stern",
+    "hair": "queue",
+    "outfit": "greatcoat",
+    "accessory": "bicorne"
+  },
+  "paintOverlay": true
+}

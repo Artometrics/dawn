@@ -1,62 +1,33 @@
-import { FORGE_SCHEMA } from './catalog';
-import type { ForgeCharacter } from './schema';
+import joan from './presets/joan.json' with { type: 'json' };
+import napoleon from './presets/napoleon.json' with { type: 'json' };
+import sunTzu from './presets/sun-tzu.json' with { type: 'json' };
+import { validateCharacter, type ForgeCharacter } from './schema';
 
-export type ForgePreset = { id: string; character: ForgeCharacter };
+// Pantheon's own character files, copied byte for byte from tools/forge/presets/.
+// They go through the same validator as an imported file, so a bad edit fails here.
 
-export const PRESETS: readonly ForgePreset[] = [
-  {
-    id: 'joan-of-arc',
-    character: {
-      schema: FORGE_SCHEMA,
-      name: 'Joan of Arc',
-      title: 'The Maid of Orleans',
-      head: 'round',
-      face: 'calm',
-      hair: 'bob',
-      outfit: 'armor',
-      accessory: 'sword',
-      height: 0.95,
-      build: 0.4,
-      clip: 'guard',
-      colors: { skin: '#e8c3a0', hair: '#4a3022', primary: '#a9b4c2', secondary: '#2f4c8a', accent: '#d9b86a' },
-    },
-  },
-  {
-    id: 'napoleon',
-    character: {
-      schema: FORGE_SCHEMA,
-      name: 'Napoleon',
-      title: 'Emperor of the French',
-      head: 'round',
-      face: 'stern',
-      hair: 'crop',
-      outfit: 'coat',
-      accessory: 'bicorne',
-      height: 0.85,
-      build: 0.62,
-      clip: 'idle',
-      colors: { skin: '#e0b48f', hair: '#3a2a20', primary: '#1f3a6e', secondary: '#e8e2d0', accent: '#c9a24a' },
-    },
-  },
-  {
-    id: 'sun-tzu',
-    character: {
-      schema: FORGE_SCHEMA,
-      name: 'Sun Tzu',
-      title: 'The Art of War',
-      head: 'long',
-      face: 'sly',
-      hair: 'topknot',
-      outfit: 'robe',
-      accessory: 'scroll',
-      height: 1.05,
-      build: 0.3,
-      clip: 'idle',
-      colors: { skin: '#d9ab82', hair: '#1d1a18', primary: '#6b3b2a', secondary: '#c8a24b', accent: '#2d5e55' },
-    },
-  },
-];
+function load(data: unknown): ForgeCharacter {
+  const result = validateCharacter(data);
+  if (!result.ok) throw new Error(`Bad preset: ${result.errors.join(' ')}`);
+  return result.character;
+}
 
-export function presetById(id: string): ForgePreset | undefined {
+export const PRESETS: readonly ForgeCharacter[] = [load(joan), load(napoleon), load(sunTzu)];
+
+export function presetById(id: string): ForgeCharacter | undefined {
   return PRESETS.find((preset) => preset.id === id);
+}
+
+/** A neutral starting point. The maker derives the id from the name as it is typed. */
+export function blankCharacter(): ForgeCharacter {
+  return {
+    version: 1,
+    id: 'new-character',
+    name: 'New character',
+    epithet: '',
+    body: { height: 0.5, build: 0.5 },
+    colors: { skin: '#d7a37a', hair: '#2a1a12', cloth: '#7a8a9e', trim: '#c6a24a' },
+    parts: { head: 'oval', face: 'calm', hair: 'cropped', outfit: 'tunic', accessory: 'none' },
+    paintOverlay: true,
+  };
 }

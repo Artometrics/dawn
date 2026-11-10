@@ -1,15 +1,16 @@
 
 == 1440px ==
-ok 3D view drew (10.3% of pixels)
+ok 3D view drew (100.0% of pixels)
 ok no sideways scroll
 ok preset and pose swap
 ok part swaps and height slider
-ok saved to the roster (portrait 21330 chars, sprite 2102 chars)
-ok JSON import
+ok saved to the roster (portrait 48554 chars, sprite 3742 chars)
+ok Pantheon's sun-tzu.json imports as it is
 ok a bad JSON file is refused and the draft is kept
-ok exports: imported-sage-portrait.png, imported-sage.forge.json, imported-sage.glb (glTF: 49 nodes, clips idle,guard)
-ok Napoleon assigned to Trinity
-  screenshot characters-1440.png (1678px tall)
+ok exported JSON equals the Pantheon file it came from
+ok exports: sun-tzu-portrait.png, sun-tzu.glb, sun-tzu.json (glTF: 44 nodes, clips idle,guard)
+ok Napoleon Bonaparte assigned to Trinity
+  screenshot characters-1440.png (1910px tall)
 ok the roster survives a reload
 ok the village scene draws Trinity from the saved character
   screenshot village-1440.png (900px tall)
@@ -17,16 +18,17 @@ ok releasing the agent brings back its tile sprite
 ok no browser errors
 
 == 390px ==
-ok 3D view drew (14.5% of pixels)
+ok 3D view drew (100.0% of pixels)
 ok no sideways scroll
 ok preset and pose swap
 ok part swaps and height slider
-ok saved to the roster (portrait 21330 chars, sprite 2102 chars)
-ok JSON import
+ok saved to the roster (portrait 48554 chars, sprite 3742 chars)
+ok Pantheon's sun-tzu.json imports as it is
 ok a bad JSON file is refused and the draft is kept
-ok exports: imported-sage-portrait.png, imported-sage.forge.json, imported-sage.glb (glTF: 49 nodes, clips idle,guard)
-ok Napoleon assigned to Trinity
-  screenshot characters-390.png (2306px tall)
+ok exported JSON equals the Pantheon file it came from
+ok exports: sun-tzu-portrait.png, sun-tzu.glb, sun-tzu.json (glTF: 44 nodes, clips idle,guard)
+ok Napoleon Bonaparte assigned to Trinity
+  screenshot characters-390.png (2582px tall)
 ok the roster survives a reload
 ok the village scene draws Trinity from the saved character
   screenshot village-390.png (844px tall)

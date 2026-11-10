@@ -4,32 +4,42 @@ The character-creation tool inside Dawn's village. Open **Characters** in the dr
 
 ## Attribution and source status
 
-Forge is the Pantheon character maker (Artometrics/pantheon, PR #15, `tools/forge/`). This module is Dawn's own build of that tool. It does not import from the Pantheon repo at runtime and does not need it.
+Forge is the Pantheon character maker (Artometrics/pantheon, PR #15, `tools/forge/`). Kyle owns it. This module is a copy of that source, adapted to Dawn's TypeScript and React setup. It does not import from the Pantheon repo at runtime and does not need it. The Pantheon repo was not modified.
 
-**Read this before relying on the "vendored" label.** The Pantheon repository was not readable from the environment that built this integration (GitHub returned 404 for the repo, the PR, and the raw files). So the Forge source could not be copied. Everything here was written in Dawn from the tool's feature description: one procedural low-poly body and skeleton, idle and guard clips, swappable head, face, hair, outfit and accessory, height, build and color controls, JSON-defined characters (Joan of Arc, Napoleon, Sun Tzu), JSON export and import, portrait PNG, glTF export, and a toon ramp with rim light and an ink outline.
+What is copied, and how it changed:
 
-What that means:
+| Dawn file | Pantheon file | Change |
+| --- | --- | --- |
+| `schema.ts` | `src/schema.js` | Types added. Checks, messages and file format are unchanged. |
+| `engine/bones.ts`, `ik.ts`, `skeleton.ts`, `poses.ts`, `body.ts`, `wardrobe.ts`, `materials.ts`, `character.ts` | the same names in `src/` | Types added, and `repaint` now tracks its replacement textures so they are freed. Geometry, shaders, clips and numbers are unchanged. |
+| `engine/stage.ts` | `src/main.js` (scene, camera, lights, turntable, drag, portrait) | Rewritten as a class so React owns the canvas. The scene numbers are Forge's. Adds a transparent village sprite and a detached render for roster images. |
+| `presets/*.json` | `src/presets/*.json` | Byte for byte. |
+| `schema.test.ts`, `engine/bones.test.ts` | `src/schema.test.js`, `src/bones.test.js` | Ported to TypeScript. The assertions are unchanged. |
+| `CREDITS.md`, `PANTHEON-FORGE-README.md` | `CREDITS.md`, `README.md` | Byte for byte. |
 
-- The JSON schema (`dawn.forge.character/1`), the part catalog, the figure proportions and the clip poses are Dawn's reading of the description. Pantheon's own JSON files will not import as-is until the two are reconciled.
-- The 3D engine is isolated in `engine/`. When the real Forge source can be read, replace `engine/build.ts`, `engine/clips.ts` and `engine/materials.ts`, and map its JSON to `schema.ts` in `parseCharacter`. The roster, storage, Village avatar, and UI do not depend on how the body is built.
+Pantheon's own JSON files import and export unchanged: `forge.test.ts` imports each preset file, checks the character equals the file, and checks the export is the same JSON.
 
-Credit for the idea and the design of Forge stays with Pantheon. Rendering uses [three.js](https://threejs.org) (MIT).
+Forge targeted three.js r170. Dawn runs r185. The toon shader hooks still compile, and a Sun Tzu portrait drawn by the original Forge build (r170) and by this module (r185) look the same (`docs/process/forge-integration/compare-*.png`).
+
+Not from Pantheon, written for Dawn: `catalog.ts` (limits), `codec.ts`, `presets.ts` (loads the JSON through the validator), `roster.ts`, `engine/outputs.ts`, and everything in `../../components/forge/`.
+
+Rendering uses [three.js](https://threejs.org) (MIT). See `CREDITS.md` for the asset statement that ships with Forge.
 
 ## Layout
 
 | Path | What it is |
 | --- | --- |
-| `catalog.ts` | Part lists, ranges, limits. One place to add a part id. |
-| `schema.ts` | `ForgeCharacter`, `parseCharacter` (validates and clamps untrusted JSON). |
-| `presets.ts` | Joan of Arc, Napoleon, Sun Tzu. |
-| `codec.ts` | JSON export and import (a Dawn file or a bare character). |
+| `schema.ts` | Forge's character schema: `validateCharacter`, `parseCharacter(text)`, `serializeCharacter`, `CATALOG`. Pure data, no three.js. |
+| `catalog.ts` | Roster, file and agent limits. |
+| `presets.ts` | Joan of Arc, Napoleon Bonaparte, Sun Tzu from `presets/*.json`, plus a blank starting character. |
+| `codec.ts` | JSON export and import in Pantheon's format. |
 | `roster.ts` | Roster rules, localStorage load and save, one character per agent, Firestore document shape. |
-| `engine/` | three.js: body and skeleton, clips, toon/rim/outline materials, viewport, portrait, sprite, glTF. Browser only. |
+| `engine/` | Forge's three.js engine and the stage. Browser only, except `bones.ts`. |
 | `../../components/forge/` | The Characters panel, the 3D viewport, and `use-roster.ts`. |
 
 ## Where characters are saved
 
-- Always on this phone: `localStorage` key `dawn.forge.roster.v1` (up to 12 characters, each with a 192px portrait and a 48px sprite).
+- Always on this phone: `localStorage` key `dawn.forge.roster.v1` (up to 12 characters, each with a 168 x 224 portrait and a 64px sprite).
 - Signed in with Firebase (emulator or the hosted project): mirrored to `users/{uid}/characters/{id}`, the same pattern as quests. Rules are in `firestore.rules` and tested in `tests/rules.mjs`.
 - No paid service is called. Nothing leaves the browser except the Firestore mirror Dawn already uses.
 
@@ -39,6 +49,6 @@ On a roster entry, tap Trinity, Kali, or Nimbus under "Avatar for". That charact
 
 ## Checks
 
-- `npm test` runs `forge.test.ts` (schema, JSON codec, roster save and load, agent assignment, Firestore document shape).
+- `npm test` runs `forge.test.ts` (Pantheon JSON round trip, roster save and load, agent assignment, Firestore document shape), plus Forge's own `schema.test.ts` and `engine/bones.test.ts`.
 - `npm run test:rules` runs the Firestore rules, including `users/{uid}/characters`.
 - `npm run build && npm run check:forge` drives the static export in headless Chrome at 1440px and 390px and writes full-page screenshots to `docs/process/forge-integration/`.

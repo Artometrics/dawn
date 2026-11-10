@@ -1,124 +1,165 @@
-import {
-  BUILD_RANGE,
-  CLIPS,
-  COLOR_SLOTS,
-  FORGE_SCHEMA,
-  HEIGHT_RANGE,
-  NAME_MAX,
-  PARTS,
-  PART_SLOTS,
-  type ClipId,
-  type ColorSlot,
-  type PartSlot,
-} from './catalog';
+// Character JSON. Pure data: no Three.js, so node:test can import it.
+// Ported from Pantheon Forge (tools/forge/src/schema.js, Pantheon PR #15) with TypeScript types added.
+// The checks and the file format are unchanged, so Pantheon's own JSON files import and export as-is.
+
+export const SCHEMA_VERSION = 1;
+
+export type PartGroup = 'head' | 'face' | 'hair' | 'outfit' | 'accessory';
+export type ColorKey = 'skin' | 'hair' | 'cloth' | 'trim';
+
+export type CatalogEntry = { id: string; label: string };
+
+const entry = (id: string, label: string): CatalogEntry => ({ id, label });
+
+export const CATALOG: Record<PartGroup, CatalogEntry[]> = {
+  head: [entry('oval', 'Oval'), entry('round', 'Round'), entry('square', 'Square'), entry('long', 'Long')],
+  face: [entry('determined', 'Determined'), entry('stern', 'Stern'), entry('calm', 'Calm'), entry('youthful', 'Youthful')],
+  hair: [entry('cropped', 'Cropped'), entry('bob', 'Bob'), entry('queue', 'Queue'), entry('long', 'Long'), entry('topknot', 'Topknot'), entry('none', 'None')],
+  outfit: [entry('tunic', 'Tunic'), entry('plate', 'Plate'), entry('greatcoat', 'Greatcoat'), entry('robe', 'Robe')],
+  accessory: [entry('none', 'None'), entry('banner', 'Banner'), entry('bicorne', 'Bicorne'), entry('saber', 'Saber'), entry('sword', 'Sword'), entry('laurel', 'Laurel')],
+};
 
 export type ForgeCharacter = {
-  schema: typeof FORGE_SCHEMA;
+  version: typeof SCHEMA_VERSION;
+  id: string;
   name: string;
-  title: string;
-  head: string;
-  face: string;
-  hair: string;
-  outfit: string;
-  accessory: string;
-  height: number;
-  build: number;
-  clip: ClipId;
-  colors: Record<ColorSlot, string>;
+  epithet: string;
+  body: { height: number; build: number };
+  colors: Record<ColorKey, string>;
+  parts: Record<PartGroup, string>;
+  paintOverlay: boolean;
 };
 
-export type ParseResult =
-  | { ok: true; value: ForgeCharacter }
-  | { ok: false; error: string };
+export type CharacterResult =
+  | { ok: true; errors: never[]; character: ForgeCharacter }
+  | { ok: false; errors: string[]; character?: undefined };
 
-const HEX = /^#[0-9a-fA-F]{6}$/;
+const TOP_KEYS = ['version', 'id', 'name', 'epithet', 'body', 'colors', 'parts', 'paintOverlay'];
+const BODY_KEYS = ['height', 'build'];
+const COLOR_KEYS: ColorKey[] = ['skin', 'hair', 'cloth', 'trim'];
+const PART_KEYS: PartGroup[] = ['head', 'face', 'hair', 'outfit', 'accessory'];
 
-export const DEFAULT_COLORS: Record<ColorSlot, string> = {
-  skin: '#e0b48f',
-  hair: '#3b2a20',
-  primary: '#4a6fa5',
-  secondary: '#d9b86a',
-  accent: '#d97746',
-};
+const HEX = /^#[0-9a-f]{6}$/i;
+const ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-export function blankCharacter(): ForgeCharacter {
-  return {
-    schema: FORGE_SCHEMA,
-    name: 'New character',
-    title: '',
-    head: 'round',
-    face: 'calm',
-    hair: 'crop',
-    outfit: 'tunic',
-    accessory: 'none',
-    height: 1,
-    build: 0.5,
-    clip: 'idle',
-    colors: { ...DEFAULT_COLORS },
-  };
+type Plain = Record<string, unknown>;
+
+function isPlain(v: unknown): v is Plain {
+  return !!v && typeof v === 'object' && !Array.isArray(v);
 }
 
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
+function unknownKeys(obj: Plain, allowed: string[]): string[] {
+  return Object.keys(obj).filter((k) => !allowed.includes(k));
 }
 
-function cleanText(value: unknown, max: number): string {
-  if (typeof value !== 'string') return '';
-  return value.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
+function num(value: unknown, label: string, errors: string[]): number | null {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    errors.push(`${label} must be a number from 0 to 1.`);
+    return null;
+  }
+  if (value < 0 || value > 1) {
+    errors.push(`${label} must be from 0 to 1.`);
+    return null;
+  }
+  return Math.round(value * 1000) / 1000;
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
+function partId(group: PartGroup, value: unknown, errors: string[]): string | null {
+  const ids = CATALOG[group].map((p) => p.id);
+  if (typeof value !== 'string' || !ids.includes(value)) {
+    errors.push(`Unknown ${group} "${value}". Expected ${ids.join(', ')}.`);
+    return null;
+  }
+  return value;
 }
 
-/**
- * Accepts untrusted JSON (a pasted file, a Firestore document, localStorage) and
- * returns a character that the renderer can always build. Unknown part ids and
- * bad colors are refused, not silently replaced, so an import cannot smuggle
- * a half-valid character into the roster. Numbers are clamped.
- */
-export function parseCharacter(input: unknown): ParseResult {
-  if (!isRecord(input)) return { ok: false, error: 'That is not a character.' };
-  if (input.schema !== FORGE_SCHEMA) return { ok: false, error: 'This is not a Dawn Forge character.' };
+export function validateCharacter(data: unknown): CharacterResult {
+  const errors: string[] = [];
+  if (!isPlain(data)) return { ok: false, errors: ['Character must be a JSON object.'] };
 
-  const name = cleanText(input.name, NAME_MAX);
-  if (!name) return { ok: false, error: 'The character needs a name.' };
+  for (const k of unknownKeys(data, TOP_KEYS)) errors.push(`Unknown field "${k}".`);
 
-  const base = blankCharacter();
-  const out: ForgeCharacter = { ...base, name, title: cleanText(input.title, 60), colors: { ...base.colors } };
+  if (data.version !== SCHEMA_VERSION) {
+    errors.push(`version must be ${SCHEMA_VERSION}.`);
+  }
+  if (typeof data.id !== 'string' || !ID.test(data.id) || data.id.length > 32) {
+    errors.push('id must be 1–32 characters: lowercase letters, digits, and hyphens.');
+  }
+  if (typeof data.name !== 'string' || data.name.trim().length === 0 || data.name.trim().length > 48) {
+    errors.push('name must be 1–48 characters.');
+  } else if (/[\u0000-\u001F]/.test(data.name)) {
+    errors.push('name cannot contain line breaks.');
+  }
+  if (typeof data.epithet !== 'string' || data.epithet.trim().length > 64) {
+    errors.push('epithet must be a string of at most 64 characters.');
+  } else if (typeof data.epithet === 'string' && /[\u0000-\u001F]/.test(data.epithet)) {
+    errors.push('epithet cannot contain line breaks.');
+  }
 
-  for (const slot of PART_SLOTS) {
-    const id = input[slot];
-    if (typeof id !== 'string' || !PARTS[slot].some((option) => option.id === id)) {
-      return { ok: false, error: `Unknown ${slot}.` };
+  if (!isPlain(data.body)) errors.push('body must be an object with height and build.');
+  if (!isPlain(data.colors)) errors.push('colors must be an object of hex strings.');
+  if (!isPlain(data.parts)) errors.push('parts must be an object of part ids.');
+
+  const height = isPlain(data.body) ? num(data.body.height, 'body.height', errors) : null;
+  const build = isPlain(data.body) ? num(data.body.build, 'body.build', errors) : null;
+  if (isPlain(data.body)) {
+    for (const k of unknownKeys(data.body, BODY_KEYS)) errors.push(`Unknown body field "${k}".`);
+  }
+
+  const colors: Partial<Record<ColorKey, string>> = {};
+  if (isPlain(data.colors)) {
+    for (const k of unknownKeys(data.colors, COLOR_KEYS)) errors.push(`Unknown color "${k}".`);
+    for (const k of COLOR_KEYS) {
+      const v = data.colors[k];
+      if (typeof v !== 'string' || !HEX.test(v)) errors.push(`colors.${k} must be a #rrggbb hex color.`);
+      else colors[k] = v.toLowerCase();
     }
-    (out as Record<PartSlot, string> & ForgeCharacter)[slot] = id;
   }
 
-  if (typeof input.clip !== 'string' || !CLIPS.some((clip) => clip.id === input.clip)) {
-    return { ok: false, error: 'Unknown pose.' };
-  }
-  out.clip = input.clip as ClipId;
-
-  if (typeof input.height !== 'number' || !Number.isFinite(input.height)) return { ok: false, error: 'Height must be a number.' };
-  if (typeof input.build !== 'number' || !Number.isFinite(input.build)) return { ok: false, error: 'Build must be a number.' };
-  out.height = round2(clamp(input.height, HEIGHT_RANGE.min, HEIGHT_RANGE.max));
-  out.build = round2(clamp(input.build, BUILD_RANGE.min, BUILD_RANGE.max));
-
-  if (!isRecord(input.colors)) return { ok: false, error: 'Colors are missing.' };
-  for (const slot of COLOR_SLOTS) {
-    const color = input.colors[slot.id];
-    if (typeof color !== 'string' || !HEX.test(color)) return { ok: false, error: `${slot.label} color must look like #aabbcc.` };
-    out.colors[slot.id] = color.toLowerCase();
+  const parts: Partial<Record<PartGroup, string | null>> = {};
+  if (isPlain(data.parts)) {
+    for (const k of unknownKeys(data.parts, PART_KEYS)) errors.push(`Unknown part slot "${k}".`);
+    for (const k of PART_KEYS) parts[k] = partId(k, data.parts[k], errors);
   }
 
-  return { ok: true, value: out };
+  if (typeof data.paintOverlay !== 'boolean') errors.push('paintOverlay must be true or false.');
+
+  if (errors.length) return { ok: false, errors };
+
+  const character = {
+    version: SCHEMA_VERSION,
+    id: data.id as string,
+    name: (data.name as string).trim(),
+    epithet: (data.epithet as string).trim(),
+    body: { height: height as number, build: build as number },
+    colors: colors as Record<ColorKey, string>,
+    parts: parts as Record<PartGroup, string>,
+    paintOverlay: data.paintOverlay as boolean,
+  } satisfies ForgeCharacter;
+  return { ok: true, errors: [], character };
 }
 
-function round2(value: number): number {
-  return Math.round(value * 100) / 100;
+export function parseCharacter(text: unknown): CharacterResult {
+  if (typeof text !== 'string') return { ok: false, errors: ['Character file is not valid JSON.'] };
+  let data: unknown;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    return { ok: false, errors: ['Character file is not valid JSON.'] };
+  }
+  return validateCharacter(data);
 }
 
-export function characterEquals(a: ForgeCharacter, b: ForgeCharacter): boolean {
-  return JSON.stringify(a) === JSON.stringify(b);
+export class CharacterError extends Error {
+  errors: string[];
+  constructor(errors: string[]) {
+    super(errors.join(' '));
+    this.errors = errors;
+  }
+}
+
+export function serializeCharacter(data: unknown): string {
+  const result = validateCharacter(data);
+  if (!result.ok) throw new CharacterError(result.errors);
+  return JSON.stringify(result.character, null, 2);
 }
