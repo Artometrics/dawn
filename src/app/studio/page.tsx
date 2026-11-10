@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { 
   Bot, 
   Code2, 
@@ -365,10 +366,10 @@ export default function DawnStudio() {
           </div>
 
           <div className="flex items-center gap-1 text-[var(--dawn-muted)]">
-            <a href="/" className="p-1 rounded hover:bg-[var(--dawn-field)] hover:text-[var(--dawn-text)] inline-flex items-center gap-1 text-xs" aria-label="Back to town">
+            <Link href="/" className="p-1 rounded hover:bg-[var(--dawn-field)] hover:text-[var(--dawn-text)] inline-flex items-center gap-1 text-xs" aria-label="Back to town">
               <ArrowLeft className="w-3.5 h-3.5" />
               Town
-            </a>
+            </Link>
             <button type="button" aria-label="Forward" className="p-1 rounded hover:bg-[var(--dawn-field)] hover:text-[var(--dawn-text)] cursor-pointer">
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
@@ -420,7 +421,7 @@ export default function DawnStudio() {
       ═════════════════════════════════════════════════════════════════ */}
       {narrow && (
         <div className="flex shrink-0 border-b border-[var(--dawn-chip)] bg-[var(--dawn-bg)]">
-          <a href="/" className="px-3 py-3 text-sm text-[var(--dawn-text)]">Town</a>
+          <Link href="/" className="px-3 py-3 text-sm text-[var(--dawn-text)]">Town</Link>
           {(['chat', 'computer', 'project'] as const).map((pane) => (
             <button
               key={pane}
@@ -1191,7 +1192,7 @@ export default function DawnStudio() {
                 className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-[var(--dawn-chip)] text-left cursor-pointer"
               >
                 <span className="text-sm font-serif">🏠</span>
-                <span className="text-[var(--dawn-text)]">Claude Home View ("Evening Thoughts")</span>
+                <span className="text-[var(--dawn-text)]">Claude Home View (&quot;Evening Thoughts&quot;)</span>
               </button>
               <button
                 onClick={() => {

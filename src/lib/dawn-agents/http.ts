@@ -829,7 +829,7 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       const data = await store.read();
       const agent = data.agents.find((item) => item.id === editorMessage[1]);
       if (!agent) return sendJson(res, 404, { error: 'Agent not found.' });
-      let thread = body.threadId ? data.threads.find((item) => item.id === body.threadId) : data.threads.find((item) => item.kind === 'direct' && item.agentIds[0] === agent.id);
+      const thread = body.threadId ? data.threads.find((item) => item.id === body.threadId) : data.threads.find((item) => item.kind === 'direct' && item.agentIds[0] === agent.id);
       if (!thread) return sendJson(res, 404, { error: 'Thread not found.' });
       const replies: MessageRecord[] = [];
       await talk(thread.id, String(body.text || ''), 'editor', (_event, payload) => {
@@ -908,7 +908,7 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       const body = await readJson(req);
       const token = String(body.token || url.searchParams.get('token') || '');
       const reader = readerId(req, body.readerId);
-      let articleTopic = 'the list';
+      const articleTopic = 'the list';
       let ok = false;
       await store.update((data) => {
         const row = data.subscribers.find((item) => item.confirmToken === token);

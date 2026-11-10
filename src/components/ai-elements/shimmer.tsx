@@ -48,6 +48,7 @@ const ShimmerComponent = ({
   );
 
   return (
+    // eslint-disable-next-line react-hooks/static-components -- resolved from a module-level cache, so the component identity is stable across renders
     <MotionComponent
       animate={{ backgroundPosition: "0% center" }}
       className={cn(

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { AGENT_SPRITES, defaultSpriteId } from '@/lib/credits/sprites';
 import { formatUsd } from '@/lib/dawn-agents/spend';
@@ -24,6 +25,7 @@ export function AgentsRoot() {
   const [queue, setQueue] = useState<GatewayState['data'] extends never ? never : { id: string; track: string; status: string; messages?: { content: string }[] }[]>([]);
   const openedLink = useRef(false);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- reads the ?section= link and the gateway address after hydration so the static HTML and the first client render match */
   useEffect(() => {
     const asked = new URLSearchParams(window.location.search).get('section');
     if (asked === 'recipes' || asked === 'letter' || asked === 'data' || asked === 'settings' || asked === 'edit') setSection(asked);
@@ -34,7 +36,9 @@ export function AgentsRoot() {
       await refresh(url);
     })();
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
+  /* eslint-disable react-hooks/set-state-in-effect -- opens the linked thread once, when the gateway state first arrives */
   useEffect(() => {
     if (!state || openedLink.current) return;
     const params = new URLSearchParams(window.location.search);
@@ -53,6 +57,7 @@ export function AgentsRoot() {
       setSection('agents');
     }
   }, [state]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   async function refresh(url = base) {
     try {
@@ -81,7 +86,7 @@ export function AgentsRoot() {
             {error && <p className="error">{error}</p>}
             {needsGoogle && <a className="primary" href={googleSignInHref()} style={{ display: 'inline-flex', alignItems: 'center' }}>Sign in with Google</a>}
             <nav className="ph-links" aria-label="Dawn" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <a href="/">Town</a>
+              <Link href="/">Town</Link>
               <a href="/village">Village</a>
               <a href="/atlas">Atlas</a>
               <a href="/studio">Studio</a>
@@ -333,7 +338,7 @@ function Settings({ base, state, onSaved }: { base: string; state: GatewayState;
       <button type="button" className="primary" onClick={() => save({ spendCapUsd: Number(cap) })}>Save cap</button>
       <h3>Training log</h3>
       <label className="row"><input type="checkbox" checked={state.training.enabled} onChange={(event) => save({ trainingEnabled: event.target.checked })} /> Keep a training log</label>
-      <p className="note">Some providers' terms restrict training on outputs. Turn a provider off to leave it out of the export.</p>
+      <p className="note">Some providers&apos; terms restrict training on outputs. Turn a provider off to leave it out of the export.</p>
       {Object.keys(providers).map((id) => (
         <label key={id} className="row">
           <input type="checkbox" checked={providers[id]} onChange={(event) => save({ trainingProviders: { ...providers, [id]: event.target.checked } })} />

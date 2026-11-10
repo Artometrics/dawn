@@ -39,7 +39,9 @@ export function NightcodeDesk() {
     if (data.reason) setNote(data.reason);
   }
 
+  /* eslint-disable react-hooks/set-state-in-effect -- loads the session list once when the desk mounts */
   useEffect(() => { void loadList(''); }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   async function start() {
     const response = await fetch('/api/kits/nightcode/sessions', {

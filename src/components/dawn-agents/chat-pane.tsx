@@ -35,12 +35,14 @@ export function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: 
     .slice(0, 3);
   const unread = unreadElsewhere(state, threadId);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- reads the saved wallpaper from localStorage, which does not exist during static render */
   useEffect(() => {
     setWallpaper(readWallpaper());
     seedSeen(state);
     const latest = state.messages.filter((message) => message.threadId === threadId).reduce((max, message) => Math.max(max, message.createdAt), Date.now());
     markSeen(threadId, latest);
   }, [threadId, state]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     const node = scroller.current;
@@ -308,7 +310,7 @@ function MessageView({ message, agents, streaming, base, onRefresh, showName }: 
             {tool.state === 'needs_confirm' && (
               <div className="actions">
                 <button type="button" className="primary" onClick={() => decide(base, message.id, tool.id, true, onRefresh)}>Allow</button>
-                <button type="button" className="ghost" onClick={() => decide(base, message.id, tool.id, false, onRefresh)}>Don't run</button>
+                <button type="button" className="ghost" onClick={() => decide(base, message.id, tool.id, false, onRefresh)}>Don&apos;t run</button>
               </div>
             )}
           </div>

@@ -46,11 +46,13 @@ export function BotDesk() {
     setNotice('');
   }
 
+  /* eslint-disable react-hooks/set-state-in-effect -- loads the bot session once when the desk mounts */
   useEffect(() => {
     load().catch((error: unknown) => {
       setNotice(error instanceof Error ? error.message : 'This static site does not run the bot.');
     });
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   async function run(action: 'plan' | 'build' | 'ask' | 'approve' | 'game' | 'revise' | 'observe' | 'handoff', label: string) {
     setBusy(true);

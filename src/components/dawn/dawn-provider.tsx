@@ -144,9 +144,9 @@ export function DawnProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let unsubAuth = () => {};
-    let unsubQuests = () => {};
-    let unsubApprovals = () => {};
-    let unsubMemories = () => {};
+    const unsubQuests = () => {};
+    const unsubApprovals = () => {};
+    const unsubMemories = () => {};
     let cancelled = false;
 
     void bootFirebase().then((boot) => {

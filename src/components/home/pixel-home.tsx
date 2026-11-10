@@ -38,6 +38,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
   const mapRef = useRef<HTMLImageElement | null>(null);
   const viewRef = useRef({ w: 0, h: 0 });
   const frameRef = useRef({ fit: 1, ox: 0, oy: 0 });
+  const [frame, setFrame] = useState({ fit: 1, ox: 0, oy: 0 });
   const camRef = useRef({ x: 0, y: 0 });
   const dragRef = useRef<{ x: number; y: number; camX: number; camY: number; moved: boolean } | null>(null);
 
@@ -50,7 +51,6 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
   const [sheetH, setSheetH] = useState(228);
   const [sheetOpen, setSheetOpen] = useState(true);
   const sheetRef = useRef(true);
-  sheetRef.current = sheetOpen;
   const [threads, setThreads] = useState<Thread[]>([]);
   const [savedMessages, setSavedMessages] = useState<SavedLine[]>([]);
   const [previews, setPreviews] = useState<Record<string, string[]>>({});
@@ -70,8 +70,11 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
   const [talkId, setTalkId] = useState<string | null>(null);
   const panelRef = useRef(false);
   const talkRef = useRef(false);
-  panelRef.current = panel;
-  talkRef.current = Boolean(talkId);
+  useEffect(() => {
+    sheetRef.current = sheetOpen;
+    panelRef.current = panel;
+    talkRef.current = Boolean(talkId);
+  });
 
   const selected = layer.hotspots.find((spot) => spot.id === selectedId) ?? null;
 
@@ -119,6 +122,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
       canvas.style.height = `${h}px`;
       const frame = frameFor(layer, w, h);
       frameRef.current = frame;
+      setFrame(frame);
       const next = clampCam(layer, (layer.view.w * frame.fit - w) / 2, 0, w, h, frame.fit);
       camRef.current = next;
       setCam(next);
@@ -137,33 +141,6 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
     frameRef.current = frame;
     paint(canvas, layer, plateRef.current ?? mapRef.current, cam, frame, hero, playerRef.current);
   }, [ready, cam, layer, hero]);
-
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (panelRef.current) {
-        if (event.key === 'Escape') setPanel(false);
-        return;
-      }
-      if (event.key === 'Escape') {
-        if (sheetRef.current) setSheetOpen(false);
-        return;
-      }
-      const tag = (event.target as HTMLElement | null)?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      const dirs: Record<string, [number, number]> = {
-        ArrowUp: [0, -1],
-        ArrowDown: [0, 1],
-        ArrowLeft: [-1, 0],
-        ArrowRight: [1, 0],
-      };
-      const dir = dirs[event.key];
-      if (!dir) return;
-      event.preventDefault();
-      walk(dir[0], dir[1]);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [layer]);
 
   useEffect(() => {
     let cancel = false;
@@ -207,11 +184,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
   }, [desk, talkId]);
 
   useEffect(() => {
-    if (desk !== 'ready') {
-      setThreads([]);
-      setSavedMessages([]);
-      return;
-    }
+    if (desk !== 'ready') return;
     let cancel = false;
     void (async () => {
       try {
@@ -307,9 +280,9 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
     window.addEventListener('pointercancel', up);
   }
 
-  const frame = frameRef.current;
+  const liveThreads = desk === 'ready' ? threads : [];
   const shownRecents = desk === 'ready'
-    ? threads
+    ? liveThreads
       .filter((thread) => (thread.kind === 'direct' || thread.kind === 'group') && !thread.leftAt)
       .slice()
       .sort((a, b) => b.updatedAt - a.updatedAt)
@@ -369,6 +342,33 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
     const spot = hotspotAt(layer, next.x, next.y);
     if (spot) setSelectedId(spot.id);
   }
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (panelRef.current) {
+        if (event.key === 'Escape') setPanel(false);
+        return;
+      }
+      if (event.key === 'Escape') {
+        if (sheetRef.current) setSheetOpen(false);
+        return;
+      }
+      const tag = (event.target as HTMLElement | null)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      const dirs: Record<string, [number, number]> = {
+        ArrowUp: [0, -1],
+        ArrowDown: [0, 1],
+        ArrowLeft: [-1, 0],
+        ArrowRight: [1, 0],
+      };
+      const dir = dirs[event.key];
+      if (!dir) return;
+      event.preventDefault();
+      walk(dir[0], dir[1]);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [layer]);
 
   function holdWalk(dx: number, dy: number) {
     walk(dx, dy);
@@ -732,7 +732,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
           bot={talking}
           people={TOWN_CAST as readonly TownBot[] as TownBot[]}
           preview={previews[talking.id] ?? []}
-          saved={savedFor(talking.name, threads, savedMessages)}
+          saved={savedFor(talking.name, liveThreads, desk === 'ready' ? savedMessages : [])}
           onOpen={openBot}
           onPreview={(text) => { void keepLine(talking.id, text); }}
           stored={stored[talking.id] ?? []}
