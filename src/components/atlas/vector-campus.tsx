@@ -426,7 +426,7 @@ export function VectorCampus({
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-40 flex items-center gap-2 px-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
         {framed === 'shell' && onMenu && (
-          <button type="button" className="pointer-events-auto grid h-11 w-11 place-items-center rounded-full bg-[#2a2a27] md:hidden" aria-label="Menu" onClick={onMenu}>
+          <button type="button" className="pointer-events-auto grid h-11 w-11 place-items-center rounded-full bg-[var(--dawn-chip)] dw-dock-hide" aria-label="Menu" onClick={onMenu}>
             <Menu className="h-5 w-5" aria-hidden />
           </button>
         )}

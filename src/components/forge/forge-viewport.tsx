@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type MutableRefObject } from 'react';
+import { hasWebGL } from '@/components/forge/webgl';
 import type { ForgeCharacter } from '@/lib/forge/schema';
 import type { PoseName } from '@/lib/forge/engine/bones';
 import type { ForgeStage } from '@/lib/forge/engine/stage';
@@ -32,6 +33,11 @@ export function ForgeViewport({
   useEffect(() => {
     const element = canvas.current;
     if (!element) return;
+    if (!hasWebGL()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- browser capability is only known after mount
+      setFailed(true);
+      return;
+    }
     let dead = false;
     let made: ForgeStage | null = null;
     void import('@/lib/forge/engine/stage')
@@ -73,17 +79,16 @@ export function ForgeViewport({
   }, [stage, skeleton, character]);
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-[18px] bg-[var(--dawn-elev)]">
+    <div className="dw-stage">
       <canvas
         ref={canvas}
         data-forge-canvas
         aria-label={`${character.name}, a 3D character. Drag to turn.`}
         role="img"
-        className="block h-full w-full touch-pan-y"
       />
       {failed && (
-        <p role="alert" className="absolute inset-0 grid place-items-center px-6 text-center text-[14px] text-[var(--dawn-accent)]">
-          This browser could not start 3D. Your characters still save.
+        <p role="alert" className="dw-stage-message">
+          This browser could not start 3D, so there is no preview. JSON import and export still work.
         </p>
       )}
     </div>

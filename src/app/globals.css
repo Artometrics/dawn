@@ -2,8 +2,10 @@
 @import "tw-animate-css";
 @import "../styles/tokens.css";
 @import "../styles/dawn-ui.css";
+@import "../styles/forge-ui.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant dock (@media (min-width: 768px) and (min-height: 520px));
 
 @theme inline {
     --font-heading: var(--font-sans);
