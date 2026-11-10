@@ -70,7 +70,8 @@ async function nightcodeRoute(
   const desk = new NightcodeDesk(path.join(dataRoot, 'nightcode.sqlite'));
   const model = desk.modelState();
   if (req.method === 'GET' && pathname === '/api/kits/nightcode/sessions') {
-    sendJson(res, 200, { sessions: desk.listSessions(), ...model });
+    const query = new URL(req.url || '/', 'http://127.0.0.1').searchParams.get('q') || '';
+    sendJson(res, 200, { sessions: desk.searchSessions(query), ...model });
     return;
   }
   if (req.method === 'POST' && pathname === '/api/kits/nightcode/sessions') {

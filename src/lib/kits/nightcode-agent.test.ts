@@ -3,7 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { NightcodeDesk } from './nightcode-agent.ts';
+import { NightcodeDesk, systemPrompt, toolsFor } from './nightcode-agent.ts';
 
 test('a NightCode session plans without writing and builds only after build mode', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'dawn-nightcode-'));
@@ -20,7 +20,21 @@ test('a NightCode session plans without writing and builds only after build mode
     assert.match(read.messages.at(-1)?.body || '', /export const page/);
     const again = new NightcodeDesk(dbPath).getSession(id);
     assert.equal(again.messages.length, 6);
+    assert.equal(again.tools.join(','), 'readFile,listDirectory,glob,grep');
+    assert.match(again.prompt, /plan mode/);
+    assert.match(again.messages.find((message) => message.tool === 'readFile')?.body || '', /export const page/);
     assert.equal(desk.modelState().gemini, 'off');
+    assert.deepEqual(desk.searchSessions('page').map((session) => session.id), [id]);
+    assert.deepEqual(desk.searchSessions('missing'), []);
+    assert.deepEqual([...toolsFor('plan')], ['readFile', 'listDirectory', 'glob', 'grep']);
+    assert.ok(toolsFor('build').includes('bash'));
+    assert.match(systemPrompt('build'), /build mode/);
+    const searched = await desk.postMessage(id, 'grep page', 'plan');
+    assert.match(searched.messages.at(-1)?.body || '', /page\.txt/);
+    const shell = await desk.postMessage(id, 'bash printf hi', 'build');
+    assert.match(shell.messages.at(-1)?.body || '', /hi/);
+    const blocked = await desk.postMessage(id, 'bash printf no', 'plan');
+    assert.match(blocked.messages.at(-1)?.body || '', /not available in PLAN mode/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
