@@ -39,20 +39,22 @@ export function BotDesk() {
   const [notice, setNotice] = useState('Opening the local gateway…');
   const [busy, setBusy] = useState(false);
 
-  async function load() {
-    const response = await fetch('/api/bot-session', { cache: 'no-store' });
-    if (!response.ok) throw new Error(failure(response.status, 'The desk'));
-    setPayload(await response.json() as Payload);
-    setNotice('');
-  }
-
-  /* eslint-disable react-hooks/set-state-in-effect -- loads the bot session once when the desk mounts */
   useEffect(() => {
-    load().catch((error: unknown) => {
-      setNotice(error instanceof Error ? error.message : 'This static site does not run the bot.');
-    });
+    let cancelled = false;
+    fetch('/api/bot-session', { cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(failure(response.status, 'The desk'));
+        const next = await response.json() as Payload;
+        if (cancelled) return;
+        setPayload(next);
+        setNotice('');
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        setNotice(error instanceof Error ? error.message : 'This static site does not run the bot.');
+      });
+    return () => { cancelled = true; };
   }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   async function run(action: 'plan' | 'build' | 'ask' | 'approve' | 'game' | 'revise' | 'observe' | 'handoff', label: string) {
     setBusy(true);

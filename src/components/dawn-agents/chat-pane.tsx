@@ -35,14 +35,16 @@ export function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: 
     .slice(0, 3);
   const unread = unreadElsewhere(state, threadId);
 
-  /* eslint-disable react-hooks/set-state-in-effect -- reads the saved wallpaper from localStorage, which does not exist during static render */
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage does not exist during static render, so the saved wallpaper can only be read after hydration
     setWallpaper(readWallpaper());
+  }, [threadId, state]);
+
+  useEffect(() => {
     seedSeen(state);
     const latest = state.messages.filter((message) => message.threadId === threadId).reduce((max, message) => Math.max(max, message.createdAt), Date.now());
     markSeen(threadId, latest);
   }, [threadId, state]);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     const node = scroller.current;

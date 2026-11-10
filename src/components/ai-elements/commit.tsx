@@ -163,11 +163,10 @@ export const CommitTimestamp = ({
     setFormatted(formatRelativeDate(date));
   }, [date]);
 
-  /* eslint-disable react-hooks/set-state-in-effect -- formats the relative date in the browser so it matches the viewer's clock and avoids a hydration mismatch */
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the label depends on Date.now(), so rendering it on the server or first client pass would mismatch hydration; it is filled in after mount
     updateFormatted();
   }, [updateFormatted]);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   return (
     <time

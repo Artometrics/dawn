@@ -15,6 +15,19 @@ type Session = {
   reason?: string;
 };
 
+type SessionSummary = { id: string; title: string; mode: 'plan' | 'build' };
+type SessionList = { sessions?: SessionSummary[]; note?: string };
+
+async function fetchSessionList(search: string): Promise<SessionList> {
+  const response = await fetch(`/api/kits/nightcode/sessions?q=${encodeURIComponent(search)}`, { credentials: 'include', redirect: 'manual' });
+  if (response.type === 'opaqueredirect' || response.status === 401) {
+    return { note: 'Google sign-in is in front of this host. Open /oauth2/start, then return here.' };
+  }
+  if (!response.ok) return { note: 'The gateway is not answering on this origin.' };
+  const data = await response.json() as { sessions: SessionSummary[]; reason?: string };
+  return { sessions: data.sessions, note: data.reason };
+}
+
 export function NightcodeDesk() {
   const [sessions, setSessions] = useState<{ id: string; title: string; mode: 'plan' | 'build' }[]>([]);
   const [current, setCurrent] = useState<Session | null>(null);
@@ -24,24 +37,24 @@ export function NightcodeDesk() {
   const [dialog, setDialog] = useState(false);
   const [note, setNote] = useState('Sign in, then start a session. Press Tab to switch mode. Gemini is off.');
 
-  async function loadList(search = query) {
-    const response = await fetch(`/api/kits/nightcode/sessions?q=${encodeURIComponent(search)}`, { credentials: 'include', redirect: 'manual' });
-    if (response.type === 'opaqueredirect' || response.status === 401) {
-      setNote('Google sign-in is in front of this host. Open /oauth2/start, then return here.');
-      return;
-    }
-    if (!response.ok) {
-      setNote('The gateway is not answering on this origin.');
-      return;
-    }
-    const data = await response.json() as { sessions: { id: string; title: string; mode: 'plan' | 'build' }[]; reason?: string };
-    setSessions(data.sessions);
-    if (data.reason) setNote(data.reason);
+  function applyList(result: SessionList) {
+    if (result.sessions) setSessions(result.sessions);
+    if (result.note) setNote(result.note);
   }
 
-  /* eslint-disable react-hooks/set-state-in-effect -- loads the session list once when the desk mounts */
-  useEffect(() => { void loadList(''); }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
+  async function loadList(search = query) {
+    applyList(await fetchSessionList(search));
+  }
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchSessionList('').then((result) => {
+      if (cancelled) return;
+      if (result.sessions) setSessions(result.sessions);
+      if (result.note) setNote(result.note);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   async function start() {
     const response = await fetch('/api/kits/nightcode/sessions', {

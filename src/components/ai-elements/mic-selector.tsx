@@ -49,6 +49,11 @@ const MicSelectorContext = createContext<MicSelectorContextType>({
   width: 200,
 });
 
+const readAudioInputs = async () => {
+  const deviceList = await navigator.mediaDevices.enumerateDevices();
+  return deviceList.filter((device) => device.kind === "audioinput");
+};
+
 export const useAudioDevices = () => {
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,12 +65,7 @@ export const useAudioDevices = () => {
       setLoading(true);
       setError(null);
 
-      const deviceList = await navigator.mediaDevices.enumerateDevices();
-      const audioInputs = deviceList.filter(
-        (device) => device.kind === "audioinput"
-      );
-
-      setDevices(audioInputs);
+      setDevices(await readAudioInputs());
     } catch (caughtError) {
       const message =
         caughtError instanceof Error
@@ -116,11 +116,24 @@ export const useAudioDevices = () => {
     }
   }, [loading]);
 
-  /* eslint-disable react-hooks/set-state-in-effect -- enumerates audio devices once on mount */
   useEffect(() => {
-    loadDevicesWithoutPermission();
-  }, [loadDevicesWithoutPermission]);
-  /* eslint-enable react-hooks/set-state-in-effect */
+    // loading starts true and error starts null, so the first read only has to report its result
+    void (async () => {
+      try {
+        setDevices(await readAudioInputs());
+      } catch (caughtError) {
+        const message =
+          caughtError instanceof Error
+            ? caughtError.message
+            : "Failed to get audio devices";
+
+        setError(message);
+        console.error("Error getting audio devices:", message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     const handleDeviceChange = () => {

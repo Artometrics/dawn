@@ -166,7 +166,7 @@ export const SpeechInput = ({
     speechRecognition.addEventListener("error", handleError);
 
     recognitionRef.current = speechRecognition;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- the recognizer is created in this effect, so readiness can only be reported from it
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the SpeechRecognition instance lives in a ref and is created only inside this effect (browser-only API), so the 'ready' flag has no render-time source to derive it from
     setIsRecognitionReady(true);
 
     return () => {

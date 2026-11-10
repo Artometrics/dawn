@@ -21,6 +21,7 @@ interface JSXPreviewContextValue {
   processedJsx: string;
   isStreaming: boolean;
   error: Error | null;
+  lastGoodJsx: string;
   setError: (error: Error | null) => void;
   setLastGoodJsx: (jsx: string) => void;
   components: JsxParserProps["components"];
@@ -144,7 +145,7 @@ export const JSXPreview = memo(
   }: JSXPreviewProps) => {
     const [prevJsx, setPrevJsx] = useState(jsx);
     const [error, setError] = useState<Error | null>(null);
-    const [_lastGoodJsx, setLastGoodJsx] = useState("");
+    const [lastGoodJsx, setLastGoodJsx] = useState("");
 
     // Clear error when jsx changes (derived state pattern)
     if (jsx !== prevJsx) {
@@ -164,6 +165,7 @@ export const JSXPreview = memo(
         error,
         isStreaming,
         jsx,
+        lastGoodJsx,
         onErrorProp: onError,
         processedJsx,
         setError,
@@ -175,6 +177,7 @@ export const JSXPreview = memo(
         error,
         isStreaming,
         jsx,
+        lastGoodJsx,
         onError,
         processedJsx,
         setError,
@@ -202,21 +205,24 @@ export const JSXPreviewContent = memo(
       isStreaming,
       components,
       bindings,
+      lastGoodJsx,
       setError,
       setLastGoodJsx,
       onErrorProp,
     } = useJSXPreview();
     const errorReportedRef = useRef<string | null>(null);
-    const lastGoodJsxRef = useRef("");
     const [hadError, setHadError] = useState(false);
+    const [errorTrackedJsx, setErrorTrackedJsx] = useState(processedJsx);
 
-    // Reset error tracking when jsx changes
-    /* eslint-disable react-hooks/set-state-in-effect -- resets error tracking when the previewed JSX changes */
+    // Reset error tracking when jsx changes (derived state pattern)
+    if (errorTrackedJsx !== processedJsx) {
+      setErrorTrackedJsx(processedJsx);
+      setHadError(false);
+    }
+
     useEffect(() => {
       errorReportedRef.current = null;
-      setHadError(false);
     }, [processedJsx]);
-    /* eslint-enable react-hooks/set-state-in-effect */
 
     const handleError = useCallback(
       (err: Error) => {
@@ -241,7 +247,6 @@ export const JSXPreviewContent = memo(
     // Track the last JSX that rendered without error
     useEffect(() => {
       if (!errorReportedRef.current) {
-        lastGoodJsxRef.current = processedJsx;
         setLastGoodJsx(processedJsx);
       }
     }, [processedJsx, setLastGoodJsx]);
@@ -249,8 +254,7 @@ export const JSXPreviewContent = memo(
     // During streaming, if the current JSX errored, re-render with last good version
     const displayJsx =
       isStreaming && hadError
-        ? // eslint-disable-next-line react-hooks/refs -- the last good JSX is only needed at render time and must not trigger another render
-          lastGoodJsxRef.current
+        ? lastGoodJsx
         : processedJsx;
 
     return (

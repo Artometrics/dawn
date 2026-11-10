@@ -1,29 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Link from 'next/link';
-import { PREVIEW_KEY, STUCK_STEPS, emptyPreview, normalizePreview, stepRound, type PreviewState } from '@/lib/preview/board';
+import { usePreviewState } from '@/components/preview/use-preview-state';
+import { STUCK_STEPS, stepRound } from '@/lib/preview/board';
 
 export function StuckView() {
-  const [state, setState] = useState<PreviewState>(emptyPreview);
-  const [ready, setReady] = useState(false);
-
-  /* eslint-disable react-hooks/set-state-in-effect -- reads sessionStorage after hydration so the static HTML and the first client render match */
-  useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem(PREVIEW_KEY);
-      if (raw) setState(normalizePreview(JSON.parse(raw)));
-    } catch {
-      setState(emptyPreview());
-    }
-    setReady(true);
-  }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
-
-  useEffect(() => {
-    if (!ready) return;
-    sessionStorage.setItem(PREVIEW_KEY, JSON.stringify(state));
-  }, [ready, state]);
+  const [state, setState, ready] = usePreviewState();
 
   useEffect(() => {
     if (!ready || state.steps >= STUCK_STEPS) return;
@@ -34,7 +17,7 @@ export function StuckView() {
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [ready, state.steps]);
+  }, [ready, state.steps, setState]);
 
   const done = state.steps >= STUCK_STEPS;
   const place = Math.min(state.steps, STUCK_STEPS - 1);
