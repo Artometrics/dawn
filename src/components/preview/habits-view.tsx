@@ -1,36 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { usePreviewState } from '@/components/preview/use-preview-state';
 import {
   HABITS,
-  PREVIEW_KEY,
-  emptyPreview,
-  normalizePreview,
   selectHabit,
   toggleHabit,
-  type PreviewState,
 } from '@/lib/preview/board';
 
 export function HabitsView() {
-  const [state, setState] = useState<PreviewState>(emptyPreview);
-  const [ready, setReady] = useState(false);
-
-  /* eslint-disable react-hooks/set-state-in-effect -- reads sessionStorage after hydration so the static HTML and the first client render match */
-  useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem(PREVIEW_KEY);
-      if (raw) setState(normalizePreview(JSON.parse(raw)));
-    } catch {
-      setState(emptyPreview());
-    }
-    setReady(true);
-  }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
-
-  useEffect(() => {
-    if (!ready) return;
-    sessionStorage.setItem(PREVIEW_KEY, JSON.stringify(state));
-  }, [ready, state]);
+  const [state, setState, ready] = usePreviewState();
 
   const open = HABITS.find((habit) => habit.id === state.habitId) ?? null;
   const doneCount = HABITS.filter((habit) => state.habitDone[habit.id]).length;

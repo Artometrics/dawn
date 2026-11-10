@@ -25,10 +25,12 @@ export function AgentsRoot() {
   const [queue, setQueue] = useState<GatewayState['data'] extends never ? never : { id: string; track: string; status: string; messages?: { content: string }[] }[]>([]);
   const openedLink = useRef(false);
 
-  /* eslint-disable react-hooks/set-state-in-effect -- reads the ?section= link and the gateway address after hydration so the static HTML and the first client render match */
   useEffect(() => {
     const asked = new URLSearchParams(window.location.search).get('section');
-    if (asked === 'recipes' || asked === 'letter' || asked === 'data' || asked === 'settings' || asked === 'edit') setSection(asked);
+    if (asked === 'recipes' || asked === 'letter' || asked === 'data' || asked === 'settings' || asked === 'edit') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- the static export always renders section 'agents', so a ?section= link can only be applied after hydration to keep the first client render equal to the static HTML
+      setSection(asked);
+    }
     void (async () => {
       const url = await gatewayBase();
       setBase(url);
@@ -36,33 +38,31 @@ export function AgentsRoot() {
       await refresh(url);
     })();
   }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
-  /* eslint-disable react-hooks/set-state-in-effect -- opens the linked thread once, when the gateway state first arrives */
-  useEffect(() => {
-    if (!state || openedLink.current) return;
+  function openLinkedThread(next: GatewayState) {
+    if (openedLink.current) return;
     const params = new URLSearchParams(window.location.search);
     const thread = params.get('thread');
     const agent = params.get('agent');
     openedLink.current = true;
-    if (thread && state.threads.some((item) => item.id === thread)) {
+    if (thread && next.threads.some((item) => item.id === thread)) {
       setThreadId(thread);
       setSection('agents');
       return;
     }
     if (!agent) return;
-    const direct = state.threads.find((item) => item.kind === 'direct' && item.agentIds[0] === agent);
+    const direct = next.threads.find((item) => item.kind === 'direct' && item.agentIds[0] === agent);
     if (direct) {
       setThreadId(direct.id);
       setSection('agents');
     }
-  }, [state]);
-  /* eslint-enable react-hooks/set-state-in-effect */
+  }
 
   async function refresh(url = base) {
     try {
       const next = await api<GatewayState>(url, '/api/state');
       setState(next);
+      openLinkedThread(next);
       const data = await api<{ queue: typeof queue }>(url, '/api/data');
       setQueue(data.queue || []);
       setNeedsGoogle(false);

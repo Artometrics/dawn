@@ -1,43 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
+import { usePreviewState } from '@/components/preview/use-preview-state';
 import {
-  PREVIEW_KEY,
   SAMPLES,
   canVerify,
-  emptyPreview,
-  normalizePreview,
   sampleById,
   saveIdea,
   selectSample,
   toggleCheck,
   verifySample,
-  type PreviewState,
 } from '@/lib/preview/board';
 
 export function BenchView() {
-  const [state, setState] = useState<PreviewState>(emptyPreview);
-  const [ready, setReady] = useState(false);
+  const [state, setState, ready] = usePreviewState();
   const [draft, setDraft] = useState('');
   const [error, setError] = useState<string | null>(null);
-
-  /* eslint-disable react-hooks/set-state-in-effect -- reads sessionStorage after hydration so the static HTML and the first client render match */
-  useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem(PREVIEW_KEY);
-      if (raw) setState(normalizePreview(JSON.parse(raw)));
-    } catch {
-      setState(emptyPreview());
-    }
-    setReady(true);
-  }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
-
-  useEffect(() => {
-    if (!ready) return;
-    sessionStorage.setItem(PREVIEW_KEY, JSON.stringify(state));
-  }, [ready, state]);
 
   const sample = state.sampleId ? sampleById(state.sampleId) : null;
 

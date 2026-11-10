@@ -19,7 +19,7 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
+  useSyncExternalStore,
   useState,
 } from "react";
 
@@ -147,32 +147,28 @@ export const InlineCitationCarouselIndex = ({
   ...props
 }: InlineCitationCarouselIndexProps) => {
   const api = useCarouselApi();
-  const [current, setCurrent] = useState(0);
-  const [count, setCount] = useState(0);
-
-  const syncState = useCallback(() => {
-    if (!api) {
-      return;
-    }
-    setCount(api.scrollSnapList().length);
-    setCurrent(api.selectedScrollSnap() + 1);
-  }, [api]);
-
-  /* eslint-disable react-hooks/set-state-in-effect -- copies the carousel's initial state once its API is ready */
-  useEffect(() => {
-    if (!api) {
-      return;
-    }
-
-    syncState();
-
-    api.on("select", syncState);
-
-    return () => {
-      api.off("select", syncState);
-    };
-  }, [api, syncState]);
-  /* eslint-enable react-hooks/set-state-in-effect */
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      if (!api) {
+        return () => {};
+      }
+      api.on("select", onChange);
+      return () => {
+        api.off("select", onChange);
+      };
+    },
+    [api]
+  );
+  const count = useSyncExternalStore(
+    subscribe,
+    () => api?.scrollSnapList().length ?? 0,
+    () => 0
+  );
+  const current = useSyncExternalStore(
+    subscribe,
+    () => (api ? api.selectedScrollSnap() + 1 : 0),
+    () => 0
+  );
 
   return (
     <div

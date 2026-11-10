@@ -48,12 +48,13 @@ function Shell() {
   const dawn = useDawn();
   const town = useTown(dawn.memories, dawn.remember);
   const [section, setSection] = useState<Section>('quests');
-  /* eslint-disable react-hooks/set-state-in-effect -- reads the ?section= link after hydration so the static HTML and the first client render match */
   useEffect(() => {
     const asked = new URLSearchParams(window.location.search).get('section');
-    if (asked === 'quests' || asked === 'village' || asked === 'characters' || asked === 'atlas' || asked === 'library') setSection(asked);
+    if (asked === 'quests' || asked === 'village' || asked === 'characters' || asked === 'atlas' || asked === 'library') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- the static export always renders 'quests', so a ?section= link can only be applied after hydration to keep the first client render equal to the static HTML
+      setSection(asked);
+    }
   }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
   const [drawer, setDrawer] = useState(false);
   const [query, setQuery] = useState('');
   const [youOpen, setYouOpen] = useState(false);

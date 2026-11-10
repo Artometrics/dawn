@@ -5,6 +5,28 @@ import { PageShell } from '@/components/site/page-shell';
 
 type Row = { name: string; text: string; where: 'desk' | 'visit' };
 
+async function readDesk(): Promise<{ rows?: Row[]; note: string } | null> {
+  try {
+    const response = await fetch('/api/local-drafts', { credentials: 'include', redirect: 'manual' });
+    if (response.type === 'opaqueredirect' || !response.ok) return null;
+    const data = await response.json() as { files?: string[] };
+    const names = data.files ?? [];
+    const loaded: Row[] = [];
+    for (const file of names) {
+      const read = await fetch(`/api/local-drafts?file=${encodeURIComponent(file)}`, { credentials: 'include', redirect: 'manual' });
+      if (!read.ok) {
+        loaded.push({ name: file, text: '', where: 'desk' });
+        continue;
+      }
+      const body = await read.json() as { text?: string };
+      loaded.push({ name: file, text: body.text || '', where: 'desk' });
+    }
+    return { rows: loaded, note: loaded.length ? 'These names are stored on this desk.' : 'No project files on this desk yet.' };
+  } catch {
+    return { note: 'The desk is not answering. A file you save here stays for this visit.' };
+  }
+}
+
 export default function ProjectsPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [name, setName] = useState('note.txt');
@@ -12,31 +34,21 @@ export default function ProjectsPage() {
   const [note, setNote] = useState('Project files for Dawn. This is not the sample chat.');
 
   async function load() {
-    try {
-      const response = await fetch('/api/local-drafts', { credentials: 'include', redirect: 'manual' });
-      if (response.type === 'opaqueredirect' || !response.ok) return;
-      const data = await response.json() as { files?: string[] };
-      const names = data.files ?? [];
-      const loaded: Row[] = [];
-      for (const file of names) {
-        const read = await fetch(`/api/local-drafts?file=${encodeURIComponent(file)}`, { credentials: 'include', redirect: 'manual' });
-        if (!read.ok) {
-          loaded.push({ name: file, text: '', where: 'desk' });
-          continue;
-        }
-        const body = await read.json() as { text?: string };
-        loaded.push({ name: file, text: body.text || '', where: 'desk' });
-      }
-      setRows(loaded);
-      setNote(loaded.length ? 'These names are stored on this desk.' : 'No project files on this desk yet.');
-    } catch {
-      setNote('The desk is not answering. A file you save here stays for this visit.');
-    }
+    const result = await readDesk();
+    if (!result) return;
+    if (result.rows) setRows(result.rows);
+    setNote(result.note);
   }
 
-  /* eslint-disable react-hooks/set-state-in-effect -- loads the desk's file list once when the page mounts */
-  useEffect(() => { void load(); }, []);
-  /* eslint-enable react-hooks/set-state-in-effect */
+  useEffect(() => {
+    let cancelled = false;
+    void readDesk().then((result) => {
+      if (cancelled || !result) return;
+      if (result.rows) setRows(result.rows);
+      setNote(result.note);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   async function save(event: React.FormEvent) {
     event.preventDefault();
