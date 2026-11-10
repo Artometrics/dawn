@@ -1,0 +1,3621 @@
+{
+  "label": "before",
+  "date": "2026-11-10T14:35:06.256Z",
+  "origin": "http://127.0.0.1:35517",
+  "viewports": {
+    "desktop": {
+      "empty": {
+        "shot": "empty-desktop.png",
+        "height": 1379,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 35,
+          "tapSmall": [
+            "48x36 button.dw-btn.dw-btn--chip \"Idle\"",
+            "64x36 button.dw-btn.dw-btn--chip \"Guard\"",
+            "86x36 button.dw-btn.dw-btn--chip \"Turntable\"",
+            "82x36 button.dw-btn.dw-btn--chip \"Skeleton\"",
+            "96x36 button.dw-btn.dw-btn--chip \"Reset view\"",
+            "99x36 button.dw-btn.dw-btn--chip \"Joan of Arc\"",
+            "159x36 button.dw-btn.dw-btn--chip \"Napoleon Bonaparte\"",
+            "76x36 button.dw-btn.dw-btn--chip \"Sun Tzu\""
+          ],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 77
+          },
+          "fontSizes": {
+            "13": 20,
+            "14": 42,
+            "15": 4,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 39
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 348,
+            "y": 68,
+            "w": 620,
+            "h": 560
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.62,
+          "scrollerHeight": {
+            "scroll": 1565,
+            "client": 724
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 113
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 111,
+            "rgba(243, 241, 236, 0.1)": 72,
+            "rgb(23, 23, 21)": 1,
+            "rgb(20, 18, 16)": 20,
+            "rgb(217, 119, 70)": 9,
+            "rgb(42, 42, 39)": 29,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 479,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "editing": {
+        "shot": "editing-desktop.png",
+        "height": 1379,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 35,
+          "tapSmall": [
+            "48x36 button.dw-btn.dw-btn--chip \"Idle\"",
+            "64x36 button.dw-btn.dw-btn--chip \"Guard\"",
+            "86x36 button.dw-btn.dw-btn--chip \"Turntable\"",
+            "82x36 button.dw-btn.dw-btn--chip \"Skeleton\"",
+            "96x36 button.dw-btn.dw-btn--chip \"Reset view\"",
+            "99x36 button.dw-btn.dw-btn--chip \"Joan of Arc\"",
+            "159x36 button.dw-btn.dw-btn--chip \"Napoleon Bonaparte\"",
+            "76x36 button.dw-btn.dw-btn--chip \"Sun Tzu\""
+          ],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 77
+          },
+          "fontSizes": {
+            "13": 20,
+            "14": 42,
+            "15": 4,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 39
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 348,
+            "y": 68,
+            "w": 620,
+            "h": 560
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.62,
+          "scrollerHeight": {
+            "scroll": 1565,
+            "client": 724
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 113
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 111,
+            "rgba(243, 241, 236, 0.1)": 72,
+            "rgb(23, 23, 21)": 1,
+            "rgb(20, 18, 16)": 20,
+            "rgb(217, 119, 70)": 9,
+            "rgb(42, 42, 39)": 29,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 479,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "posing": {
+        "shot": "posing-desktop.png",
+        "height": 1379,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 35,
+          "tapSmall": [
+            "48x36 button.dw-btn.dw-btn--chip \"Idle\"",
+            "64x36 button.dw-btn.dw-btn--chip \"Guard\"",
+            "86x36 button.dw-btn.dw-btn--chip \"Turntable\"",
+            "82x36 button.dw-btn.dw-btn--chip \"Skeleton\"",
+            "96x36 button.dw-btn.dw-btn--chip \"Reset view\"",
+            "99x36 button.dw-btn.dw-btn--chip \"Joan of Arc\"",
+            "159x36 button.dw-btn.dw-btn--chip \"Napoleon Bonaparte\"",
+            "76x36 button.dw-btn.dw-btn--chip \"Sun Tzu\""
+          ],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 77
+          },
+          "fontSizes": {
+            "13": 20,
+            "14": 42,
+            "15": 4,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 9,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 39
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 348,
+            "y": 40,
+            "w": 620,
+            "h": 560
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.62,
+          "scrollerHeight": {
+            "scroll": 1565,
+            "client": 724
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 113
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 113,
+            "rgba(243, 241, 236, 0.1)": 72,
+            "rgb(23, 23, 21)": 1,
+            "rgb(42, 42, 39)": 29,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 8,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(53, 53, 49)": 1,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 479,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "error-name": {
+        "shot": "error-name-desktop.png",
+        "height": 1406,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 35,
+          "tapSmall": [
+            "48x36 button.dw-btn.dw-btn--chip \"Idle\"",
+            "64x36 button.dw-btn.dw-btn--chip \"Guard\"",
+            "86x36 button.dw-btn.dw-btn--chip \"Turntable\"",
+            "82x36 button.dw-btn.dw-btn--chip \"Skeleton\"",
+            "96x36 button.dw-btn.dw-btn--chip \"Reset view\"",
+            "99x36 button.dw-btn.dw-btn--chip \"Joan of Arc\"",
+            "159x36 button.dw-btn.dw-btn--chip \"Napoleon Bonaparte\"",
+            "76x36 button.dw-btn.dw-btn--chip \"Sun Tzu\""
+          ],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 78
+          },
+          "fontSizes": {
+            "13": 21,
+            "14": 42,
+            "15": 4,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 39
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 348,
+            "y": 68,
+            "w": 620,
+            "h": 560
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.62,
+          "scrollerHeight": {
+            "scroll": 1592,
+            "client": 724
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 114
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 113,
+            "rgba(243, 241, 236, 0.1)": 73,
+            "rgb(23, 23, 21)": 1,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 9,
+            "rgb(42, 42, 39)": 30,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 506,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "sawSavingLabel": true,
+      "saving": {
+        "shot": "saving-desktop.png",
+        "height": 1379,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 35,
+          "tapSmall": [
+            "48x36 button.dw-btn.dw-btn--chip \"Idle\"",
+            "64x36 button.dw-btn.dw-btn--chip \"Guard\"",
+            "86x36 button.dw-btn.dw-btn--chip \"Turntable\"",
+            "82x36 button.dw-btn.dw-btn--chip \"Skeleton\"",
+            "96x36 button.dw-btn.dw-btn--chip \"Reset view\"",
+            "99x36 button.dw-btn.dw-btn--chip \"Joan of Arc\"",
+            "159x36 button.dw-btn.dw-btn--chip \"Napoleon Bonaparte\"",
+            "76x36 button.dw-btn.dw-btn--chip \"Sun Tzu\""
+          ],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 77
+          },
+          "fontSizes": {
+            "13": 20,
+            "14": 42,
+            "15": 4,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 39
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 348,
+            "y": -32,
+            "w": 620,
+            "h": 560
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.62,
+          "scrollerHeight": {
+            "scroll": 1565,
+            "client": 724
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 113
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 113,
+            "rgba(243, 241, 236, 0.1)": 72,
+            "rgb(23, 23, 21)": 1,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 8,
+            "rgb(42, 42, 39)": 30,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 479,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "saved": {
+        "shot": "saved-desktop.png",
+        "height": 1379,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 39,
+          "tapSmall": [
+            "48x36 button.dw-btn.dw-btn--chip \"Idle\"",
+            "64x36 button.dw-btn.dw-btn--chip \"Guard\"",
+            "86x36 button.dw-btn.dw-btn--chip \"Turntable\"",
+            "82x36 button.dw-btn.dw-btn--chip \"Skeleton\"",
+            "96x36 button.dw-btn.dw-btn--chip \"Reset view\"",
+            "99x36 button.dw-btn.dw-btn--chip \"Joan of Arc\"",
+            "159x36 button.dw-btn.dw-btn--chip \"Napoleon Bonaparte\"",
+            "76x36 button.dw-btn.dw-btn--chip \"Sun Tzu\""
+          ],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 84
+          },
+          "fontSizes": {
+            "13": 23,
+            "14": 46,
+            "15": 3,
+            "16": 11,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 44
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 348,
+            "y": -32,
+            "w": 620,
+            "h": 560
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.62,
+          "scrollerHeight": {
+            "scroll": 1678,
+            "client": 724
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 129
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 135,
+            "rgba(243, 241, 236, 0.1)": 83,
+            "rgb(23, 23, 21)": 2,
+            "rgb(20, 18, 16)": 16,
+            "rgb(217, 119, 70)": 7,
+            "rgb(42, 42, 39)": 37,
+            "rgb(143, 136, 127)": 13,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(255, 255, 255)": 1
+          },
+          "pageScroll": 479,
+          "status": "Napoleon Bonaparte is in your roster.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "exporting": {
+        "shot": "exporting-desktop.png",
+        "height": 1379,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 39,
+          "tapSmall": [
+            "48x36 button.dw-btn.dw-btn--chip \"Idle\"",
+            "64x36 button.dw-btn.dw-btn--chip \"Guard\"",
+            "86x36 button.dw-btn.dw-btn--chip \"Turntable\"",
+            "82x36 button.dw-btn.dw-btn--chip \"Skeleton\"",
+            "96x36 button.dw-btn.dw-btn--chip \"Reset view\"",
+            "99x36 button.dw-btn.dw-btn--chip \"Joan of Arc\"",
+            "159x36 button.dw-btn.dw-btn--chip \"Napoleon Bonaparte\"",
+            "76x36 button.dw-btn.dw-btn--chip \"Sun Tzu\""
+          ],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 84
+          },
+          "fontSizes": {
+            "13": 23,
+            "14": 46,
+            "15": 3,
+            "16": 11,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 9,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 44
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 348,
+            "y": -32,
+            "w": 620,
+            "h": 560
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.62,
+          "scrollerHeight": {
+            "scroll": 1678,
+            "client": 724
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 129
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 135,
+            "rgba(243, 241, 236, 0.1)": 83,
+            "rgb(23, 23, 21)": 2,
+            "rgb(20, 18, 16)": 16,
+            "rgb(217, 119, 70)": 7,
+            "rgb(42, 42, 39)": 36,
+            "rgb(143, 136, 127)": 13,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1,
+            "rgb(53, 53, 49)": 1
+          },
+          "pageScroll": 479,
+          "status": "glTF saved with the idle and guard clips.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "error-import": {
+        "shot": "error-import-desktop.png",
+        "height": 1379,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 39,
+          "tapSmall": [
+            "48x36 button.dw-btn.dw-btn--chip \"Idle\"",
+            "64x36 button.dw-btn.dw-btn--chip \"Guard\"",
+            "86x36 button.dw-btn.dw-btn--chip \"Turntable\"",
+            "82x36 button.dw-btn.dw-btn--chip \"Skeleton\"",
+            "96x36 button.dw-btn.dw-btn--chip \"Reset view\"",
+            "99x36 button.dw-btn.dw-btn--chip \"Joan of Arc\"",
+            "159x36 button.dw-btn.dw-btn--chip \"Napoleon Bonaparte\"",
+            "76x36 button.dw-btn.dw-btn--chip \"Sun Tzu\""
+          ],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 84
+          },
+          "fontSizes": {
+            "13": 23,
+            "14": 46,
+            "15": 3,
+            "16": 11,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 9,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 44
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 348,
+            "y": -13,
+            "w": 620,
+            "h": 560
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.62,
+          "scrollerHeight": {
+            "scroll": 1697,
+            "client": 724
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 129
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 135,
+            "rgba(243, 241, 236, 0.1)": 83,
+            "rgb(23, 23, 21)": 2,
+            "rgb(20, 18, 16)": 16,
+            "rgb(217, 119, 70)": 8,
+            "rgb(42, 42, 39)": 36,
+            "rgb(143, 136, 127)": 13,
+            "rgb(196, 189, 179)": 10,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1,
+            "rgb(53, 53, 49)": 1
+          },
+          "pageScroll": 479,
+          "status": "Unknown hair \"mohawk\". Expected cropped, bob, queue, long, topknot, none.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "roster": {
+        "shot": "roster-desktop.png",
+        "height": 1379,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 44,
+          "tapSmall": [
+            "48x36 button.dw-btn.dw-btn--chip \"Idle\"",
+            "64x36 button.dw-btn.dw-btn--chip \"Guard\"",
+            "86x36 button.dw-btn.dw-btn--chip \"Turntable\"",
+            "82x36 button.dw-btn.dw-btn--chip \"Skeleton\"",
+            "96x36 button.dw-btn.dw-btn--chip \"Reset view\"",
+            "99x36 button.dw-btn.dw-btn--chip \"Joan of Arc\"",
+            "159x36 button.dw-btn.dw-btn--chip \"Napoleon Bonaparte\"",
+            "76x36 button.dw-btn.dw-btn--chip \"Sun Tzu\""
+          ],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 92
+          },
+          "fontSizes": {
+            "13": 25,
+            "14": 51,
+            "15": 3,
+            "16": 12,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 50
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 348,
+            "y": -32,
+            "w": 620,
+            "h": 560
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.62,
+          "scrollerHeight": {
+            "scroll": 1834,
+            "client": 724
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 149
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 157,
+            "rgba(243, 241, 236, 0.1)": 97,
+            "rgb(23, 23, 21)": 3,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 8,
+            "rgb(42, 42, 39)": 43,
+            "rgb(143, 136, 127)": 15,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(255, 255, 255)": 1
+          },
+          "pageScroll": 479,
+          "status": "Sun Tzu is in your roster.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "you-panel": {
+        "shot": "you-panel-desktop.png",
+        "height": 1379,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 44,
+          "tapSmall": [
+            "48x36 button.dw-btn.dw-btn--chip \"Idle\"",
+            "64x36 button.dw-btn.dw-btn--chip \"Guard\"",
+            "86x36 button.dw-btn.dw-btn--chip \"Turntable\"",
+            "82x36 button.dw-btn.dw-btn--chip \"Skeleton\"",
+            "96x36 button.dw-btn.dw-btn--chip \"Reset view\"",
+            "99x36 button.dw-btn.dw-btn--chip \"Joan of Arc\"",
+            "159x36 button.dw-btn.dw-btn--chip \"Napoleon Bonaparte\"",
+            "76x36 button.dw-btn.dw-btn--chip \"Sun Tzu\""
+          ],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 94
+          },
+          "fontSizes": {
+            "13": 25,
+            "14": 52,
+            "15": 3,
+            "16": 13,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 4,
+            "999px": 50
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 348,
+            "y": -32,
+            "w": 620,
+            "h": 560
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.62,
+          "scrollerHeight": {
+            "scroll": 1834,
+            "client": 724
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 149
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 157,
+            "rgba(243, 241, 236, 0.1)": 97,
+            "rgb(23, 23, 21)": 3,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 8,
+            "rgb(42, 42, 39)": 43,
+            "rgb(143, 136, 127)": 15,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 479,
+          "status": "Sun Tzu is in your roster.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "village": {
+        "shot": "village-desktop.png",
+        "height": 900,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 23
+          },
+          "fontSizes": {
+            "13": 3,
+            "14": 8,
+            "15": 1,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 5,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 6
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Village"
+          ]
+        },
+        "forge": {
+          "canvas": null,
+          "canvasInsideWidth": null,
+          "canvasShareOfViewportHeight": null,
+          "scrollerHeight": null,
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {},
+          "palette": {},
+          "pageScroll": 0,
+          "status": null,
+          "alerts": [
+            "Gemini is not on this host yet. These village lines are stand-ins."
+          ],
+          "searchField": true
+        },
+        "canvasPainted": 0,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "agent-sheet": {
+        "shot": "agent-sheet-desktop.png",
+        "height": 900,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 26
+          },
+          "fontSizes": {
+            "13": 4,
+            "14": 10,
+            "15": 1,
+            "16": 11,
+            "34": 1
+          },
+          "buttonLookCount": 5,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 5
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": []
+        },
+        "forge": {
+          "canvas": null,
+          "canvasInsideWidth": null,
+          "canvasShareOfViewportHeight": null,
+          "scrollerHeight": null,
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {},
+          "palette": {},
+          "pageScroll": 0,
+          "status": null,
+          "alerts": [
+            "Gemini is not on this host yet. These village lines are stand-ins."
+          ],
+          "searchField": false
+        },
+        "canvasPainted": 0,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "error-no3d": {
+        "shot": "error-no3d-desktop.png",
+        "height": 1379,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 35,
+          "tapSmall": [
+            "48x36 button.dw-btn.dw-btn--chip \"Idle\"",
+            "64x36 button.dw-btn.dw-btn--chip \"Guard\"",
+            "86x36 button.dw-btn.dw-btn--chip \"Turntable\"",
+            "82x36 button.dw-btn.dw-btn--chip \"Skeleton\"",
+            "96x36 button.dw-btn.dw-btn--chip \"Reset view\"",
+            "99x36 button.dw-btn.dw-btn--chip \"Joan of Arc\"",
+            "159x36 button.dw-btn.dw-btn--chip \"Napoleon Bonaparte\"",
+            "76x36 button.dw-btn.dw-btn--chip \"Sun Tzu\""
+          ],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 78
+          },
+          "fontSizes": {
+            "13": 20,
+            "14": 43,
+            "15": 4,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 39
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 348,
+            "y": 68,
+            "w": 620,
+            "h": 560
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.62,
+          "scrollerHeight": {
+            "scroll": 1565,
+            "client": 724
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 114
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 111,
+            "rgba(243, 241, 236, 0.1)": 73,
+            "rgb(23, 23, 21)": 1,
+            "rgb(217, 119, 70)": 10,
+            "rgb(20, 18, 16)": 20,
+            "rgb(42, 42, 39)": 29,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 479,
+          "status": "",
+          "alerts": [
+            "This browser could not start 3D. Your characters still save."
+          ],
+          "searchField": true
+        },
+        "canvasPainted": 0,
+        "console": [
+          "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+        ],
+        "pageErrors": [],
+        "http": []
+      },
+      "error-storage": {
+        "shot": "error-storage-desktop.png",
+        "height": 1379,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 39,
+          "tapSmall": [
+            "48x36 button.dw-btn.dw-btn--chip \"Idle\"",
+            "64x36 button.dw-btn.dw-btn--chip \"Guard\"",
+            "86x36 button.dw-btn.dw-btn--chip \"Turntable\"",
+            "82x36 button.dw-btn.dw-btn--chip \"Skeleton\"",
+            "96x36 button.dw-btn.dw-btn--chip \"Reset view\"",
+            "99x36 button.dw-btn.dw-btn--chip \"Joan of Arc\"",
+            "159x36 button.dw-btn.dw-btn--chip \"Napoleon Bonaparte\"",
+            "76x36 button.dw-btn.dw-btn--chip \"Sun Tzu\""
+          ],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 85
+          },
+          "fontSizes": {
+            "13": 24,
+            "14": 46,
+            "15": 3,
+            "16": 11,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 44
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 348,
+            "y": -9,
+            "w": 620,
+            "h": 560
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.62,
+          "scrollerHeight": {
+            "scroll": 1702,
+            "client": 724
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 130
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 133,
+            "rgba(243, 241, 236, 0.1)": 84,
+            "rgb(23, 23, 21)": 2,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 9,
+            "rgb(42, 42, 39)": 36,
+            "rgb(143, 136, 127)": 13,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(255, 255, 255)": 1
+          },
+          "pageScroll": 479,
+          "status": "Joan of Arc is in your roster.",
+          "alerts": [
+            "This phone has no room left to keep characters."
+          ],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "roster-full": {
+        "shot": "roster-full-desktop.png",
+        "height": 1406,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 83,
+          "tapSmall": [
+            "48x36 button.dw-btn.dw-btn--chip \"Idle\"",
+            "64x36 button.dw-btn.dw-btn--chip \"Guard\"",
+            "86x36 button.dw-btn.dw-btn--chip \"Turntable\"",
+            "82x36 button.dw-btn.dw-btn--chip \"Skeleton\"",
+            "96x36 button.dw-btn.dw-btn--chip \"Reset view\"",
+            "99x36 button.dw-btn.dw-btn--chip \"Joan of Arc\"",
+            "159x36 button.dw-btn.dw-btn--chip \"Napoleon Bonaparte\"",
+            "76x36 button.dw-btn.dw-btn--chip \"Sun Tzu\""
+          ],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 161
+          },
+          "fontSizes": {
+            "13": 45,
+            "14": 90,
+            "15": 3,
+            "16": 22,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 99
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 348,
+            "y": 68,
+            "w": 620,
+            "h": 560
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.62,
+          "scrollerHeight": {
+            "scroll": 3422,
+            "client": 724
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 306
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 340,
+            "rgba(243, 241, 236, 0.1)": 205,
+            "rgb(23, 23, 21)": 13,
+            "rgb(20, 18, 16)": 20,
+            "rgb(217, 119, 70)": 10,
+            "rgb(42, 42, 39)": 101,
+            "rgb(143, 136, 127)": 35,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 506,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      }
+    },
+    "mobile": {
+      "empty": {
+        "shot": "empty-mobile.png",
+        "height": 2363,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 63
+          },
+          "fontSizes": {
+            "13": 18,
+            "14": 39,
+            "15": 4,
+            "16": 1,
+            "17": 1
+          },
+          "buttonLookCount": 6,
+          "radii": {
+            "3.35544e+07px": 3,
+            "999px": 39,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": 68,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 2571,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 113
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 111,
+            "rgba(243, 241, 236, 0.1)": 72,
+            "rgb(23, 23, 21)": 1,
+            "rgb(20, 18, 16)": 20,
+            "rgb(217, 119, 70)": 9,
+            "rgb(42, 42, 39)": 29,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1519,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "editing": {
+        "shot": "editing-mobile.png",
+        "height": 2363,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 63
+          },
+          "fontSizes": {
+            "13": 18,
+            "14": 39,
+            "15": 4,
+            "16": 1,
+            "17": 1
+          },
+          "buttonLookCount": 6,
+          "radii": {
+            "3.35544e+07px": 3,
+            "999px": 39,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": -857,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 2571,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 113
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 111,
+            "rgba(243, 241, 236, 0.1)": 72,
+            "rgb(23, 23, 21)": 1,
+            "rgb(20, 18, 16)": 20,
+            "rgb(217, 119, 70)": 9,
+            "rgb(42, 42, 39)": 29,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1519,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "posing": {
+        "shot": "posing-mobile.png",
+        "height": 2363,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 63
+          },
+          "fontSizes": {
+            "13": 18,
+            "14": 39,
+            "15": 4,
+            "16": 1,
+            "17": 1
+          },
+          "buttonLookCount": 7,
+          "radii": {
+            "3.35544e+07px": 3,
+            "999px": 39,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": -1699,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 2571,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 113
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 113,
+            "rgba(243, 241, 236, 0.1)": 72,
+            "rgb(23, 23, 21)": 1,
+            "rgb(42, 42, 39)": 29,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 8,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(53, 53, 49)": 1,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1519,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "error-name": {
+        "shot": "error-name-mobile.png",
+        "height": 2390,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 64
+          },
+          "fontSizes": {
+            "13": 19,
+            "14": 39,
+            "15": 4,
+            "16": 1,
+            "17": 1
+          },
+          "buttonLookCount": 6,
+          "radii": {
+            "3.35544e+07px": 3,
+            "999px": 39,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": -126,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 2599,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 114
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 113,
+            "rgba(243, 241, 236, 0.1)": 73,
+            "rgb(23, 23, 21)": 1,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 9,
+            "rgb(42, 42, 39)": 30,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1546,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "sawSavingLabel": true,
+      "saving": {
+        "shot": "saving-mobile.png",
+        "height": 2363,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 63
+          },
+          "fontSizes": {
+            "13": 18,
+            "14": 39,
+            "15": 4,
+            "16": 1,
+            "17": 1
+          },
+          "buttonLookCount": 6,
+          "radii": {
+            "3.35544e+07px": 3,
+            "999px": 39,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": -1775,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 2571,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 113
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 113,
+            "rgba(243, 241, 236, 0.1)": 72,
+            "rgb(23, 23, 21)": 1,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 8,
+            "rgb(42, 42, 39)": 30,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1519,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "saved": {
+        "shot": "saved-mobile.png",
+        "height": 2363,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 70
+          },
+          "fontSizes": {
+            "13": 21,
+            "14": 43,
+            "15": 3,
+            "16": 2,
+            "17": 1
+          },
+          "buttonLookCount": 6,
+          "radii": {
+            "3.35544e+07px": 3,
+            "999px": 44,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": -1775,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 2766,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 129
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 135,
+            "rgba(243, 241, 236, 0.1)": 83,
+            "rgb(23, 23, 21)": 2,
+            "rgb(20, 18, 16)": 16,
+            "rgb(217, 119, 70)": 7,
+            "rgb(42, 42, 39)": 37,
+            "rgb(143, 136, 127)": 13,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(255, 255, 255)": 1
+          },
+          "pageScroll": 1519,
+          "status": "Napoleon Bonaparte is in your roster.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "exporting": {
+        "shot": "exporting-mobile.png",
+        "height": 2363,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 70
+          },
+          "fontSizes": {
+            "13": 21,
+            "14": 43,
+            "15": 3,
+            "16": 2,
+            "17": 1
+          },
+          "buttonLookCount": 7,
+          "radii": {
+            "3.35544e+07px": 3,
+            "999px": 44,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": -1775,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 2766,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 129
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 135,
+            "rgba(243, 241, 236, 0.1)": 83,
+            "rgb(23, 23, 21)": 2,
+            "rgb(20, 18, 16)": 16,
+            "rgb(217, 119, 70)": 7,
+            "rgb(42, 42, 39)": 36,
+            "rgb(143, 136, 127)": 13,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1,
+            "rgb(53, 53, 49)": 1
+          },
+          "pageScroll": 1519,
+          "status": "glTF saved with the idle and guard clips.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "error-import": {
+        "shot": "error-import-mobile.png",
+        "height": 2363,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 70
+          },
+          "fontSizes": {
+            "13": 21,
+            "14": 43,
+            "15": 3,
+            "16": 2,
+            "17": 1
+          },
+          "buttonLookCount": 7,
+          "radii": {
+            "3.35544e+07px": 3,
+            "999px": 44,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": -1775,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 2785,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 129
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 135,
+            "rgba(243, 241, 236, 0.1)": 83,
+            "rgb(23, 23, 21)": 2,
+            "rgb(20, 18, 16)": 16,
+            "rgb(217, 119, 70)": 8,
+            "rgb(42, 42, 39)": 36,
+            "rgb(143, 136, 127)": 13,
+            "rgb(196, 189, 179)": 10,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1,
+            "rgb(53, 53, 49)": 1
+          },
+          "pageScroll": 1519,
+          "status": "Unknown hair \"mohawk\". Expected cropped, bob, queue, long, topknot, none.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "roster": {
+        "shot": "roster-mobile.png",
+        "height": 2363,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 78
+          },
+          "fontSizes": {
+            "13": 23,
+            "14": 48,
+            "15": 3,
+            "16": 3,
+            "17": 1
+          },
+          "buttonLookCount": 6,
+          "radii": {
+            "3.35544e+07px": 3,
+            "999px": 50,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": -1775,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 3026,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 149
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 157,
+            "rgba(243, 241, 236, 0.1)": 97,
+            "rgb(23, 23, 21)": 3,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 8,
+            "rgb(42, 42, 39)": 43,
+            "rgb(143, 136, 127)": 15,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(255, 255, 255)": 1
+          },
+          "pageScroll": 1519,
+          "status": "Sun Tzu is in your roster.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "menu-drawer": {
+        "shot": "menu-drawer-mobile.png",
+        "height": 2363,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 92
+          },
+          "fontSizes": {
+            "13": 25,
+            "14": 51,
+            "15": 3,
+            "16": 12,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 9,
+          "radii": {
+            "0px": 6,
+            "3.35544e+07px": 5,
+            "14px": 5,
+            "999px": 50
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": -1775,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 3026,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 149
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 157,
+            "rgba(243, 241, 236, 0.1)": 97,
+            "rgb(23, 23, 21)": 3,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 8,
+            "rgb(42, 42, 39)": 43,
+            "rgb(143, 136, 127)": 15,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1519,
+          "status": "Sun Tzu is in your roster.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "you-panel": {
+        "shot": "you-panel-mobile.png",
+        "height": 2363,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 80
+          },
+          "fontSizes": {
+            "13": 23,
+            "14": 49,
+            "15": 3,
+            "16": 4,
+            "17": 1
+          },
+          "buttonLookCount": 6,
+          "radii": {
+            "3.35544e+07px": 4,
+            "999px": 50,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": -1775,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 3026,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 149
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 157,
+            "rgba(243, 241, 236, 0.1)": 97,
+            "rgb(23, 23, 21)": 3,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 8,
+            "rgb(42, 42, 39)": 43,
+            "rgb(143, 136, 127)": 15,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1519,
+          "status": "Sun Tzu is in your roster.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "village": {
+        "shot": "village-mobile.png",
+        "height": 844,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 9
+          },
+          "fontSizes": {
+            "13": 1,
+            "14": 5,
+            "15": 1,
+            "16": 1,
+            "17": 1
+          },
+          "buttonLookCount": 3,
+          "radii": {
+            "3.35544e+07px": 6,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Village"
+          ]
+        },
+        "forge": {
+          "canvas": null,
+          "canvasInsideWidth": null,
+          "canvasShareOfViewportHeight": null,
+          "scrollerHeight": null,
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {},
+          "palette": {},
+          "pageScroll": 0,
+          "status": null,
+          "alerts": [
+            "Gemini is not on this host yet. These village lines are stand-ins."
+          ],
+          "searchField": true
+        },
+        "canvasPainted": 0,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "agent-sheet": {
+        "shot": "agent-sheet-mobile.png",
+        "height": 844,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 11
+          },
+          "fontSizes": {
+            "13": 2,
+            "14": 6,
+            "15": 1,
+            "16": 2
+          },
+          "buttonLookCount": 3,
+          "radii": {
+            "3.35544e+07px": 4,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": []
+        },
+        "forge": {
+          "canvas": null,
+          "canvasInsideWidth": null,
+          "canvasShareOfViewportHeight": null,
+          "scrollerHeight": null,
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {},
+          "palette": {},
+          "pageScroll": 0,
+          "status": null,
+          "alerts": [
+            "Gemini is not on this host yet. These village lines are stand-ins."
+          ],
+          "searchField": false
+        },
+        "canvasPainted": 0,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "error-no3d": {
+        "shot": "error-no3d-mobile.png",
+        "height": 2363,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 64
+          },
+          "fontSizes": {
+            "13": 18,
+            "14": 40,
+            "15": 4,
+            "16": 1,
+            "17": 1
+          },
+          "buttonLookCount": 6,
+          "radii": {
+            "3.35544e+07px": 3,
+            "999px": 39,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": 68,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 2571,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 114
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 111,
+            "rgba(243, 241, 236, 0.1)": 73,
+            "rgb(23, 23, 21)": 1,
+            "rgb(217, 119, 70)": 10,
+            "rgb(20, 18, 16)": 20,
+            "rgb(42, 42, 39)": 29,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1519,
+          "status": "",
+          "alerts": [
+            "This browser could not start 3D. Your characters still save."
+          ],
+          "searchField": true
+        },
+        "canvasPainted": 0,
+        "console": [
+          "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+        ],
+        "pageErrors": [],
+        "http": []
+      },
+      "error-storage": {
+        "shot": "error-storage-mobile.png",
+        "height": 2363,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 71
+          },
+          "fontSizes": {
+            "13": 22,
+            "14": 43,
+            "15": 3,
+            "16": 2,
+            "17": 1
+          },
+          "buttonLookCount": 6,
+          "radii": {
+            "3.35544e+07px": 3,
+            "999px": 44,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": -1775,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 2790,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 130
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 133,
+            "rgba(243, 241, 236, 0.1)": 84,
+            "rgb(23, 23, 21)": 2,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 9,
+            "rgb(42, 42, 39)": 36,
+            "rgb(143, 136, 127)": 13,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(255, 255, 255)": 1
+          },
+          "pageScroll": 1519,
+          "status": "Joan of Arc is in your roster.",
+          "alerts": [
+            "This phone has no room left to keep characters."
+          ],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "roster-full": {
+        "shot": "roster-full-mobile.png",
+        "height": 2390,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Geist": 147
+          },
+          "fontSizes": {
+            "13": 43,
+            "14": 87,
+            "15": 3,
+            "16": 13,
+            "17": 1
+          },
+          "buttonLookCount": 6,
+          "radii": {
+            "3.35544e+07px": 3,
+            "999px": 99,
+            "0px": 1
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 16,
+            "y": 68,
+            "w": 358,
+            "h": 460
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.55,
+          "scrollerHeight": {
+            "scroll": 5654,
+            "client": 668
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 306
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 340,
+            "rgba(243, 241, 236, 0.1)": 205,
+            "rgb(23, 23, 21)": 13,
+            "rgb(20, 18, 16)": 20,
+            "rgb(217, 119, 70)": 10,
+            "rgb(42, 42, 39)": 101,
+            "rgb(143, 136, 127)": 35,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1546,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      }
+    },
+    "landscape": {
+      "empty": {
+        "shot": "empty-landscape.png",
+        "height": 1719,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 77
+          },
+          "fontSizes": {
+            "13": 20,
+            "14": 42,
+            "15": 4,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 39
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 296,
+            "y": 68,
+            "w": 128,
+            "h": 300
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.77,
+          "scrollerHeight": {
+            "scroll": 1905,
+            "client": 214
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 113
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 111,
+            "rgba(243, 241, 236, 0.1)": 72,
+            "rgb(23, 23, 21)": 1,
+            "rgb(20, 18, 16)": 20,
+            "rgb(217, 119, 70)": 9,
+            "rgb(42, 42, 39)": 29,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1329,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "editing": {
+        "shot": "editing-landscape.png",
+        "height": 1719,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 77
+          },
+          "fontSizes": {
+            "13": 20,
+            "14": 42,
+            "15": 4,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 9,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 39
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 296,
+            "y": 68,
+            "w": 128,
+            "h": 300
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.77,
+          "scrollerHeight": {
+            "scroll": 1905,
+            "client": 214
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 113
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 111,
+            "rgba(243, 241, 236, 0.1)": 72,
+            "rgb(23, 23, 21)": 1,
+            "rgb(20, 18, 16)": 20,
+            "rgb(217, 119, 70)": 9,
+            "rgb(42, 42, 39)": 28,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(53, 53, 49)": 1,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1329,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "posing": {
+        "shot": "posing-landscape.png",
+        "height": 1719,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 77
+          },
+          "fontSizes": {
+            "13": 20,
+            "14": 42,
+            "15": 4,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 9,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 39
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 296,
+            "y": -308,
+            "w": 128,
+            "h": 300
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.77,
+          "scrollerHeight": {
+            "scroll": 1905,
+            "client": 214
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 113
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 113,
+            "rgba(243, 241, 236, 0.1)": 72,
+            "rgb(23, 23, 21)": 1,
+            "rgb(42, 42, 39)": 29,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 8,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(53, 53, 49)": 1,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1329,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "error-name": {
+        "shot": "error-name-landscape.png",
+        "height": 1746,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 78
+          },
+          "fontSizes": {
+            "13": 21,
+            "14": 42,
+            "15": 4,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 39
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 296,
+            "y": 68,
+            "w": 128,
+            "h": 300
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.77,
+          "scrollerHeight": {
+            "scroll": 1932,
+            "client": 214
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 114
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 113,
+            "rgba(243, 241, 236, 0.1)": 73,
+            "rgb(23, 23, 21)": 1,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 9,
+            "rgb(42, 42, 39)": 30,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1356,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "sawSavingLabel": true,
+      "saving": {
+        "shot": "saving-landscape.png",
+        "height": 1719,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 77
+          },
+          "fontSizes": {
+            "13": 20,
+            "14": 42,
+            "15": 4,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 39
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 296,
+            "y": -243,
+            "w": 128,
+            "h": 300
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.77,
+          "scrollerHeight": {
+            "scroll": 2070,
+            "client": 214
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 129
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 133,
+            "rgba(243, 241, 236, 0.1)": 83,
+            "rgb(23, 23, 21)": 2,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 8,
+            "rgb(42, 42, 39)": 36,
+            "rgb(143, 136, 127)": 13,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1329,
+          "status": "Napoleon Bonaparte is in your roster.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "saved": {
+        "shot": "saved-landscape.png",
+        "height": 1719,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 84
+          },
+          "fontSizes": {
+            "13": 23,
+            "14": 46,
+            "15": 3,
+            "16": 11,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 44
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 296,
+            "y": -243,
+            "w": 128,
+            "h": 300
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.77,
+          "scrollerHeight": {
+            "scroll": 2070,
+            "client": 214
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 129
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 135,
+            "rgba(243, 241, 236, 0.1)": 83,
+            "rgb(23, 23, 21)": 2,
+            "rgb(20, 18, 16)": 16,
+            "rgb(217, 119, 70)": 7,
+            "rgb(42, 42, 39)": 37,
+            "rgb(143, 136, 127)": 13,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(255, 255, 255)": 1
+          },
+          "pageScroll": 1329,
+          "status": "Napoleon Bonaparte is in your roster.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "exporting": {
+        "shot": "exporting-landscape.png",
+        "height": 1719,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 84
+          },
+          "fontSizes": {
+            "13": 23,
+            "14": 46,
+            "15": 3,
+            "16": 11,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 9,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 44
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 296,
+            "y": -351,
+            "w": 128,
+            "h": 300
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.77,
+          "scrollerHeight": {
+            "scroll": 2070,
+            "client": 214
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 129
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 135,
+            "rgba(243, 241, 236, 0.1)": 83,
+            "rgb(23, 23, 21)": 2,
+            "rgb(20, 18, 16)": 16,
+            "rgb(217, 119, 70)": 7,
+            "rgb(42, 42, 39)": 36,
+            "rgb(143, 136, 127)": 13,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1,
+            "rgb(53, 53, 49)": 1
+          },
+          "pageScroll": 1329,
+          "status": "glTF saved with the idle and guard clips.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "error-import": {
+        "shot": "error-import-landscape.png",
+        "height": 1719,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 84
+          },
+          "fontSizes": {
+            "13": 23,
+            "14": 46,
+            "15": 3,
+            "16": 11,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 9,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 44
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 296,
+            "y": -332,
+            "w": 128,
+            "h": 300
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.77,
+          "scrollerHeight": {
+            "scroll": 2089,
+            "client": 214
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 129
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 135,
+            "rgba(243, 241, 236, 0.1)": 83,
+            "rgb(23, 23, 21)": 2,
+            "rgb(20, 18, 16)": 16,
+            "rgb(217, 119, 70)": 8,
+            "rgb(42, 42, 39)": 36,
+            "rgb(143, 136, 127)": 13,
+            "rgb(196, 189, 179)": 10,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1,
+            "rgb(53, 53, 49)": 1
+          },
+          "pageScroll": 1329,
+          "status": "Unknown hair \"mohawk\". Expected cropped, bob, queue, long, topknot, none.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "roster": {
+        "shot": "roster-landscape.png",
+        "height": 1719,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 92
+          },
+          "fontSizes": {
+            "13": 25,
+            "14": 51,
+            "15": 3,
+            "16": 12,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 50
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 296,
+            "y": -243,
+            "w": 128,
+            "h": 300
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.77,
+          "scrollerHeight": {
+            "scroll": 2278,
+            "client": 214
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 149
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 157,
+            "rgba(243, 241, 236, 0.1)": 97,
+            "rgb(23, 23, 21)": 3,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 8,
+            "rgb(42, 42, 39)": 43,
+            "rgb(143, 136, 127)": 15,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(255, 255, 255)": 1
+          },
+          "pageScroll": 1329,
+          "status": "Sun Tzu is in your roster.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "you-panel": {
+        "shot": "you-panel-landscape.png",
+        "height": 1719,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 94
+          },
+          "fontSizes": {
+            "13": 25,
+            "14": 52,
+            "15": 3,
+            "16": 13,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 4,
+            "999px": 50
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 296,
+            "y": -243,
+            "w": 128,
+            "h": 300
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.77,
+          "scrollerHeight": {
+            "scroll": 2278,
+            "client": 214
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 149
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 157,
+            "rgba(243, 241, 236, 0.1)": 97,
+            "rgb(23, 23, 21)": 3,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 8,
+            "rgb(42, 42, 39)": 43,
+            "rgb(143, 136, 127)": 15,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1329,
+          "status": "Sun Tzu is in your roster.",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "village": {
+        "shot": "village-landscape.png",
+        "height": 614,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 23
+          },
+          "fontSizes": {
+            "13": 3,
+            "14": 8,
+            "15": 1,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 5,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 6
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Village"
+          ]
+        },
+        "forge": {
+          "canvas": null,
+          "canvasInsideWidth": null,
+          "canvasShareOfViewportHeight": null,
+          "scrollerHeight": null,
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {},
+          "palette": {},
+          "pageScroll": 224,
+          "status": null,
+          "alerts": [
+            "Gemini is not on this host yet. These village lines are stand-ins."
+          ],
+          "searchField": true
+        },
+        "canvasPainted": 0,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "agent-sheet": {
+        "shot": "agent-sheet-landscape.png",
+        "height": 614,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 25
+          },
+          "fontSizes": {
+            "13": 4,
+            "14": 9,
+            "15": 1,
+            "16": 11,
+            "34": 1
+          },
+          "buttonLookCount": 5,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 5
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": []
+        },
+        "forge": {
+          "canvas": null,
+          "canvasInsideWidth": null,
+          "canvasShareOfViewportHeight": null,
+          "scrollerHeight": null,
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {},
+          "palette": {},
+          "pageScroll": 224,
+          "status": null,
+          "alerts": [
+            "Gemini is not on this host yet. These village lines are stand-ins."
+          ],
+          "searchField": false
+        },
+        "canvasPainted": 0,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "error-no3d": {
+        "shot": "error-no3d-landscape.png",
+        "height": 1719,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 78
+          },
+          "fontSizes": {
+            "13": 20,
+            "14": 43,
+            "15": 4,
+            "16": 10,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 39
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 296,
+            "y": 68,
+            "w": 128,
+            "h": 300
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.77,
+          "scrollerHeight": {
+            "scroll": 1905,
+            "client": 214
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 114
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 111,
+            "rgba(243, 241, 236, 0.1)": 73,
+            "rgb(23, 23, 21)": 1,
+            "rgb(217, 119, 70)": 10,
+            "rgb(20, 18, 16)": 20,
+            "rgb(42, 42, 39)": 29,
+            "rgb(143, 136, 127)": 11,
+            "rgb(196, 189, 179)": 12,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1329,
+          "status": "",
+          "alerts": [
+            "This browser could not start 3D. Your characters still save."
+          ],
+          "searchField": true
+        },
+        "canvasPainted": 0,
+        "console": [
+          "THREE.WebGLRenderer: THREE.WebGLRenderer: Error creating WebGL context."
+        ],
+        "pageErrors": [],
+        "http": []
+      },
+      "error-storage": {
+        "shot": "error-storage-landscape.png",
+        "height": 1719,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 85
+          },
+          "fontSizes": {
+            "13": 24,
+            "14": 46,
+            "15": 3,
+            "16": 11,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 44
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 296,
+            "y": -220,
+            "w": 128,
+            "h": 300
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.77,
+          "scrollerHeight": {
+            "scroll": 2094,
+            "client": 214
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 130
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 133,
+            "rgba(243, 241, 236, 0.1)": 84,
+            "rgb(23, 23, 21)": 2,
+            "rgb(20, 18, 16)": 18,
+            "rgb(217, 119, 70)": 9,
+            "rgb(42, 42, 39)": 36,
+            "rgb(143, 136, 127)": 13,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(255, 255, 255)": 1
+          },
+          "pageScroll": 1329,
+          "status": "Joan of Arc is in your roster.",
+          "alerts": [
+            "This phone has no room left to keep characters."
+          ],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      },
+      "roster-full": {
+        "shot": "roster-full-landscape.png",
+        "height": 1746,
+        "metrics": {
+          "overflowX": 0,
+          "overflowers": [],
+          "tapSmallCount": 0,
+          "tapSmall": [],
+          "smallTextCount": 0,
+          "smallText": [],
+          "lowContrastCount": 0,
+          "lowContrast": [],
+          "bodyFont": "Geist",
+          "fontFamilies": {
+            "Source Serif 4": 1,
+            "Geist": 161
+          },
+          "fontSizes": {
+            "13": 45,
+            "14": 90,
+            "15": 3,
+            "16": 22,
+            "17": 1,
+            "34": 1
+          },
+          "buttonLookCount": 8,
+          "radii": {
+            "14px": 5,
+            "0px": 5,
+            "3.35544e+07px": 3,
+            "999px": 99
+          },
+          "unlabelled": [],
+          "brokenImages": [],
+          "hasMain": true,
+          "h1": [
+            "Characters"
+          ]
+        },
+        "forge": {
+          "canvas": {
+            "x": 296,
+            "y": 68,
+            "w": 128,
+            "h": 300
+          },
+          "canvasInsideWidth": true,
+          "canvasShareOfViewportHeight": 0.77,
+          "scrollerHeight": {
+            "scroll": 4386,
+            "client": 214
+          },
+          "offscreen": [],
+          "newQuestCoversSave": false,
+          "fonts": {
+            "Geist": 306
+          },
+          "palette": {
+            "rgb(243, 241, 236)": 340,
+            "rgba(243, 241, 236, 0.1)": 205,
+            "rgb(23, 23, 21)": 13,
+            "rgb(20, 18, 16)": 20,
+            "rgb(217, 119, 70)": 10,
+            "rgb(42, 42, 39)": 101,
+            "rgb(143, 136, 127)": 35,
+            "rgb(196, 189, 179)": 11,
+            "rgb(28, 28, 26)": 2,
+            "rgb(247, 244, 239)": 1
+          },
+          "pageScroll": 1356,
+          "status": "",
+          "alerts": [],
+          "searchField": true
+        },
+        "canvasPainted": 1,
+        "console": [],
+        "pageErrors": [],
+        "http": []
+      }
+    }
+  }
+}
