@@ -57,7 +57,7 @@ behind it. Every `/api/*` request returns 404 on that host, and the pages are wr
 | `/village` | Quests, library and the side drawer, kept in this browser. | Nothing syncs. |
 | `/atlas` | Campus map, filters, search, walk-to, the role switch. | The Cardinal note is still "coming soon". |
 | `/studio` | Layout, panes, the sample transcript, tabs, search, the computer and editor panes. | The conversation is a sample, not a live chat. Send only reaches a model on a hosted project with a model configured; here it says "A model is not connected on this host. Nothing was sent." Wake does not open a computer. |
-| `/editor` | A code sample layout. | Run does nothing. Nothing is saved. The status says the editor is not connected. |
+| `/editor` | The Dawn file editor on the shared page shell: page.txt, desk files, local booth and held drafts. | Saving, the booth and drafts need the local gateway (`/api/local-drafts`). Offline the status says so. It is not OpenVSCode and it calls no model. |
 | `/projects` | The page and its empty state. | Saved drafts come from `/api/local-drafts`, which only the local gateway serves. |
 | `/artifacts` | The recipe board and its poster specimens. | A like is not saved. It is not a Refero or Envato catalog. |
 | `/letter` | The page and the sign-up form. | Subscribing and listing letters need `/api/public/letters`, which does not exist on static hosting. The page now shows an empty state instead of crashing. |
@@ -149,7 +149,7 @@ text under 12px, no contrast failures.
 | `/village` | 200 | 0 | Closed drawer is hidden from keyboard and screen readers. |
 | `/atlas` | 200 | 0 | Filter chips are 44px. |
 | `/studio` | 200 | 0 | Dense desktop chrome keeps 22 to 28px icon buttons at 1440 (41 controls); on phones they are 44px. |
-| `/editor` | 200 | 0 | Status says not connected. |
+| `/editor` | 200 | 0 | Status says no owner desk here, so Save is disabled. |
 | `/projects` | 200 | 0 | Empty state. One expected 404. |
 | `/artifacts` | 200 | 0 | Poster specimens are art and are excluded from the type and contrast checks. |
 | `/letter` | 200 | 0 | No uncaught error. |
@@ -166,6 +166,26 @@ sizes in use from 35 to 11 (the before figure includes the poster specimens, the
 254 to 399, because every page now has the same 10-chip header at the 36px desktop size, and the new style
 guide page demonstrates every button state. The 36px desktop chip is deliberate. It grows to 44px under
 768px wide and on touch.
+
+## Merged with main: Pantheon Forge (#28)
+
+This branch was brought up to date with `main` after the Pantheon Forge character maker landed
+(`/village?section=characters`). Both pieces now live together:
+
+- `/editor` keeps the desk file editor from `main` (page.txt save, drafts, approve) and draws it with the
+  shared `PageShell` and `.dw-*` components.
+- The Characters panel (`src/components/forge/character-maker.tsx`) no longer has its own `Chip` and
+  `Secondary` helpers. Pose, preset, part and avatar chips are `dw-btn dw-btn--chip` (the pressed state is
+  `aria-pressed`, styled by the shared CSS), export buttons are `dw-btn`, Save is `dw-btn--primary`, the name
+  and epithet inputs are `dw-label` and `dw-field`, section titles are `dw-eyebrow`, and roster rows are
+  `dw-card`. The panel's behaviour and the `data-forge-*` hooks are unchanged.
+- Both `playwright-core` (route audit and smoke test) and `puppeteer-core` (`npm run check:forge`) stay in
+  `devDependencies`.
+
+Results on the merged branch: `npm run build` ok, `npm test` 152 of 152 (includes the route smoke test, 51
+checks, and the Forge schema, bones and codec tests), `npm run test:rules` ok, `npm run check:forge` ok at
+1440 and 390 (3D view drew, no sideways scroll, no browser errors). Screenshots of the restyled panel:
+`docs/process/design/after/characters-1440.png` and `characters-390.png`.
 
 ## What is still not connected
 
