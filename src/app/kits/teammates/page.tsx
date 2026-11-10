@@ -1,6 +1,5 @@
-import { KitPage } from '@/components/kits/kit-panel';
-import { kitById } from '@/lib/kits/registry';
+import { TeammatesDesk } from '@/components/kits/teammates-desk';
 
 export default function Page() {
-  return <KitPage kit={kitById('teammates')!} />;
+  return <TeammatesDesk />;
 }
