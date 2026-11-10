@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "id": "sun-tzu",
+  "name": "Sun Tzu",
+  "epithet": "The Strategist",
+  "body": { "height": 0.52, "build": 0.46 },
+  "colors": {
+    "skin": "#c49a78",
+    "hair": "#1a120c",
+    "cloth": "#1a4034",
+    "trim": "#efe6d0"
+  },
+  "parts": {
+    "head": "oval",
+    "face": "calm",
+    "hair": "topknot",
+    "outfit": "robe",
+    "accessory": "sword"
+  },
+  "paintOverlay": true
+}

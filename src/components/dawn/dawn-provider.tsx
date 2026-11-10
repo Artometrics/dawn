@@ -35,6 +35,7 @@ import {
 } from 'firebase/auth';
 import { agentById } from '@/lib/agents';
 import { bootFirebase, displayNameOf, type DawnMode } from '@/lib/firebase-client';
+import { useRoster, type RosterApi } from '@/components/forge/use-roster';
 import type { ActionKind } from '@/lib/proposals';
 
 const LOCAL_KEY = 'dawn.village.v1';
@@ -95,6 +96,8 @@ type DawnContextValue = {
   decide: (id: string, status: 'approved' | 'declined') => Promise<void>;
   saveQuest: (quest: Quest) => void;
   clearDesk: () => Promise<void>;
+  /** Character Maker roster and the looks it gives the village agents. */
+  roster: RosterApi;
 };
 
 const DawnContext = createContext<DawnContextValue | null>(null);
@@ -133,6 +136,7 @@ export function DawnProvider({ children }: { children: ReactNode }) {
   const [note, setNote] = useState<string | null>(null);
   const [db, setDb] = useState<Firestore | null>(null);
   const [auth, setAuth] = useState<Auth | null>(null);
+  const roster = useRoster({ db, user });
 
   useEffect(() => {
     localStorage.setItem(LOCAL_KEY, JSON.stringify({ name, avatar, quests, approvals, memories }));
@@ -422,9 +426,10 @@ export function DawnProvider({ children }: { children: ReactNode }) {
     decide,
     saveQuest,
     clearDesk,
+    roster,
   }), [
     ready, mode, user, name, avatar, authError, note, quests, approvals, memories,
-    signInLocal, signInGoogle, signOut, setAvatar, setName, remember, addApproval, decide, saveQuest, clearDesk,
+    signInLocal, signInGoogle, signOut, setAvatar, setName, remember, addApproval, decide, saveQuest, clearDesk, roster,
   ]);
 
   return <DawnContext.Provider value={value}>{children}</DawnContext.Provider>;
