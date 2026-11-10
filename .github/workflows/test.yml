@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+env:
+  OPENVSCODE_VERSION: v1.109.5
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -13,7 +16,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - name: Chrome for the redirect test
+      - name: Chrome for the browser tests
         run: |
           sudo apt-get update
           sudo apt-get install -y wget
@@ -21,4 +24,43 @@ jobs:
           sudo apt-get install -y /tmp/chrome.deb
       - run: npm ci --legacy-peer-deps
       - run: npm run build
+      - name: Build the code gateway
+        run: |
+          npm --prefix editor ci
+          npm --prefix editor run build
+          npm --prefix editor run typecheck
+      - name: OpenVSCode Server (cached)
+        uses: actions/cache@v4
+        with:
+          path: /tmp/dawn-code-cache
+          key: openvscode-${{ env.OPENVSCODE_VERSION }}-linux-x64
+      - name: Download OpenVSCode Server
+        run: |
+          dir=/tmp/dawn-code-cache/openvscode-server-${OPENVSCODE_VERSION}-linux-x64
+          if [ ! -x "$dir/bin/openvscode-server" ]; then
+            mkdir -p /tmp/dawn-code-cache
+            curl -fL --retry 4 -o /tmp/dawn-code-cache/ov.tar.gz \
+              "https://github.com/gitpod-io/openvscode-server/releases/download/openvscode-server-${OPENVSCODE_VERSION}/openvscode-server-${OPENVSCODE_VERSION}-linux-x64.tar.gz"
+            tar -xzf /tmp/dawn-code-cache/ov.tar.gz -C /tmp/dawn-code-cache
+            rm /tmp/dawn-code-cache/ov.tar.gz
+          fi
+          test -x "$dir/bin/openvscode-server"
       - run: npm test
+      - name: Character Maker browser check
+        run: npm run check:forge -- "$RUNNER_TEMP/forge-shots"
+
+  rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci --legacy-peer-deps
+      - name: Firestore rules on the local emulator
+        run: npm run test:rules

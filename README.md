@@ -123,6 +123,18 @@ See `docs/dawn-agents-editor-api.md`. Browser routes use the Google session. The
 - Group replies run one agent after another.
 - Dawn Code, the VS Code editor, is in `editor/`. It calls `docs/dawn-agents-editor-api.md` and keeps a local stub when a route is missing.
 
+## Tests
+
+`npm test` runs every suite: `test:app` (all `src/lib` suites, including the kit, browser and OpenVSCode ones) and `test:editor` (the code gateway in `editor/`). Several suites need things on the machine:
+
+- `npm run build` first, so `out/` exists for the route and browser tests, and a local Chrome.
+- `npm --prefix editor ci && npm --prefix editor run build` for `editor/dist/gateway.cjs`.
+- OpenVSCode Server in `/tmp/dawn-code-cache` (see `editor/scripts/dev.sh`).
+
+The two OpenVSCode runtime tests skip with a reason when the binary or the gateway bundle is missing, except when `CI` is set, where a missing piece fails the run. CI (`.github/workflows/test.yml`) builds and downloads both.
+
+Run separately, because they do not belong in a plain unit run: `npm run check:forge` (Character Maker in Chrome; it writes screenshots, pass an output directory) and `npm run test:rules` (Firestore rules on the local emulator, needs Java). CI runs both. No suite calls a model, Telegram, Google or any mail service.
+
 ## ⚡ Architecture & Features
 
 - **Monaco Code Editor**: Full-featured VS Code-style editor with syntax highlighting, auto-completion, and multi-file context tracking.
