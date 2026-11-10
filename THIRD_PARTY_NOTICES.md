@@ -52,4 +52,10 @@ https://kenney.nl/assets/tiny-dungeon
 
 ## OpenStreetMap
 
-The map tab uses Leaflet and OpenStreetMap tiles. © OpenStreetMap contributors.
+The Here layer uses Leaflet and OpenStreetMap tiles. © OpenStreetMap contributors.
+
+The Atlas basemap (`public/maps/atlas/cardinal-basemap.json`) is drawn from OpenStreetMap data fetched once at build time with `scripts/atlas-bake-basemap.mjs`. It is a simplified derivative of the Overpass extract, shared under the Open Database License (ODbL 1.0). © OpenStreetMap contributors. https://www.openstreetmap.org/copyright. The file names its source and licence in its own `meta`, and the map shows the credit and an ODbL link.
+
+## Cardinal Quest
+
+The Atlas stories, quizzes, sources, tours and place notes in `src/features/atlas/data/cardinal/` are ported from Kyle's own `Artometrics/cardinal-quest` repository (commit ff16ac4) by `scripts/atlas-import-cardinal.mjs`. Source links stay on every card. Wikipedia links are marked secondary.

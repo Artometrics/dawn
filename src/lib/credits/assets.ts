@@ -17,6 +17,7 @@ export const BUNDLED_ASSETS: BundledAsset[] = [
   { file: 'public/maps/dawn-town-staging.png', what: 'Staging home plate until a Tiled map replaces it. Approved Dawn Town comp, not a game rip.', artist: 'Dawn', sourceUrl: 'https://github.com/Artometrics/dawn', license: 'Project original' },
   { file: 'public/sprites/town/LICENSE.txt', what: 'License note for the Dawn Town cast', artist: 'Dawn', sourceUrl: 'https://github.com/Artometrics/dawn', license: 'Project original' },
   { file: 'public/sprites/town/player.png', what: 'Dawn Town player', artist: 'Dawn', sourceUrl: 'https://github.com/Artometrics/dawn', license: 'Project original' },
+  { file: 'public/maps/atlas/cardinal-basemap.json', what: 'Atlas campus basemap, baked from OpenStreetMap data (roads, paths, buildings, water, green)', artist: 'OpenStreetMap contributors', sourceUrl: 'https://www.openstreetmap.org/copyright', license: 'ODbL-1.0' },
   { file: 'public/sprites/town/atlas-scout.png', what: 'Atlas Scout', artist: 'Dawn', sourceUrl: 'https://github.com/Artometrics/dawn', license: 'Project original' },
   { file: 'public/sprites/town/code-mage.png', what: 'Code Mage', artist: 'Dawn', sourceUrl: 'https://github.com/Artometrics/dawn', license: 'Project original' },
   { file: 'public/sprites/town/recipe-keeper.png', what: 'Recipe Keeper', artist: 'Dawn', sourceUrl: 'https://github.com/Artometrics/dawn', license: 'Project original' },

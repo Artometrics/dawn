@@ -2,12 +2,13 @@
 //   node scripts/atlas-shots.mjs [outDir]
 import { existsSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { chromium } from 'playwright-core';
 import { serveOut } from './lib/static-server.mjs';
 
 const outDir = path.resolve('out');
-const shots = path.resolve(process.argv[2] || 'docs/atlas/screenshots');
+const shots = path.resolve(process.argv[2] || path.join(os.tmpdir(), 'atlas-shots'));
 const chromeBin = ['/usr/local/bin/google-chrome', '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium'].find((file) => existsSync(file));
 if (!chromeBin) throw new Error('Chrome is not installed');
 if (!existsSync(path.join(outDir, 'atlas/index.html'))) throw new Error('Run `npm run build` first. out/atlas/index.html is missing.');

@@ -241,7 +241,7 @@ The shell is a phone column that becomes a fixed drawer beside the work. Below t
 
 The bottom search sits in the safe area (`padding-bottom` at least 12px, plus `env(safe-area-inset-bottom)`). Lists pad about 96px at the bottom so the floating pill and the search do not cover the last row. The drawer’s top inset is at least 20px, plus the safe-area top. Horizontal rhythm is 12px on the phone column, 16px on reading blocks, and 20px in the drawer. Stacked sections in the drawer open with 24px. Related controls use 8px gaps; catalog rows use 12px.
 
-Atlas is full bleed. A translucent search (44px, black at 70%) sits in the top safe area. Layers and recenter are a vertical pair of 44px rounds, 8px apart, inset 12px from the right. The sheet snaps to 26%, 46%, and 78% of the height. Minor labels fade with zoom: opacity runs from 0 at scale 1.15 to 1 at scale 1.85.
+Atlas is full bleed on a phone. From 900px of width it becomes a 420px side panel (search, four tabs, then the list, tour, story or card) beside the map. A translucent search (44px, black at 70%) sits in the top safe area. Layers and recenter are a vertical pair of 44px rounds, 8px apart, inset 12px from the right. The sheet snaps to 26%, 46%, and 78% of the height. Labels fade with zoom, in pixels per metre: road names from 0 at 0.28 to 1 at 0.48, minor names from 0.7 to 1.1, and catalog place names from 0.45 to 0.8. Stop pills turn into numbered dots where they would collide, so no two pills overlap. Every map control and every row is 44px or taller.
 
 ### Named Rules
 

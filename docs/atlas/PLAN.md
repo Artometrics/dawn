@@ -96,3 +96,10 @@ Ported: all data and story content, tours, threads, timeline, quizzes, hunt, ran
 - Atlas as the opening view is a call for Kyle. This plan makes it the first stop from `/`. Changing `/` itself is a one-line route swap.
 - Book-part mapping on each thread is still marked "draft mapping", as in the source.
 - The Apify/Google-Maps place list in `data/atlas/stanford-places.json` is no longer read. It is left in place for Kyle to decide.
+
+## As built
+
+- The panel has four tabs: Places, Tours, Story (threads and timeline) and You (rank, stats, era stamps, daily hunt, location, reset). It opens on Tours with the Founders' Walk drawn and its first stop live.
+- A round button on the map swaps in the existing Here layer (OpenStreetMap tiles) and back.
+- The village drawer's Atlas section renders the same component. The old campus-atlas code and `src/lib/atlas/` are gone; the Apify name list in `data/atlas/stanford-places.json` stays on disk, unread.
+- Nav: Atlas is the second link, right after Town, and the first chip on the town sheet.

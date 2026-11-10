@@ -108,6 +108,12 @@
   background: transparent;
   font-size: 16px;
 }
+.at-search input::-webkit-search-cancel-button {
+  display: none;
+}
+.at-search input:focus-visible {
+  outline: 0;
+}
 .at-search input::placeholder {
   color: var(--dawn-placeholder);
 }
@@ -335,7 +341,7 @@
 .at-credit {
   position: absolute;
   left: 8px;
-  z-index: 15;
+  z-index: 40;
   margin: 0;
   padding: 0 8px;
   border-radius: 6px;
