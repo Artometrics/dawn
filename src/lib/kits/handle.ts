@@ -1,5 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import path from 'node:path';
 import { KITS, kitById, type KitId } from './registry.ts';
+import { TeammatesDesk } from './teammates-chat.ts';
 import { runKit } from './runners.ts';
 
 type SendJson = (res: ServerResponse, status: number, body: unknown) => void;
@@ -28,6 +30,10 @@ export async function handleKits(
     });
     return;
   }
+  if (pathname.startsWith('/api/kits/teammates/')) {
+    await teammatesRoute(req, res, pathname, _dataRoot, sendJson);
+    return;
+  }
   const id = pathname.slice('/api/kits/'.length);
   const kit = kitById(id);
   if (!kit || req.method !== 'POST') {
@@ -51,6 +57,53 @@ export async function handleKits(
     sendJson(res, 200, { ...result, title: kit.title, source: kit.source, replaced: kit.replaced });
   } catch (error) {
     sendJson(res, 400, { error: error instanceof Error ? error.message : 'The check failed.', delivered: false, model: 'mock' });
+  }
+}
+
+async function teammatesRoute(
+  req: IncomingMessage,
+  res: ServerResponse,
+  pathname: string,
+  dataRoot: string,
+  sendJson: SendJson,
+): Promise<void> {
+  const desk = new TeammatesDesk(path.join(dataRoot, 'teammates.sqlite'));
+  if (req.method === 'POST' && pathname === '/api/kits/teammates/rooms') {
+    const created = desk.createRoom();
+    sendJson(res, 201, { ...desk.getRoom(created.id), model: 'mock', delivered: false });
+    return;
+  }
+  const match = pathname.match(/^\/api\/kits\/teammates\/rooms\/([^/]+)(?:\/messages)?$/);
+  if (!match) {
+    sendJson(res, 404, { error: 'Unknown teammates route.' });
+    return;
+  }
+  const id = decodeURIComponent(match[1]);
+  if (req.method === 'GET') {
+    try {
+      sendJson(res, 200, { ...desk.getRoom(id), model: 'mock', delivered: false });
+    } catch (error) {
+      sendJson(res, 404, { error: error instanceof Error ? error.message : 'Room not found' });
+    }
+    return;
+  }
+  if (req.method !== 'POST' || !pathname.endsWith('/messages')) {
+    sendJson(res, 404, { error: 'Unknown teammates route.' });
+    return;
+  }
+  const raw = await readBody(req);
+  let body: { text?: string } = {};
+  try {
+    body = JSON.parse(raw) as { text?: string };
+  } catch {
+    sendJson(res, 400, { error: 'JSON is required.' });
+    return;
+  }
+  try {
+    const room = await desk.postMessage(id, String(body.text || ''));
+    sendJson(res, 200, { ...room, model: 'mock', delivered: false });
+  } catch (error) {
+    sendJson(res, 400, { error: error instanceof Error ? error.message : 'The turn stopped.', model: 'mock', delivered: false });
   }
 }
 

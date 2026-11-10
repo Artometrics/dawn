@@ -16,9 +16,9 @@ export const KITS: KitInfo[] = [
   {
     id: 'teammates',
     title: 'AI Teammates',
-    source: 'code-with-antonio/ai-teammates lib/sandbox-tools.ts and lib/handoff-tool.ts',
-    adapted: 'File, memory, and handoff tools inside a child process whose working directory is a jail.',
-    replaced: 'Daytona desktop, Trigger.dev, Neon, and Clerk. No screenshot tool and no model call.',
+    source: 'code-with-antonio/ai-teammates lib/handoff-tool.ts',
+    adapted: 'A group chat stores turns in SQLite. Handoff switches the speaker and keeps the note.',
+    replaced: 'Daytona, Trigger.dev, Neon, and Clerk. Replies are mock. No model call.',
     href: '/kits/teammates',
     liveUrl: `${HOST}/kits/teammates`,
   },
