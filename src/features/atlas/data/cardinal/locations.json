@@ -1,0 +1,526 @@
+{
+  "_meta": {
+    "title": "Cardinal Quest campus location catalog",
+    "version": "0.1",
+    "derivedFrom": "Cardinal campus app location list (working doc, Oct 30, 2026). Entries, points, OSM ids, scene files, podcast segments and notes are taken from that doc; nothing here is a new historical claim.",
+    "coordinateSource": "OpenStreetMap Nominatim lookup run for the working doc on Oct 30, 2026. Each point is a map point, not a surveyed position; confirm on the map before it becomes an unlock zone. Map data (c) OpenStreetMap contributors (ODbL).",
+    "osmUrlPattern": "https://www.openstreetmap.org/<type>/<id>",
+    "bookRepo": "kylesmcauliffe/cardinal",
+    "bookScenePath": "site/corpus/rewrite/chapters",
+    "podcastPath": "site/corpus/podcast",
+    "flags": {
+      "offCampus": "true only where the working doc says the place is off campus",
+      "privateProperty": "private property; exterior only, never an unlock zone inside the lot",
+      "exteriorOnly": "pin and audio from outside only",
+      "linear": "a line feature (zone along it, no pin)",
+      "needsPoint": "the doc has no point for this place yet; lat and lon stay null until one is confirmed",
+      "noPin": "deliberately no map pin or address; audio mention only"
+    }
+  },
+  "locations": [
+    {
+      "id": "el-palo-alto",
+      "name": "El Palo Alto (the double redwood)",
+      "lat": 37.44716,
+      "lon": -122.16996,
+      "osm": { "type": "node", "id": 369171762 },
+      "bookScenes": [
+        { "file": "ep1-01-the-tree", "context": "Portolá camp, \"double redwood\"" }
+      ],
+      "podcastSegments": [
+        "Ep 1, 01. The Tall Stick",
+        "Ep 1, 08. The Rancho",
+        "Ep 1, 10. Prove It"
+      ],
+      "note": "Off campus (City of Palo Alto, by Caltrain). Prologue stop. GN shots 1.02 and 1.03 are set here.",
+      "offCampus": true,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "san-francisquito-creek",
+      "name": "San Francisquito Creek (campus edge)",
+      "lat": null,
+      "lon": null,
+      "osm": null,
+      "bookScenes": [
+        { "file": "ep1-04-rancho" },
+        { "file": "ep6-05-east-palo-alto" },
+        { "file": "coda" }
+      ],
+      "podcastSegments": [
+        "Ep 1, 08. The Rancho",
+        "Ep 6, 07. Across the Creek"
+      ],
+      "note": "Linear feature: better as a \"walk along\" audio zone than a pin. The doc takes no single OSM point; it suggests using a point on the creek near El Palo Alto.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": true,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "red-barn",
+      "name": "Red Barn (Palo Alto Stock Farm, Muybridge track)",
+      "lat": 37.42468,
+      "lon": -122.1844,
+      "osm": { "type": "way", "id": 232494091 },
+      "bookScenes": [
+        { "file": "ep4-03-farm-opening-day", "context": "Muybridge, 8 mentions" },
+        { "file": "coda", "context": "Governor's Ave, Electioneer" }
+      ],
+      "podcastSegments": [
+        "Ep 5, 06. The Myth Machine"
+      ],
+      "note": "Ep 5, 06 says \"shot on this farm\". The 1880 zoopraxiscope showing (Ep 8, 04. The Studio) was at the San Francisco mansion, not here.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "main-quad",
+      "name": "Main Quad",
+      "lat": 37.42749,
+      "lon": -122.17179,
+      "osm": { "type": "relation", "id": 35820 },
+      "bookScenes": [
+        { "file": "ep5-03-earthquake", "context": "students \"in the quad\"" },
+        { "file": "coda", "context": "Lasuen Mall \"cuts the Quad\"" }
+      ],
+      "podcastSegments": [
+        "Ep 4, 05. A Supermission",
+        "Ep 4, 07. The Story of Our Streets",
+        "Ep 4, 08. Opening Day",
+        "Ep 5, 01. The Spire and the Plank"
+      ],
+      "note": "Central hub; most tour routes will pass it.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "memorial-church",
+      "name": "Memorial Church",
+      "lat": 37.42692,
+      "lon": -122.17051,
+      "osm": { "type": "way", "id": 836474103 },
+      "bookScenes": [
+        { "file": "ep5-03-earthquake", "context": "spire falls, 1906" },
+        { "file": "ep5-02-bionomics", "context": "passing mention" }
+      ],
+      "podcastSegments": [
+        "Ep 4, 12. The Church of One",
+        "Ep 5, 01. The Spire and the Plank"
+      ],
+      "note": "Strong graphic-novel set: before/after spire.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "palm-drive",
+      "name": "Palm Drive",
+      "lat": 37.43473,
+      "lon": -122.16783,
+      "osm": { "type": "way", "id": 396887096 },
+      "bookScenes": [
+        { "file": "coda", "context": "Palm Drive" },
+        { "file": "ep5-03-earthquake", "context": "arch fell" }
+      ],
+      "podcastSegments": [
+        "Ep 4, 05. A Supermission"
+      ],
+      "note": "Point is the OSM way for Palm Drive. The doc lists Palm Drive and the Memorial Arch site as one row; the arch site is a separate entry (memorial-arch-site) because it needs its own point.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "memorial-arch-site",
+      "name": "Memorial Arch site (head of Palm Drive)",
+      "lat": null,
+      "lon": null,
+      "osm": null,
+      "bookScenes": [
+        { "file": "ep5-03-earthquake", "context": "arch fell" },
+        { "file": "coda", "context": "\"Memorial Arch stood at its head until 1906\"" }
+      ],
+      "podcastSegments": [
+        "Ep 4, 05. A Supermission"
+      ],
+      "note": "The arch site needs its own point at the head of Palm Drive; not looked up yet.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": true,
+      "noPin": false
+    },
+    {
+      "id": "encina-hall",
+      "name": "Encina Hall",
+      "lat": 37.42775,
+      "lon": -122.16418,
+      "osm": { "type": "node", "id": 4742672899 },
+      "bookScenes": [
+        { "file": "ep5-03-earthquake", "context": "students asleep in Encina" }
+      ],
+      "podcastSegments": [
+        "Ep 4, 05",
+        "Ep 4, 08",
+        "Ep 4, 11",
+        "Ep 6, 10. April Third",
+        "Ep 7, 02. The Ticket Booth",
+        "Ep 7, 07. Bayh-Dole"
+      ],
+      "note": "One building, three eras: 1891 dorm, 1906 quake, 1970s licensing office. Ep 7, 07 has the licensing trailer \"behind Encina Hall\".",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "stanford-mausoleum",
+      "name": "Stanford Mausoleum",
+      "lat": 37.43651,
+      "lon": -122.16994,
+      "osm": { "type": "way", "id": 232715721 },
+      "bookScenes": [
+        { "file": "ep4-06-poland-moana-mausoleum", "context": "7 mentions" },
+        { "file": "ep5-03-earthquake" }
+      ],
+      "podcastSegments": [
+        "Ep 4, 06. Two Widows"
+      ],
+      "note": "Pairs with the Arizona Garden (arizona-cactus-garden). The doc lists the Mausoleum and the Angel of Grief in one row; the Angel has its own entry (angel-of-grief).",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "angel-of-grief",
+      "name": "Angel of Grief",
+      "lat": 37.43737,
+      "lon": -122.1688,
+      "osm": { "type": "node", "id": 6477042804 },
+      "bookScenes": [],
+      "podcastSegments": [
+        "Ep 4, 06. Two Widows"
+      ],
+      "note": "Angel of Grief is in the game but never named in the book. Listed with the Stanford Mausoleum in the doc, so the book scene and podcast segment are the Mausoleum row's. Pairs with the Arizona Garden (arizona-cactus-garden).",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "cantor-arts-center",
+      "name": "Cantor Arts Center (Leland Stanford Jr. Museum)",
+      "lat": 37.43301,
+      "lon": -122.17088,
+      "osm": { "type": "relation", "id": 12236339 },
+      "bookScenes": [
+        { "file": "coda", "context": "Museum Way, \"the memorial Jane Stanford built for her son\"" }
+      ],
+      "podcastSegments": [
+        "Ep 4, 02. Florence",
+        "Ep 5, 01. The Spire and the Plank"
+      ],
+      "note": "Ep 4, 02: the boy's room moved into the museum in 1893. Ep 5, 01: the golden spike \"sits in the art museum\". Good object-based audio stop (the spike).",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "hoover-tower",
+      "name": "Hoover Tower",
+      "lat": 37.42762,
+      "lon": -122.16699,
+      "osm": { "type": "way", "id": 232805688 },
+      "bookScenes": [
+        { "file": "coda", "context": "tallest structure, archive begun 1919" },
+        { "file": "ep5-04-feeding-belgium", "context": "Hoover Institution" },
+        { "file": "ep5-05-commerce", "context": "Hoover Institution" }
+      ],
+      "podcastSegments": [
+        "Ep 5, 05. Feeding Belgium",
+        "Ep 6, 08. Three Landings",
+        "Ep 7, 08. The Bechtel Cabinet",
+        "Ep 8, 09",
+        "Ep 8, 11",
+        "Ep 8, 15"
+      ],
+      "note": "The library's origin scene is still a gap in the book (outline check, Oct 29).",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "hp-garage",
+      "name": "HP Garage, 367 Addison Ave",
+      "lat": 37.44302,
+      "lon": -122.15464,
+      "osm": { "type": "way", "id": 133684662 },
+      "bookScenes": [
+        { "file": "ep5-06-radio-lab", "context": "opens here, 1939" },
+        { "file": "ep6-01-the-lease" },
+        { "file": "ep6-04-defense-money" }
+      ],
+      "podcastSegments": [
+        "Ep 5, 09. The Garage",
+        "Ep 6, 02. Why Here"
+      ],
+      "note": "Off campus, private property. Exterior only: never an unlock zone inside the lot.",
+      "offCampus": true,
+      "privateProperty": true,
+      "exteriorOnly": true,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "stanford-research-park",
+      "name": "Stanford Research Park (Hansen Way, Page Mill Rd)",
+      "lat": 37.42094,
+      "lon": -122.13802,
+      "osm": { "type": "way", "id": 8928677 },
+      "bookScenes": [
+        { "file": "ep6-01-the-lease", "context": "1951, Varian first tenant, Hansen Way" },
+        { "file": "ep6-05-east-palo-alto" }
+      ],
+      "podcastSegments": [
+        "Ep 6, 01. The Lease",
+        "Ep 6, 02. Why Here",
+        "Ep 6, 08. Three Landings",
+        "Ep 8, 15. The Pattern"
+      ],
+      "note": "Point is Hansen Way (OSM way). Large area; a drive-by or bike stop rather than walking.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "applied-electronics-laboratory",
+      "name": "Applied Electronics Laboratory (April Third sit-in, 1969)",
+      "lat": null,
+      "lon": null,
+      "osm": null,
+      "bookScenes": [
+        { "file": "ep6-06-april-third" }
+      ],
+      "podcastSegments": [
+        "Ep 6, 10. April Third",
+        "Ep 6, 11. Off the Books"
+      ],
+      "note": "Not looked up: the lab's building and its current name need confirming first. Don't place a pin until the building is confirmed from a Stanford source.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": true,
+      "noPin": false
+    },
+    {
+      "id": "gates-computer-science",
+      "name": "Gates Computer Science Building",
+      "lat": 37.43014,
+      "lon": -122.17353,
+      "osm": { "type": "way", "id": 232841885 },
+      "bookScenes": [
+        { "file": "ep7-04-backrub", "context": "opens here, Jan 1997" }
+      ],
+      "podcastSegments": [
+        "Ep 7, 10. BackRub"
+      ],
+      "note": "OSM has a second \"Gates Building\" node nearby (5686381081); use the building outline.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "sand-hill-3000",
+      "name": "3000 Sand Hill Road",
+      "lat": 37.42347,
+      "lon": -122.22112,
+      "osm": { "type": "way", "id": 166728484 },
+      "bookScenes": [
+        { "file": "ep7-01-sand-hill", "context": "Kleiner Perkins lease, 1972" }
+      ],
+      "podcastSegments": [
+        "Ep 7, 01. Sand Hill"
+      ],
+      "note": "Off campus, on Stanford land. The OSM way is matched to \"Restaurant 3000\" at that address. Point is one building in the complex; fine for a zone.",
+      "offCampus": true,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "rosewood-sand-hill",
+      "name": "Rosewood Sand Hill",
+      "lat": 37.41953,
+      "lon": -122.21254,
+      "osm": { "type": "way", "id": 384022279 },
+      "bookScenes": [
+        { "file": "ep8-04-rosewood-daily" }
+      ],
+      "podcastSegments": [
+        "Ep 8, 11. The Aura",
+        "Ep 8, 15. The Pattern"
+      ],
+      "note": "Hotel; exterior only.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": true,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "stanford-daily-building",
+      "name": "Stanford Daily building (Lorry I. Lokey Stanford Daily Building)",
+      "lat": 37.4256,
+      "lon": -122.17068,
+      "osm": { "type": "way", "id": 886812786 },
+      "bookScenes": [
+        { "file": "ep8-04-rosewood-daily", "context": "2022 investigation" }
+      ],
+      "podcastSegments": [
+        "Ep 8, 12. The Freshman"
+      ],
+      "note": "Check that the 2022 reporting was based in this building before using \"here\" in narration.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "street-name-walk",
+      "name": "Street-name walk (Lasuen Mall, Serra, Gálvez, Alvarado Row, Jane Stanford Way, Governor's Ave, Electioneer)",
+      "lat": 37.42716,
+      "lon": -122.16858,
+      "osm": { "type": "node", "id": 358816618 },
+      "bookScenes": [
+        { "file": "coda-street-names", "context": "narrator walk" }
+      ],
+      "podcastSegments": [
+        "Ep 4, 07. The Story of Our Streets",
+        "Ep 7, 06. The Story of Our Streets"
+      ],
+      "note": "Point is Lasuen Mall only; the other streets were not looked up and have no point. The coda is already a walking tour; it could be the app's closing route.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "arizona-cactus-garden",
+      "name": "Arizona Cactus Garden",
+      "lat": 37.43588,
+      "lon": -122.1711,
+      "osm": { "type": "way", "id": 525728184 },
+      "bookScenes": [],
+      "podcastSegments": [],
+      "note": "Not in the book or in the podcast scripts searched. Game-only for now (Cardinal Quest v0.1 doc has cited history). Pairs with the Stanford Mausoleum.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "lake-lagunita",
+      "name": "Lake Lagunita",
+      "lat": 37.42242,
+      "lon": -122.17605,
+      "osm": { "type": "way", "id": 1357657104 },
+      "bookScenes": [],
+      "podcastSegments": [],
+      "note": "Not in the book or in the podcast scripts searched. Game-only for now.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "hanna-house",
+      "name": "Hanna House",
+      "lat": 37.41595,
+      "lon": -122.16369,
+      "osm": { "type": "way", "id": 232668564 },
+      "bookScenes": [],
+      "podcastSegments": [],
+      "note": "Not in the book or in the podcast scripts searched. Tour-only residence; game-only for now.",
+      "offCampus": false,
+      "privateProperty": false,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": false
+    },
+    {
+      "id": "google-garage-menlo-park",
+      "name": "Google garage (Menlo Park)",
+      "lat": null,
+      "lon": null,
+      "osm": null,
+      "bookScenes": [
+        { "file": "ep7-05-google-garage" }
+      ],
+      "podcastSegments": [
+        "Ep 7, 10. BackRub (garage mention)"
+      ],
+      "note": "No pin on purpose. A private home. Mention in audio only; no map pin or address in the app.",
+      "offCampus": true,
+      "privateProperty": true,
+      "exteriorOnly": false,
+      "linear": false,
+      "needsPoint": false,
+      "noPin": true
+    }
+  ]
+}
