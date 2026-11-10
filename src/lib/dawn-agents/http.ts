@@ -244,6 +244,16 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
             sendJson(res, 200, { html });
             return;
           }
+          if (body.kind === 'script') {
+            const result = await desk.runSandboxFile(deskRoot, String(body.name || ''));
+            sendJson(res, 200, { result });
+            return;
+          }
+          if (body.kind === 'approve') {
+            const draft = await desk.approveSend(deskRoot, String(body.id || ''));
+            sendJson(res, 200, { draft, delivery: desk.deliverSend(draft) });
+            return;
+          }
         } catch (error) {
           sendJson(res, 400, { error: error instanceof Error ? error.message : 'Refused.' });
           return;

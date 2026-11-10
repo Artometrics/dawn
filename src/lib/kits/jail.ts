@@ -6,8 +6,13 @@ import path from 'node:path';
 export type JailRequest = {
   tool: string;
   mode?: 'plan' | 'build';
+  suite?: 'nightcode';
   path?: string;
   content?: string;
+  pattern?: string;
+  oldString?: string;
+  newString?: string;
+  command?: string;
   key?: string;
   value?: string;
   to?: string;

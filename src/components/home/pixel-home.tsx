@@ -8,7 +8,7 @@ import { api, gatewayBase, googleSignInHref, type Thread } from '@/components/da
 import type { SavedLine } from '@/components/home/bot-talk';
 import { searchTown, type SearchHit } from '@/lib/home/town-search';
 import { stepHero } from '@/lib/home/town-walk';
-import { isPaintedPlayerPixel, isTownWalkable, PAINTED_PLAYER, pathCell, TOWN_DOORS } from '@/lib/home/town-ground';
+import { isTownWalkable, pathCell, TOWN_DOORS } from '@/lib/home/town-ground';
 import { activeMapLayer, hotspotAt, type MapHotspot, type MapLayer } from '@/lib/home/map-layer';
 import { probeDesk, townAction, type DeskStatus } from '@/lib/home/town-action';
 import { PLAYER_SRC } from '@/lib/home/overworld';
@@ -815,45 +815,6 @@ function buildWalkGrid(map: HTMLImageElement, layerView = { x: 0, y: 330, w: 768
       if (seen && ok * 2 >= seen) grid[cy * cols + cx] = 1;
     }
   }
-  const { x, y, w, h } = PAINTED_PLAYER;
-  const pad = 2;
-  const block = ctx.getImageData(x - pad, y - pad, w + pad * 2, h + pad * 2);
-  const width = w + pad * 2;
-  const height = h + pad * 2;
-  const painted = new Uint8Array(width * height);
-  for (let i = 0; i < painted.length; i += 1) {
-    const offset = i * 4;
-    if (isPaintedPlayerPixel(block.data[offset], block.data[offset + 1], block.data[offset + 2])) painted[i] = 1;
-  }
-  for (let pass = 0; pass < width + height; pass += 1) {
-    let changed = false;
-    const next = painted.slice();
-    const copy = block.data.slice();
-    for (let i = 0; i < painted.length; i += 1) {
-      if (!painted[i]) continue;
-      const px = i % width;
-      const py = Math.floor(i / width);
-      const neighbors = [i - 1, i + 1, i - width, i + width];
-      for (const neighbor of neighbors) {
-        const nx = neighbor % width;
-        const ny = Math.floor(neighbor / width);
-        if (neighbor < 0 || neighbor >= painted.length || Math.abs(nx - px) > 1 || ny < 0 || ny >= height || painted[neighbor]) continue;
-        const to = i * 4;
-        const from = neighbor * 4;
-        copy[to] = block.data[from];
-        copy[to + 1] = block.data[from + 1];
-        copy[to + 2] = block.data[from + 2];
-        copy[to + 3] = 255;
-        next[i] = 0;
-        changed = true;
-        break;
-      }
-    }
-    block.data.set(copy);
-    painted.set(next);
-    if (!changed) break;
-  }
-  ctx.putImageData(block, x - pad, y - pad);
   return { grid, cols, plate: canvas };
 }
 

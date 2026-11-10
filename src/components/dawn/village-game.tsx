@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import type Phaser from 'phaser';
 import type { VillageHandlers, VillagePose } from '@/components/dawn/village-scene';
 
-export function VillageGame(props: Omit<VillageHandlers, 'poses'> & { poses: VillagePose[] }) {
+export function VillageGame(props: Omit<VillageHandlers, 'poses' | 'looks'> & { poses: VillagePose[]; looks?: ReturnType<VillageHandlers['looks']> }) {
   const host = useRef<HTMLDivElement>(null);
   const handlers = useRef(props);
   handlers.current = props;
@@ -21,6 +21,7 @@ export function VillageGame(props: Omit<VillageHandlers, 'poses'> & { poses: Vil
         return handlers.current.avatar;
       },
       poses: () => handlers.current.poses,
+      looks: () => handlers.current.looks ?? {},
     };
 
     void import('@/components/dawn/village-scene').then(({ mountVillage }) => {

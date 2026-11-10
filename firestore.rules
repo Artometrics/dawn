@@ -33,6 +33,16 @@ service cloud.firestore {
     // Fields:
     //   - id, agentId, text 1-400, createdAt
     //
+    // Collection: users/{uid}/characters/{characterId}   (Character Maker roster)
+    // Fields:
+    //   - id: string equals document id (10-79)
+    //   - name: string 1-40 (the character's name)
+    //   - spec: map, a dawn.forge.character/1 object (checked again in the app)
+    //   - portrait: PNG data URL or '' (<= 60000 chars)
+    //   - sprite: small PNG data URL or '' (<= 20000 chars)
+    //   - agentId: '' | trinity | kali | nimbus (village avatar slot)
+    //   - createdAt immutable, updatedAt >= createdAt
+    //
     // Collection: rooms/{roomId}
     // Fields:
     //   - title: string equals room id, [a-z0-9-]{2,24}
@@ -140,6 +150,38 @@ service cloud.firestore {
         && (!data.keys().hasAny(['kind']) || data.kind in ['conversation', 'reflection', 'observation']);
     }
 
+    function pngOrEmpty(value, max) {
+      return value is string
+        && value.size() <= max
+        && (value == '' || value.matches('^data:image/png;base64,[A-Za-z0-9+/]+=*$'));
+    }
+
+    function validCharacter(data) {
+      return data.keys().hasOnly(['id', 'name', 'spec', 'portrait', 'sprite', 'agentId', 'createdAt', 'updatedAt'])
+        && data.id is string
+        && data.id.size() > 10
+        && data.id.size() < 80
+        && data.name is string
+        && data.name.size() > 0
+        && data.name.size() <= 48
+        && data.spec is map
+        && data.spec.version == 1
+        && data.spec.name == data.name
+        && data.spec.id is string
+        && data.spec.epithet is string
+        && data.spec.epithet.size() <= 64
+        && data.spec.body is map
+        && data.spec.colors is map
+        && data.spec.parts is map
+        && data.spec.paintOverlay is bool
+        && pngOrEmpty(data.portrait, 90000)
+        && pngOrEmpty(data.sprite, 20000)
+        && data.agentId in ['', 'trinity', 'kali', 'nimbus']
+        && freshMillis(data.createdAt)
+        && freshMillis(data.updatedAt)
+        && data.updatedAt >= data.createdAt;
+    }
+
     function validRoom(data) {
       return data.keys().hasOnly(['title', 'createdBy', 'createdAt'])
         && data.title is string
@@ -235,6 +277,20 @@ service cloud.firestore {
         allow update: if false;
         allow delete: if isOwner(uid);
       }
+    }
+
+    match /users/{uid}/characters/{characterId} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && validCharacter(request.resource.data)
+        && request.resource.data.id == characterId
+        && request.resource.size() < 200000;
+      allow update: if isOwner(uid)
+        && validCharacter(request.resource.data)
+        && request.resource.data.id == characterId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.size() < 200000;
+      allow delete: if isOwner(uid);
     }
 
     // Dawn Agents mirror. The live store is the gateway file. Only the owner
