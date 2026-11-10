@@ -63,6 +63,14 @@
 		file_server
 	}
 
+	# Kit pages are static. Their checks run on the loopback gateway.
+	handle /kits* {
+		import dawn_auth
+		root * {$DAWN_STATIC_ROOT}
+		try_files {path} {path}.html {path}/index.html
+		file_server
+	}
+
 	handle /editor* {
 		import dawn_auth
 		reverse_proxy 127.0.0.1:3000

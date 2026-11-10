@@ -191,6 +191,11 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       sendJson(res, 200, await snapshot());
       return;
     }
+    if (pathname === '/api/kits' || pathname.startsWith('/api/kits/')) {
+      const kits = await import('../kits/handle.ts');
+      await kits.handleKits(req, res, pathname, path.dirname(options.storePath), sendJson);
+      return;
+    }
     if (pathname === '/api/local-drafts') {
       const desk = await import('../integrations/local-desk.ts');
       const deskRoot = path.join(path.dirname(options.storePath), 'local-desk');
