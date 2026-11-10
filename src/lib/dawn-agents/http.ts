@@ -165,6 +165,14 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       if (!ownerOk(req)) return sendJson(res, 401, { error: 'Sign in with Google.' });
       return sendJson(res, 200, { email: emailFromProxyHeaders(req.headers) || firstAllowedEmail(ownerEmail) });
     }
+    if (pathname === '/api/kits' || pathname.startsWith('/api/kits/')) {
+      if (!ownerOk(req)) {
+        sendJson(res, 401, { error: 'not allowed' });
+        return;
+      }
+      await ownerRoute(req, res, pathname);
+      return;
+    }
     if (!ownerOk(req)) {
       sendJson(res, 401, { error: 'Sign in with Google.' });
       return;
