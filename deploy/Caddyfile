@@ -63,9 +63,11 @@
 		file_server
 	}
 
-	# Kit pages are static. Their checks run on the loopback gateway.
+	# Kit pages are static and stay public so tool pages do not bounce
+	# to Google sign-in. Kit APIs are also not behind oauth2-proxy; the
+	# gateway still returns 401 if the caller is not the owner. Do not
+	# open /editor, /agents, or the rest of /api/* this way.
 	handle /kits* {
-		import dawn_auth
 		root * {$DAWN_STATIC_ROOT}
 		try_files {path} {path}.html {path}/index.html
 		file_server
@@ -80,6 +82,10 @@
 	# oauth2-proxy's copy_headers replaces X-Auth-Request-Email. The gateway
 	# trusts that header only from loopback, so 8787 must not be a public bind
 	# and DAWN_ALLOW_LOOPBACK_OWNER must stay unset here.
+	handle /api/kits* {
+		reverse_proxy 127.0.0.1:8787
+	}
+
 	handle /api/* {
 		import dawn_auth
 		reverse_proxy 127.0.0.1:8787
