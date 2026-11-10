@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function VillagePreviewPage() {
-  return <VillagePreview />;
+  return <main style={{ display: 'contents' }}><h1 className="dw-sr-only">Village preview</h1><VillagePreview /></main>;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import '../agents/agents.css';
+import { PageShell } from '@/components/site/page-shell';
 
 type Row = { name: string; text: string; where: 'desk' | 'visit' };
 
@@ -66,34 +66,37 @@ export default function ProjectsPage() {
   }
 
   return (
-    <main className="dawn-agents" style={{ minHeight: '100dvh', padding: '16px 16px 32px' }}>
-      <div style={{ width: 'min(720px, 100%)', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <a href="/" style={{ minHeight: 44, display: 'inline-flex', alignItems: 'center', fontSize: 16 }}>Town</a>
-        <p className="word">DAWN</p>
-        <h1>Projects</h1>
-        <p className="note" role="status">{note}</p>
-        <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {rows.length === 0 && <li>No files yet.</li>}
+    <PageShell title="Projects" current="/projects" lead="Project files for Dawn. This is not the sample chat.">
+      <p className="dw-alert" role="status">{note}</p>
+      {rows.length === 0 ? (
+        <div className="dw-empty">
+          <img src="/tiles/you-0.png" alt="" width={72} height={72} />
+          <h2>No files yet</h2>
+          <p>Save a note below. It is stored on the desk when one is connected, and listed for this visit when not.</p>
+        </div>
+      ) : (
+        <ul className="dw-list">
           {rows.map((row) => (
-            <li key={row.name} style={{ padding: 12, borderRadius: 12, background: '#141824' }}>
+            <li key={row.name} className="dw-card">
               <strong>{row.name}</strong>
-              <span className="note"> {row.where === 'desk' ? 'On this desk' : 'This visit'}</span>
+              <span className="dw-note"> {row.where === 'desk' ? 'On this desk' : 'This visit'}</span>
               {row.text && <p style={{ margin: '8px 0 0', whiteSpace: 'pre-wrap' }}>{row.text}</p>}
             </li>
           ))}
         </ul>
-        <form onSubmit={(event) => { void save(event); }} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <label>
-            File name
-            <input value={name} onChange={(event) => setName(event.target.value)} style={{ width: '100%', fontSize: 16, minHeight: 44 }} />
-          </label>
-          <label>
-            Text
-            <textarea value={text} onChange={(event) => setText(event.target.value)} rows={5} style={{ width: '100%', fontSize: 16 }} />
-          </label>
-          <button type="submit" className="primary">Save file</button>
-        </form>
-      </div>
-    </main>
+      )}
+      <form className="dw-form dw-card" onSubmit={(event) => { void save(event); }}>
+        <h2 className="dw-card-title">New file</h2>
+        <label className="dw-label">
+          File name
+          <input className="dw-field" value={name} onChange={(event) => setName(event.target.value)} />
+        </label>
+        <label className="dw-label">
+          Text
+          <textarea className="dw-field" value={text} onChange={(event) => setText(event.target.value)} rows={5} />
+        </label>
+        <button type="submit" className="dw-btn dw-btn--primary">Save file</button>
+      </form>
+    </PageShell>
   );
 }

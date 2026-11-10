@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function AtlasPage() {
-  return <CampusAtlas />;
+  return <main style={{ display: 'contents' }}><h1 className="dw-sr-only">Atlas</h1><CampusAtlas /></main>;
 }

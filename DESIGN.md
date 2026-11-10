@@ -158,7 +158,7 @@ Dawn on a phone is a calm night list. The ground is near-black, reading text ste
 
 The word Dawn is set in Source Serif 4. Every other line in this shell is the grotesque. Actions, fields, and icon buttons are capsules. A message, a menu, or the team card sits on a slightly lifted grey with a gentle corner, still flat. A shadow appears only when something floats over the night: the white pill, the You menu, the map controls, the campus sheet, and the place markers.
 
-Atlas is its own night. The ground goes charcoal, the roads a step lighter, and neon is reserved for the walked path, the live zone, and the next leg. Stops are dark-blue pills. The person on the map is a pixel sprite. Minor names fade as the map zooms out. Studio keeps its own tokens and is outside this shell.
+Atlas is its own night. The ground goes charcoal, the roads a step lighter, and neon is reserved for the walked path, the live zone, and the next leg. Stops are dark-blue pills. The person on the map is a pixel sprite. Minor names fade as the map zooms out. Studio now draws from the same tokens as the rest of the site.
 
 **Key Characteristics:**
 
@@ -220,7 +220,7 @@ Lake Lagunita is a single ellipse (`#152028`). It is not a reusable surface.
 
 **Character:** The word Dawn is a quiet serif. Everything you scan or tap is a plain grotesque at phone sizes, with weight doing the ranking: regular rows, medium actions, semibold screen titles.
 
-`html` sets `font-sans`. The theme token `--font-sans` references itself, so the shell CSS does not assign `--font-geist-sans`. The sizes below are the ones the night shell actually sets. Geist is the grotesque the layout loads.
+`html` sets `font-sans`, which now resolves to Geist through `--font-geist-sans`. It used to reference itself, which made body text fall back to Times on every page that did not set its own font. The sizes below are the ones the night shell actually sets.
 
 ### Hierarchy
 
@@ -295,7 +295,7 @@ Primary actions are quiet because the fill is warm white on a near-black ground.
 
 ### Chips
 
-- **Style:** capsule, 36px tall, 12px horizontal padding, 14px. Unselected is chip stone and warm paper. Selected is clay and pill ink. This is the campus filter row (All, Quest, Gardens, Halls, Here) and the Student / Researcher pair. Catalog row actions (Talk, Open) are the same 36px chip-stone pill.
+- **Style:** capsule, 36px tall on desktop and 44px under 768px or on a coarse pointer, 12px horizontal padding, 14px. Unselected is chip stone and warm paper. Selected is clay and pill ink. This is the campus filter row (All, Quest, Gardens, Halls, Here) and the Student / Researcher pair. Catalog row actions (Talk, Open) are the same 36px chip-stone pill.
 - **State:** `aria-pressed` swaps the fill to clay. There is no separate hover fill.
 
 ### Cards / Containers
@@ -331,6 +331,20 @@ The sheet is sheet-colored, top radius 22px, with the sheet shadow. Its title is
 ### Named Rules
 
 **The Open Section Rule.** The current section is clay on the icon and the label. The row behind them stays unfilled.
+
+## One system for every page
+
+Every page, including the town map, the studio, the kits, the desk and the review pages, uses one set of tokens and one set of shared components. Before this, the site had five unrelated palettes (warm clay, navy and blue, brown and gold, glassy iOS teal, and an espresso studio).
+
+- **Tokens:** `src/styles/tokens.css`. Colour, type scale (12 to 34px), 4px spacing, radii, shadows, tap size (44px) and header height (56px). Page CSS references `var(--dawn-*)` and does not carry its own hex values. The only remaining literals are the traffic-light dots in Studio's window bar and the sand tile colour in the preview village, which are art.
+- **Components:** `src/styles/dawn-ui.css`, as `.dw-*` classes. `.dw-btn` with `--primary`, `--ghost`, `--danger`, `--icon`, `--chip` and `--block`; `.dw-card`, `.dw-panel`, `.dw-alert`, `.dw-row`, `.dw-badge`, `.dw-field`, `.dw-empty`, `.dw-table-wrap`. The older `.primary/.ghost/.icon-btn` names in `agents.css` are scoped under `.dawn-agents` and map to the same look.
+- **Page shell:** `src/components/site/page-shell.tsx`. Standalone pages get the same bar: the pixel DAWN mark (Press Start 2P, the only place that font is used for text), one chip per page from `src/lib/site/nav.ts`, and a footer with credits. App shells that fill the screen (town map, village, atlas, studio) keep their own chrome but use the same buttons, chips and colours.
+- **Dark only.** `color-scheme: dark`. There is no light theme and `prefers-color-scheme` changes nothing. The audit checks this.
+- **Serif is for display.** Page titles (`.dw-h1`) and the drawer wordmark use Source Serif 4. Everything else is Geist.
+- **One primary per view.** The warm-white pill is the primary action. Clay marks state (selected, current page, alerts). Plan and build kits use muted and clay borders, not new colours.
+- **Tap size.** Every button, chip and footer link is 44px on phones. The 36px desktop chip grows on coarse pointers.
+- **The 404 page** (`src/app/not-found.tsx`) uses the same shell and lists every page. `/chats` is not a page and lands there with a note.
+- Live reference: `/preview/style-guide`. Rendered copy and the all-pages contact sheet: `docs/process/design/STYLE_GUIDE.png`.
 
 ## Do's and Don'ts
 

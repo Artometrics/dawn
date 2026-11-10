@@ -1,0 +1,44 @@
+.rb {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-4);
+}
+
+.rb .board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+  gap: var(--dawn-space-4);
+}
+
+.rb .pin {
+  display: block;
+  min-height: var(--dawn-tap);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--dawn-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.rb .cv {
+  overflow: hidden;
+  border-radius: var(--dawn-radius-panel);
+  background: var(--dawn-elev);
+}
+
+.rb .pin .nm {
+  padding: var(--dawn-space-2) var(--dawn-space-1) 0;
+  font-size: var(--dawn-fs-action);
+  color: var(--dawn-secondary);
+}
+
+.rb .pin:hover .nm {
+  color: var(--dawn-text);
+}
+
+.rb-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-4);
+}

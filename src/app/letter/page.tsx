@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { gatewayBase } from '@/components/dawn-agents/api';
-import '../agents/agents.css';
+import { PageShell } from '@/components/site/page-shell';
 
 type Letter = { id: string; title: string; slug: string; dek: string; html?: string; recipeId?: string | null };
 
@@ -37,8 +37,12 @@ export default function LetterPage() {
         await fetch(`${url}/api/public/unsubscribe`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-reader-id': reader }, body: JSON.stringify({ token: params.get('unsub'), readerId: reader }) });
         setNote('You are unsubscribed.');
       }
-      const list = await fetch(`${url}/api/public/letters`).then((response) => response.json()) as { letters: Letter[] };
-      setLetters(list.letters || []);
+      try {
+        const list = await fetch(`${url}/api/public/letters`).then((response) => response.json()) as { letters: Letter[] };
+        setLetters(list.letters || []);
+      } catch {
+        setLetters([]);
+      }
     })();
   }, []);
   async function open(slug: string) {
@@ -52,36 +56,44 @@ export default function LetterPage() {
     }
   }
   return (
-    <div className="dawn-agents">
-      <main className="sheet-view" style={{ maxWidth: 680, margin: '0 auto' }}>
-        <p className="word">DAWN</p>
-        <h1>The letter</h1>
-        <p className="note">{note}</p>
-        <form
-          onSubmit={async (event) => {
-            event.preventDefault();
-            const reader = readerId();
+    <PageShell title="The letter" current="/letter" lead="A short note from Dawn. Subscribing needs the desk; on a static host the form cannot reach it.">
+      <p className="dw-alert" role="status">{note}</p>
+      <form
+        className="dw-form dw-card"
+        onSubmit={async (event) => {
+          event.preventDefault();
+          const reader = readerId();
+          try {
             const response = await fetch(`${base}/api/public/subscribe`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-reader-id': reader }, body: JSON.stringify({ email, readerId: reader }) });
             const body = (await response.json()) as { message?: string; error?: string };
             setNote(body.message || body.error || 'Request received.');
-          }}
-        >
-          <label>Email<input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} /></label>
-          <button className="primary" type="submit">Request the letter</button>
-        </form>
-        <ul className="list">
+          } catch {
+            setNote('The letter desk is not connected on this host, so nothing was requested.');
+          }
+        }}
+      >
+        <label className="dw-label">Email<input className="dw-field" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} /></label>
+        <button className="dw-btn dw-btn--primary" type="submit">Request the letter</button>
+      </form>
+      {letters.length === 0 ? (
+        <div className="dw-empty">
+          <img src="/sprites/town/letter-carrier.png" alt="" width={72} height={72} />
+          <h2>No letters yet</h2>
+          <p>Published letters list here once the desk is connected and one has been sent.</p>
+        </div>
+      ) : (
+        <ul className="dw-list">
           {letters.map((letter) => (
-            <li key={letter.id}><button type="button" className="row" onClick={() => open(letter.slug)}>{letter.title}</button></li>
+            <li key={letter.id}><button type="button" className="dw-row" onClick={() => open(letter.slug)}>{letter.title}</button></li>
           ))}
         </ul>
-        {current && (
-          <article>
-            <h2>{current.title}</h2>
-            <div dangerouslySetInnerHTML={{ __html: current.html || '' }} />
-          </article>
-        )}
-        <p className="note"><a href="/credits">Credits & licenses</a></p>
-      </main>
-    </div>
+      )}
+      {current && (
+        <article className="dw-card">
+          <h2 className="dw-card-title">{current.title}</h2>
+          <div dangerouslySetInnerHTML={{ __html: current.html || '' }} />
+        </article>
+      )}
+    </PageShell>
   );
 }

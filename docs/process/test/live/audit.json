@@ -1,0 +1,499 @@
+{
+  "label": "live",
+  "base": "https://dawn-510519.web.app",
+  "date": "2026-11-10T08:25:53.492Z",
+  "routes": [
+    {
+      "path": "/",
+      "name": "home",
+      "title": "Town map",
+      "widths": {
+        "390": {
+          "status": 200,
+          "console": [],
+          "pageErrors": [],
+          "failed": [],
+          "http": [],
+          "metrics": {
+            "title": "Private",
+            "h1": [],
+            "bodyBg": "rgb(244, 239, 230)",
+            "bodyFont": "Georgia",
+            "colorScheme": "normal",
+            "docHeight": 844,
+            "overflowX": 0,
+            "overflowers": [],
+            "interactiveCount": 3,
+            "tapSmallCount": 1,
+            "tapSmall": [
+              "13x13 input#staticrypt-remember"
+            ],
+            "fontSizes": {
+              "15.2": 2,
+              "13.6": 1
+            },
+            "fontFamilies": {
+              "system-ui": 3
+            },
+            "smallText": [],
+            "smallTextCount": 0,
+            "lowContrast": [],
+            "lowContrastCount": 0,
+            "radii": {},
+            "buttonLookCount": 0,
+            "buttonLooks": {},
+            "bgColors": {
+              "rgb(255, 255, 255)": 1,
+              "rgb(26, 25, 22)": 1
+            },
+            "brokenImages": [],
+            "textLength": 81,
+            "hasMain": false,
+            "hasLang": true,
+            "unlabelled": [
+              "input.staticrypt-decrypt-button"
+            ]
+          },
+          "innerScrollers": []
+        },
+        "768": {
+          "status": 200,
+          "console": [],
+          "pageErrors": [],
+          "failed": [],
+          "http": [],
+          "metrics": {
+            "title": "Private",
+            "h1": [],
+            "bodyBg": "rgb(244, 239, 230)",
+            "bodyFont": "Georgia",
+            "colorScheme": "normal",
+            "docHeight": 1024,
+            "overflowX": 0,
+            "overflowers": [],
+            "interactiveCount": 3,
+            "tapSmallCount": 1,
+            "tapSmall": [
+              "13x13 input#staticrypt-remember"
+            ],
+            "fontSizes": {
+              "15.2": 2,
+              "13.6": 1
+            },
+            "fontFamilies": {
+              "system-ui": 3
+            },
+            "smallText": [],
+            "smallTextCount": 0,
+            "lowContrast": [],
+            "lowContrastCount": 0,
+            "radii": {},
+            "buttonLookCount": 0,
+            "buttonLooks": {},
+            "bgColors": {
+              "rgb(255, 255, 255)": 1,
+              "rgb(26, 25, 22)": 1
+            },
+            "brokenImages": [],
+            "textLength": 81,
+            "hasMain": false,
+            "hasLang": true,
+            "unlabelled": [
+              "input.staticrypt-decrypt-button"
+            ]
+          },
+          "innerScrollers": []
+        },
+        "1440": {
+          "status": 200,
+          "console": [],
+          "pageErrors": [],
+          "failed": [],
+          "http": [],
+          "metrics": {
+            "title": "Private",
+            "h1": [],
+            "bodyBg": "rgb(244, 239, 230)",
+            "bodyFont": "Georgia",
+            "colorScheme": "normal",
+            "docHeight": 900,
+            "overflowX": 0,
+            "overflowers": [],
+            "interactiveCount": 3,
+            "tapSmallCount": 1,
+            "tapSmall": [
+              "13x13 input#staticrypt-remember"
+            ],
+            "fontSizes": {
+              "15.2": 2,
+              "13.6": 1
+            },
+            "fontFamilies": {
+              "system-ui": 3
+            },
+            "smallText": [],
+            "smallTextCount": 0,
+            "lowContrast": [],
+            "lowContrastCount": 0,
+            "radii": {},
+            "buttonLookCount": 0,
+            "buttonLooks": {},
+            "bgColors": {
+              "rgb(255, 255, 255)": 1,
+              "rgb(26, 25, 22)": 1
+            },
+            "brokenImages": [],
+            "textLength": 81,
+            "hasMain": false,
+            "hasLang": true,
+            "unlabelled": [
+              "input.staticrypt-decrypt-button"
+            ]
+          },
+          "innerScrollers": []
+        }
+      },
+      "interactions": {}
+    },
+    {
+      "path": "/kits",
+      "name": "kits",
+      "title": "Kits",
+      "widths": {
+        "390": {
+          "status": 404,
+          "console": [
+            "Failed to load resource: the server responded with a status of 404 ()"
+          ],
+          "pageErrors": [],
+          "failed": [],
+          "http": [
+            "404 https://dawn-510519.web.app/kits"
+          ],
+          "metrics": {
+            "title": "Private",
+            "h1": [],
+            "bodyBg": "rgb(244, 239, 230)",
+            "bodyFont": "Georgia",
+            "colorScheme": "normal",
+            "docHeight": 844,
+            "overflowX": 0,
+            "overflowers": [],
+            "interactiveCount": 3,
+            "tapSmallCount": 1,
+            "tapSmall": [
+              "13x13 input#staticrypt-remember"
+            ],
+            "fontSizes": {
+              "15.2": 2,
+              "13.6": 1
+            },
+            "fontFamilies": {
+              "system-ui": 3
+            },
+            "smallText": [],
+            "smallTextCount": 0,
+            "lowContrast": [],
+            "lowContrastCount": 0,
+            "radii": {},
+            "buttonLookCount": 0,
+            "buttonLooks": {},
+            "bgColors": {
+              "rgb(255, 255, 255)": 1,
+              "rgb(26, 25, 22)": 1
+            },
+            "brokenImages": [],
+            "textLength": 81,
+            "hasMain": false,
+            "hasLang": true,
+            "unlabelled": [
+              "input.staticrypt-decrypt-button"
+            ]
+          },
+          "innerScrollers": []
+        },
+        "768": {
+          "status": 404,
+          "console": [
+            "Failed to load resource: the server responded with a status of 404 ()"
+          ],
+          "pageErrors": [],
+          "failed": [],
+          "http": [
+            "404 https://dawn-510519.web.app/kits"
+          ],
+          "metrics": {
+            "title": "Private",
+            "h1": [],
+            "bodyBg": "rgb(244, 239, 230)",
+            "bodyFont": "Georgia",
+            "colorScheme": "normal",
+            "docHeight": 1024,
+            "overflowX": 0,
+            "overflowers": [],
+            "interactiveCount": 3,
+            "tapSmallCount": 1,
+            "tapSmall": [
+              "13x13 input#staticrypt-remember"
+            ],
+            "fontSizes": {
+              "15.2": 2,
+              "13.6": 1
+            },
+            "fontFamilies": {
+              "system-ui": 3
+            },
+            "smallText": [],
+            "smallTextCount": 0,
+            "lowContrast": [],
+            "lowContrastCount": 0,
+            "radii": {},
+            "buttonLookCount": 0,
+            "buttonLooks": {},
+            "bgColors": {
+              "rgb(255, 255, 255)": 1,
+              "rgb(26, 25, 22)": 1
+            },
+            "brokenImages": [],
+            "textLength": 81,
+            "hasMain": false,
+            "hasLang": true,
+            "unlabelled": [
+              "input.staticrypt-decrypt-button"
+            ]
+          },
+          "innerScrollers": []
+        },
+        "1440": {
+          "status": 404,
+          "console": [
+            "Failed to load resource: the server responded with a status of 404 ()"
+          ],
+          "pageErrors": [],
+          "failed": [],
+          "http": [
+            "404 https://dawn-510519.web.app/kits"
+          ],
+          "metrics": {
+            "title": "Private",
+            "h1": [],
+            "bodyBg": "rgb(244, 239, 230)",
+            "bodyFont": "Georgia",
+            "colorScheme": "normal",
+            "docHeight": 900,
+            "overflowX": 0,
+            "overflowers": [],
+            "interactiveCount": 3,
+            "tapSmallCount": 1,
+            "tapSmall": [
+              "13x13 input#staticrypt-remember"
+            ],
+            "fontSizes": {
+              "15.2": 2,
+              "13.6": 1
+            },
+            "fontFamilies": {
+              "system-ui": 3
+            },
+            "smallText": [],
+            "smallTextCount": 0,
+            "lowContrast": [],
+            "lowContrastCount": 0,
+            "radii": {},
+            "buttonLookCount": 0,
+            "buttonLooks": {},
+            "bgColors": {
+              "rgb(255, 255, 255)": 1,
+              "rgb(26, 25, 22)": 1
+            },
+            "brokenImages": [],
+            "textLength": 81,
+            "hasMain": false,
+            "hasLang": true,
+            "unlabelled": [
+              "input.staticrypt-decrypt-button"
+            ]
+          },
+          "innerScrollers": []
+        }
+      },
+      "interactions": {}
+    },
+    {
+      "path": "/chats",
+      "name": "chats",
+      "title": "Chats (not built)",
+      "widths": {
+        "390": {
+          "status": 404,
+          "console": [
+            "Failed to load resource: the server responded with a status of 404 ()"
+          ],
+          "pageErrors": [],
+          "failed": [],
+          "http": [
+            "404 https://dawn-510519.web.app/chats"
+          ],
+          "metrics": {
+            "title": "Private",
+            "h1": [],
+            "bodyBg": "rgb(244, 239, 230)",
+            "bodyFont": "Georgia",
+            "colorScheme": "normal",
+            "docHeight": 844,
+            "overflowX": 0,
+            "overflowers": [],
+            "interactiveCount": 3,
+            "tapSmallCount": 1,
+            "tapSmall": [
+              "13x13 input#staticrypt-remember"
+            ],
+            "fontSizes": {
+              "15.2": 2,
+              "13.6": 1
+            },
+            "fontFamilies": {
+              "system-ui": 3
+            },
+            "smallText": [],
+            "smallTextCount": 0,
+            "lowContrast": [],
+            "lowContrastCount": 0,
+            "radii": {},
+            "buttonLookCount": 0,
+            "buttonLooks": {},
+            "bgColors": {
+              "rgb(255, 255, 255)": 1,
+              "rgb(26, 25, 22)": 1
+            },
+            "brokenImages": [],
+            "textLength": 81,
+            "hasMain": false,
+            "hasLang": true,
+            "unlabelled": [
+              "input.staticrypt-decrypt-button"
+            ]
+          },
+          "innerScrollers": []
+        },
+        "768": {
+          "status": 404,
+          "console": [
+            "Failed to load resource: the server responded with a status of 404 ()"
+          ],
+          "pageErrors": [],
+          "failed": [],
+          "http": [
+            "404 https://dawn-510519.web.app/chats"
+          ],
+          "metrics": {
+            "title": "Private",
+            "h1": [],
+            "bodyBg": "rgb(244, 239, 230)",
+            "bodyFont": "Georgia",
+            "colorScheme": "normal",
+            "docHeight": 1024,
+            "overflowX": 0,
+            "overflowers": [],
+            "interactiveCount": 3,
+            "tapSmallCount": 1,
+            "tapSmall": [
+              "13x13 input#staticrypt-remember"
+            ],
+            "fontSizes": {
+              "15.2": 2,
+              "13.6": 1
+            },
+            "fontFamilies": {
+              "system-ui": 3
+            },
+            "smallText": [],
+            "smallTextCount": 0,
+            "lowContrast": [],
+            "lowContrastCount": 0,
+            "radii": {},
+            "buttonLookCount": 0,
+            "buttonLooks": {},
+            "bgColors": {
+              "rgb(255, 255, 255)": 1,
+              "rgb(26, 25, 22)": 1
+            },
+            "brokenImages": [],
+            "textLength": 81,
+            "hasMain": false,
+            "hasLang": true,
+            "unlabelled": [
+              "input.staticrypt-decrypt-button"
+            ]
+          },
+          "innerScrollers": []
+        },
+        "1440": {
+          "status": 404,
+          "console": [
+            "Failed to load resource: the server responded with a status of 404 ()"
+          ],
+          "pageErrors": [],
+          "failed": [],
+          "http": [
+            "404 https://dawn-510519.web.app/chats"
+          ],
+          "metrics": {
+            "title": "Private",
+            "h1": [],
+            "bodyBg": "rgb(244, 239, 230)",
+            "bodyFont": "Georgia",
+            "colorScheme": "normal",
+            "docHeight": 900,
+            "overflowX": 0,
+            "overflowers": [],
+            "interactiveCount": 3,
+            "tapSmallCount": 1,
+            "tapSmall": [
+              "13x13 input#staticrypt-remember"
+            ],
+            "fontSizes": {
+              "15.2": 2,
+              "13.6": 1
+            },
+            "fontFamilies": {
+              "system-ui": 3
+            },
+            "smallText": [],
+            "smallTextCount": 0,
+            "lowContrast": [],
+            "lowContrastCount": 0,
+            "radii": {},
+            "buttonLookCount": 0,
+            "buttonLooks": {},
+            "bgColors": {
+              "rgb(255, 255, 255)": 1,
+              "rgb(26, 25, 22)": 1
+            },
+            "brokenImages": [],
+            "textLength": 81,
+            "hasMain": false,
+            "hasLang": true,
+            "unlabelled": [
+              "input.staticrypt-decrypt-button"
+            ]
+          },
+          "innerScrollers": []
+        }
+      },
+      "interactions": {}
+    }
+  ],
+  "lightScheme": [
+    {
+      "path": "/",
+      "bodyBg": "rgb(244, 239, 230)",
+      "htmlClass": "light"
+    },
+    {
+      "path": "/kits",
+      "bodyBg": "rgb(244, 239, 230)",
+      "htmlClass": "light"
+    }
+  ]
+}

@@ -1,28 +1,28 @@
 'use client';
 
 import { useState } from 'react';
+import { PageShell } from '@/components/site/page-shell';
 import { KITS, type KitInfo } from '@/lib/kits/registry';
 
 export function KitDashboard() {
   return (
-    <main className="dawn-agents" style={{ minHeight: '100dvh', padding: '20px 16px 32px' }}>
-      <div style={{ width: 'min(880px, 100%)', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <p className="word">DAWN</p>
-        <h1>Kits</h1>
-        <p className="note">Six local checks adapted from the Code with Antonio projects. None of them call a model or send a message. They are not live on this host until the gateway that serves /api/kits is the process on 127.0.0.1:8787.</p>
-        <p><a href="/">Town</a></p>
-        <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {KITS.map((kit) => (
-            <li key={kit.id} style={{ border: '1px solid #333', borderRadius: 12, padding: 12 }}>
-              <a href={kit.href}><strong>{kit.title}</strong></a>
-              <p className="note">{kit.adapted}</p>
-              <p className="note">Replaced: {kit.replaced}</p>
-              <p className="note">After the deploy worker publishes this build and restarts the gateway: {kit.liveUrl}</p>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </main>
+    <PageShell
+      title="Kits"
+      current="/kits"
+      lead="Six local checks adapted from the Code with Antonio projects. None of them call a model or send a message. They only run where the local gateway is running; a static host cannot run them."
+    >
+      <ul className="dw-list" style={{ gap: 12 }}>
+        {KITS.map((kit) => (
+          <li key={kit.id} className="dw-card">
+            <h2 className="dw-card-title"><a className="dw-link" href={kit.href}>{kit.title}</a></h2>
+            <p className="dw-note">{kit.adapted}</p>
+            <p className="dw-note">Replaced: {kit.replaced}</p>
+            <p className="dw-note">After the deploy worker publishes this build and restarts the gateway: {kit.liveUrl}</p>
+            <a className="dw-btn dw-btn--chip" style={{ marginTop: 12 }} href={kit.href}>Open</a>
+          </li>
+        ))}
+      </ul>
+    </PageShell>
   );
 }
 
@@ -53,21 +53,20 @@ export function KitPage({ kit }: { kit: KitInfo }) {
   }
 
   return (
-    <main className="dawn-agents" style={{ minHeight: '100dvh', padding: '20px 16px 32px' }}>
-      <div style={{ width: 'min(880px, 100%)', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <p className="word">DAWN</p>
-        <h1>{kit.title}</h1>
-        <p><a href="/kits">All kits</a> · <a href="/">Town</a></p>
-        <p className="note">Source: {kit.source}</p>
-        <p className="note">{kit.adapted}</p>
-        <p className="note">Replaced: {kit.replaced}</p>
-        <p className="note">Intended URL after deploy: {kit.liveUrl}. It is not live until that deploy finishes.</p>
-        <button type="button" className="primary" onClick={() => { void run(); }}>Run local check</button>
-        <p role="status">{note}</p>
-        {html && (
-          <iframe title="Seeded game" sandbox="" srcDoc={html} style={{ width: '100%', height: 180, border: '1px solid #333', background: '#fff' }} />
-        )}
+    <PageShell title={kit.title} current="/kits" lead={kit.adapted}>
+      <p className="dw-actions"><a className="dw-btn dw-btn--chip" href="/kits">All kits</a></p>
+      <section className="dw-card">
+        <p className="dw-note">Source: {kit.source}</p>
+        <p className="dw-note">Replaced: {kit.replaced}</p>
+        <p className="dw-note">Intended URL after deploy: {kit.liveUrl}. It is not live until that deploy finishes.</p>
+      </section>
+      <div className="dw-actions">
+        <button type="button" className="dw-btn dw-btn--primary" onClick={() => { void run(); }}>Run local check</button>
       </div>
-    </main>
+      <p className="dw-alert" role="status">{note}</p>
+      {html && (
+        <iframe title="Seeded game" sandbox="" srcDoc={html} style={{ width: '100%', height: 180, border: 0, borderRadius: 'var(--dawn-radius-row)', background: '#fff' }} />
+      )}
+    </PageShell>
   );
 }

@@ -5,7 +5,8 @@ import { RecipesBoard } from '@/components/dawn-agents/recipes-board';
 import { api, gatewayBase, googleSignInHref } from '@/components/dawn-agents/api';
 import { recipeAttributes, type Recipe } from '@/lib/dawn-agents/recipes';
 import { probeDesk, type DeskStatus } from '@/lib/home/town-action';
-import '../agents/agents.css';
+import { PageShell } from '@/components/site/page-shell';
+import './recipes.css';
 
 export default function ArtifactsPage() {
   const [desk, setDesk] = useState<DeskStatus>('offline');
@@ -28,20 +29,9 @@ export default function ArtifactsPage() {
     };
   }, []);
   return (
-    <main className="dawn-agents" style={{ minHeight: '100dvh' }}>
-      <div style={{ padding: '16px 16px 0', display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <p className="word">DAWN</p>
-        <h1>Artifacts</h1>
-        <p className="note" role="status">{note}</p>
-        {desk === 'signin' && <a href={googleSignInHref()}>Sign in with Google</a>}
-        <nav aria-label="Dawn" style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-          <a href="/">Town</a>
-          <a href="/letter">Letter</a>
-          <a href="/credits">Credits</a>
-          <a href="/editor">Code</a>
-          <a href="/village?section=library">Village history</a>
-        </nav>
-      </div>
+    <PageShell title="Recipes" current="/artifacts" wide lead="Dawn style recipes: layouts, textures, palettes and type to look at and mix. They are not a catalog of other products.">
+      <p className="dw-alert" role="status">{note}</p>
+      {desk === 'signin' && <a className="dw-btn dw-btn--primary" style={{ alignSelf: 'flex-start' }} href={googleSignInHref()}>Sign in with Google</a>}
       <RecipesBoard
         onEvent={async (action, recipe) => {
           if (desk !== 'ready') {
@@ -55,6 +45,6 @@ export default function ArtifactsPage() {
           setNote(`“${action}” was sent to the desk.`);
         }}
       />
-    </main>
+    </PageShell>
   );
 }

@@ -276,6 +276,12 @@
     "url": "https://phaser.io"
   },
   {
+    "name": "playwright-core",
+    "kind": "dawn",
+    "license": "Apache-2.0",
+    "url": "https://playwright.dev"
+  },
+  {
     "name": "puppeteer-core",
     "kind": "dawn",
     "license": "Apache-2.0",
