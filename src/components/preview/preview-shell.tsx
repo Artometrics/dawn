@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { SiteFooter, SiteHeader } from '@/components/site/page-shell';
 import './preview.css';
 
 const LINKS = [
@@ -6,6 +7,7 @@ const LINKS = [
   { href: '/preview/bench', label: 'Bench' },
   { href: '/preview/habits', label: 'Habits' },
   { href: '/preview/stuck', label: 'Stuck' },
+  { href: '/preview/style-guide', label: 'Style guide' },
 ];
 
 export function PreviewShell({
@@ -20,24 +22,26 @@ export function PreviewShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="dawn-preview">
-      <a className="pv-skip" href="#preview-main">Skip to the sample</a>
-      <header className="pv-bar">
-        <Link className="pv-word" href="/preview">DAWN</Link>
-        <p className="pv-badge">Demo — agents off</p>
-        <nav className="pv-nav" aria-label="Review pages">
-          {LINKS.map((link) => (
-            <Link key={link.href} href={link.href} aria-current={current === link.href ? 'page' : undefined}>
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-      </header>
-      <main id="preview-main" className="pv-main">
-        <h1>{title}</h1>
-        <p className="pv-lead">{lead}</p>
+    <div className="dw-page dawn-preview">
+      <a className="dw-skip" href="#preview-main">Skip to the sample</a>
+      <SiteHeader />
+      <main id="preview-main" className="dw-main dw-main--wide">
+        <div className="pv-sub">
+          <span className="dw-badge dw-badge--accent">Demo, agents off</span>
+          <nav className="pv-sub" aria-label="Review pages">
+            <Link prefetch={false} className="dw-btn dw-btn--chip" href="/preview" aria-current={current === '/preview' ? 'page' : undefined}>All</Link>
+            {LINKS.map((link) => (
+              <Link prefetch={false} key={link.href} className="dw-btn dw-btn--chip" href={link.href} aria-current={current === link.href ? 'page' : undefined}>
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+        <h1 className="dw-h1">{title}</h1>
+        <p className="dw-lead">{lead}</p>
         {children}
       </main>
+      <SiteFooter />
     </div>
   );
 }

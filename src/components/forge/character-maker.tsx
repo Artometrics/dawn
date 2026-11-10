@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Castle, Download, FileUp, ImageDown, Trash2 } from 'lucide-react';
 import { AGENTS } from '@/lib/agents';
 import { useDawn } from '@/components/dawn/dawn-provider';
@@ -25,34 +25,6 @@ const SLOT_LABEL: Record<PartGroup, string> = {
 const COLOR_LABEL: Record<ColorKey, string> = { skin: 'Skin', hair: 'Hair', cloth: 'Cloth', trim: 'Trim' };
 const COLOR_KEYS = Object.keys(COLOR_LABEL) as ColorKey[];
 const POSE_LABEL: Record<PoseName, string> = { idle: 'Idle', guard: 'Guard' };
-function Chip({ on, onClick, children }: { on?: boolean; onClick: () => void; children: ReactNode }) {
-  return (
-    <button
-      type="button"
-      aria-pressed={on === undefined ? undefined : on}
-      onClick={onClick}
-      className={`inline-flex h-9 shrink-0 items-center rounded-full px-3 text-[14px] ${
-        on ? 'bg-[var(--dawn-accent)] text-[var(--dawn-ink)]' : 'bg-[var(--dawn-chip)] text-[var(--dawn-text)]'
-      }`}
-    >
-      {children}
-    </button>
-  );
-}
-
-function Secondary({ onClick, disabled, children }: { onClick: () => void; disabled?: boolean; children: ReactNode }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className="inline-flex h-11 items-center gap-2 rounded-full bg-[var(--dawn-chip)] px-4 text-[14px] font-medium disabled:opacity-40"
-    >
-      {children}
-    </button>
-  );
-}
-
 function download(name: string, blob: Blob) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -193,67 +165,71 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
               stageRef={stageRef}
             />
           </div>
-          <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label="Pose and view">
+          <div className="dw-actions mt-3" role="group" aria-label="Pose and view">
             {POSES.map((name) => (
-              <Chip key={name} on={pose === name} onClick={() => setPose(name)}>
+              <button key={name} type="button" className="dw-btn dw-btn--chip" aria-pressed={pose === name} onClick={() => setPose(name)}>
                 {POSE_LABEL[name]}
-              </Chip>
+              </button>
             ))}
-            <Chip on={turntable} onClick={() => setTurntable((on) => !on)}>Turntable</Chip>
-            <Chip on={skeleton} onClick={() => setSkeleton((on) => !on)}>Skeleton</Chip>
-            <Chip onClick={() => stageRef.current?.resetView()}>Reset view</Chip>
+            <button type="button" className="dw-btn dw-btn--chip" aria-pressed={turntable} onClick={() => setTurntable((on) => !on)}>Turntable</button>
+            <button type="button" className="dw-btn dw-btn--chip" aria-pressed={skeleton} onClick={() => setSkeleton((on) => !on)}>Skeleton</button>
+            <button type="button" className="dw-btn dw-btn--chip" onClick={() => stageRef.current?.resetView()}>Reset view</button>
           </div>
         </div>
 
         <div className="min-w-0">
           <section aria-labelledby="forge-start">
-            <h2 id="forge-start" className="text-[13px] text-[var(--dawn-muted)]">Start from</h2>
-            <div className="mt-2 flex flex-wrap gap-2">
+            <h2 id="forge-start" className="dw-eyebrow">Start from</h2>
+            <div className="dw-actions mt-2">
               {PRESETS.map((preset) => (
-                <Chip key={preset.id} on={draftId === null && draft.id === preset.id} onClick={() => load(preset, null)}>
+                <button key={preset.id} type="button" className="dw-btn dw-btn--chip" aria-pressed={draftId === null && draft.id === preset.id} onClick={() => load(preset, null)}>
                   {preset.name}
-                </Chip>
+                </button>
               ))}
-              <Chip onClick={() => load(blankCharacter(), null)}>Blank</Chip>
+              <button type="button" className="dw-btn dw-btn--chip" onClick={() => load(blankCharacter(), null)}>Blank</button>
             </div>
           </section>
 
-          <section className="mt-6" aria-labelledby="forge-name">
-            <label id="forge-name" htmlFor="forge-name-input" className="text-[13px] text-[var(--dawn-muted)]">Name</label>
-            <input
-              id="forge-name-input"
-              value={draft.name}
-              maxLength={NAME_MAX}
-              onChange={(event) => rename(event.target.value)}
-              className="dawn-field mt-2"
-              autoComplete="off"
-            />
-            <label htmlFor="forge-epithet-input" className="mt-4 block text-[13px] text-[var(--dawn-muted)]">Epithet</label>
-            <input
-              id="forge-epithet-input"
-              value={draft.epithet}
-              maxLength={EPITHET_MAX}
-              onChange={(event) => edit((next) => { next.epithet = event.target.value; })}
-              className="dawn-field mt-2"
-              autoComplete="off"
-            />
+          <section className="mt-6 flex flex-col gap-4" aria-label="Name and epithet">
+            <label className="dw-label">
+              Name
+              <input
+                id="forge-name-input"
+                value={draft.name}
+                maxLength={NAME_MAX}
+                onChange={(event) => rename(event.target.value)}
+                className="dw-field"
+                autoComplete="off"
+              />
+            </label>
+            <label className="dw-label">
+              Epithet
+              <input
+                id="forge-epithet-input"
+                value={draft.epithet}
+                maxLength={EPITHET_MAX}
+                onChange={(event) => edit((next) => { next.epithet = event.target.value; })}
+                className="dw-field"
+                autoComplete="off"
+              />
+            </label>
           </section>
 
           {PART_GROUPS.map((group) => (
             <section key={group} className="mt-6" aria-labelledby={`forge-${group}`}>
-              <h2 id={`forge-${group}`} className="text-[13px] text-[var(--dawn-muted)]">{SLOT_LABEL[group]}</h2>
-              <div className="mt-2 flex flex-wrap gap-2">
+              <h2 id={`forge-${group}`} className="dw-eyebrow">{SLOT_LABEL[group]}</h2>
+              <div className="dw-actions mt-2">
                 {CATALOG[group].map((option) => (
-                  <Chip key={option.id} on={draft.parts[group] === option.id} onClick={() => edit((next) => { next.parts[group] = option.id; })}>
+                  <button key={option.id} type="button" className="dw-btn dw-btn--chip" aria-pressed={draft.parts[group] === option.id} onClick={() => edit((next) => { next.parts[group] = option.id; })}>
                     {option.label}
-                  </Chip>
+                  </button>
                 ))}
               </div>
             </section>
           ))}
 
           <section className="mt-6">
-            <h2 className="text-[13px] text-[var(--dawn-muted)]">Body</h2>
+            <h2 className="dw-eyebrow">Body</h2>
             {(['height', 'build'] as const).map((key) => (
               <label key={key} className="mt-2 flex min-h-11 items-center gap-3 text-[15px] first:mt-2">
                 <span className="w-16 shrink-0 capitalize">{key}</span>
@@ -272,7 +248,7 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
           </section>
 
           <section className="mt-6">
-            <h2 className="text-[13px] text-[var(--dawn-muted)]">Color</h2>
+            <h2 className="dw-eyebrow">Color</h2>
             <div className="mt-2 flex flex-wrap gap-4">
               {COLOR_KEYS.map((key) => (
                 <label key={key} className="flex flex-col items-center gap-1 text-[13px] text-[var(--dawn-secondary)]">
@@ -286,27 +262,27 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
                 </label>
               ))}
             </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Chip on={draft.paintOverlay} onClick={() => edit((next) => { next.paintOverlay = !next.paintOverlay; })}>Brush texture</Chip>
+            <div className="dw-actions mt-3">
+              <button type="button" className="dw-btn dw-btn--chip" aria-pressed={draft.paintOverlay} onClick={() => edit((next) => { next.paintOverlay = !next.paintOverlay; })}>Brush texture</button>
             </div>
           </section>
 
           <section className="mt-8">
             <button
               type="button"
-              onClick={() => void save()}
+             onClick={() => void save()}
               disabled={busy !== null || full || !checked.ok}
-              className="inline-flex h-11 w-full items-center justify-center rounded-full bg-[var(--dawn-pill)] px-4 text-[14px] font-medium text-[var(--dawn-ink)] disabled:opacity-40"
+              className="dw-btn dw-btn--primary dw-btn--block"
             >
               {busy === 'save' ? 'Saving…' : draftId ? 'Save changes' : 'Save to roster'}
             </button>
             {!checked.ok && <p className="mt-2 text-[13px] text-[var(--dawn-accent)]">{checked.errors[0]}</p>}
             {full && <p className="mt-2 text-[13px] text-[var(--dawn-accent)]">The roster holds {ROSTER_MAX} characters. Remove one to add another.</p>}
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Secondary onClick={saveJson} disabled={!checked.ok}><Download className="h-4 w-4" aria-hidden />JSON</Secondary>
-              <Secondary onClick={() => fileRef.current?.click()}><FileUp className="h-4 w-4" aria-hidden />Import</Secondary>
-              <Secondary onClick={() => void savePng()} disabled={busy !== null || !checked.ok}><ImageDown className="h-4 w-4" aria-hidden />PNG</Secondary>
-              <Secondary onClick={() => void saveGlb()} disabled={busy !== null || !checked.ok}><Download className="h-4 w-4" aria-hidden />glTF</Secondary>
+            <div className="dw-actions mt-3">
+              <button type="button" className="dw-btn" onClick={saveJson} disabled={!checked.ok}><Download aria-hidden />JSON</button>
+              <button type="button" className="dw-btn" onClick={() => fileRef.current?.click()}><FileUp aria-hidden />Import</button>
+              <button type="button" className="dw-btn" onClick={() => void savePng()} disabled={busy !== null || !checked.ok}><ImageDown aria-hidden />PNG</button>
+              <button type="button" className="dw-btn" onClick={() => void saveGlb()} disabled={busy !== null || !checked.ok}><Download aria-hidden />glTF</button>
             </div>
             <input
               ref={fileRef}
@@ -330,18 +306,18 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
       </div>
 
       <section className="mx-auto mt-10 w-full max-w-5xl" aria-labelledby="forge-roster">
-        <h2 id="forge-roster" className="text-[13px] text-[var(--dawn-muted)]">Your roster · {roster.characters.length} of {ROSTER_MAX}</h2>
+        <h2 id="forge-roster" className="dw-eyebrow">Your roster · {roster.characters.length} of {ROSTER_MAX}</h2>
         {roster.characters.length === 0 && (
           <p className="mt-2 text-[15px] text-[var(--dawn-secondary)]">Nobody yet. Save a character and it appears here, then in the village.</p>
         )}
         <ul className="mt-3 flex flex-col gap-3" data-forge-roster>
           {roster.characters.map((entry) => (
-            <li key={entry.id} className="rounded-[18px] bg-[var(--dawn-elev)] p-3">
+            <li key={entry.id} className="dw-card">
               <div className="flex items-center gap-3">
                 {entry.portrait ? (
-                  <img src={entry.portrait} alt="" width={56} height={56} className="h-14 w-14 shrink-0 rounded-[14px] bg-[var(--dawn-chip)] object-cover" />
+                  <img src={entry.portrait} alt="" width={56} height={56} className="h-14 w-14 shrink-0 rounded-[var(--dawn-radius-row)] bg-[var(--dawn-chip)] object-cover" />
                 ) : (
-                  <span className="h-14 w-14 shrink-0 rounded-[14px] bg-[var(--dawn-chip)]" />
+                  <span className="h-14 w-14 shrink-0 rounded-[var(--dawn-radius-row)] bg-[var(--dawn-chip)]" />
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[16px] leading-5">{entry.character.name}</p>
@@ -352,26 +328,26 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
                 <button
                   type="button"
                   onClick={() => load(entry.character, entry.id)}
-                  className="inline-flex h-9 shrink-0 items-center rounded-full bg-[var(--dawn-chip)] px-4 text-[14px] font-medium"
+                  className="dw-btn dw-btn--chip"
                 >
                   Edit
                 </button>
               </div>
-              <div className="mt-3 flex flex-wrap items-center gap-2" role="group" aria-label={`Village avatar for ${entry.character.name}`}>
-                <span className="text-[13px] text-[var(--dawn-muted)]">Avatar for</span>
+              <div className="dw-actions mt-3 items-center" role="group" aria-label={`Village avatar for ${entry.character.name}`}>
+                <span className="dw-eyebrow">Avatar for</span>
                 {AGENTS.map((agent) => (
-                  <Chip
-                    key={agent.id}
-                    on={entry.agentId === agent.id}
-                    onClick={() => roster.assignCharacter(entry.id, entry.agentId === agent.id ? '' : (agent.id as AgentSlot))}
+                  <button type="button" className="dw-btn dw-btn--chip" aria-pressed={entry.agentId === agent.id}
+                   key={agent.id}
+                    
+                   onClick={() => roster.assignCharacter(entry.id, entry.agentId === agent.id ? '' : (agent.id as AgentSlot))}
                   >
                     {agent.name}
-                  </Chip>
+                  </button>
                 ))}
                 {entry.agentId && (
-                  <Chip onClick={onOpenVillage}>
-                    <Castle className="mr-1 h-4 w-4" aria-hidden />See in village
-                  </Chip>
+                  <button type="button" className="dw-btn dw-btn--chip" onClick={onOpenVillage}>
+                    <Castle aria-hidden />See in village
+                  </button>
                 )}
                 <button
                   type="button"
@@ -380,9 +356,9 @@ export function CharacterMaker({ onOpenVillage }: { onOpenVillage: () => void })
                     roster.removeCharacter(entry.id);
                     if (draftId === entry.id) setDraftId(null);
                   }}
-                  className="ml-auto grid h-9 w-9 place-items-center rounded-full bg-[var(--dawn-chip)]"
+                  className="dw-btn dw-btn--icon ml-auto"
                 >
-                  <Trash2 className="h-4 w-4" aria-hidden />
+                  <Trash2 aria-hidden />
                 </button>
               </div>
             </li>

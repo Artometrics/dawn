@@ -11,12 +11,12 @@ export function RecipesBoard({ onEvent }: { onEvent: (action: string, recipe: Re
   const [mixing, setMixing] = useState<Recipe | null>(null);
   const list = RECIPES.filter((recipe) => cat === 'All' || recipe.tags.includes(cat));
   return (
-    <div>
+    <div className="rb">
       <link rel="stylesheet" href={FONT_STYLESHEET} />
       <style>{RECIPE_BASE_CSS}</style>
-      <div className="actions" style={{ padding: '12px 12px 0' }}>
+      <div className="dw-actions">
         {CATS.map((item) => (
-          <button key={item} type="button" className={item === cat ? 'primary' : 'ghost'} onClick={() => setCat(item)}>
+          <button key={item} type="button" className="dw-btn dw-btn--chip" aria-pressed={item === cat} onClick={() => setCat(item)}>
             {item}
           </button>
         ))}
@@ -69,28 +69,28 @@ function RecipeSheet({
   const palette = PALETTES.find((item) => item.id === recipe.palette);
   const html = useMemo(() => recipeSnippet(recipe), [recipe]);
   return (
-    <div className="sheet-view">
-      <div className="actions">
-        <button type="button" className="ghost" onClick={onClose}>Back</button>
-        <h2 className="grow">{recipe.name}</h2>
+    <div className="rb-sheet">
+      <div className="dw-actions">
+        <button type="button" className="dw-btn dw-btn--ghost" onClick={onClose}>Back</button>
+        <h2 className="dw-h2" style={{ flex: 1, margin: 0 }}>{recipe.name}</h2>
       </div>
       <div className="cv" dangerouslySetInnerHTML={{ __html: recipeCardHtml(recipe) }} />
-      <p>{recipe.note}</p>
-      <div className="actions">
+      <p className="dw-lead">{recipe.note}</p>
+      <div className="dw-actions">
         {palette?.colors.map((color) => (
-          <button key={color} type="button" className="ghost" onClick={() => navigator.clipboard.writeText(color)}>
+          <button key={color} type="button" className="dw-btn dw-btn--ghost" onClick={() => navigator.clipboard.writeText(color)}>
             {color}
           </button>
         ))}
       </div>
-      <div className="actions">
-        <button type="button" className="primary" onClick={() => onEvent('like')}>Like</button>
-        <button type="button" className="ghost" onClick={() => onEvent('save')}>Save</button>
-        <button type="button" className="ghost" onClick={() => onEvent('skip')}>Skip</button>
-        <button type="button" className="ghost" onClick={onMix}>Mix</button>
-        <button type="button" className="ghost" onClick={() => navigator.clipboard.writeText(html)}>Copy HTML</button>
+      <div className="dw-actions">
+        <button type="button" className="dw-btn dw-btn--primary" onClick={() => onEvent('like')}>Like</button>
+        <button type="button" className="dw-btn dw-btn--ghost" onClick={() => onEvent('save')}>Save</button>
+        <button type="button" className="dw-btn dw-btn--ghost" onClick={() => onEvent('skip')}>Skip</button>
+        <button type="button" className="dw-btn dw-btn--ghost" onClick={onMix}>Mix</button>
+        <button type="button" className="dw-btn dw-btn--ghost" onClick={() => navigator.clipboard.writeText(html)}>Copy HTML</button>
       </div>
-      <pre className="tool">{html}</pre>
+      <pre>{html}</pre>
     </div>
   );
 }
@@ -102,26 +102,26 @@ function Mixer({ seed, onClose, onKeep }: { seed: Recipe; onClose: () => void; o
   const [font, setFont] = useState(seed.font);
   const mixed = mixRecipe(seed, { layout, texture, palette, font });
   return (
-    <div className="sheet-view">
-      <div className="actions">
-        <button type="button" className="ghost" onClick={onClose}>Back</button>
-        <h2>Mix</h2>
+    <div className="rb-sheet">
+      <div className="dw-actions">
+        <button type="button" className="dw-btn dw-btn--ghost" onClick={onClose}>Back</button>
+        <h2 className="dw-h2" style={{ margin: 0 }}>Mix</h2>
       </div>
       <div className="cv" dangerouslySetInnerHTML={{ __html: recipeCardHtml(mixed) }} />
       <Select label="Style" value={layout} options={LAYOUTS.map((item) => [item.id, item.name])} onChange={setLayout} />
       <Select label="Texture" value={texture} options={TEXTURES.map((item) => [item.id, item.name])} onChange={setTexture} />
       <Select label="Palette" value={palette} options={PALETTES.map((item) => [item.id, item.name])} onChange={setPalette} />
       <Select label="Type" value={font} options={FONTS.map((item) => [item.id, item.name])} onChange={setFont} />
-      <button type="button" className="primary" onClick={() => onKeep(mixed)}>Keep this mix</button>
+      <button type="button" className="dw-btn dw-btn--primary" onClick={() => onKeep(mixed)}>Keep this mix</button>
     </div>
   );
 }
 
 function Select({ label, value, options, onChange }: { label: string; value: string; options: [string, string][]; onChange: (value: string) => void }) {
   return (
-    <label>
+    <label className="dw-label">
       {label}
-      <select value={value} onChange={(event) => onChange(event.target.value)}>
+      <select className="dw-field" value={value} onChange={(event) => onChange(event.target.value)}>
         {options.map(([id, name]) => (
           <option key={id} value={id}>{name}</option>
         ))}

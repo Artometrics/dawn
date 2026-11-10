@@ -488,7 +488,7 @@ export function PixelHome({ initialPanel = false }: { initialPanel?: boolean }) 
         );
       })}
       {ART_CONTROLS.map((control) => {
-        const size = 52 * frame.fit;
+        const size = Math.max(44, 52 * frame.fit);
         const left = frame.ox + (control.x - layer.view.x) * frame.fit - cam.x - size / 2;
         const top = frame.oy + (control.y - layer.view.y) * frame.fit - cam.y - size / 2;
         return (
@@ -764,7 +764,7 @@ function paint(
   const sourceWidth = map instanceof HTMLImageElement ? map.naturalWidth : map instanceof HTMLCanvasElement ? map.width : 0;
   if (!ctx || !map || !sourceWidth) return;
   ctx.imageSmoothingEnabled = false;
-  ctx.fillStyle = '#3f8f34';
+  ctx.fillStyle = '#143018'; // --dawn-forest; canvas cannot read CSS variables
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   const { view } = mapLayer;
   ctx.drawImage(
@@ -827,7 +827,8 @@ function frameFor(mapLayer: MapLayer, viewW: number, viewH: number) {
   const bottom = Math.min(270, viewH * 0.34);
   const band = Math.max(180, viewH - top - bottom);
   const fit = band / mapLayer.view.h;
-  return { fit, ox: 0, oy: top };
+  const ox = Math.max(0, (viewW - mapLayer.view.w * fit) / 2);
+  return { fit, ox, oy: top };
 }
 
 function clampCam(mapLayer: MapLayer, x: number, y: number, viewW: number, viewH: number, fit: number) {

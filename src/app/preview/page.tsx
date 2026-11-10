@@ -10,12 +10,13 @@ export const metadata: Metadata = {
 
 const ACTUAL = [
   { href: '/', name: 'Home map', note: 'Pixel town. Live.' },
-  { href: '/village', name: 'Village', note: 'Live route. Phone layout still overflows. Not changed here.' },
+  { href: '/village', name: 'Village', note: 'Quests, library and the drawer. Phone layout fits.' },
   { href: '/atlas', name: 'Atlas', note: 'Campus walk. Cardinal note still coming soon.' },
   { href: '/agents', name: 'Agents desk', note: 'Gateway desk. Not opened by this preview.' },
-  { href: '/studio', name: 'Studio', note: 'Older studio. Live route, untouched.' },
-  { href: '/letter', name: 'Letter', note: 'Newsletter page. Live route, untouched.' },
+  { href: '/studio', name: 'Studio', note: 'Chat and live preview workspace. Sends need a model on the host; local and static builds send nothing.' },
+  { href: '/letter', name: 'Letter', note: 'Newsletter page. Needs the desk to subscribe.' },
   { href: '/credits', name: 'Credits', note: 'Sprite and library credits.' },
+  { href: '/preview/style-guide', name: 'Style guide', note: 'Tokens and shared components every page uses.' },
 ];
 
 const PROPOSED = [
@@ -35,7 +36,7 @@ export default function PreviewIndexPage() {
       <ul className="pv-list">
         {ACTUAL.map((row) => (
           <li key={row.href}>
-            <Link className="pv-row" href={row.href}>
+            <Link prefetch={false} className="pv-row" href={row.href}>
               <span>
                 <strong>{row.name}</strong>
                 <span>{row.note}</span>
@@ -49,7 +50,7 @@ export default function PreviewIndexPage() {
       <ul className="pv-list">
         {PROPOSED.map((row) => (
           <li key={row.href}>
-            <Link className="pv-row" href={row.href}>
+            <Link prefetch={false} className="pv-row" href={row.href}>
               <img src="/sprites/town/player.png" alt="" width={40} height={40} />
               <span>
                 <strong>{row.name}</strong>
