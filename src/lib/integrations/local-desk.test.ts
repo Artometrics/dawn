@@ -3,7 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { appendChat, draftSend, readChat, readLocalPage, readProjectFile, readSends, runBrowserJob, writeProjectFile, writeSandboxPage } from './local-desk.ts';
+import { appendChat, approveSend, deliverSend, draftSend, readChat, readLocalPage, readProjectFile, readSends, runBrowserJob, runSandboxFile, writeProjectFile, writeSandboxPage } from './local-desk.ts';
 
 test('chat and a send draft survive a reopen and nothing is delivered', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'dawn-local-desk-'));
@@ -27,6 +27,12 @@ test('chat and a send draft survive a reopen and nothing is delivered', async ()
     assert.match(await runBrowserJob(root, 'booth.html'), /local/);
     await assert.rejects(() => runBrowserJob(root, 'https://example.com'), /refused/);
     await assert.rejects(() => writeProjectFile(root, '../note.txt', 'no'), /plain file/);
+    await writeSandboxPage(root, 'fixture.js', "'ran'");
+    assert.equal(await runSandboxFile(root, 'fixture.js'), 'ran');
+    const held = await draftSend(root, 'review@localhost', 'hold');
+    const approved = await approveSend(root, held.id);
+    assert.equal(approved.status, 'approved');
+    assert.deepEqual(deliverSend(approved), { delivered: false, reason: 'Outbound is off.' });
   } finally {
     await rm(root, { recursive: true, force: true });
   }
