@@ -55,7 +55,7 @@ export function BenchView() {
   }
 
   if (!ready) {
-    return <p className="pv-lead">Opening the sample…</p>;
+    return <p className="dw-lead">Opening the sample…</p>;
   }
 
   return (
@@ -114,7 +114,7 @@ export function BenchView() {
                 placeholder="A sample idea"
                 onChange={(event) => setDraft(event.target.value)}
               />
-              <button className="pv-pill" type="button" onClick={canVerify(state) ? onVerify : onSave} disabled={!canVerify(state) && draft.trim().length < 2}>
+              <button className="dw-btn dw-btn--primary" type="button" onClick={canVerify(state) ? onVerify : onSave} disabled={!canVerify(state) && draft.trim().length < 2}>
                 {canVerify(state) ? 'I checked this' : 'Save idea'}
               </button>
             </div>
@@ -125,10 +125,10 @@ export function BenchView() {
             <ul className="pv-ideas">
               {state.ideas.length === 0 ? <li>No ideas yet.</li> : state.ideas.map((idea) => <li key={idea.id}>{idea.text}</li>)}
             </ul>
-            <p className="pv-lead"><Link className="pv-pill" href="/preview/stuck">Take a short break</Link></p>
+            <p className="dw-lead"><Link prefetch={false} className="dw-btn" href="/preview/stuck">Take a short break</Link></p>
           </>
         ) : (
-          <p className="pv-lead">Choose a sample.</p>
+          <p className="dw-lead">Choose a sample.</p>
         )}
       </section>
     </div>

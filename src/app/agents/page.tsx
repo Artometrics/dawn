@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function AgentsPage() {
-  return <AgentsEntry />;
+  return <main style={{ display: 'contents' }}><AgentsEntry /></main>;
 }

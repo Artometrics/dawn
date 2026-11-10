@@ -112,7 +112,7 @@ function Shell() {
         <button type="button" className="fixed inset-0 z-40 bg-black/55 md:hidden" aria-label="Close menu" onClick={() => setDrawer(false)} />
       )}
       <aside
-        className={`dawn-drawer fixed inset-y-0 left-0 z-50 flex w-[min(84vw,300px)] flex-col bg-[var(--dawn-bg)] transition-transform duration-200 ease-out md:static md:z-0 md:w-[280px] md:shrink-0 md:translate-x-0 ${drawer ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`dawn-drawer fixed inset-y-0 left-0 z-50 flex w-[min(84vw,300px)] flex-col bg-[var(--dawn-bg)] transition-[transform,visibility] duration-200 ease-out md:visible md:static md:z-0 md:w-[280px] md:shrink-0 md:translate-x-0 ${drawer ? 'translate-x-0' : '-translate-x-full max-md:invisible'}`}
         aria-label="Dawn"
       >
         <div className="flex items-center justify-between px-5 pt-[max(1.25rem,env(safe-area-inset-top))]">
@@ -320,7 +320,7 @@ function Shell() {
                 className="h-full min-w-0 flex-1 bg-transparent text-[16px] outline-none placeholder:text-[#a8a199]"
               />
             </label>
-            <a href="/credits" className="mt-2 block text-center text-[13px] text-[var(--dawn-muted)]">Credits & licenses</a>
+            <a href="/credits" className="mt-2 flex min-h-11 items-center justify-center text-center text-[13px] text-[var(--dawn-muted)]">Credits & licenses</a>
           </div>
         )}
       </div>

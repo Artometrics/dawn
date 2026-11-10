@@ -41,7 +41,7 @@ export function StuckView() {
     setState((current) => ({ ...current, steps: stepRound(current.steps) }));
   }
 
-  if (!ready) return <p className="pv-lead">Opening the board…</p>;
+  if (!ready) return <p className="dw-lead">Opening the board…</p>;
 
   return (
     <section aria-live="polite">
@@ -56,10 +56,10 @@ export function StuckView() {
       </div>
       <p className="pv-count">Demo · step {state.steps} of {STUCK_STEPS}</p>
       {done ? (
-        <p className="pv-lead"><Link className="pv-pill" href="/preview/bench">Back to the bench</Link></p>
+        <p className="dw-lead"><Link prefetch={false} className="dw-btn" href="/preview/bench">Back to the bench</Link></p>
       ) : (
-        <p className="pv-lead">
-          <button className="pv-pill" type="button" onClick={step}>Step</button>
+        <p className="dw-lead">
+          <button className="dw-btn dw-btn--primary" type="button" onClick={step}>Step</button>
         </p>
       )}
     </section>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { gatewayBase } from '@/components/dawn-agents/api';
 import { probeDesk, type DeskStatus } from '@/lib/home/town-action';
-import '../agents/agents.css';
+import { PageShell } from '@/components/site/page-shell';
 
 const SAMPLE = `// Dawn Code is the OpenVSCode workspace in editor/.
 // This static page does not run it and does not save a file.
@@ -46,57 +46,46 @@ export default function EditorPage() {
     ? 'Google sign-in is in front of this host. Open /oauth2/start on this same site. The editor process is OpenVSCode on 127.0.0.1:3000 and does not need a model key.'
     : desk === 'ready'
       ? 'The owner desk answered on this site. OpenVSCode, when the host runs editor/scripts/dev.sh, is the editor. Mock mode does not call a model. Files below are the desk workspace.'
-      : 'This origin has no /api desk. Firebase Hosting cannot start it. The process is node server/dawn-agents.mjs on 127.0.0.1:8787, and Caddy on https://2-29-173-68.sslip.io already proxies /api there after Google sign-in.';
+      : 'This origin has no /api desk, and static hosting cannot start one. The editor is not connected here. Run node server/dawn-agents.mjs next to this site to turn the desk buttons on.';
   return (
-    <main className="dawn-agents" style={{ minHeight: '100dvh', padding: '20px 16px 32px' }}>
-      <div style={{ width: 'min(720px, 100%)', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <p className="word">DAWN</p>
-        <h1>Code</h1>
-        <p className="note" role="status">{status} Nothing on this page executes.</p>
-        <nav aria-label="Dawn" style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-          <a href="/">Town</a>
-          <a href="/village">Village</a>
-          <a href="/atlas">Atlas</a>
-          <a href="/projects">Projects</a>
-          <a href="/artifacts">Artifacts</a>
-          <a href="/village?section=library">Village history</a>
-        </nav>
-        <label>
-          Workspace note
-          <textarea
-            value={SAMPLE}
-            readOnly
-            rows={4}
-            spellCheck={false}
-            style={{ width: '100%', fontFamily: 'ui-monospace, monospace', fontSize: 16 }}
-          />
-        </label>
-        <ul>{files.length === 0 ? <li>No desk files yet.</li> : files.map((name) => <li key={name}>{name}</li>)}</ul>
-        {desk === 'ready' && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-            <button type="button" className="primary" onClick={() => {
-              void post({ kind: 'sandbox', name: 'booth.html', html: '<p>Local booth</p>' }).then(async (saved) => {
-                if (!saved.ok) { setNote(saved.data.error || 'Sandbox was refused.'); return; }
-                const read = await post({ kind: 'browser', target: 'booth.html' });
-                setBooth(read.data.html || '');
-                setNote(read.ok ? 'Local booth read back. Nothing was fetched.' : (read.data.error || 'Refused.'));
-              });
-            }}>Open local booth</button>
-            <button type="button" onClick={() => {
-              void post({ kind: 'browser', target: 'https://example.com' }).then((read) => {
-                setNote(read.data.error || 'Remote pages are refused.');
-              });
-            }}>Try a remote page</button>
-            <button type="button" onClick={() => {
-              void post({ kind: 'send', to: 'review@localhost', body: 'Hold this draft.' }).then((read) => {
-                setNote(read.ok ? 'Draft held for review. Nothing was sent.' : (read.data.error || 'Refused.'));
-              });
-            }}>Hold a draft</button>
-          </div>
-        )}
-        {booth && <pre>{booth}</pre>}
-        {note && <p role="status">{note}</p>}
-      </div>
-    </main>
+    <PageShell
+      title="Code"
+      current="/editor"
+      lead="A read-only workspace note and the desk file list. Nothing on this page executes."
+    >
+      <p className="dw-alert" role="status">{status}</p>
+      <label className="dw-label">
+        Workspace note
+        <textarea className="dw-field" value={SAMPLE} readOnly rows={4} spellCheck={false} style={{ fontFamily: 'var(--dawn-font-mono)' }} />
+      </label>
+      <section className="dw-card">
+        <h2 className="dw-card-title">Desk files</h2>
+        <ul className="dw-list">{files.length === 0 ? <li className="dw-note">No desk files yet.</li> : files.map((name) => <li key={name}>{name}</li>)}</ul>
+      </section>
+      {desk === 'ready' && (
+        <div className="dw-actions">
+          <button type="button" className="dw-btn dw-btn--primary" onClick={() => {
+            void post({ kind: 'sandbox', name: 'booth.html', html: '<p>Local booth</p>' }).then(async (saved) => {
+              if (!saved.ok) { setNote(saved.data.error || 'Sandbox was refused.'); return; }
+              const read = await post({ kind: 'browser', target: 'booth.html' });
+              setBooth(read.data.html || '');
+              setNote(read.ok ? 'Local booth read back. Nothing was fetched.' : (read.data.error || 'Refused.'));
+            });
+          }}>Open local booth</button>
+          <button type="button" className="dw-btn" onClick={() => {
+            void post({ kind: 'browser', target: 'https://example.com' }).then((read) => {
+              setNote(read.data.error || 'Remote pages are refused.');
+            });
+          }}>Try a remote page</button>
+          <button type="button" className="dw-btn" onClick={() => {
+            void post({ kind: 'send', to: 'review@localhost', body: 'Hold this draft.' }).then((read) => {
+              setNote(read.ok ? 'Draft held for review. Nothing was sent.' : (read.data.error || 'Refused.'));
+            });
+          }}>Hold a draft</button>
+        </div>
+      )}
+      {booth && <pre>{booth}</pre>}
+      {note && <p className="dw-alert" role="status">{note}</p>}
+    </PageShell>
   );
 }
