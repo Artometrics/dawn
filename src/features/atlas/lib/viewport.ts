@@ -59,3 +59,13 @@ export function clampView(view: View, size: Size, bounds: Bounds, marginM = 200)
     cy: clamp(view.cy, bounds.y0 + halfH - marginM, bounds.y1 - halfH + marginM),
   };
 }
+
+/** A view that puts a world point in the middle of the free area (the part chrome does not cover). */
+export function focusPoint(point: XY, scale: number, insets: Insets): View {
+  const s = clampScale(scale);
+  return {
+    cx: point.x - (insets.left - insets.right) / 2 / s,
+    cy: point.y - (insets.top - insets.bottom) / 2 / s,
+    scale: s,
+  };
+}

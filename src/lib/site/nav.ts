@@ -3,8 +3,8 @@ export type SiteLink = { href: string; label: string };
 
 export const SITE_NAV: SiteLink[] = [
   { href: '/', label: 'Town' },
-  { href: '/village', label: 'Village' },
   { href: '/atlas', label: 'Atlas' },
+  { href: '/village', label: 'Village' },
   { href: '/studio', label: 'Studio' },
   { href: '/editor', label: 'Code' },
   { href: '/projects', label: 'Projects' },

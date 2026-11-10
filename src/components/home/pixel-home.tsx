@@ -17,6 +17,7 @@ import './pixel-home.css';
 type Tab = 'explore' | 'you' | 'contribute';
 
 const CHIPS: { label: string; href?: string; panel?: boolean }[] = [
+  { label: 'Atlas', href: '/atlas' },
   { label: 'Village', href: '/village' },
   { label: 'Ask Dawn', href: '/agents' },
   { label: 'Agents', panel: true },
