@@ -93,6 +93,7 @@ function Carousel({
     setApi(api)
   }, [api, setApi])
 
+  /* eslint-disable react-hooks/set-state-in-effect -- copies the carousel's initial state once its API is ready */
   React.useEffect(() => {
     if (!api) return
     onSelect(api)
@@ -103,6 +104,7 @@ function Carousel({
       api?.off("select", onSelect)
     }
   }, [api, onSelect])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   return (
     <CarouselContext.Provider

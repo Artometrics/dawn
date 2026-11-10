@@ -158,6 +158,7 @@ export const InlineCitationCarouselIndex = ({
     setCurrent(api.selectedScrollSnap() + 1);
   }, [api]);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- copies the carousel's initial state once its API is ready */
   useEffect(() => {
     if (!api) {
       return;
@@ -171,6 +172,7 @@ export const InlineCitationCarouselIndex = ({
       api.off("select", syncState);
     };
   }, [api, syncState]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   return (
     <div

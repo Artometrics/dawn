@@ -48,10 +48,12 @@ function Shell() {
   const dawn = useDawn();
   const town = useTown(dawn.memories, dawn.remember);
   const [section, setSection] = useState<Section>('quests');
+  /* eslint-disable react-hooks/set-state-in-effect -- reads the ?section= link after hydration so the static HTML and the first client render match */
   useEffect(() => {
     const asked = new URLSearchParams(window.location.search).get('section');
     if (asked === 'quests' || asked === 'village' || asked === 'characters' || asked === 'atlas' || asked === 'library') setSection(asked);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
   const [drawer, setDrawer] = useState(false);
   const [query, setQuery] = useState('');
   const [youOpen, setYouOpen] = useState(false);

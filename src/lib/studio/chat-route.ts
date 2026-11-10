@@ -86,9 +86,10 @@ export async function POST(req: Request) {
     });
 
     return result.toTextStreamResponse();
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in Dawn chat route:', error);
-    return new Response(`Error in Dawn AI Gateway: ${error.message || 'Unknown error'}`, {
+    const message = error instanceof Error ? error.message : '';
+    return new Response(`Error in Dawn AI Gateway: ${message || 'Unknown error'}`, {
       status: 500,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     });

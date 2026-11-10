@@ -23,6 +23,7 @@ jobs:
           wget -q -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo apt-get install -y /tmp/chrome.deb
       - run: npm ci --legacy-peer-deps
+      - run: npm run lint
       - run: npm run build
       - name: Build the code gateway
         run: |

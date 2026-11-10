@@ -109,8 +109,10 @@ export const SpeechInput = ({
     useRef<SpeechInputProps["onAudioRecorded"]>(onAudioRecorded);
 
   // Keep refs in sync
-  onTranscriptionChangeRef.current = onTranscriptionChange;
-  onAudioRecordedRef.current = onAudioRecorded;
+  useEffect(() => {
+    onTranscriptionChangeRef.current = onTranscriptionChange;
+    onAudioRecordedRef.current = onAudioRecorded;
+  });
 
   // Initialize Speech Recognition when mode is speech-recognition
   useEffect(() => {
@@ -164,6 +166,7 @@ export const SpeechInput = ({
     speechRecognition.addEventListener("error", handleError);
 
     recognitionRef.current = speechRecognition;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the recognizer is created in this effect, so readiness can only be reported from it
     setIsRecognitionReady(true);
 
     return () => {

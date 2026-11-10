@@ -22,6 +22,7 @@ export function BenchView() {
   const [draft, setDraft] = useState('');
   const [error, setError] = useState<string | null>(null);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- reads sessionStorage after hydration so the static HTML and the first client render match */
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(PREVIEW_KEY);
@@ -31,6 +32,7 @@ export function BenchView() {
     }
     setReady(true);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (!ready) return;

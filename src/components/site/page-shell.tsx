@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { SITE_FOOTER, SITE_NAV } from '@/lib/site/nav';
 
@@ -6,7 +7,7 @@ export function SiteHeader({ current }: { current?: string }) {
   return (
     <header className="dw-header">
       <div className="dw-header-bar">
-        <a className="dw-brand" href="/" aria-label="Dawn, back to the town">DAWN</a>
+        <Link className="dw-brand" href="/" aria-label="Dawn, back to the town">DAWN</Link>
         <nav className="dw-nav" aria-label="Dawn">
           {SITE_NAV.map((link) => (
             <a

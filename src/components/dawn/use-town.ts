@@ -62,8 +62,10 @@ export function useTown(
   const [notice, setNotice] = useState<string | null>(null);
   const memoriesRef = useRef(memories);
   const rememberRef = useRef(remember);
-  memoriesRef.current = memories;
-  rememberRef.current = remember;
+  useEffect(() => {
+    memoriesRef.current = memories;
+    rememberRef.current = remember;
+  });
 
   useEffect(() => {
     const grid = buildHq();

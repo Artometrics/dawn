@@ -7,7 +7,9 @@ import type { VillageHandlers, VillagePose } from '@/components/dawn/village-sce
 export function VillageGame(props: Omit<VillageHandlers, 'poses' | 'looks'> & { poses: VillagePose[]; looks?: ReturnType<VillageHandlers['looks']> }) {
   const host = useRef<HTMLDivElement>(null);
   const handlers = useRef(props);
-  handlers.current = props;
+  useEffect(() => {
+    handlers.current = props;
+  });
 
   useEffect(() => {
     const parent = host.current;

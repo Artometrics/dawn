@@ -116,9 +116,11 @@ export const useAudioDevices = () => {
     }
   }, [loading]);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- enumerates audio devices once on mount */
   useEffect(() => {
     loadDevicesWithoutPermission();
   }, [loadDevicesWithoutPermission]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     const handleDeviceChange = () => {

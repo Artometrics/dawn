@@ -8,6 +8,7 @@ export function StuckView() {
   const [state, setState] = useState<PreviewState>(emptyPreview);
   const [ready, setReady] = useState(false);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- reads sessionStorage after hydration so the static HTML and the first client render match */
   useEffect(() => {
     try {
       const raw = sessionStorage.getItem(PREVIEW_KEY);
@@ -17,6 +18,7 @@ export function StuckView() {
     }
     setReady(true);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (!ready) return;

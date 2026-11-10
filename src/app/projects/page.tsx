@@ -34,7 +34,9 @@ export default function ProjectsPage() {
     }
   }
 
+  /* eslint-disable react-hooks/set-state-in-effect -- loads the desk's file list once when the page mounts */
   useEffect(() => { void load(); }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   async function save(event: React.FormEvent) {
     event.preventDefault();

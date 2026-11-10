@@ -1,11 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
+
+const subscribe = () => () => {};
+const readPath = () => window.location.pathname.replace(/\/+$/, '');
+const readServerPath = () => '';
 
 /** Says where a mistyped or retired address went. Reads the address in the browser; the static 404 file is shared. */
 export function NotFoundHint() {
-  const [path, setPath] = useState('');
-  useEffect(() => setPath(window.location.pathname.replace(/\/+$/, '')), []);
+  const path = useSyncExternalStore(subscribe, readPath, readServerPath);
   if (path === '/chats') {
     return (
       <p className="dw-alert" role="status">
