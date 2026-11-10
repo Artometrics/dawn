@@ -10,7 +10,7 @@ import test from 'node:test';
 const binary = '/tmp/dawn-code-cache/openvscode-server-v1.109.5-linux-x64/bin/openvscode-server';
 const gateway = path.resolve('editor/dist/gateway.cjs');
 
-test('OpenVSCode workbench answers only after the session cookie', { skip: existsSync(binary) ? false : 'OpenVSCode is not downloaded on this machine' }, async () => {
+test('OpenVSCode workbench answers only after the session cookie', { skip: existsSync(binary) || process.env.CI ? false : 'OpenVSCode is not downloaded on this machine' }, async () => {
   let owned: ReturnType<typeof spawn> | null = null;
   if (!(await reachable('http://127.0.0.1:3010/editor/'))) {
     const data = await mkdtemp(path.join(tmpdir(), 'dawn-vscode-'));
@@ -59,7 +59,7 @@ test('OpenVSCode workbench answers only after the session cookie', { skip: exist
   }
 });
 
-test('the code gateway starts in mock mode and does not claim a provider', { skip: existsSync(gateway) ? false : 'editor/dist/gateway.cjs is not built' }, async () => {
+test('the code gateway starts in mock mode and does not claim a provider', { skip: existsSync(gateway) || process.env.CI ? false : 'editor/dist/gateway.cjs is not built' }, async () => {
   const data = await mkdtemp(path.join(tmpdir(), 'dawn-gateway-'));
   const child = spawn(process.execPath, [gateway], {
     env: {
