@@ -1,0 +1,34 @@
+
+== 1440px ==
+ok 3D view drew (10.3% of pixels)
+ok no sideways scroll
+ok preset and pose swap
+ok part swaps and height slider
+ok saved to the roster (portrait 21330 chars, sprite 2102 chars)
+ok JSON import
+ok a bad JSON file is refused and the draft is kept
+ok exports: imported-sage-portrait.png, imported-sage.forge.json, imported-sage.glb (glTF: 49 nodes, clips idle,guard)
+ok Napoleon assigned to Trinity
+  screenshot characters-1440.png (1678px tall)
+ok the roster survives a reload
+ok the village scene draws Trinity from the saved character
+  screenshot village-1440.png (900px tall)
+ok releasing the agent brings back its tile sprite
+ok no browser errors
+
+== 390px ==
+ok 3D view drew (14.5% of pixels)
+ok no sideways scroll
+ok preset and pose swap
+ok part swaps and height slider
+ok saved to the roster (portrait 21330 chars, sprite 2102 chars)
+ok JSON import
+ok a bad JSON file is refused and the draft is kept
+ok exports: imported-sage-portrait.png, imported-sage.forge.json, imported-sage.glb (glTF: 49 nodes, clips idle,guard)
+ok Napoleon assigned to Trinity
+  screenshot characters-390.png (2306px tall)
+ok the roster survives a reload
+ok the village scene draws Trinity from the saved character
+  screenshot village-390.png (844px tall)
+ok releasing the agent brings back its tile sprite
+ok no browser errors

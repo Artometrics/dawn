@@ -3,6 +3,7 @@ import { initializeTestEnvironment, assertFails, assertSucceeds } from '@firebas
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   serverTimestamp,
@@ -130,6 +131,45 @@ await assertSucceeds(setDoc(doc(alice, `users/alice/quests/${questId}`), {
 
 await assertFails(getDoc(doc(bob, `users/alice/quests/${questId}`)));
 await assertSucceeds(getDoc(doc(alice, `users/alice/quests/${questId}`)));
+
+const characterId = 'character-abc-1234567890';
+const png = 'data:image/png;base64,iVBORw0KGgo=';
+const character = {
+  id: characterId,
+  name: 'Napoleon',
+  spec: {
+    schema: 'dawn.forge.character/1',
+    name: 'Napoleon',
+    title: 'Emperor of the French',
+    head: 'round',
+    face: 'stern',
+    hair: 'crop',
+    outfit: 'coat',
+    accessory: 'bicorne',
+    height: 0.85,
+    build: 0.62,
+    clip: 'idle',
+    colors: { skin: '#e0b48f', hair: '#3a2a20', primary: '#1f3a6e', secondary: '#e8e2d0', accent: '#c9a24a' },
+  },
+  portrait: png,
+  sprite: png,
+  agentId: 'trinity',
+  createdAt: now,
+  updatedAt: now,
+};
+await assertSucceeds(setDoc(doc(alice, `users/alice/characters/${characterId}`), character));
+await assertSucceeds(getDoc(doc(alice, `users/alice/characters/${characterId}`)));
+await assertFails(getDoc(doc(bob, `users/alice/characters/${characterId}`)));
+await assertFails(setDoc(doc(bob, `users/alice/characters/${characterId}`), character));
+await assertFails(setDoc(doc(anon, `users/alice/characters/${characterId}`), character));
+await assertSucceeds(setDoc(doc(alice, `users/alice/characters/${characterId}`), { ...character, agentId: '', updatedAt: now + 1 }));
+await assertFails(setDoc(doc(alice, `users/alice/characters/${characterId}`), { ...character, createdAt: now - 5, updatedAt: now + 2 }));
+await assertFails(setDoc(doc(alice, `users/alice/characters/${characterId}`), { ...character, agentId: 'mallory' }));
+await assertFails(setDoc(doc(alice, `users/alice/characters/${characterId}`), { ...character, portrait: 'data:text/html;base64,AAAA' }));
+await assertFails(setDoc(doc(alice, `users/alice/characters/${characterId}`), { ...character, name: 'Someone else' }));
+await assertFails(setDoc(doc(alice, `users/alice/characters/${characterId}`), { ...character, extra: true }));
+await assertFails(setDoc(doc(alice, 'users/alice/characters/other-id-1234567890'), character));
+await assertSucceeds(deleteDoc(doc(alice, `users/alice/characters/${characterId}`)));
 
 await testEnv.cleanup();
 console.log('firestore rules ok');
