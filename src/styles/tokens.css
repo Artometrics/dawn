@@ -1,0 +1,89 @@
+/*
+ * Dawn design tokens. One set for every page.
+ * Palette and rules: DESIGN.md. Shared component styles: dawn-ui.css.
+ * Dawn is dark only. There is no light theme, so prefers-color-scheme changes nothing.
+ */
+:root {
+  color-scheme: dark;
+
+  /* Surfaces, darkest to lightest. Depth is tonal, not shadowed. */
+  --dawn-bg: #0e0e0c;
+  --dawn-sheet: #121211;
+  --dawn-elev: #171715;
+  --dawn-field: #1c1c1a;
+  --dawn-chip: #2a2a27;
+  --dawn-chip-hover: #353531;
+  --dawn-grip: #3a3834;
+  --dawn-line: rgb(243 241 236 / 0.1);
+  --dawn-line-strong: rgb(243 241 236 / 0.18);
+  --dawn-scrim: rgb(0 0 0 / 0.55);
+
+  /* Text, three warm tiers. */
+  --dawn-text: #f3f1ec;
+  --dawn-secondary: #c4bdb3;
+  --dawn-muted: #8f887f;
+  --dawn-placeholder: #a8a199;
+
+  /* Accent. Clay marks things; it never fills a ground or a card. */
+  --dawn-accent: #d97746;
+  --dawn-accent-strong: #e58a5c;
+  --dawn-pill: #f7f4ef;
+  --dawn-pill-hover: #ffffff;
+  --dawn-ink: #141210;
+
+  /* Map and town. Neon stays on the drawing. */
+  --dawn-marker: #1a3358;
+  --dawn-map: #161816;
+  --dawn-road: #3a413c;
+  --dawn-grass: #3f8f34;
+  --dawn-forest: #143018;
+  --dawn-neon-orange: #ff7a2f;
+  --dawn-neon-green: #3ee08a;
+  --dawn-neon-blue: #4cb7ff;
+
+  /* Type. Geist for interface, Source Serif 4 for display, Press Start 2P for the brand mark only. */
+  --dawn-font-ui: var(--font-geist-sans), "Geist", system-ui, sans-serif;
+  --dawn-font-display: var(--font-serif), "Source Serif 4", "Iowan Old Style", Palatino, serif;
+  --dawn-font-pixel: var(--font-pixel), "Press Start 2P", monospace;
+  --dawn-font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
+
+  --dawn-fs-micro: 12px;
+  --dawn-fs-label: 13px;
+  --dawn-fs-action: 14px;
+  --dawn-fs-support: 15px;
+  --dawn-fs-body: 16px;
+  --dawn-fs-title: 17px;
+  --dawn-fs-heading: 22px;
+  --dawn-fs-h1: 30px;
+  --dawn-fs-display: 34px;
+
+  /* Spacing, a 4px grid. */
+  --dawn-space-1: 4px;
+  --dawn-space-2: 8px;
+  --dawn-space-3: 12px;
+  --dawn-space-4: 16px;
+  --dawn-space-5: 20px;
+  --dawn-space-6: 24px;
+  --dawn-space-8: 32px;
+  --dawn-space-10: 40px;
+
+  /* Shape. */
+  --dawn-radius-full: 999px;
+  --dawn-radius-sheet: 22px;
+  --dawn-radius-panel: 18px;
+  --dawn-radius-row: 14px;
+  --dawn-radius-tile: 10px;
+  --dawn-radius-mark: 8px;
+
+  /* Elevation, only for things that float. */
+  --dawn-shadow-pill: 0 8px 20px rgb(0 0 0 / 0.35);
+  --dawn-shadow-menu: 0 12px 32px rgb(0 0 0 / 0.4);
+  --dawn-shadow-sheet: 0 -10px 28px rgb(0 0 0 / 0.4);
+
+  /* Layout. */
+  --dawn-tap: 44px;
+  --dawn-header-h: 56px;
+  --dawn-measure-narrow: 720px;
+  --dawn-measure-wide: 1040px;
+  --dawn-focus: 2px solid var(--dawn-accent);
+}
