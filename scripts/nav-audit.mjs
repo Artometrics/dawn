@@ -131,7 +131,7 @@ for (const mode of ['offline', 'redirect', 'ready']) {
     const height = width === 1280 ? 900 : width === 472 ? 1024 : 844;
     await size(width, height);
     const before = await go(origin, '/studio');
-    const tabs = await ev(`['Town','Chat','Computer','Project'].map(name => [...document.querySelectorAll('a,button')].some(el => el.textContent.trim()===name)).join(',')`);
+    const tabs = await ev(`['Home','Chat','Computer','Project'].map(name => [...document.querySelectorAll('a,button')].some(el => el.textContent.trim()===name)).join(',')`);
     note(`studio ${width} tabs ${tabs} overflow ${await ev('document.documentElement.scrollWidth>document.documentElement.clientWidth+1')}`);
     for (const pane of ['Chat', 'Computer', 'Project']) {
       note(`studio ${width} ${pane} ${await click(pane)}`);
@@ -147,7 +147,7 @@ for (const mode of ['offline', 'redirect', 'ready']) {
     note(`studio ${width} provider calls ${providerCalls.length}`);
   }
   await size(390, 844);
-  await go(origin, '/?bot=atlas-scout');
+  await go(origin, '/town?bot=atlas-scout');
   note(`reload bot ${await ev(`document.querySelector('.ph-talk')?.innerText.replace(/\\s+/g,' ').slice(0,180)`)}`);
   await ev(`history.back()`);
   await new Promise((r) => setTimeout(r, 400));
@@ -155,7 +155,7 @@ for (const mode of ['offline', 'redirect', 'ready']) {
   await go(origin, '/agents');
   await new Promise((r) => setTimeout(r, 400));
   note(`agents ${await ev(`document.body.innerText.replace(/\\s+/g,' ').slice(0,160)`)}`);
-  await go(origin, '/');
+  await go(origin, '/town');
   await ev(`document.querySelector('button[aria-label="Menu"]').click()`);
   note(`drawer ${await ev(`document.querySelector('#dawn-menu')?.innerText.replace(/\\s+/g,' ').slice(0,220)`)}`);
   note(`chats entry ${await ev(`!![...document.querySelectorAll('#dawn-menu a, #dawn-menu button')].find(el => el.textContent.trim()==='Chats')`)}`);

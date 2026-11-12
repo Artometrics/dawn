@@ -24,7 +24,8 @@ import './atlas.css';
 
 const HereLayer = dynamic(() => import('@/components/dawn/atlas-map').then((mod) => mod.AtlasMap), { ssr: false });
 
-type Tab = 'places' | 'tours' | 'story' | 'you';
+export type AtlasTab = 'places' | 'tours' | 'story' | 'you';
+type Tab = AtlasTab;
 const TABS: { id: Tab; label: string; icon: typeof MapPin }[] = [
   { id: 'places', label: 'Places', icon: MapPin },
   { id: 'tours', label: 'Tours', icon: Footprints },
@@ -47,14 +48,21 @@ type RouteGeo = { route: Route; line: XY[]; indexes: number[]; anchors: XY[] };
 
 export type AtlasAppProps = {
   region?: Region;
-  /** `page` is the /atlas route. `shell` is inside the village drawer, which supplies the menu button. */
-  framed?: 'page' | 'shell';
+  /**
+   * `home` is the / and /atlas screen: its top-left button opens the Dawn sidebar.
+   * `page` is a bare map with a link home. `shell` is inside the village drawer, which supplies the menu button.
+   */
+  framed?: 'home' | 'page' | 'shell';
   onMenu?: () => void;
+  /** Whether the Dawn sidebar is open, for the menu button's aria-expanded. */
+  menuOpen?: boolean;
+  /** Ask the panel to show a tab. A new `id` is a new request. */
+  tabRequest?: { tab: AtlasTab; id: number } | null;
   /** The look picked in the village. Without it the map uses the town walker. */
   avatar?: number;
 };
 
-export function AtlasApp({ region = DEFAULT_REGION, framed = 'page', onMenu, avatar }: AtlasAppProps) {
+export function AtlasApp({ region = DEFAULT_REGION, framed = 'page', onMenu, menuOpen = false, tabRequest = null, avatar }: AtlasAppProps) {
   const embed = useEmbed();
   const canSpeak = useSyncExternalStore(noSubscribe, speechAvailable, () => false);
   const { progress, update, reset } = useAtlasProgress();
@@ -315,6 +323,12 @@ export function AtlasApp({ region = DEFAULT_REGION, framed = 'page', onMenu, ava
     if (!wide) setSnap((s) => Math.max(s, 1));
   };
 
+  const [seenRequest, setSeenRequest] = useState(tabRequest?.id ?? 0);
+  if (tabRequest && tabRequest.id !== seenRequest) {
+    setSeenRequest(tabRequest.id);
+    pickTab(tabRequest.tab);
+  }
+
   const onQuery = (value: string) => {
     setQuery(value);
     if (value) {
@@ -531,7 +545,11 @@ export function AtlasApp({ region = DEFAULT_REGION, framed = 'page', onMenu, ava
   );
 
   const home =
-    framed === 'shell' && onMenu ? (
+    framed === 'home' && onMenu && !embed ? (
+      <button type="button" className="at-round" aria-label="Menu" aria-expanded={menuOpen} aria-controls="dawn-menu" onClick={onMenu}>
+        <Menu size={20} aria-hidden />
+      </button>
+    ) : framed === 'shell' && onMenu ? (
       <button type="button" className="at-round dw-dock-hide" aria-label="Menu" onClick={onMenu}>
         <Menu size={20} aria-hidden />
       </button>

@@ -86,7 +86,8 @@ export function AgentsRoot() {
             {error && <p className="error">{error}</p>}
             {needsGoogle && <a className="primary" href={googleSignInHref()} style={{ display: 'inline-flex', alignItems: 'center' }}>Sign in with Google</a>}
             <nav className="ph-links" aria-label="Dawn" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <Link href="/">Town</Link>
+              <Link href="/">Home</Link>
+              <a href="/town">Town</a>
               <a href="/village">Village</a>
               <a href="/atlas">Atlas</a>
               <a href="/studio">Studio</a>

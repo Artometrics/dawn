@@ -2,12 +2,12 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { SITE_FOOTER, SITE_NAV } from '@/lib/site/nav';
 
-/** Top bar for standalone pages: brand, the page list as chips, and the way back to the town. */
+/** Top bar for standalone pages: brand, the page list as chips, and the way back home. */
 export function SiteHeader({ current }: { current?: string }) {
   return (
     <header className="dw-header">
       <div className="dw-header-bar">
-        <Link className="dw-brand" href="/" aria-label="Dawn, back to the town">DAWN</Link>
+        <Link className="dw-brand" href="/" aria-label="Dawn, back to the Atlas home">DAWN</Link>
         <nav className="dw-nav" aria-label="Dawn">
           {SITE_NAV.map((link) => (
             <a

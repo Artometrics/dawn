@@ -32,6 +32,7 @@ publish('agents');
 publish('letter');
 publish('credits');
 publish('village');
+publish('town');
 publish('desk');
 publish('editor');
 publish('projects');

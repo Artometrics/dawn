@@ -9,9 +9,10 @@ export const metadata: Metadata = {
 };
 
 const ACTUAL = [
-  { href: '/', name: 'Home map', note: 'Pixel town. Live.' },
+  { href: '/', name: 'Home', note: 'The Atlas map with the Dawn sidebar. Live.' },
+  { href: '/town', name: 'Dawn Town', note: 'The 8-bit town map that used to be home. Live.' },
   { href: '/village', name: 'Village', note: 'Quests, library and the drawer. Phone layout fits.' },
-  { href: '/atlas', name: 'Atlas', note: 'Campus walk. Cardinal note still coming soon.' },
+  { href: '/atlas', name: 'Atlas', note: 'Same screen as home. Kept so old links work.' },
   { href: '/agents', name: 'Agents desk', note: 'Gateway desk. Not opened by this preview.' },
   { href: '/studio', name: 'Studio', note: 'Chat and live preview workspace. Sends need a model on the host; local and static builds send nothing.' },
   { href: '/letter', name: 'Letter', note: 'Newsletter page. Needs the desk to subscribe.' },

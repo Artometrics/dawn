@@ -366,9 +366,9 @@ export default function DawnStudio() {
           </div>
 
           <div className="flex items-center gap-1 text-[var(--dawn-muted)]">
-            <Link href="/" className="p-1 rounded hover:bg-[var(--dawn-field)] hover:text-[var(--dawn-text)] inline-flex items-center gap-1 text-xs" aria-label="Back to town">
+            <Link href="/" className="p-1 rounded hover:bg-[var(--dawn-field)] hover:text-[var(--dawn-text)] inline-flex items-center gap-1 text-xs" aria-label="Back to home">
               <ArrowLeft className="w-3.5 h-3.5" />
-              Town
+              Home
             </Link>
             <button type="button" aria-label="Forward" className="p-1 rounded hover:bg-[var(--dawn-field)] hover:text-[var(--dawn-text)] cursor-pointer">
               <ArrowRight className="w-3.5 h-3.5" />
@@ -421,7 +421,7 @@ export default function DawnStudio() {
       ═════════════════════════════════════════════════════════════════ */}
       {narrow && (
         <div className="flex shrink-0 border-b border-[var(--dawn-chip)] bg-[var(--dawn-bg)]">
-          <Link href="/" className="px-3 py-3 text-sm text-[var(--dawn-text)]">Town</Link>
+          <Link href="/" className="px-3 py-3 text-sm text-[var(--dawn-text)]">Home</Link>
           {(['chat', 'computer', 'project'] as const).map((pane) => (
             <button
               key={pane}

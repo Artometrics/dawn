@@ -132,7 +132,7 @@ async function drive(webSocketUrl: string) {
     headers: { 'content-type': 'application/json', origin: 'http://127.0.0.1:3000', 'sec-fetch-site': 'same-origin', 'x-auth-request-email': 'attacker@example.com' },
     body: JSON.stringify({ kind: 'chat', personId: 'letter-carrier', text: 'spoof' }),
   });
-  await call('Page.navigate', { url: 'http://127.0.0.1:3000/' });
+  await call('Page.navigate', { url: 'http://127.0.0.1:3000/town' });
   await new Promise((resolve) => setTimeout(resolve, 500));
   await ev(`document.querySelector('.ph-sheet-close')?.click()`);
   await new Promise((resolve) => setTimeout(resolve, 200));
@@ -147,7 +147,7 @@ async function drive(webSocketUrl: string) {
   await new Promise((resolve) => setTimeout(resolve, 400));
   await ev(`(() => { const input=document.getElementById('bot-draft'); const set=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set; set.call(input,'saved line'); input.dispatchEvent(new Event('input',{bubbles:true})); input.form.requestSubmit(); })()`);
   await new Promise((resolve) => setTimeout(resolve, 400));
-  await call('Page.navigate', { url: 'http://127.0.0.1:3000/?bot=letter-carrier' });
+  await call('Page.navigate', { url: 'http://127.0.0.1:3000/town?bot=letter-carrier' });
   await new Promise((resolve) => setTimeout(resolve, 1200));
   const reload = Boolean(await ev(`document.body.innerText.includes('saved line')`));
   await call('Page.navigate', { url: 'http://127.0.0.1:3000/projects' });
