@@ -1,8 +1,9 @@
 // Every page the static export emits, with the shared-shell family it belongs to.
 export const ROUTES = [
-  { path: '/', name: 'home', title: 'Town map' },
+  { path: '/', name: 'home', title: 'Atlas home' },
   { path: '/agents', name: 'agents', title: 'Agents drawer' },
   { path: '/village', name: 'village', title: 'Village' },
+  { path: '/town', name: 'town', title: 'Dawn Town (8-bit map)' },
   { path: '/atlas', name: 'atlas', title: 'Atlas' },
   { path: '/studio', name: 'studio', title: 'Studio' },
   { path: '/editor', name: 'editor', title: 'Code editor' },

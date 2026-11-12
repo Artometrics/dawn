@@ -1,11 +1,17 @@
 import type { Metadata } from 'next';
-import { HomeClient } from '@/components/home/home-client';
+import { AtlasHome } from '@/components/home/atlas-home';
 
 export const metadata: Metadata = {
   title: 'Dawn',
-  description: 'A 16-bit map of Dawn. Search, walk, and open the desk.',
+  description: 'The Atlas map of Cardinal, with tours, places, and the Dawn sidebar one tap away.',
+  robots: { index: false, follow: false },
 };
 
 export default function HomePage() {
-  return <main style={{ display: 'contents' }}><HomeClient /></main>;
+  return (
+    <main style={{ display: 'contents' }}>
+      <h1 className="dw-sr-only">Atlas</h1>
+      <AtlasHome />
+    </main>
+  );
 }

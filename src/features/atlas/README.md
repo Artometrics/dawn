@@ -2,7 +2,7 @@
 
 A map of real places with Dawn's pixel character on it. Cardinal (Stanford, from Kyle's Cardinal book and podcast) is the first region. Plan, IN and OUT lists, and mockups: `docs/atlas/`.
 
-Route: `/atlas` (static, no sign-in). `/atlas?embed=1` hides the home button. The village drawer renders the same `AtlasApp` with `framed="shell"`.
+Routes: `/` is Dawn's home and `/atlas` is the same screen (static, no sign-in). Both render `AtlasHome` (`src/components/home/atlas-home.tsx`), which wraps `AtlasApp` with `framed="home"` and the Dawn sidebar (`dawn-drawer.tsx`). The menu button at the top left opens the sidebar. `/atlas?embed=1` hides it. The village drawer renders the same `AtlasApp` with `framed="shell"`. The old 8-bit home is `/town`.
 
 ## Layout
 
@@ -39,7 +39,8 @@ Add `data/<region>/` with the same files, bake its basemap, export a `Region` fr
 ## Tests
 
 - `npm run test:app` runs the unit tests (`data/cardinal/cardinal.test.ts`, `lib/*.test.ts`) and `atlas.browser.test.ts` (needs `npm run build` first and Chrome).
-- `node scripts/atlas-shots.mjs [dir]` writes the screenshots at 1440x900 and 390x844.
+- `atlas-home.browser.test.ts` loads `/` at 390x844 and 1280x800, checks the map, and opens and closes the sidebar (button, scrim tap, swipe, Escape).
+- `node scripts/atlas-shots.mjs [dir]` writes the screenshots at 1440x900 and 390x844. `node scripts/atlas-home-shots.mjs [dir] [--root out] [--label after]` writes full-page shots of `/` with the sidebar shut and open.
 
 ## Rules this module keeps
 

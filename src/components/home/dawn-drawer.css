@@ -1,0 +1,154 @@
+/* The Dawn sidebar. Tokens come from src/styles/tokens.css. Every target is 44px or taller. */
+.dd {
+  position: absolute;
+  z-index: 1;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  width: var(--ah-drawer);
+  padding: calc(var(--dawn-space-5) + env(safe-area-inset-top)) var(--dawn-space-4) calc(var(--dawn-space-3) + env(safe-area-inset-bottom));
+  background: var(--dawn-bg);
+  color: var(--dawn-text);
+  font-family: var(--dawn-font-ui);
+  transform: translateX(-105%);
+  visibility: hidden;
+  transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 280ms;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+}
+.dd[data-open='true'] {
+  transform: none;
+  visibility: visible;
+  transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s;
+}
+.dd-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: var(--dawn-space-2) var(--dawn-space-2) var(--dawn-space-5);
+}
+.dd-mark {
+  margin: 0;
+  font-family: var(--dawn-font-display);
+  font-size: var(--dawn-fs-display);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.dd-close,
+.dd-avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--dawn-tap);
+  height: var(--dawn-tap);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--dawn-chip);
+  color: var(--dawn-secondary);
+  cursor: pointer;
+}
+.dd-close:hover,
+.dd-avatar:hover {
+  background: var(--dawn-chip-hover);
+}
+.dd-close svg,
+.dd-avatar svg {
+  width: 20px;
+  height: 20px;
+}
+.dd-nav,
+.dd-scroll {
+  display: flex;
+  flex-direction: column;
+}
+.dd-nav a,
+.dd-row {
+  display: flex;
+  align-items: center;
+  gap: var(--dawn-space-3);
+  min-height: var(--dawn-tap);
+  padding: 0 var(--dawn-space-2);
+  border-radius: var(--dawn-radius-tile);
+  color: inherit;
+  font-size: var(--dawn-fs-body);
+  font-weight: 550;
+  text-decoration: none;
+}
+.dd-nav a:hover,
+.dd-row:hover {
+  background: var(--dawn-elev);
+}
+.dd-nav svg,
+.dd-row svg {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  stroke-width: 1.75;
+}
+.dd-row img {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+.dd-row span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dd-scroll {
+  flex: 1;
+  min-height: 0;
+  margin-top: var(--dawn-space-2);
+  padding-bottom: var(--dawn-space-2);
+  overflow-y: auto;
+}
+.dd-label {
+  margin: var(--dawn-space-4) var(--dawn-space-2) var(--dawn-space-1);
+  color: var(--dawn-muted);
+  font-size: var(--dawn-fs-label);
+  font-weight: 600;
+}
+.dd-note {
+  margin: var(--dawn-space-1) var(--dawn-space-2);
+  color: var(--dawn-muted);
+  font-size: var(--dawn-fs-action);
+}
+.dd-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--dawn-space-3);
+  padding-top: var(--dawn-space-3);
+  border-top: 1px solid var(--dawn-line);
+}
+.dd-account {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--dawn-tap);
+  color: var(--dawn-secondary);
+  font-size: var(--dawn-fs-action);
+  text-decoration: none;
+}
+.dd-account--quiet {
+  color: var(--dawn-muted);
+}
+.dd a,
+.dd img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+.dd :focus-visible {
+  outline: var(--dawn-focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dd,
+  .dd[data-open='true'] {
+    transition: none;
+  }
+}
