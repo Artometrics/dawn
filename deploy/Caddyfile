@@ -1,9 +1,26 @@
 # Dawn on one host. oauth2-proxy is the only Google sign-in.
-# One cookie on this domain covers /agents, /editor, and the letter admin API.
+#
+# Sign-in is switched with one environment variable, DAWN_AUTH_SNIPPET:
+#   unset or dawn_auth_on   Google sign-in through oauth2-proxy (the owner cookie).
+#   dawn_auth_off           no sign-in. Set DAWN_AUTH_DISABLED=1 on the gateway too, so it
+#                           treats every request as the owner. Only for testing: anyone who
+#                           can reach this host can use the desks, NightCode, and the model budget.
+# /editor (OpenVSCode has a terminal) always uses dawn_auth_on, whatever the switch says.
 # The public letter (signup, confirm, read) is not behind the proxy.
 # Do not turn on access logs. They are not needed, and query strings must stay out of them.
 
 (dawn_auth) {
+	import {$DAWN_AUTH_SNIPPET:dawn_auth_on}
+}
+
+# With sign-in off, drop any identity header a caller sends. The gateway ignores it anyway.
+(dawn_auth_off) {
+	request_header -X-Auth-Request-Email
+	request_header -X-Auth-Request-User
+	request_header -X-Auth-Request-Preferred-Username
+}
+
+(dawn_auth_on) {
 	forward_auth 127.0.0.1:4180 {
 		uri /oauth2/auth
 		copy_headers X-Auth-Request-User X-Auth-Request-Email X-Auth-Request-Preferred-Username
@@ -47,15 +64,16 @@
 		reverse_proxy 127.0.0.1:8787
 	}
 
-	# Atlas home, town, village, studio, credits, and static files stay public.
-	@public path / /atlas /atlas/* /studio /studio/* /projects /projects/* /artifacts /artifacts/* /village /village/* /town /town/* /credits /credits/* /sprites/* /tiles/* /maps/* /_next/* /dawn-agents-config.json /favicon.ico
+	# Every page of the static app stays public. The pages hold no data. The
+	# data lives behind /api/*, which uses dawn_auth. /agents is the one page that
+	# still goes through dawn_auth, so sign-in lands there when it is switched on.
+	@public path / /atlas /atlas/* /studio /studio/* /projects /projects/* /artifacts /artifacts/* /village /village/* /town /town/* /credits /credits/* /code /code/* /desk /desk/* /kits /kits/* /preview /preview/* /sprites/* /tiles/* /maps/* /_next/* /dawn-agents-config.json /favicon.ico /robots.txt /404.html /*.svg
 	handle @public {
 		root * {$DAWN_STATIC_ROOT}
 		try_files {path} {path}.html {path}/index.html
 		file_server
 	}
 
-	# Letter admin lives in the agents desk. Same cookie as the editor.
 	handle /agents* {
 		import dawn_auth
 		root * {$DAWN_STATIC_ROOT}
@@ -63,26 +81,21 @@
 		file_server
 	}
 
-	# Kit pages are static and stay public so tool pages do not bounce
-	# to Google sign-in. Kit APIs are also not behind oauth2-proxy; the
-	# gateway still returns 401 if the caller is not the owner. Do not
-	# open /editor, /agents, or the rest of /api/* this way.
-	handle /kits* {
-		root * {$DAWN_STATIC_ROOT}
-		try_files {path} {path}.html {path}/index.html
-		file_server
-	}
-
+	# /editor is OpenVSCode at 127.0.0.1:3000. It is not the static page, and it
+	# always requires the real sign-in. The Dawn editor page is /code/editor.
 	handle /editor* {
-		import dawn_auth
+		import dawn_auth_on
 		reverse_proxy 127.0.0.1:3000
 	}
 
-	# /editor stays on OpenVSCode at 127.0.0.1:3000. It is not the static page.
 	# oauth2-proxy's copy_headers replaces X-Auth-Request-Email. The gateway
 	# trusts that header only from loopback, so 8787 must not be a public bind
 	# and DAWN_ALLOW_LOOPBACK_OWNER must stay unset here.
+	# Kit APIs need the same sign-in step as the rest of /api/*. Without it the
+	# gateway never sees the email header and answers 401, which NightCode
+	# showed as "Could not start a session."
 	handle /api/kits* {
+		import dawn_auth
 		reverse_proxy 127.0.0.1:8787
 	}
 
@@ -91,8 +104,12 @@
 		reverse_proxy 127.0.0.1:8787
 	}
 
+	# Anything else is the styled in-app 404 page with a real 404 status.
 	handle {
-		import dawn_auth
-		respond "Not found" 404
+		root * {$DAWN_STATIC_ROOT}
+		rewrite * /404.html
+		file_server {
+			status 404
+		}
 	}
 }

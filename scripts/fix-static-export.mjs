@@ -1,10 +1,11 @@
-import { copyFileSync, existsSync, mkdirSync, rmSync, readdirSync, statSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const out = 'out';
 
 // Next may emit a route folder of RSC text dumps without index.html.
-// That directory shadows the route on Firebase Hosting. Replace with a real index.
+// That directory shadows the route on Firebase Hosting, so add a real index.
+// The text dumps stay: client-side navigation prefetches them.
 function publish(route) {
   const html = join(out, `${route}.html`);
   const dir = join(out, route);
@@ -12,14 +13,7 @@ function publish(route) {
     console.warn(`fix-static-export: out/${route}.html missing; skip`);
     return;
   }
-  if (existsSync(dir)) {
-    for (const name of readdirSync(dir)) {
-      const p = join(dir, name);
-      // Child routes keep route.html beside this folder (preview/village.html).
-      // Only the RSC text dumps are removed so the directory can hold index.html.
-      if (statSync(p).isFile() && name !== 'index.html' && !name.endsWith('.html')) rmSync(p);
-    }
-  } else {
+  if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });
   }
   copyFileSync(html, join(dir, 'index.html'));
@@ -35,6 +29,9 @@ publish('village');
 publish('town');
 publish('desk');
 publish('editor');
+publish('code');
+publish('code/editor');
+publish('kits');
 publish('projects');
 publish('artifacts');
 publish('preview/bench');
