@@ -2,18 +2,21 @@
 
 import { useEffect, useState } from 'react';
 import { gatewayBase } from '@/components/dawn-agents/api';
-import { probeDesk, type DeskStatus } from '@/lib/home/town-action';
+import { DeskGate } from '@/components/shell/status-card';
 import { PageShell } from '@/components/site/page-shell';
+import { probeDesk, type DeskStatus } from '@/lib/home/town-action';
 
-const TRUTH = 'This page is the Dawn file editor. It is not the OpenVSCode workbench and it does not call a model. OpenVSCode is a separate process from editor/scripts/dev.sh.';
+type Draft = { id: string; to: string; status: string };
+type DeskFiles = { files?: string[]; sends?: Draft[] };
 
 export default function EditorPage() {
   const [desk, setDesk] = useState<DeskStatus | 'loading'>('loading');
   const [files, setFiles] = useState<string[]>([]);
-  const [drafts, setDrafts] = useState<{ id: string; to: string; status: string }[]>([]);
+  const [drafts, setDrafts] = useState<Draft[]>([]);
   const [fileText, setFileText] = useState('');
   const [booth, setBooth] = useState('');
-  const [note, setNote] = useState(TRUTH);
+  const [note, setNote] = useState('');
+
   useEffect(() => {
     let cancel = false;
     void (async () => {
@@ -24,7 +27,7 @@ export default function EditorPage() {
       if (status !== 'ready') return;
       const response = await fetch(`${base}/api/local-drafts`, { credentials: 'include', redirect: 'manual' });
       if (!response.ok) return;
-      const data = await response.json() as { files?: string[]; sends?: { id: string; to: string; status: string }[] };
+      const data = await response.json() as DeskFiles;
       setFiles(data.files ?? []);
       setDrafts(data.sends ?? []);
       if ((data.files ?? []).includes('page.txt')) {
@@ -39,6 +42,7 @@ export default function EditorPage() {
       cancel = true;
     };
   }, []);
+
   async function post(body: Record<string, string>) {
     const response = await fetch('/api/local-drafts', {
       method: 'POST',
@@ -47,81 +51,82 @@ export default function EditorPage() {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body),
     });
-    const data = await response.json().catch(() => ({})) as { error?: string; html?: string; text?: string; result?: string; delivery?: { reason?: string }; mockMail?: { note?: string } };
+    const data = await response.json().catch(() => ({})) as { error?: string; html?: string; text?: string; delivery?: { reason?: string }; mockMail?: { note?: string } };
     return { ok: response.ok, data };
   }
+
   async function refresh() {
     const response = await fetch('/api/local-drafts', { credentials: 'include', redirect: 'manual' });
     if (!response.ok) return;
-    const data = await response.json() as { files?: string[]; sends?: { id: string; to: string; status: string }[] };
+    const data = await response.json() as DeskFiles;
     setFiles(data.files ?? []);
     setDrafts(data.sends ?? []);
   }
-  const status = desk === 'signin'
-    ? 'Google sign-in is in front of this host. Use /oauth2/start on this same site. This page is not the OpenVSCode workbench.'
-    : desk === 'ready'
-      ? 'The owner desk answered. Files save through /api/local-drafts. This page is not the OpenVSCode workbench.'
-      : 'This origin has no owner desk, so Save cannot persist. Firebase Hosting cannot start the gateway.';
+
+  const ready = desk === 'ready';
+
   return (
-    <PageShell
-      title="Code"
-      current="/editor"
-      lead="The Dawn file editor for the owner desk. It is not OpenVSCode and it does not call a model."
-    >
-      <p className="dw-alert" role="status">{status} {TRUTH}</p>
-      <label className="dw-label">
-        page.txt
-        <textarea
-          id="file-body"
-          className="dw-field"
-          value={fileText}
-          onChange={(event) => setFileText(event.target.value)}
-          rows={8}
-          spellCheck={false}
-          style={{ fontFamily: 'var(--dawn-font-mono)' }}
-        />
-      </label>
-      <div className="dw-actions">
-        <button type="button" className="dw-btn dw-btn--primary" disabled={desk !== 'ready'} onClick={() => {
-          void post({ kind: 'file', name: 'page.txt', text: fileText }).then(async (saved) => {
-            setNote(saved.ok ? 'page.txt stored on the desk.' : (saved.data.error || 'Not stored.'));
-            if (saved.ok) await refresh();
-          });
-        }}>Save page.txt</button>
-      </div>
-      <section className="dw-card">
-        <h2 className="dw-card-title">Desk files</h2>
-        <ul className="dw-list">{files.length === 0 ? <li className="dw-note">No desk files yet.</li> : files.map((name) => <li key={name}>{name}</li>)}</ul>
-      </section>
-      {desk === 'ready' && (
-        <div className="dw-actions">
-          <button type="button" className="dw-btn dw-btn--primary" onClick={() => {
-            void post({ kind: 'sandbox', name: 'booth.html', html: '<p>Local booth</p>' }).then(async (saved) => {
-              if (!saved.ok) { setNote(saved.data.error || 'The file was refused.'); return; }
-              const read = await post({ kind: 'page', name: 'booth.html' });
-              setBooth(read.data.html || '');
-              setNote(read.ok ? 'Saved file read back. This is not a browser.' : (read.data.error || 'Refused.'));
-            });
-          }}>Open local booth</button>
-          <button type="button" className="dw-btn" onClick={() => {
-            void post({ kind: 'browse', mode: 'fixture' }).then((read) => {
-              setNote(read.ok ? `Chrome clicked the fixture. Text: ${read.data.text || ''}.` : (read.data.error || 'Browser check failed.'));
-            });
-          }}>Run local browser check</button>
-          <button type="button" className="dw-btn" onClick={() => {
-            void post({ kind: 'browse', url: 'https://example.com' }).then((read) => {
-              setNote(read.data.error || 'Remote pages are refused.');
-            });
-          }}>Try a remote page</button>
-          <button type="button" className="dw-btn" onClick={() => {
-            void post({ kind: 'send', to: 'review@localhost', body: 'Hold this draft.' }).then((read) => {
-              setNote(read.ok ? 'Draft held for review. Nothing was sent.' : (read.data.error || 'Refused.'));
-            });
-          }}>Hold a draft</button>
-        </div>
+    <PageShell title="Editor" lead="Edit your desk files.">
+      <DeskGate status={desk} offline="Offline preview. Open live Dawn to edit and save files." />
+      {ready && (
+        <>
+          <label className="dw-label">
+            page.txt
+            <textarea
+              id="file-body"
+              className="dw-field"
+              value={fileText}
+              onChange={(event) => setFileText(event.target.value)}
+              rows={8}
+              spellCheck={false}
+              style={{ fontFamily: 'var(--dawn-font-mono)' }}
+            />
+          </label>
+          <div className="dw-actions">
+            <button type="button" className="dw-btn dw-btn--primary" onClick={() => {
+              void post({ kind: 'file', name: 'page.txt', text: fileText }).then(async (saved) => {
+                setNote(saved.ok ? 'Saved.' : (saved.data.error || 'Not saved.'));
+                if (saved.ok) await refresh();
+              });
+            }}>Save</button>
+          </div>
+          <section className="dw-card">
+            <h2 className="dw-card-title">Desk files</h2>
+            <ul className="dw-list">{files.length === 0 ? <li className="dw-note">No files yet.</li> : files.map((name) => <li key={name}>{name}</li>)}</ul>
+          </section>
+          <details className="dw-card">
+            <summary className="dw-card-title">More checks</summary>
+            <div className="dw-actions" style={{ marginTop: 'var(--dawn-space-3)' }}>
+              <button type="button" className="dw-btn" onClick={() => {
+                void post({ kind: 'sandbox', name: 'booth.html', html: '<p>Local booth</p>' }).then(async (saved) => {
+                  if (!saved.ok) { setNote(saved.data.error || 'The file was refused.'); return; }
+                  const read = await post({ kind: 'page', name: 'booth.html' });
+                  setBooth(read.data.html || '');
+                  setNote(read.ok ? 'Saved page read back.' : (read.data.error || 'Refused.'));
+                });
+              }}>Open local booth</button>
+              <button type="button" className="dw-btn" onClick={() => {
+                void post({ kind: 'browse', mode: 'fixture' }).then((read) => {
+                  setNote(read.ok ? `Chrome clicked the fixture. Text: ${read.data.text || ''}.` : (read.data.error || 'Browser check failed.'));
+                });
+              }}>Run local browser check</button>
+              <button type="button" className="dw-btn" onClick={() => {
+                void post({ kind: 'browse', url: 'https://example.com' }).then((read) => {
+                  setNote(read.data.error || 'Remote pages are refused.');
+                });
+              }}>Try a remote page</button>
+              <button type="button" className="dw-btn" onClick={() => {
+                void post({ kind: 'send', to: 'review@localhost', body: 'Hold this draft.' }).then((read) => {
+                  setNote(read.ok ? 'Draft held for review. Nothing was sent.' : (read.data.error || 'Refused.'));
+                  if (read.ok) void refresh();
+                });
+              }}>Hold a draft</button>
+            </div>
+          </details>
+        </>
       )}
       {booth && (
-        <iframe title="Local booth" sandbox="allow-scripts" srcDoc={`<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">${booth}`} style={{ width: '100%', height: 120, border: 0, background: '#fff' }} />
+        <iframe title="Local booth" sandbox="allow-scripts" srcDoc={`<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">${booth}`} style={{ width: '100%', height: 120, border: 0, borderRadius: 'var(--dawn-radius-row)', background: 'var(--dawn-sheet)' }} />
       )}
       {drafts.length > 0 && (
         <section className="dw-card">

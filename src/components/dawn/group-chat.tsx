@@ -70,7 +70,7 @@ export function GroupChat() {
     event.preventDefault();
     setError(null);
     if (!user) {
-      setError('Sign in to join a room.');
+      setError('Rooms are not available right now.');
       return;
     }
     const roomId = room.trim().toLowerCase().replace(/[^a-z0-9-]+/g, '').slice(0, 24);

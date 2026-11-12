@@ -70,7 +70,7 @@ export function AtlasMap({
   return (
     <div className="dawn-map relative h-full min-h-0">
       <p className="pointer-events-none absolute top-16 left-4 z-[400] max-w-[16rem] text-[13px] text-[var(--dawn-secondary)]">
-        {place === 'here' ? 'You are on the map.' : 'Stand-in spot until location is allowed.'}
+        {place === 'here' ? 'You are on the map.' : 'Showing a default spot until location is allowed.'}
       </p>
       <div ref={host} className="h-full min-h-[240px]" />
     </div>

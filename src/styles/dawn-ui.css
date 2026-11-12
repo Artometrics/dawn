@@ -1,10 +1,11 @@
 /*
  * Shared Dawn component styles. Every standalone page (Code, Projects, Recipes, Letter, Credits,
  * Desk, Kits, Preview, 404) is built from these. Values come from tokens.css only.
+ * The top bar and sidebar are not here: they live in src/components/shell.
  */
 
 .dw-page {
-  min-height: 100dvh;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   background: var(--dawn-bg);
@@ -30,86 +31,6 @@
 .dw-page :where(button, input, textarea, select) {
   font: inherit;
   color: inherit;
-}
-
-.dw-skip {
-  position: absolute;
-  left: var(--dawn-space-3);
-  top: var(--dawn-space-3);
-  z-index: 40;
-  transform: translateY(-160%);
-  background: var(--dawn-pill);
-  color: var(--dawn-ink);
-  border-radius: var(--dawn-radius-full);
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--dawn-tap);
-  padding: 0 16px;
-  font-size: var(--dawn-fs-action);
-  font-weight: 500;
-}
-
-.dw-skip:focus {
-  transform: none;
-}
-
-/* Header ---------------------------------------------------------------- */
-
-.dw-header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: color-mix(in srgb, var(--dawn-bg) 92%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--dawn-line);
-  padding-top: env(safe-area-inset-top);
-}
-
-.dw-header-bar {
-  width: min(100%, var(--dawn-measure-wide));
-  margin: 0 auto;
-  min-height: var(--dawn-header-h);
-  padding: 0 var(--dawn-space-4);
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--dawn-space-2) var(--dawn-space-3);
-}
-
-.dw-brand {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--dawn-tap);
-  font-family: var(--dawn-font-pixel);
-  font-size: var(--dawn-fs-micro);
-  letter-spacing: 0.08em;
-  line-height: 1;
-  color: var(--dawn-text);
-  text-decoration: none;
-}
-
-.dw-spacer {
-  flex: 1 1 0;
-}
-
-.dw-nav {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--dawn-space-2);
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding: 2px 0;
-}
-
-.dw-nav::-webkit-scrollbar {
-  display: none;
-}
-
-.dw-nav a {
-  flex: none;
 }
 
 /* Page body ------------------------------------------------------------- */
@@ -163,7 +84,10 @@
 
 .dw-eyebrow {
   margin: 0;
-  font-size: var(--dawn-fs-label);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--dawn-muted);
 }
 
@@ -288,8 +212,9 @@
 .dw-btn--chip[aria-selected="true"],
 .dw-btn--chip[aria-current="page"],
 .dw-btn--chip.is-on {
-  background: var(--dawn-accent);
-  color: var(--dawn-ink);
+  background: var(--dawn-navy);
+  box-shadow: inset 0 0 0 1px var(--dawn-navy-line);
+  color: #fff;
 }
 
 .dw-btn--block {
@@ -298,7 +223,7 @@
 
 .dw-btn:disabled,
 .dw-btn[aria-disabled="true"] {
-  opacity: 0.4;
+  opacity: 0.55;
   cursor: not-allowed;
   pointer-events: none;
 }
@@ -318,6 +243,7 @@
 
 .dw-card {
   background: var(--dawn-elev);
+  border: 1px solid var(--dawn-line);
   border-radius: var(--dawn-radius-panel);
   padding: var(--dawn-space-4);
   min-width: 0;
@@ -361,6 +287,7 @@
 .dw-alert {
   margin: 0;
   background: var(--dawn-elev);
+  border: 1px solid var(--dawn-line);
   border-radius: var(--dawn-radius-panel);
   padding: var(--dawn-space-3) var(--dawn-space-4);
   font-size: var(--dawn-fs-action);
@@ -428,8 +355,9 @@
 }
 
 .dw-badge--accent {
-  background: var(--dawn-accent);
-  color: var(--dawn-ink);
+  background: var(--dawn-navy);
+  box-shadow: inset 0 0 0 1px var(--dawn-navy-line);
+  color: #fff;
 }
 
 /* Fields ------------------------------------------------------------------ */
@@ -452,7 +380,7 @@
   width: 100%;
   min-height: var(--dawn-tap);
   padding: 0 var(--dawn-space-4);
-  border: 0;
+  border: 1px solid var(--dawn-line);
   border-radius: var(--dawn-radius-full);
   background: var(--dawn-field);
   color: var(--dawn-text);
@@ -642,6 +570,7 @@ textarea.dw-field {
   overflow: hidden;
   border-radius: var(--dawn-radius-panel);
   background: var(--dawn-elev);
+  border: 1px solid var(--dawn-line);
 }
 
 .dw-stage > canvas {
@@ -661,38 +590,6 @@ textarea.dw-field {
   font-size: var(--dawn-fs-action);
   line-height: 1.55;
   color: var(--dawn-secondary);
-}
-
-/* Footer ------------------------------------------------------------------ */
-
-.dw-footer {
-  border-top: 1px solid var(--dawn-line);
-  padding: var(--dawn-space-4) var(--dawn-space-4) calc(var(--dawn-space-4) + env(safe-area-inset-bottom));
-}
-
-.dw-footer-bar {
-  width: min(100%, var(--dawn-measure-wide));
-  margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--dawn-space-2) var(--dawn-space-4);
-  font-size: var(--dawn-fs-label);
-  color: var(--dawn-muted);
-}
-
-.dw-footer a {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--dawn-tap);
-  min-width: var(--dawn-tap);
-  justify-content: center;
-  color: var(--dawn-secondary);
-  text-decoration: none;
-}
-
-.dw-footer a:hover {
-  color: var(--dawn-text);
 }
 
 .dw-sr-only {
@@ -726,12 +623,6 @@ textarea.dw-field {
 
   .dw-h1 {
     font-size: 28px;
-  }
-
-  .dw-nav {
-    flex-basis: 100%;
-    order: 3;
-    padding-bottom: var(--dawn-space-2);
   }
 
   .dw-actions .dw-btn {
@@ -772,4 +663,9 @@ textarea.dw-field {
   .dawn-studio form button[type="submit"] {
     border-radius: var(--dawn-radius-full);
   }
+}
+
+.as-fill {
+  position: absolute;
+  inset: 0;
 }

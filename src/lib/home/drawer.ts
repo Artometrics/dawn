@@ -1,24 +1,6 @@
-/** Pure rules for the Dawn sidebar on the Atlas home. The component only wires them to the DOM. */
+/** Pure rules for the Dawn sidebar. The component only wires them to the DOM. */
 import type { Thread } from '@/components/dawn-agents/api';
 import type { DeskStatus } from './town-action.ts';
-
-export type DrawerLink = { id: string; label: string; href: string };
-
-/** Where the sidebar sends you. Village and Dawn Town are the two pixel places that are no longer the first screen. */
-export const DRAWER_LINKS: DrawerLink[] = [
-  { id: 'projects', label: 'Projects', href: '/projects' },
-  { id: 'code', label: 'Code', href: '/editor' },
-  { id: 'artifacts', label: 'Artifacts', href: '/artifacts' },
-  { id: 'village', label: 'Village', href: '/village?section=village' },
-  { id: 'town', label: 'Dawn Town', href: '/town' },
-];
-
-export const VILLAGE_HISTORY_HREF = '/village?section=library';
-
-/** A pinned agent opens its chat in the town, which owns the chat preview. */
-export function pinnedHref(agentId: string): string {
-  return `/town?bot=${encodeURIComponent(agentId)}`;
-}
 
 export type Recent = { id: string; title: string; href: string };
 

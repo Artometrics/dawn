@@ -1,0 +1,58 @@
+.ch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: var(--dawn-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ch-grid li {
+  animation: ch-in 260ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+.dw-main .ch-grid li > .ch-card {
+  display: grid;
+  align-items: start;
+  min-height: 0;
+  gap: 4px;
+  height: 100%;
+  padding: var(--dawn-space-4);
+  border: 1px solid var(--dawn-line);
+  border-radius: var(--dawn-radius-panel);
+  background: var(--dawn-elev);
+  color: var(--dawn-text);
+  text-decoration: none;
+}
+.dw-main .ch-grid li > .ch-card:hover {
+  border-color: var(--dawn-navy-line);
+}
+.ch-card svg {
+  width: 22px;
+  height: 22px;
+  margin-bottom: var(--dawn-space-2);
+  color: var(--dawn-accent);
+}
+.ch-title {
+  font-family: var(--dawn-font-display);
+  font-size: var(--dawn-fs-heading);
+  font-weight: 600;
+}
+.ch-line {
+  color: var(--dawn-secondary);
+  font-size: var(--dawn-fs-support);
+}
+@keyframes ch-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ch-grid li {
+    animation: none;
+  }
+}

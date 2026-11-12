@@ -13,7 +13,6 @@ export default function StuckPage() {
     <PreviewShell
       title="Take a short break"
       lead="Three steps, then back to the bench."
-      current="/preview/stuck"
     >
       <StuckView />
     </PreviewShell>

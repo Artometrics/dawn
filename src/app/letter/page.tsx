@@ -22,7 +22,7 @@ export default function LetterPage() {
   const [letters, setLetters] = useState<Letter[]>([]);
   const [current, setCurrent] = useState<Letter | null>(null);
   const [email, setEmail] = useState('');
-  const [note, setNote] = useState('A confirmation comes first. You are not on the list until it is confirmed.');
+  const [note, setNote] = useState('');
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     void (async () => {
@@ -56,8 +56,8 @@ export default function LetterPage() {
     }
   }
   return (
-    <PageShell title="The letter" current="/letter" lead="A short note from Dawn. Subscribing needs the desk; on a static host the form cannot reach it.">
-      <p className="dw-alert" role="status">{note}</p>
+    <PageShell title="The letter" lead="A short note from Dawn.">
+      {note && <p className="dw-alert" role="status">{note}</p>}
       <form
         className="dw-form dw-card"
         onSubmit={async (event) => {
@@ -68,7 +68,7 @@ export default function LetterPage() {
             const body = (await response.json()) as { message?: string; error?: string };
             setNote(body.message || body.error || 'Request received.');
           } catch {
-            setNote('The letter desk is not connected on this host, so nothing was requested.');
+            setNote('Offline preview. Open live Dawn to subscribe.');
           }
         }}
       >
@@ -79,7 +79,7 @@ export default function LetterPage() {
         <div className="dw-empty">
           <img src="/sprites/town/letter-carrier.png" alt="" width={72} height={72} />
           <h2>No letters yet</h2>
-          <p>Published letters list here once the desk is connected and one has been sent.</p>
+          <p>Letters appear here once one is sent.</p>
         </div>
       ) : (
         <ul className="dw-list">

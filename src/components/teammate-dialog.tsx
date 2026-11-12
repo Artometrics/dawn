@@ -114,7 +114,7 @@ export function TeammateDialog({
                 {existingTeammate ? 'Edit Teammate' : 'Configure AI Teammate'}
               </DialogTitle>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Code with Antonio Grok Bot Teammate Engine
+                Teammate settings
               </p>
             </div>
           </div>

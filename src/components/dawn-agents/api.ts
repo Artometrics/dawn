@@ -92,16 +92,16 @@ export async function api<T>(base: string, path: string, init: RequestInit = {})
   if (!headers.has('content-type') && init.body) headers.set('content-type', 'application/json');
   const response = await fetch(`${base}${path}`, { ...init, headers, credentials: 'include', redirect: 'manual' });
   if (response.status === 401 || response.status === 302 || response.status === 303 || response.type === 'opaqueredirect') {
-    throw new Error('Sign in with Google.');
+    throw new Error('This is not available right now.');
   }
   const text = await response.text();
   let data: T & { error?: string };
   try {
     data = text ? (JSON.parse(text) as T & { error?: string }) : ({} as T & { error?: string });
   } catch {
-    throw new Error(response.status === 401 ? 'Sign in with Google.' : 'The desk is offline.');
+    throw new Error(response.status === 401 ? 'This is not available right now.' : 'The desk is offline.');
   }
-  if (!response.ok) throw new Error(data.error || (response.status === 401 ? 'Sign in with Google.' : 'The desk is offline.'));
+  if (!response.ok) throw new Error(data.error || (response.status === 401 ? 'This is not available right now.' : 'The desk is offline.'));
   return data;
 }
 

@@ -24,9 +24,13 @@
   --dawn-muted: #8f887f;
   --dawn-placeholder: #a8a199;
 
-  /* Accent. Clay marks things; it never fills a ground or a card. */
-  --dawn-accent: #d97746;
-  --dawn-accent-strong: #e58a5c;
+  /* Accent. Light blue marks the current thing and outlines navy markers; it never fills a ground or a card. */
+  --dawn-accent: #8cc4ff;
+  --dawn-accent-strong: #b3d8ff;
+  --dawn-navy: #1a3358;
+  --dawn-navy-hover: #25497f;
+  --dawn-navy-line: #4cb7ff;
+  --dawn-accent-wash: rgb(76 183 255 / 0.14);
   --dawn-pill: #f7f4ef;
   --dawn-pill-hover: #ffffff;
   --dawn-ink: #141210;
@@ -86,4 +90,5 @@
   --dawn-measure-narrow: 720px;
   --dawn-measure-wide: 1040px;
   --dawn-focus: 2px solid var(--dawn-accent);
+  --dawn-card: #171715;
 }

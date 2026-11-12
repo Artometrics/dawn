@@ -6,6 +6,7 @@ const SHEET_COLS = 12;
 const SHEET_SRC = '/tiles/kenney-tiny-town.png';
 
 export const WALLPAPERS = [
+  { id: 'plain', name: 'Plain' },
   { id: 'town', name: 'Town' },
   { id: 'grove', name: 'Grove' },
   { id: 'castle', name: 'Castle' },
@@ -16,9 +17,9 @@ export type WallpaperId = (typeof WALLPAPERS)[number]['id'];
 const WALL_KEY = 'dawn-chat-wallpaper';
 
 export function readWallpaper(): WallpaperId {
-  if (typeof localStorage === 'undefined') return 'town';
+  if (typeof localStorage === 'undefined') return 'plain';
   const saved = localStorage.getItem(WALL_KEY);
-  return WALLPAPERS.some((item) => item.id === saved) ? (saved as WallpaperId) : 'town';
+  return WALLPAPERS.some((item) => item.id === saved) ? (saved as WallpaperId) : 'plain';
 }
 
 export function writeWallpaper(id: WallpaperId) {
@@ -30,7 +31,7 @@ export function ChatWallpaper({ scene }: { scene: WallpaperId }) {
 
   useEffect(() => {
     const canvas = ref.current;
-    if (!canvas) return;
+    if (!canvas || scene === 'plain') return;
     const image = new Image();
     let cancel = false;
     image.onload = () => {
@@ -42,10 +43,11 @@ export function ChatWallpaper({ scene }: { scene: WallpaperId }) {
     };
   }, [scene]);
 
+  if (scene === 'plain') return null;
   return <canvas ref={ref} className="im-wall" aria-hidden />;
 }
 
-function paintWallpaper(canvas: HTMLCanvasElement, sheet: HTMLImageElement, scene: WallpaperId) {
+function paintWallpaper(canvas: HTMLCanvasElement, sheet: HTMLImageElement, scene: Exclude<WallpaperId, 'plain'>) {
   const { ground, object } = sceneGrid(scene);
   const rows = ground.length;
   const cols = ground[0].length;
@@ -71,7 +73,7 @@ function paintWallpaper(canvas: HTMLCanvasElement, sheet: HTMLImageElement, scen
   }
 }
 
-function sceneGrid(scene: WallpaperId): { ground: number[][]; object: (number | null)[][] } {
+function sceneGrid(scene: Exclude<WallpaperId, 'plain'>): { ground: number[][]; object: (number | null)[][] } {
   const cols = 18;
   const rows = 24;
   const ground: number[][] = Array.from({ length: rows }, (_, y) =>

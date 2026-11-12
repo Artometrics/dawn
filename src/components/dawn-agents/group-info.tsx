@@ -1,23 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronLeft, Download, Mail, Phone, Plus, Video } from 'lucide-react';
+import { ChevronLeft, Download, Mail, Plus } from 'lucide-react';
 import { PLAYER_SRC } from '@/lib/home/overworld';
 import { AGENT_SPRITES } from '@/lib/credits/sprites';
 import { PixelAvatarView } from './pixel-avatar';
 import { api, type Agent, type ChatMessage, type GatewayState, type Thread } from './api';
 import { WALLPAPERS, type WallpaperId } from './chat-wallpaper';
 
-type Tab = 'info' | 'backgrounds' | 'photos' | 'links' | 'documents';
 type AddMode = null | 'person' | 'agent' | 'figure';
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'info', label: 'Info' },
-  { id: 'backgrounds', label: 'Backgrounds' },
-  { id: 'photos', label: 'Photos' },
-  { id: 'links', label: 'Links' },
-  { id: 'documents', label: 'Documents' },
-];
 
 export function GroupInfo({
   base,
@@ -42,7 +33,6 @@ export function GroupInfo({
   onRefresh: () => Promise<void>;
   onError: (message: string) => void;
 }) {
-  const [tab, setTab] = useState<Tab>('info');
   const [add, setAdd] = useState<AddMode>(null);
   const [note, setNote] = useState('');
   const [leaving, setLeaving] = useState(false);
@@ -77,8 +67,7 @@ export function GroupInfo({
   async function invitePerson() {
     const result = await patch({ invite: { name: personName, email: personEmail } });
     if (!result) return;
-    // TODO: the server stores the person and does not send mail.
-    setNote('Saved on this chat. No invitation is sent.');
+    setNote('Saved on this chat.');
     setPersonName('');
     setPersonEmail('');
     setAdd(null);
@@ -94,7 +83,6 @@ export function GroupInfo({
 
   function writeMail() {
     const emails = (thread.humans || []).map((human) => human.email).filter((email): email is string => Boolean(email));
-    // TODO: Dawn does not send group mail. This only opens the owner's mail app.
     if (!emails.length) {
       setNote('No address to write to.');
       return;
@@ -117,6 +105,7 @@ export function GroupInfo({
     URL.revokeObjectURL(link.href);
   }
 
+  const hasEmails = (thread.humans || []).some((human) => human.email);
   return (
     <section className="gi" aria-label={`${thread.title} details`}>
       <header className="gi-bar">
@@ -125,97 +114,81 @@ export function GroupInfo({
         </button>
         <h1>{thread.title}</h1>
       </header>
-      <div className="gi-actions">
-        <button type="button" onClick={() => setNote('Calls are not on this desk.')}><Phone aria-hidden /> Call</button>
-        <button type="button" onClick={() => setNote('Video is not on this desk.')}><Video aria-hidden /> Video</button>
-        <button type="button" onClick={writeMail}><Mail aria-hidden /> Mail</button>
-      </div>
       {note && <p className="gi-note" role="status">{note}</p>}
-      <div className="gi-tabs" role="tablist">
-        {TABS.map((item) => (
-          <button key={item.id} type="button" role="tab" aria-selected={tab === item.id} className={tab === item.id ? 'on' : ''} onClick={() => setTab(item.id)}>
-            {item.label}
-          </button>
-        ))}
-      </div>
-      {tab === 'info' && (
-        <div className="gi-body">
-          <div className="gi-grid">
-            <div className="gi-member">
-              <img src={PLAYER_SRC} alt="" width={64} height={64} />
-              <span>You</span>
-              <small>Person</small>
+      <div className="gi-body">
+        <h2 className="gi-h">Members</h2>
+        <div className="gi-grid">
+          <div className="gi-member">
+            <img src={PLAYER_SRC} alt="" width={64} height={64} />
+            <span>You</span>
+            <small>Person</small>
+          </div>
+          {(thread.humans || []).map((human) => (
+            <div key={human.id} className="gi-member">
+              <span className="gi-initials" aria-hidden>{initials(human.name)}</span>
+              <span>{human.name}</span>
+              <small>Invited</small>
             </div>
-            {(thread.humans || []).map((human) => (
-              <div key={human.id} className="gi-member">
-                <span className="gi-initials" aria-hidden>{initials(human.name)}</span>
-                <span>{human.name}</span>
-                <small>Invited</small>
-              </div>
-            ))}
-            {members.map((agent) => (
-              <div key={agent.id} className="gi-member">
-                <PixelAvatarView avatar={agent.avatar} size={64} title={agent.name} />
-                <span>{agent.name}</span>
-                <small>{agent.figure ? 'Figure' : 'Agent'}</small>
-              </div>
-            ))}
-            <button type="button" className="gi-member gi-add" onClick={() => setAdd('person')}>
-              <span className="gi-plus" aria-hidden><Plus /></span>
-              <span>Add</span>
-            </button>
-          </div>
-          <div className="gi-list">
-            <label className="gi-toggle">
-              <span>Hide Alerts<small>Saved for this chat. Dawn has no push alerts yet.</small></span>
-              <input
-                type="checkbox"
-                checked={Boolean(thread.hideAlerts)}
-                onChange={(event) => void patch({ hideAlerts: event.target.checked })}
-              />
-            </label>
-            <label className="gi-toggle">
-              <span>Save to training data<small>When off, this chat stays out of the training export.</small></span>
-              <input
-                type="checkbox"
-                checked={thread.saveTraining !== false}
-                onChange={(event) => void patch({ saveTraining: event.target.checked })}
-              />
-            </label>
-            <button type="button" className="gi-leave" onClick={() => (leaving ? void patch({ leave: true }).then((result) => result && onLeft()) : setLeaving(true))}>
-              {leaving ? 'Leave this conversation?' : 'Leave conversation'}
-            </button>
-            <button type="button" className="gi-export" onClick={exportChat}><Download aria-hidden /> Export chat</button>
-          </div>
+          ))}
+          {members.map((agent) => (
+            <div key={agent.id} className="gi-member">
+              <PixelAvatarView avatar={agent.avatar} size={64} title={agent.name} />
+              <span>{agent.name}</span>
+              <small>{agent.figure ? 'Figure' : 'Agent'}</small>
+            </div>
+          ))}
+          <button type="button" className="gi-member gi-add" onClick={() => setAdd('person')}>
+            <span className="gi-plus" aria-hidden><Plus /></span>
+            <span>Add</span>
+          </button>
         </div>
-      )}
-      {tab === 'backgrounds' && (
+
+        <h2 className="gi-h">Settings</h2>
+        <div className="gi-list">
+          <label className="gi-toggle">
+            <span>Mute this chat</span>
+            <input
+              type="checkbox"
+              checked={Boolean(thread.hideAlerts)}
+              onChange={(event) => void patch({ hideAlerts: event.target.checked })}
+            />
+          </label>
+          <label className="gi-toggle">
+            <span>Save to training data<small>When off, this chat stays out of the training export.</small></span>
+            <input
+              type="checkbox"
+              checked={thread.saveTraining !== false}
+              onChange={(event) => void patch({ saveTraining: event.target.checked })}
+            />
+          </label>
+          {hasEmails && <button type="button" className="gi-export" onClick={writeMail}><Mail aria-hidden /> Mail the group</button>}
+          <button type="button" className="gi-export" onClick={exportChat}><Download aria-hidden /> Export chat</button>
+          <button type="button" className="gi-leave" onClick={() => (leaving ? void patch({ leave: true }).then((result) => result && onLeft()) : setLeaving(true))}>
+            {leaving ? 'Leave this conversation?' : 'Leave conversation'}
+          </button>
+        </div>
+
+        <h2 className="gi-h">Background</h2>
         <div className="gi-cards">
           {WALLPAPERS.map((item) => (
-            <button key={item.id} type="button" className={item.id === wallpaper ? 'on' : ''} onClick={() => onWallpaper(item.id)}>
+            <button key={item.id} type="button" className={item.id === wallpaper ? 'on' : ''} aria-pressed={item.id === wallpaper} onClick={() => onWallpaper(item.id)}>
               {item.name}
             </button>
           ))}
         </div>
-      )}
-      {tab === 'photos' && (
-        <div className="gi-photos">
-          {photos.length === 0 && <p className="gi-note">No photos yet.</p>}
-          {photos.map((url) => <img key={url} src={url} alt="" />)}
-        </div>
-      )}
-      {tab === 'links' && (
-        <ul className="gi-links">
-          {links.length === 0 && <li className="gi-note">No links yet.</li>}
-          {links.map((url) => <li key={url}><a href={url}>{url}</a></li>)}
-        </ul>
-      )}
-      {tab === 'documents' && (
-        <ul className="gi-links">
-          {documents.length === 0 && <li className="gi-note">No documents in this chat.</li>}
-          {documents.map((url) => <li key={url}><a href={url}>{url}</a></li>)}
-        </ul>
-      )}
+
+        <h2 className="gi-h">Photos</h2>
+        {photos.length === 0 ? <p className="gi-note">No photos yet.</p> : (
+          <div className="gi-photos">{photos.map((url) => <img key={url} src={url} alt="" />)}</div>
+        )}
+
+        <h2 className="gi-h">Links and files</h2>
+        {links.length === 0 ? <p className="gi-note">No links yet.</p> : (
+          <ul className="gi-links">
+            {links.map((url) => <li key={url}><a href={url}>{documents.includes(url) ? `File · ${url}` : url}</a></li>)}
+          </ul>
+        )}
+      </div>
       {add && (
         <div className="gi-sheet" role="dialog" aria-label="Add to the chat">
           <div className="gi-sheet-card">
@@ -235,7 +208,7 @@ export function GroupInfo({
                   void invitePerson();
                 }}
               >
-                <p className="gi-note">Saved on this chat only. Dawn does not send the invitation.</p>
+                <p className="gi-note">Saved on this chat only.</p>
                 <label>Name<input value={personName} onChange={(event) => setPersonName(event.target.value)} required /></label>
                 <label>Email<input type="email" value={personEmail} onChange={(event) => setPersonEmail(event.target.value)} placeholder="Optional" /></label>
                 <button className="primary" type="submit">Save person</button>

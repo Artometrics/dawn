@@ -13,7 +13,6 @@ export default function HabitsPage() {
     <PreviewShell
       title="Today's habits"
       lead="One at a time."
-      current="/preview/habits"
     >
       <HabitsView />
     </PreviewShell>

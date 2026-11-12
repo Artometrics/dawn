@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowUp, ChevronLeft, Mic, Phone, Plus } from 'lucide-react';
+import { ArrowUp, ChevronLeft, Info, Mic, Plus } from 'lucide-react';
+import { ModelPicker, useModelPicker } from '@/components/shell/model-picker';
 import { PixelAvatarView } from './pixel-avatar';
 import { api, readSse, type Agent, type ChatMessage, type GatewayState, type ToolCall } from './api';
 import { ChatWallpaper, WALLPAPERS, readWallpaper, writeWallpaper, type WallpaperId } from './chat-wallpaper';
@@ -17,7 +18,8 @@ export function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: 
   const [streaming, setStreaming] = useState(false);
   const [recipeId, setRecipeId] = useState('');
   const [menu, setMenu] = useState(false);
-  const [wallpaper, setWallpaper] = useState<WallpaperId>('town');
+  const [wallpaper, setWallpaper] = useState<WallpaperId>('plain');
+  const picker = useModelPicker();
   const [listening, setListening] = useState(false);
   const [toast, setToast] = useState('');
   const [info, setInfo] = useState(false);
@@ -61,7 +63,7 @@ export function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: 
         redirect: 'manual',
         body: JSON.stringify(body),
       });
-      if (response.status === 401 || response.status === 302 || response.status === 303) throw new Error('Sign in with Google.');
+      if (response.status === 401 || response.status === 302 || response.status === 303) throw new Error('This is not available right now.');
       if (!response.ok) {
         const data = (await response.json()) as { error?: string };
         throw new Error(data.error || 'Chat failed.');
@@ -111,7 +113,7 @@ export function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: 
     setText('');
     setSubject('');
     setMenu(false);
-    void send(`/api/threads/${threadId}/messages`, { text: content, recipeId: recipeId || undefined });
+    void send(`/api/threads/${threadId}/messages`, { text: content, recipeId: recipeId || undefined, model: picker.choice });
   }
 
   function cycleWallpaper() {
@@ -129,7 +131,7 @@ export function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: 
       return;
     }
     setMenu(false);
-    void send(`/api/threads/${threadId}/messages`, { text: `![photo](${url})`, recipeId: recipeId || undefined });
+    void send(`/api/threads/${threadId}/messages`, { text: `![photo](${url})`, recipeId: recipeId || undefined, model: picker.choice });
   }
 
   function dictate() {
@@ -170,8 +172,8 @@ export function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: 
           </button>
           <div className="im-name">{title}</div>
         </div>
-        <button type="button" className="im-call" aria-label="Call" onClick={() => setToast('Calls are not on this desk.')}>
-          <Phone aria-hidden />
+        <button type="button" className="im-call" aria-label="Details" onClick={() => setInfo(true)}>
+          <Info aria-hidden />
         </button>
       </header>
       {toast && <p className="im-toast" role="status">{toast}</p>}
@@ -198,7 +200,7 @@ export function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: 
               {state.recipes.map((recipe) => <option key={recipe.id} value={recipe.id}>{recipe.name}</option>)}
             </select>
           </label>
-          <button type="button" disabled={streaming || !text.trim()} onClick={() => { const value = text.trim(); setText(''); setSubject(''); setMenu(false); void send(`/api/threads/${threadId}/ab`, { text: value }); }}>Compare two answers</button>
+          <button type="button" disabled={streaming || !text.trim()} onClick={() => { const value = text.trim(); setText(''); setSubject(''); setMenu(false); void send(`/api/threads/${threadId}/ab`, { text: value, model: picker.choice }); }}>Compare two answers</button>
           <MemoryPanel base={base} state={state} agentId={thread?.agentIds[0]} onRefresh={onRefresh} />
         </div>
       )}
@@ -212,6 +214,7 @@ export function ChatPane({ base, state, threadId, onBack, onRefresh, onError }: 
         <button type="button" className="im-plus" aria-label="Add" aria-expanded={menu} onClick={() => setMenu((open) => !open)}>
           <Plus aria-hidden />
         </button>
+        <div className="im-model"><ModelPicker picker={picker} /></div>
         <div className="im-field">
           <input
             className="im-subject"
@@ -293,7 +296,7 @@ function MessageView({ message, agents, streaming, base, onRefresh, showName }: 
         </div>
       )}
       <div className="im-stack">
-        {!mine && showName && <p className="im-sender">{agent?.name || 'Agent'}{message.usage?.provider === 'stand-in' ? ' · stand-in' : ''}</p>}
+        {!mine && showName && <p className="im-sender">{agent?.name || 'Agent'}{message.usage?.provider === 'stand-in' ? ' · placeholder reply' : ''}</p>}
         {parts.map((part, index) => (
           part.kind === 'image' ? (
             <img key={index} className="im-photo" src={part.value} alt="" />

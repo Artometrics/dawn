@@ -1,169 +1,114 @@
 'use client';
 
-import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { Plus, Users } from 'lucide-react';
 import { AGENT_SPRITES, defaultSpriteId } from '@/lib/credits/sprites';
 import { formatUsd } from '@/lib/dawn-agents/spend';
-import { recipeAttributes } from '@/lib/dawn-agents/recipes';
 import { PixelAvatarView } from './pixel-avatar';
 import { DataPanel } from './data-panel';
-import { PublishDesk } from './publish-desk';
-import { RecipesBoard } from './recipes-board';
-import { api, gatewayBase, googleSignInHref, type Agent, type GatewayState } from './api';
+import { api, gatewayBase, type Agent, type GatewayState } from './api';
 import { ChatPane } from './chat-pane';
 
-type Section = 'agents' | 'recipes' | 'letter' | 'data' | 'settings' | 'edit';
+type Section = 'data' | 'settings' | 'new';
+const SECTIONS: Section[] = ['data', 'settings', 'new'];
 
 export function AgentsRoot() {
+  const router = useRouter();
+  const params = useSearchParams();
   const [base, setBase] = useState('');
   const [ready, setReady] = useState(false);
   const [state, setState] = useState<GatewayState | null>(null);
   const [error, setError] = useState('');
-  const [section, setSection] = useState<Section>('agents');
-  const [threadId, setThreadId] = useState<string | null>(null);
-  const [needsGoogle, setNeedsGoogle] = useState(false);
-  const [queue, setQueue] = useState<GatewayState['data'] extends never ? never : { id: string; track: string; status: string; messages?: { content: string }[] }[]>([]);
-  const openedLink = useRef(false);
+  const [queue, setQueue] = useState<{ id: string; track: string; status: string; messages?: { content: string }[] }[]>([]);
+  const [groupOpen, setGroupOpen] = useState(false);
+  const linked = useRef(false);
+
+  const asked = params.get('section');
+  const section = SECTIONS.find((item) => item === asked) ?? null;
+  const threadId = params.get('thread');
 
   useEffect(() => {
-    const asked = new URLSearchParams(window.location.search).get('section');
-    if (asked === 'recipes' || asked === 'letter' || asked === 'data' || asked === 'settings' || asked === 'edit') {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- the static export always renders section 'agents', so a ?section= link can only be applied after hydration to keep the first client render equal to the static HTML
-      setSection(asked);
-    }
     void (async () => {
       const url = await gatewayBase();
       setBase(url);
       setReady(true);
       await refresh(url);
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once; refresh only reads the address it is given
   }, []);
 
-  function openLinkedThread(next: GatewayState) {
-    if (openedLink.current) return;
-    const params = new URLSearchParams(window.location.search);
-    const thread = params.get('thread');
+  useEffect(() => {
+    if (asked === 'recipes') router.replace('/artifacts');
+    if (asked === 'letter') router.replace('/letter');
+    if (asked === 'edit') router.replace('/agents?section=new');
+  }, [asked, router]);
+
+  function openLinkedAgent(next: GatewayState) {
+    if (linked.current) return;
+    linked.current = true;
     const agent = params.get('agent');
-    openedLink.current = true;
-    if (thread && next.threads.some((item) => item.id === thread)) {
-      setThreadId(thread);
-      setSection('agents');
-      return;
-    }
     if (!agent) return;
     const direct = next.threads.find((item) => item.kind === 'direct' && item.agentIds[0] === agent);
-    if (direct) {
-      setThreadId(direct.id);
-      setSection('agents');
-    }
+    if (direct) router.replace(`/agents?thread=${direct.id}`);
   }
 
   async function refresh(url = base) {
     try {
       const next = await api<GatewayState>(url, '/api/state');
       setState(next);
-      openLinkedThread(next);
+      openLinkedAgent(next);
       const data = await api<{ queue: typeof queue }>(url, '/api/data');
       setQueue(data.queue || []);
-      setNeedsGoogle(false);
       setError('');
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'The desk is offline.';
-      if (message === 'Sign in with Google.') setNeedsGoogle(true);
-      else setError(message);
+      setError(err instanceof Error ? err.message : 'The desk is offline.');
     }
   }
 
-  if (!ready) return <div className="dawn-agents login">Opening the desk…</div>;
-  if (!state) {
-    return (
-      <div className="dawn-agents">
-        <div className="login">
-          <div>
-            <p className="word">DAWN</p>
-            <h1>Agents</h1>
-            <p className="note">{needsGoogle ? 'One Google account. No password on this page.' : 'The agent desk is not running on this host.'}</p>
-            {error && <p className="error">{error}</p>}
-            {needsGoogle && <a className="primary" href={googleSignInHref()} style={{ display: 'inline-flex', alignItems: 'center' }}>Sign in with Google</a>}
-            <nav className="ph-links" aria-label="Dawn" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <Link href="/">Home</Link>
-              <a href="/town">Town</a>
-              <a href="/village">Village</a>
-              <a href="/atlas">Atlas</a>
-              <a href="/studio">Studio</a>
-              <a href="/letter">Letter</a>
-              <a href="/credits">Credits</a>
-            </nav>
-          </div>
-        </div>
-      </div>
-    );
+  if (!ready || !state) {
+    return <p className="note" style={{ padding: 24 }}>{error || 'Opening the agent list…'}</p>;
   }
 
-  const thread = state.threads.find((item) => item.id === threadId) || null;
-  const showList = section === 'agents' && !thread;
+  const thread = state.threads.find((item) => item.id === threadId && !item.leftAt) || null;
+  const view = thread ? 'chat' : section ? 'section' : 'list';
+  const openThread = (id: string) => router.push(`/agents?thread=${id}`);
 
   return (
-    <div className="dawn-agents">
-      <div className={`desk ${showList ? 'show-side' : ''}`}>
-        <aside className="side">
-          <div className="topbar">
-            <span className="word">DAWN</span>
-            <span className="grow">Agents</span>
-          </div>
-          <AgentList state={state} threadId={threadId} onOpen={(id) => { setThreadId(id); setSection('agents'); }} onNew={() => setSection('edit')} />
-          <div style={{ marginTop: 'auto', padding: 12 }}>
-            <SpendMeter spent={state.spend.spentUsd} cap={state.spend.capUsd} />
-            <nav>
-              <button type="button" className="ghost" onClick={() => setSection('recipes')}>Recipes</button>
-              <button type="button" className="ghost" onClick={() => setSection('letter')}>Letter</button>
-              <button type="button" className="ghost" onClick={() => setSection('data')}>Data</button>
-              <button type="button" className="ghost" onClick={() => setSection('settings')}>Settings</button>
-              <a className="ghost" href="/desk">Bot desk</a>
-            </nav>
-          </div>
-        </aside>
-        <section className="main">
-          {error && <p className="error" style={{ padding: 12 }}>{error}</p>}
-          {section === 'agents' && thread && (
-            <ChatPane
-              base={base}
-              state={state}
-              threadId={thread.id}
-              onBack={() => setThreadId(null)}
-              onRefresh={() => refresh()}
-              onError={setError}
-            />
-          )}
-          {section === 'agents' && !thread && <div className="sheet-view mobile-only"><p className="note">Choose an agent.</p></div>}
-          {section === 'edit' && <AgentEditor base={base} agents={state.agents} onDone={() => { setSection('agents'); void refresh(); }} onError={setError} />}
-          {section === 'recipes' && (
-            <RecipesBoard
-              onEvent={async (action, recipe) => {
-                await api(base, '/api/events', { method: 'POST', body: JSON.stringify({ surface: 'recipes', action, itemId: recipe.id, attributes: recipeAttributes(recipe) }) });
-                await refresh();
-              }}
-            />
-          )}
-          {section === 'letter' && (
-            <PublishDesk
-              articles={state.articles}
-              subscribers={state.subscribers}
-              sends={state.sends}
-              provider={state.mailProvider}
-              onSave={async (article) => {
-                if (article.id) await api(base, `/api/articles/${article.id}`, { method: 'PATCH', body: JSON.stringify(article) });
-                else await api(base, '/api/articles', { method: 'POST', body: JSON.stringify(article) });
-                await refresh();
-              }}
-              onPublish={async (id) => { await api(base, `/api/articles/${id}/publish`, { method: 'POST', body: '{}' }); await refresh(); }}
-              onDraft={async (id, agentId, notes) => { await api(base, `/api/articles/${id}/draft`, { method: 'POST', body: JSON.stringify({ agentId, notes }) }); await refresh(); }}
-              onSend={async (id) => { await api(base, `/api/articles/${id}/send`, { method: 'POST', body: JSON.stringify({ confirm: true }) }); await refresh(); }}
-              onImport={async (csv) => { await api(base, '/api/subscribers/import', { method: 'POST', body: csv, headers: { 'content-type': 'text/csv' } }); await refresh(); }}
-              onConfirmMail={async (id) => { await api(base, `/api/subscribers/${id}/confirm-mail`, { method: 'POST', body: '{}' }); }}
-            />
-          )}
-          {section === 'data' && (
+    <div className="dawn-agents ag" data-view={view}>
+      <aside className="ag-list" aria-label="Agents">
+        <div className="ag-head">
+          <button type="button" className="primary" onClick={() => router.push('/agents?section=new')}><Plus size={18} aria-hidden /> New agent</button>
+          <button type="button" className="ghost ag-outline" onClick={() => setGroupOpen((open) => !open)} aria-expanded={groupOpen}><Users size={18} aria-hidden /> New group</button>
+        </div>
+        {groupOpen && (
+          <GroupForm
+            agents={state.agents}
+            onCancel={() => setGroupOpen(false)}
+            onMade={async (id) => { setGroupOpen(false); await refresh(); openThread(id); }}
+            onError={setError}
+          />
+        )}
+        <SpendMeter spent={state.spend.spentUsd} cap={state.spend.capUsd} />
+        <AgentList state={state} threadId={thread?.id ?? null} onOpen={openThread} />
+      </aside>
+      <section className="ag-main">
+        {error && <p className="error ag-error" role="alert">{error}</p>}
+        {thread && (
+          <ChatPane
+            key={thread.id}
+            base={base}
+            state={state}
+            threadId={thread.id}
+            onBack={() => router.push('/agents')}
+            onRefresh={() => refresh()}
+            onError={setError}
+          />
+        )}
+        {!thread && !section && <div className="ag-empty"><p className="note">Choose an agent.</p></div>}
+        {section === 'new' && !thread && <div className="ag-page"><AgentEditor base={base} agents={state.agents} onDone={() => { router.push('/agents'); void refresh(); }} onCancel={() => router.push('/agents')} onError={setError} /></div>}
+        {section === 'data' && !thread && (
+          <div className="ag-page">
             <DataPanel
               counts={state.data.counts}
               queue={queue}
@@ -176,80 +121,100 @@ export function AgentsRoot() {
               onImport={async (jsonl) => { await api(base, '/api/data/import', { method: 'POST', body: JSON.stringify({ jsonl }) }); await refresh(); }}
               onExport={async (format) => download(base, `/api/data/export?format=${format}`, `dawn-${format}.jsonl`)}
             />
-          )}
-          {section === 'settings' && <Settings base={base} state={state} onSaved={() => refresh()} />}
-        </section>
-      </div>
-      <nav className="tabbar">
-        <button type="button" className={section === 'agents' ? 'tab on' : 'tab'} onClick={() => { setSection('agents'); setThreadId(null); }}>Agents</button>
-        <button type="button" className={section === 'recipes' ? 'tab on' : 'tab'} onClick={() => setSection('recipes')}>Recipes</button>
-        <button type="button" className={section === 'letter' ? 'tab on' : 'tab'} onClick={() => setSection('letter')}>Letter</button>
-        <button type="button" className={section === 'data' ? 'tab on' : 'tab'} onClick={() => setSection('data')}>Data</button>
-      </nav>
+          </div>
+        )}
+        {section === 'settings' && !thread && <div className="ag-page"><Settings base={base} state={state} onSaved={() => refresh()} /></div>}
+      </section>
     </div>
   );
 }
 
-function AgentList({ state, threadId, onOpen, onNew }: { state: GatewayState; threadId: string | null; onOpen: (id: string) => void; onNew: () => void }) {
+const HOSTS: Record<Agent['computer'], string> = { hetzner: 'Hetzner', mac: 'Mac', 'cloud-vm': 'Cloud VM' };
+
+function hostOnline(state: GatewayState, computer: Agent['computer']): boolean {
+  if (computer === 'hetzner') return Boolean(state.workers.linux?.online);
+  if (computer === 'mac') return Boolean(state.workers.mac?.online);
+  return false;
+}
+
+function AgentList({ state, threadId, onOpen }: { state: GatewayState; threadId: string | null; onOpen: (id: string) => void }) {
   const visible = state.threads.filter((thread) => !thread.leftAt);
   const directs = visible.filter((thread) => thread.kind === 'direct');
   const groups = visible.filter((thread) => thread.kind === 'group');
   return (
-    <div className="list" style={{ overflow: 'auto' }}>
-      {directs.map((thread) => {
-        const agent = state.agents.find((item) => item.id === thread.agentIds[0]);
-        if (!agent) return null;
-        return (
-          <button key={thread.id} type="button" className={thread.id === threadId ? 'agent-row on' : 'agent-row'} onClick={() => onOpen(thread.id)}>
-            <PixelAvatarView avatar={agent.avatar} title={agent.name} />
-            <span>
-              <strong>{agent.name}</strong>
-              <span className="muted small" style={{ display: 'block' }}>{agent.computer === 'hetzner' ? 'Hetzner' : agent.computer === 'mac' ? 'Mac' : 'Cloud VM'}</span>
-            </span>
-          </button>
-        );
-      })}
-      {groups.map((thread) => (
-        <button key={thread.id} type="button" className={thread.id === threadId ? 'agent-row on' : 'agent-row'} onClick={() => onOpen(thread.id)}>
-          <span><strong>{thread.title}</strong><span className="muted small" style={{ display: 'block' }}>Group</span></span>
-        </button>
-      ))}
-      {directs.length === 0 && <p className="note" style={{ padding: 14 }}>No agents yet.</p>}
-      <div className="actions" style={{ padding: 12 }}>
-        <button type="button" className="primary" onClick={onNew}>New agent</button>
-        <GroupButton state={state} />
-      </div>
+    <div className="ag-cards">
+      <h2 className="ag-label">Agents</h2>
+      {directs.length === 0 && <p className="note">No agents yet. Start with New agent.</p>}
+      <ul className="ag-stack">
+        {directs.map((thread, index) => {
+          const agent = state.agents.find((item) => item.id === thread.agentIds[0]);
+          if (!agent) return null;
+          const online = hostOnline(state, agent.computer);
+          return (
+            <li key={thread.id} style={{ ['--i' as string]: index }}>
+              <button type="button" className="ag-card" aria-current={thread.id === threadId ? 'true' : undefined} onClick={() => onOpen(thread.id)}>
+                <PixelAvatarView avatar={agent.avatar} size={48} title={agent.name} />
+                <span className="ag-meta">
+                  <strong>{agent.name}</strong>
+                  <span className="muted small">{HOSTS[agent.computer]}</span>
+                </span>
+                <span className="ag-status" data-online={online}>{online ? 'Online' : 'Offline'}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      {groups.length > 0 && <h2 className="ag-label">Groups</h2>}
+      <ul className="ag-stack">
+        {groups.map((thread, index) => (
+          <li key={thread.id} style={{ ['--i' as string]: index }}>
+            <button type="button" className="ag-card" aria-current={thread.id === threadId ? 'true' : undefined} onClick={() => onOpen(thread.id)}>
+              <span className="ag-group-mark" aria-hidden><Users size={22} /></span>
+              <span className="ag-meta">
+                <strong>{thread.title}</strong>
+                <span className="muted small">{thread.agentIds.length} agents</span>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
-function GroupButton({ state }: { state: GatewayState }) {
-  const [open, setOpen] = useState(false);
+function GroupForm({ agents, onCancel, onMade, onError }: { agents: Agent[]; onCancel: () => void; onMade: (id: string) => Promise<void>; onError: (message: string) => void }) {
   const [title, setTitle] = useState('Studio');
   const [ids, setIds] = useState<string[]>([]);
-  if (!open) return <button type="button" className="ghost" onClick={() => setOpen(true)}>New group</button>;
   return (
     <form
+      className="ag-card-form"
       onSubmit={async (event) => {
         event.preventDefault();
-        const base = await gatewayBase();
-        await api(base, '/api/threads', { method: 'POST', body: JSON.stringify({ title, agentIds: ids }) });
-        location.reload();
+        try {
+          const base = await gatewayBase();
+          const made = await api<{ id: string }>(base, '/api/threads', { method: 'POST', body: JSON.stringify({ title, agentIds: ids }) });
+          await onMade(made.id);
+        } catch (err) {
+          onError(err instanceof Error ? err.message : 'Could not start the group.');
+        }
       }}
     >
-      <label>Group<input value={title} onChange={(event) => setTitle(event.target.value)} /></label>
-      {state.agents.map((agent) => (
-        <label key={agent.id} className="row">
+      <label>Group name<input value={title} onChange={(event) => setTitle(event.target.value)} /></label>
+      {agents.map((agent) => (
+        <label key={agent.id} className="row ag-check">
           <input type="checkbox" checked={ids.includes(agent.id)} onChange={(event) => setIds(event.target.checked ? [...ids, agent.id] : ids.filter((id) => id !== agent.id))} />
           {agent.name}
         </label>
       ))}
-      <button className="primary" type="submit">Start group</button>
+      <div className="actions">
+        <button className="primary" type="submit" disabled={ids.length === 0}>Start group</button>
+        <button className="ghost" type="button" onClick={onCancel}>Cancel</button>
+      </div>
     </form>
   );
 }
 
-function AgentEditor({ base, agents, onDone, onError }: { base: string; agents: Agent[]; onDone: () => void; onError: (message: string) => void }) {
+function AgentEditor({ base, agents, onDone, onCancel, onError }: { base: string; agents: Agent[]; onDone: () => void; onCancel: () => void; onError: (message: string) => void }) {
   const [name, setName] = useState('');
   const [instructions, setInstructions] = useState('You are a careful studio partner. You keep answers short and you use tools when Kyle asks.');
   const [model, setModel] = useState('gemini-3.8-flash');
@@ -309,7 +274,7 @@ function AgentEditor({ base, agents, onDone, onError }: { base: string; agents: 
           <option value="cloud-vm" disabled>Cloud VM later</option>
         </select>
       </label>
-      <p className="note">16-bit characters from Kenney, CC0.</p>
+      <p className="note">Pick a look.</p>
       <div className="sprite-pick" role="listbox" aria-label="Agent sprite">
         {AGENT_SPRITES.map((item) => (
           <button key={item.id} type="button" className={sprite === item.id ? 'on' : ''} aria-pressed={sprite === item.id} aria-label={item.name} onClick={() => setSprite(item.id)}>
@@ -317,7 +282,10 @@ function AgentEditor({ base, agents, onDone, onError }: { base: string; agents: 
           </button>
         ))}
       </div>
-      <button className="primary" type="submit">Save agent</button>
+      <div className="actions">
+        <button className="primary" type="submit">Save agent</button>
+        <button className="ghost" type="button" onClick={onCancel}>Cancel</button>
+      </div>
     </form>
   );
 }
@@ -365,8 +333,6 @@ function Settings({ base, state, onSaved }: { base: string; state: GatewayState;
       </table>
       <h3>Routines</h3>
       <Routines base={base} state={state} onSaved={onSaved} />
-      <p><a href="/credits">Credits & licenses</a></p>
-      <a className="ghost" href="/oauth2/sign_out?rd=/">Sign out</a>
     </div>
   );
 }
@@ -402,10 +368,10 @@ function Routines({ base, state, onSaved }: { base: string; state: GatewayState;
 function SpendMeter({ spent, cap }: { spent: number; cap: number }) {
   const ratio = cap > 0 ? Math.min(1, spent / cap) : 0;
   return (
-    <div>
-            <p className="small nums">{formatUsd(spent)} / {formatUsd(cap)}</p>
+    <div className="ag-spend">
+      <h2 className="ag-label">Spend this month</h2>
+      <p className="nums ag-spend-line">{formatUsd(spent)} <span className="muted">of {formatUsd(cap)}</span></p>
       <div className={ratio > 0.8 ? 'meter warn' : 'meter'}><span style={{ width: `${ratio * 100}%` }} /></div>
-      <p className="small"><a href="/credits">Credits & licenses</a></p>
     </div>
   );
 }

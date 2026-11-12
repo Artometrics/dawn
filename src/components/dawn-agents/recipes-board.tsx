@@ -1,36 +1,78 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { FONT_STYLESHEET, FONTS, LAYOUTS, PALETTES, RECIPES, RECIPE_BASE_CSS, TEXTURES, mixRecipe, recipeAttributes, recipeById, recipeCardHtml, recipeSnippet, type Recipe } from '@/lib/dawn-agents/recipes';
 
 const CATS = ['All', 'Styles', 'Textures', 'Palettes', 'Type'];
+const WIDE = '(min-width: 900px)';
+
+function subscribeWide(notify: () => void) {
+  const query = window.matchMedia(WIDE);
+  query.addEventListener('change', notify);
+  return () => query.removeEventListener('change', notify);
+}
 
 export function RecipesBoard({ onEvent }: { onEvent: (action: string, recipe: Recipe) => Promise<void> }) {
   const [cat, setCat] = useState('All');
   const [open, setOpen] = useState<Recipe | null>(null);
   const [mixing, setMixing] = useState<Recipe | null>(null);
+  const [picked, setPicked] = useState<number | null>(null);
+  const wide = useSyncExternalStore(subscribeWide, () => window.matchMedia(WIDE).matches, () => false);
+  const min = 2;
+  const max = wide ? 10 : 6;
+  const cols = Math.min(max, Math.max(min, picked ?? (wide ? 4 : 2)));
   const list = RECIPES.filter((recipe) => cat === 'All' || recipe.tags.includes(cat));
+
+  useEffect(() => {
+    if (!open && !mixing) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      if (mixing) setMixing(null);
+      else setOpen(null);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, mixing]);
+
   return (
     <div className="rb">
       <link rel="stylesheet" href={FONT_STYLESHEET} />
       <style>{RECIPE_BASE_CSS}</style>
-      <div className="dw-actions">
-        {CATS.map((item) => (
-          <button key={item} type="button" className="dw-btn dw-btn--chip" aria-pressed={item === cat} onClick={() => setCat(item)}>
-            {item}
-          </button>
-        ))}
-      </div>
-      <div className="board">
-        {list.map((recipe) => (
-          <button key={recipe.id} type="button" className="pin" onClick={() => setOpen(recipe)}>
-            <div className="cv" dangerouslySetInnerHTML={{ __html: recipeCardHtml(recipe) }} />
-            <div className="nm">
-              <span>{recipe.name}</span>
+      {!open && !mixing && (
+        <>
+          <div className="rb-tools">
+            <div className="rb-seg" role="group" aria-label="Filter recipes">
+              {CATS.map((item) => (
+                <button key={item} type="button" aria-pressed={item === cat} onClick={() => setCat(item)}>
+                  {item}
+                </button>
+              ))}
             </div>
-          </button>
-        ))}
-      </div>
+            <div className="rb-size" role="group" aria-label="Grid size">
+              <button type="button" aria-label="Fewer columns, larger cards" disabled={cols <= min} onClick={() => setPicked(cols - 1)}>−</button>
+              <input
+                type="range"
+                aria-label="Columns"
+                min={min}
+                max={max}
+                value={cols}
+                onChange={(event) => setPicked(Number(event.target.value))}
+              />
+              <button type="button" aria-label="More columns, smaller cards" disabled={cols >= max} onClick={() => setPicked(cols + 1)}>+</button>
+            </div>
+          </div>
+          <div className="board" style={{ ['--cols' as string]: cols }}>
+            {list.map((recipe, index) => (
+              <button key={recipe.id} type="button" className="pin" style={{ ['--i' as string]: Math.min(index, 12) }} aria-label={`Open ${recipe.name}`} onClick={() => setOpen(recipe)}>
+                <div className="cv" dangerouslySetInnerHTML={{ __html: recipeCardHtml(recipe) }} />
+                <div className="nm">
+                  <span>{recipe.name}</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
       {open && !mixing && (
         <RecipeSheet
           recipe={open}
@@ -70,27 +112,34 @@ function RecipeSheet({
   const html = useMemo(() => recipeSnippet(recipe), [recipe]);
   return (
     <div className="rb-sheet">
-      <div className="dw-actions">
-        <button type="button" className="dw-btn dw-btn--ghost" onClick={onClose}>Back</button>
+      <div className="rb-top">
+        <button type="button" className="dw-btn" onClick={onClose}>Back</button>
         <h2 className="dw-h2" style={{ flex: 1, margin: 0 }}>{recipe.name}</h2>
       </div>
       <div className="cv" dangerouslySetInnerHTML={{ __html: recipeCardHtml(recipe) }} />
+      <div className="rb-tags">
+        {recipe.tags.map((tag) => <span key={tag} className="dw-badge">{tag}</span>)}
+      </div>
       <p className="dw-lead">{recipe.note}</p>
       <div className="dw-actions">
+        <button type="button" className="dw-btn dw-btn--primary" onClick={() => onEvent('like')}>Like</button>
+        <button type="button" className="dw-btn" onClick={() => onEvent('save')}>Save</button>
+        <button type="button" className="dw-btn" onClick={() => onEvent('skip')}>Skip</button>
+        <button type="button" className="dw-btn" onClick={onMix}>Mix</button>
+      </div>
+      <div className="dw-actions">
         {palette?.colors.map((color) => (
-          <button key={color} type="button" className="dw-btn dw-btn--ghost" onClick={() => navigator.clipboard.writeText(color)}>
+          <button key={color} type="button" className="dw-btn dw-btn--chip" onClick={() => navigator.clipboard.writeText(color)}>
+            <span className="rb-dot" style={{ background: color }} aria-hidden />
             {color}
           </button>
         ))}
       </div>
-      <div className="dw-actions">
-        <button type="button" className="dw-btn dw-btn--primary" onClick={() => onEvent('like')}>Like</button>
-        <button type="button" className="dw-btn dw-btn--ghost" onClick={() => onEvent('save')}>Save</button>
-        <button type="button" className="dw-btn dw-btn--ghost" onClick={() => onEvent('skip')}>Skip</button>
-        <button type="button" className="dw-btn dw-btn--ghost" onClick={onMix}>Mix</button>
-        <button type="button" className="dw-btn dw-btn--ghost" onClick={() => navigator.clipboard.writeText(html)}>Copy HTML</button>
-      </div>
-      <pre>{html}</pre>
+      <details className="rb-code">
+        <summary>HTML</summary>
+        <button type="button" className="dw-btn" onClick={() => navigator.clipboard.writeText(html)}>Copy HTML</button>
+        <pre>{html}</pre>
+      </details>
     </div>
   );
 }
@@ -103,8 +152,8 @@ function Mixer({ seed, onClose, onKeep }: { seed: Recipe; onClose: () => void; o
   const mixed = mixRecipe(seed, { layout, texture, palette, font });
   return (
     <div className="rb-sheet">
-      <div className="dw-actions">
-        <button type="button" className="dw-btn dw-btn--ghost" onClick={onClose}>Back</button>
+      <div className="rb-top">
+        <button type="button" className="dw-btn" onClick={onClose}>Back</button>
         <h2 className="dw-h2" style={{ margin: 0 }}>Mix</h2>
       </div>
       <div className="cv" dangerouslySetInnerHTML={{ __html: recipeCardHtml(mixed) }} />

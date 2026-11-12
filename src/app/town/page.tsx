@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import { HomeClient } from '@/components/home/home-client';
+import { Redirect } from '@/components/site/redirect';
 
 export const metadata: Metadata = {
-  title: 'Dawn Town',
-  description: 'The 8-bit map of Dawn. Search, walk, and open the desk.',
+  title: 'Village · Dawn',
   robots: { index: false, follow: false },
 };
 
+/** Old address of the 8-bit town. The village is the one place for it now. */
 export default function TownPage() {
-  return <main style={{ display: 'contents' }}><HomeClient /></main>;
+  return <Redirect to="/village?section=village" label="Village" />;
 }

@@ -1,20 +1,44 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Thread } from '../../components/dawn-agents/api.ts';
-import { DRAWER_LINKS, pinnedHref, recentsFrom, swipeClosesDrawer } from './drawer.ts';
-import { TOWN_CAST } from '../credits/town.ts';
+import { recentsFrom, swipeClosesDrawer } from './drawer.ts';
+import { NAV_GROUPS, NAV_ITEMS, PINNED_AGENTS, REDIRECTS, SITE_ROUTES, activeItem, pageTitle, pinnedHref } from '../site/nav.ts';
 
 const thread = (over: Partial<Thread> & { id: string }): Thread => ({ kind: 'direct', title: 'Chat', agentIds: [], updatedAt: 0, ...over });
 
-test('the sidebar links Village, the town, and the three work places', () => {
-  assert.deepEqual(DRAWER_LINKS.map((link) => link.label), ['Projects', 'Code', 'Artifacts', 'Village', 'Dawn Town']);
-  assert.equal(DRAWER_LINKS.find((link) => link.id === 'village')?.href, '/village?section=village');
-  assert.equal(DRAWER_LINKS.find((link) => link.id === 'town')?.href, '/town');
+test('the sidebar lists the same places in the same order, and the village sections each get one entry', () => {
+  assert.deepEqual(NAV_GROUPS.map((group) => group.label), [null, 'Work', 'Code', 'Agents']);
+  assert.deepEqual(NAV_GROUPS[0].items.map((item) => item.label), ['Atlas', 'Quests', 'Village', 'Characters', 'Library']);
+  assert.deepEqual(NAV_GROUPS[1].items.map((item) => item.label), ['Projects', 'Studio', 'Recipes', 'Letter']);
+  assert.deepEqual(NAV_GROUPS[2].items.map((item) => item.label), ['Code', 'NightCode', 'Teammates', 'Editor', 'Kits']);
+  assert.deepEqual(NAV_GROUPS[3].items.map((item) => item.label), ['Agents', 'Bot desk', 'Data', 'Settings']);
+  assert.equal(new Set(NAV_ITEMS.map((item) => item.href)).size, NAV_ITEMS.length, 'no two entries share an address');
 });
 
-test('every pinned agent opens its chat in the town', () => {
-  assert.deepEqual(TOWN_CAST.map((agent) => agent.name), ['Atlas Scout', 'Code Mage', 'Recipe Keeper', 'Letter Carrier', 'Studio Painter', 'Agents Desk']);
-  for (const agent of TOWN_CAST) assert.equal(pinnedHref(agent.id), `/town?bot=${agent.id}`);
+test('every pinned character opens its chat in the village', () => {
+  assert.ok(PINNED_AGENTS.length > 0);
+  for (const agent of PINNED_AGENTS) assert.equal(pinnedHref(agent.id), `/village?agent=${agent.id}`);
+});
+
+test('the current page is the highlighted entry, including sections and sub-pages', () => {
+  assert.equal(activeItem('/')?.id, 'atlas');
+  assert.equal(activeItem('/village', 'quests')?.id, 'quests');
+  assert.equal(activeItem('/village', 'library')?.id, 'library');
+  assert.equal(activeItem('/village')?.id, 'quests');
+  assert.equal(activeItem('/agents', 'data')?.id, 'data');
+  assert.equal(activeItem('/kits/sandbox')?.id, 'kits');
+  assert.equal(activeItem('/code/editor/')?.id, 'editor');
+  assert.equal(activeItem('/nowhere'), undefined);
+  assert.equal(pageTitle('/nowhere'), 'Dawn');
+  assert.equal(pageTitle('/credits'), 'Credits');
+});
+
+test('old addresses redirect to a place that exists', () => {
+  for (const redirect of REDIRECTS) {
+    const target = redirect.to.split('?')[0];
+    assert.ok(SITE_ROUTES.includes(target), `${redirect.from} goes to ${redirect.to}`);
+    assert.ok(!NAV_ITEMS.some((item) => item.href === redirect.from), `${redirect.from} is not also a sidebar entry`);
+  }
 });
 
 test('recents are the newest saved chats, and only a ready desk has any', () => {
@@ -27,7 +51,6 @@ test('recents are the newest saved chats, and only a ready desk has any', () => 
   ];
   assert.deepEqual(recentsFrom('ready', threads).map((r) => r.title), ['New', 'Chat', 'Old']);
   assert.equal(recentsFrom('ready', threads)[0].href, '/agents?thread=b');
-  assert.deepEqual(recentsFrom('signin', threads), []);
   assert.deepEqual(recentsFrom('offline', threads), []);
   assert.equal(recentsFrom('ready', threads, 2).length, 2);
 });
