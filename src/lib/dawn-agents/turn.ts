@@ -6,6 +6,7 @@ import type { ComputerRouter } from './computer';
 import { newId } from './ids';
 import { canSpend, estimateCost, spentThisMonth } from './spend';
 import { describeRoute, modelFor, publicError } from './provider';
+import { capMessage, maxOutputTokens, type DailyRequestCap, type ModelChoice } from './model-choice';
 import { clipText, scrubText, secretValuesFromEnv } from './scrub';
 import { standInPlan, standInSpeech } from './stand-in';
 import type { FileStore } from './store';
@@ -37,6 +38,8 @@ export type TurnContext = {
   now?: () => number;
   forceStandIn?: boolean;
   secrets?: string[];
+  /** Shared daily request limit. A turn that calls a model takes one slot. */
+  dailyCap?: DailyRequestCap;
 };
 
 export type TurnArgs = {
@@ -47,6 +50,8 @@ export type TurnArgs = {
   channel: ChatChannel;
   emit: Emit;
   recipeId?: string;
+  /** The composer's model picker. Overrides the agent's own model for this turn. */
+  choice?: ModelChoice | null;
 };
 
 export type TurnOutcome = {
@@ -225,6 +230,16 @@ export async function runAgentTurn(ctx: TurnContext, args: TurnArgs): Promise<Tu
     return { blocked: true };
   }
 
+  const route = ctx.forceStandIn
+    ? { provider: 'stand-in' as const, model: 'stand-in' }
+    : args.choice
+      ? { provider: args.choice.provider, model: args.choice.model }
+      : describeRoute(args.agent.model);
+  if (route.provider !== 'stand-in' && ctx.dailyCap && !ctx.dailyCap.take()) {
+    args.emit('error', { message: capMessage(ctx.dailyCap.status()) });
+    return { blocked: true };
+  }
+
   if (args.appendUser) {
     const userMessage: MessageRecord = {
       id: newId('m'),
@@ -260,7 +275,6 @@ export async function runAgentTurn(ctx: TurnContext, args: TurnArgs): Promise<Tu
   const names = new Map(fresh.agents.map((agent) => [agent.id, agent.name]));
   const system = withRecipe(systemPrompt(args.agent, memories, args.thread, names), args.recipeId);
   const messages = historyFor(fresh.messages.filter((message) => message.id !== assistant.id), args.thread.id);
-  const route = ctx.forceStandIn ? { provider: 'stand-in' as const, model: 'stand-in' } : describeRoute(args.agent.model);
 
   let promptTokens = 0;
   let completionTokens = 0;
@@ -414,7 +428,7 @@ async function runModel(
     model,
     system,
     messages,
-    maxOutputTokens: 900,
+    maxOutputTokens: maxOutputTokens(),
     stopWhen: ({ steps }) => pause || steps.length >= 4,
     tools: {
       web_search: tool({

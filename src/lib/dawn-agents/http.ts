@@ -29,6 +29,10 @@ import { handoffNote, playableGame } from './connected';
 import { canSpend, formatUsd, monthKey, spentThisMonth } from './spend';
 import { FileStore } from './store';
 import { keyStatus } from './provider';
+import { runChat } from './chat-route';
+import { RateLimiter, clientIp, perIpLimit } from './rate-limit';
+import { createKitModel } from './model-reply';
+import { DailyRequestCap, configuredProviders, dailyRequestCap, defaultChoice, resolveChoice, type ModelChoice } from './model-choice';
 import { recipeAttributes, recipeById, recipeSnippet, RECIPES } from './recipes';
 import { scrubPii } from './pii';
 import { secretValuesFromEnv } from './scrub';
@@ -55,6 +59,8 @@ export type ServerOptions = {
   allowLoopbackOwner?: boolean;
   spendCapUsd?: number;
   forceStandIn?: boolean;
+  /** Every request is the owner. For testing only; the owner check stays in the code for when this is off. */
+  authDisabled?: boolean;
   host?: string;
   port?: number;
   schedule?: boolean;
@@ -77,9 +83,12 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
   const outbox: OutboxMail[] = [];
   const fetchImpl = options.fetchImpl ?? fetch;
   const email = emailProviderFromEnv(fetchImpl, outbox);
+  const ipLimiter = new RateLimiter(perIpLimit());
+  const dailyCap = new DailyRequestCap(path.join(path.dirname(options.storePath), 'daily-requests.json'), dailyRequestCap());
   const ctx: TurnContext = {
     store,
     computers,
+    dailyCap,
     fetchImpl,
     forceStandIn: options.forceStandIn,
     secrets: secretValuesFromEnv(),
@@ -165,6 +174,12 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       if (!ownerOk(req)) return sendJson(res, 401, { error: 'Sign in with Google.' });
       return sendJson(res, 200, { email: emailFromProxyHeaders(req.headers) || firstAllowedEmail(ownerEmail) });
     }
+    if (req.method === 'POST' && (pathname === '/api/chat' || /^\/api\/(kits\/.+|threads\/[^/]+)\/messages$/.test(pathname))) {
+      if (!ipLimiter.take(clientIp(req.socket.remoteAddress, req.headers['x-forwarded-for']))) {
+        sendJson(res, 429, { error: 'Too many messages. Wait a minute and try again.' });
+        return;
+      }
+    }
     if (pathname === '/api/kits' || pathname.startsWith('/api/kits/')) {
       if (!ownerOk(req)) {
         sendJson(res, 401, { error: 'not allowed' });
@@ -181,6 +196,7 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
   }
 
   function ownerOk(req: IncomingMessage): boolean {
+    if (options.authDisabled) return true;
     if (proxyUserAllowed(req.socket.remoteAddress, req.headers, ownerEmail)) return true;
     if (allowLoopbackOwner && isLoopback(req.socket.remoteAddress) && !emailFromProxyHeaders(req.headers)) return true;
     return false;
@@ -200,9 +216,40 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       sendJson(res, 200, await snapshot());
       return;
     }
+    if (req.method === 'GET' && pathname === '/api/models') {
+      sendJson(res, 200, { providers: configuredProviders(), default: defaultChoice(), cap: dailyCap.status() });
+      return;
+    }
+    if (req.method === 'POST' && pathname === '/api/chat') {
+      const body = await readJson(req);
+      const model = createKitModel({
+        requested: body.model,
+        cap: dailyCap,
+        spend: {
+          blocked: capBlocked,
+          record: async (entry) => {
+            await store.update((data) => {
+              data.ledger.push({ id: newId('led'), at: Date.now(), ...entry, source: 'kit' });
+            });
+          },
+        },
+      });
+      const result = await runChat(body, model);
+      sendJson(res, result.status, result.payload);
+      return;
+    }
     if (pathname === '/api/kits' || pathname.startsWith('/api/kits/')) {
       const kits = await import('../kits/handle.ts');
-      await kits.handleKits(req, res, pathname, path.dirname(options.storePath), sendJson);
+      await kits.handleKits(req, res, pathname, path.dirname(options.storePath), sendJson, {
+        spend: {
+          blocked: capBlocked,
+          record: async (entry) => {
+            await store.update((data) => {
+              data.ledger.push({ id: newId('led'), at: Date.now(), ...entry, source: 'kit' });
+            });
+          },
+        },
+      });
       return;
     }
     if (pathname === '/api/local-drafts') {
@@ -434,7 +481,7 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       const blocked = await capBlocked();
       if (blocked) return sendJson(res, 402, { error: blocked });
       const sse = startSse(res);
-      await talk(messagePost[1], text, 'chat', sse, typeof body.recipeId === 'string' ? body.recipeId : undefined);
+      await talk(messagePost[1], text, 'chat', sse, typeof body.recipeId === 'string' ? body.recipeId : undefined, resolveChoice(body.model));
       res.end();
       return;
     }
@@ -1178,7 +1225,7 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
     return { thread, summoned, delivered: false };
   }
 
-  async function talk(threadId: string, text: string, channel: ChatChannel, emit: (event: string, data: unknown) => void, recipeId?: string) {
+  async function talk(threadId: string, text: string, channel: ChatChannel, emit: (event: string, data: unknown) => void, recipeId?: string, choice: ModelChoice | null = null) {
     const data = await store.read();
     const thread = data.threads.find((item) => item.id === threadId);
     if (!thread) {
@@ -1204,6 +1251,7 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
         channel: thread.kind === 'group' ? 'group' : channel,
         emit,
         recipeId,
+        choice,
       });
       first = false;
       if (outcome.blocked) return;

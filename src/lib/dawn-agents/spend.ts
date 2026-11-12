@@ -7,6 +7,9 @@ export const PRICE_PER_MILLION: Record<string, { input: number; output: number }
   'x-ai/grok-4.7': { input: 3, output: 15 },
   'grok-4.7': { input: 3, output: 15 },
   'openai/gpt-4o-mini': { input: 0.15, output: 0.6 },
+  'anthropic/claude-3.5-haiku': { input: 0.8, output: 4 },
+  'deepseek/deepseek-chat': { input: 0.3, output: 1.2 },
+  'meta-llama/llama-3.3-70b-instruct': { input: 0.6, output: 0.8 },
   'stand-in': { input: 0, output: 0 },
 };
 
