@@ -1,40 +1,25 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect, useId, useState, type FormEvent } from 'react';
-import {
-  BookOpen,
-  Castle,
-  ChevronLeft,
-  Flag,
-  Hammer,
-  Map as MapIcon,
-  Menu,
-  Plus,
-  Search,
-  X,
-} from 'lucide-react';
-import { AGENTS, YOU_LOOKS, type Agent } from '@/lib/agents';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState, type FormEvent } from 'react';
+import { ChevronLeft, Plus } from 'lucide-react';
+import { AGENTS, type Agent } from '@/lib/agents';
 import { AgentSheet } from '@/components/dawn/agent-sheet';
 import { DawnProvider, useDawn } from '@/components/dawn/dawn-provider';
 import { LibraryPanel } from '@/components/dawn/library-panel';
+import { QuestThread, useQuestChat } from '@/components/dawn/quest-chat';
 import { createQuest, QuestsPanel } from '@/components/dawn/quests-panel';
-import { relativeWhen } from '@/components/dawn/relative-when';
 import { useTown } from '@/components/dawn/use-town';
+import { Composer } from '@/components/shell/composer';
+import { useModelPicker } from '@/components/shell/model-picker';
+import { OfflineCard } from '@/components/shell/status-card';
 
 const VillageGame = dynamic(() => import('@/components/dawn/village-game').then((mod) => mod.VillageGame), { ssr: false });
 const CharacterMaker = dynamic(() => import('@/components/forge/character-maker').then((mod) => mod.CharacterMaker), { ssr: false });
-const AtlasApp = dynamic(() => import('@/features/atlas/components/atlas-app').then((mod) => mod.AtlasApp), { ssr: false });
 
-type Section = 'quests' | 'village' | 'characters' | 'atlas' | 'library';
-
-const NAV: { id: Section; label: string; icon: typeof Flag }[] = [
-  { id: 'quests', label: 'Quests', icon: Flag },
-  { id: 'village', label: 'Village', icon: Castle },
-  { id: 'characters', label: 'Characters', icon: Hammer },
-  { id: 'atlas', label: 'Atlas', icon: MapIcon },
-  { id: 'library', label: 'Library', icon: BookOpen },
-];
+type Section = 'quests' | 'village' | 'characters' | 'library';
+const SECTIONS: Section[] = ['quests', 'village', 'characters', 'library'];
 
 export function DawnApp() {
   return (
@@ -47,52 +32,39 @@ export function DawnApp() {
 function Shell() {
   const dawn = useDawn();
   const town = useTown(dawn.memories, dawn.remember);
-  const [section, setSection] = useState<Section>('quests');
-  useEffect(() => {
-    const asked = new URLSearchParams(window.location.search).get('section');
-    if (asked === 'quests' || asked === 'village' || asked === 'characters' || asked === 'atlas' || asked === 'library') {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- the static export always renders 'quests', so a ?section= link can only be applied after hydration to keep the first client render equal to the static HTML
-      setSection(asked);
-    }
-  }, []);
-  const [drawer, setDrawer] = useState(false);
-  const [query, setQuery] = useState('');
-  const [youOpen, setYouOpen] = useState(false);
+  const router = useRouter();
+  const params = useSearchParams();
+  const asked = params.get('section');
+  const section: Section = SECTIONS.find((item) => item === asked) ?? 'quests';
+  const agent = AGENTS.find((item) => item.id === params.get('agent')) ?? null;
+
+  const picker = useModelPicker();
+  const chat = useQuestChat(picker, dawn.quests.map((quest) => `${quest.title} (${quest.status === 'done' ? 'finished' : 'in progress'})`));
+  const [chatOpen, setChatOpen] = useState(false);
   const [composing, setComposing] = useState(false);
   const [draft, setDraft] = useState('');
+  const [message, setMessage] = useState('');
   const [questId, setQuestId] = useState<string | null>(null);
-  const [agent, setAgent] = useState<Agent | null>(null);
   const pending = dawn.approvals.filter((item) => item.status === 'pending').length;
   const selectedQuest = dawn.quests.find((item) => item.id === questId) ?? null;
-  const title = agent
-    ? agent.name
-    : section === 'quests' && selectedQuest
-      ? selectedQuest.title
-      : NAV.find((item) => item.id === section)?.label ?? 'Dawn';
+
+  const openSection = (next: Section) => router.push(`/village?section=${next}`);
+  const openAgent = (next: Agent) => router.push(`/village?section=${section}&agent=${next.id}`);
+  const closeAgent = () => router.push(`/village?section=${section}`);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
       if (event.key !== 'Escape') return;
-      if (agent) setAgent(null);
-      else if (youOpen) setYouOpen(false);
+      if (agent) closeAgent();
       else if (composing) setComposing(false);
+      else if (chatOpen) setChatOpen(false);
       else if (questId) setQuestId(null);
-      else setDrawer(false);
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [agent, composing, questId, youOpen]);
-
-  function openSection(next: Section) {
-    setSection(next);
-    setDrawer(false);
-    setYouOpen(false);
-    setAgent(null);
-    if (next !== 'quests') {
-      setQuestId(null);
-      setComposing(false);
-    }
-  }
+    // closeAgent only reads the section, which is in the dependency list through agent changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [agent, chatOpen, composing, questId, section]);
 
   function addQuest(event: FormEvent) {
     event.preventDefault();
@@ -101,239 +73,119 @@ function Shell() {
     dawn.saveQuest(quest);
     setDraft('');
     setComposing(false);
-    setSection('quests');
+    setChatOpen(false);
     setQuestId(quest.id);
   }
 
-  const showChrome = section !== 'atlas' && !agent;
-  const recent = [...dawn.quests].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 6);
-  const agents = AGENTS.filter((item) => {
-    const needle = query.trim().toLowerCase();
-    return !needle || section !== 'village' || item.name.toLowerCase().includes(needle);
-  });
+  function ask() {
+    const text = message.trim();
+    if (!text) return;
+    setMessage('');
+    setChatOpen(true);
+    setQuestId(null);
+    void chat.send(text);
+  }
+
+  const offline = picker.status === 'offline';
 
   return (
-    <div className="dawn-root flex h-dvh">
-      {drawer && (
-        <button type="button" className="fixed inset-0 z-40 bg-[var(--dawn-scrim)] dw-dock-hide" aria-label="Close menu" onClick={() => setDrawer(false)} />
-      )}
-      <aside
-        className={`dawn-drawer fixed inset-y-0 left-0 z-50 flex w-[min(84vw,300px)] flex-col overflow-y-auto bg-[var(--dawn-bg)] transition-[transform,visibility] duration-200 ease-out dock:visible dock:static dock:z-0 dock:w-[280px] dock:shrink-0 dock:translate-x-0 ${drawer ? 'translate-x-0' : 'invisible -translate-x-full'}`}
-        aria-label="Dawn"
-      >
-        <div className="flex items-center justify-between px-5 pt-[max(1.25rem,env(safe-area-inset-top))]">
-          <p className="dawn-wordmark text-[length:var(--dawn-fs-display)] leading-none">Dawn</p>
-          <button type="button" className="dw-btn dw-btn--icon dw-dock-hide" aria-label="Close menu" onClick={() => setDrawer(false)}>
-            <X className="h-5 w-5" aria-hidden />
-          </button>
-        </div>
-        <nav className="mt-6 flex flex-col px-3" aria-label="Sections">
-          {NAV.map((item) => {
-            const Icon = item.icon;
-            const on = section === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                aria-current={on ? 'page' : undefined}
-                onClick={() => openSection(item.id)}
-                className="flex min-h-11 items-center gap-3 rounded-[var(--dawn-radius-row)] px-3 text-left text-[length:var(--dawn-fs-body)]"
-              >
-                <Icon className={`h-5 w-5 ${on ? 'text-[var(--dawn-accent)]' : ''}`} aria-hidden />
-                <span className={on ? 'text-[var(--dawn-accent)]' : ''}>{item.label}</span>
-                {item.id === 'village' && pending > 0 && (
-                  <span className="ml-auto text-[length:var(--dawn-fs-label)] text-[var(--dawn-accent)]">{pending}</span>
-                )}
-              </button>
-            );
-          })}
-        </nav>
-        <div className="mt-6 px-5">
-          <p className="text-[length:var(--dawn-fs-label)] text-[var(--dawn-muted)]">Pinned</p>
-          <ul className="mt-1">
-            {AGENTS.map((item) => (
-              <li key={item.id}>
-                <button
-                  type="button"
-                  onClick={() => { setAgent(item); setDrawer(false); }}
-                  className="flex min-h-11 w-full items-center gap-3 text-left text-[length:var(--dawn-fs-body)]"
-                >
-                  <AgentPortrait agent={item} size={22} />
+    <div className="dawn-root flex h-full min-h-0 flex-col">
+      <div className="relative min-h-0 flex-1">
+        {section === 'quests' && (chatOpen ? (
+          <QuestThread chat={chat} onClose={() => setChatOpen(false)} />
+        ) : (
+          <div className="flex h-full min-h-0 flex-col">
+            {selectedQuest && (
+              <div className="flex shrink-0 items-center gap-2 px-3 pt-2">
+                <button type="button" className="dw-btn dw-btn--icon" aria-label="Back to quests" onClick={() => setQuestId(null)}>
+                  <ChevronLeft className="h-5 w-5" aria-hidden />
+                </button>
+                <h2 className="dw-card-title">{selectedQuest.title}</h2>
+              </div>
+            )}
+            <div className="min-h-0 flex-1">
+              <QuestsPanel query="" selectedId={questId} onSelect={setQuestId} />
+            </div>
+          </div>
+        ))}
+        {section === 'village' && (
+          <div className="relative z-0 flex h-full min-h-0 flex-col overflow-hidden">
+            <div className="relative z-0 min-h-[200px] flex-1 overflow-hidden">
+              <VillageGame
+                avatar={dawn.avatar}
+                looks={dawn.roster.looks}
+                poses={town.poses}
+                onAgent={(id) => { const match = AGENTS.find((item) => item.id === id); if (match) openAgent(match); }}
+                onYou={() => openSection('library')}
+              />
+            </div>
+            <div className="relative z-10 flex shrink-0 gap-2 overflow-x-auto px-3 py-2">
+              {AGENTS.map((item) => (
+                <button key={item.id} type="button" onClick={() => openAgent(item)} className="dw-btn">
+                  <AgentPortrait agent={item} size={28} />
                   {item.name}
                 </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="mt-6 flex-1 px-5">
-          <p className="text-[length:var(--dawn-fs-label)] text-[var(--dawn-muted)]">Recents</p>
-          {recent.length === 0 && <p className="mt-2 text-[length:var(--dawn-fs-action)] text-[var(--dawn-muted)]">Nothing recent.</p>}
-          <ul className="mt-1">
-            {recent.map((quest) => (
-              <li key={quest.id}>
-                <button
-                  type="button"
-                  onClick={() => { setSection('quests'); setQuestId(quest.id); setDrawer(false); }}
-                  className="flex min-h-12 w-full flex-col items-start justify-center text-left"
-                >
-                  <span className="truncate text-[length:var(--dawn-fs-support)]">{quest.title}</span>
-                  <span className="text-[length:var(--dawn-fs-label)] text-[var(--dawn-muted)]">{relativeWhen(quest.updatedAt)}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <AccountBlock />
-          <a href="/credits" className="mt-2 inline-flex min-h-11 items-center text-[length:var(--dawn-fs-action)] text-[var(--dawn-muted)]">Credits & licenses</a>
-        </div>
-      </aside>
-
-      <div className="relative flex min-w-0 flex-1 flex-col">
-        {showChrome && (
-          <header className="flex h-14 shrink-0 items-center px-3 pt-[env(safe-area-inset-top)]">
-            {section === 'quests' && questId ? (
-              <button type="button" className="dw-btn dw-btn--icon" aria-label="Back to quests" onClick={() => setQuestId(null)}>
-                <ChevronLeft className="h-5 w-5" aria-hidden />
-              </button>
-            ) : (
-              <button type="button" className="dw-btn dw-btn--icon dw-dock-hide" aria-label="Menu" onClick={() => setDrawer(true)}>
-                <Menu className="h-5 w-5" aria-hidden />
+              ))}
+            </div>
+            {town.notice && <p role="alert" className="dw-alert mx-3 mb-2 shrink-0">{town.notice}</p>}
+            <div className="shrink-0 px-4 pb-2 text-[length:var(--dawn-fs-action)] text-[var(--dawn-secondary)]">
+              <p>{town.status}</p>
+              {town.lines.slice(-2).map((line, index) => (
+                <p key={`${line.author}-${index}`} className="mt-1 text-[var(--dawn-text)]">{line.author}: {line.text}</p>
+              ))}
+            </div>
+            {pending > 0 && (
+              <button
+                type="button"
+                className="dw-btn mx-3 mb-3 shrink-0 justify-start"
+                onClick={() => {
+                  const waiting = dawn.approvals.find((item) => item.status === 'pending');
+                  const match = AGENTS.find((item) => item.id === waiting?.agentId);
+                  if (match) openAgent(match);
+                }}
+              >
+                {pending} waiting for you
               </button>
             )}
-            <h1 className="flex-1 truncate px-2 text-center text-[length:var(--dawn-fs-title)] font-semibold">{title}</h1>
-            <button
-              type="button"
-              className="dw-btn dw-btn--icon overflow-hidden"
-              aria-label="You"
-              aria-expanded={youOpen}
-              onClick={() => setYouOpen((open) => !open)}
-            >
-              <img src={YOU_LOOKS[dawn.avatar]} alt="" width={28} height={28} className="h-7 w-7 [image-rendering:pixelated]" />
-            </button>
-          </header>
-        )}
-        {dawn.authError && showChrome && (
-          <p role="alert" className="px-4 pb-1 text-[length:var(--dawn-fs-label)] text-[var(--dawn-accent)]">{dawn.authError}</p>
-        )}
-        {youOpen && showChrome && (
-          <div className="absolute top-16 right-3 z-30 w-[min(100%-1.5rem,320px)] rounded-[var(--dawn-radius-panel)] bg-[var(--dawn-elev)] p-3 shadow-[var(--dawn-shadow-menu)]">
-            <AccountBlock />
           </div>
         )}
-
-        <main className="relative min-h-0 flex-1">
-          {section === 'quests' && (
-            <QuestsPanel query={query} selectedId={questId} onSelect={setQuestId} />
-          )}
-          {section === 'village' && (
-            <div className="relative z-0 flex h-full min-h-0 flex-col overflow-hidden">
-              <div className="relative z-0 min-h-[200px] flex-1 overflow-hidden">
-                <VillageGame
-                  avatar={dawn.avatar}
-                  looks={dawn.roster.looks}
-                  poses={town.poses}
-                  onAgent={(id) => setAgent(AGENTS.find((item) => item.id === id) ?? null)}
-                  onYou={() => openSection('library')}
-                />
-              </div>
-              <div className="relative z-10 flex shrink-0 gap-2 overflow-x-auto px-3 py-2">
-                {agents.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setAgent(item)}
-                    className="dw-btn"
-                  >
-                    <AgentPortrait agent={item} size={28} />
-                    {item.name}
-                  </button>
-                ))}
-              </div>
-              {town.notice && (
-                <p role="alert" className="mx-3 mb-2 shrink-0 rounded-[var(--dawn-radius-panel)] bg-[var(--dawn-elev)] px-3 py-2 text-[length:var(--dawn-fs-action)] leading-snug">
-                  {town.notice} These village lines are stand-ins.
-                </p>
-              )}
-              <div className="shrink-0 px-4 pb-2 text-[length:var(--dawn-fs-action)] text-[var(--dawn-secondary)]">
-                <p>{town.status}{town.lines.length > 0 ? ` · ${town.source === 'gemini' ? 'Gemini' : 'Stand-in'}` : ''}</p>
-                {town.lines.slice(-2).map((line, index) => (
-                  <p key={`${line.author}-${index}`} className="mt-1 text-[var(--dawn-text)]">{line.author}: {line.text}</p>
-                ))}
-              </div>
-              {pending > 0 && (
-                <button
-                  type="button"
-                  className="dw-btn mx-3 mb-3 shrink-0 justify-start text-[var(--dawn-accent)]"
-                  onClick={() => {
-                    const waiting = dawn.approvals.find((item) => item.status === 'pending');
-                    const match = AGENTS.find((item) => item.id === waiting?.agentId);
-                    if (match) setAgent(match);
-                  }}
-                >
-                  {pending} waiting for you
-                </button>
-              )}
-            </div>
-          )}
-          {section === 'characters' && (
-            <CharacterMaker onOpenVillage={() => openSection('village')} />
-          )}
-          {section === 'atlas' && (
-            <div className="absolute inset-0">
-              <AtlasApp framed="shell" onMenu={() => setDrawer(true)} avatar={dawn.avatar} />
-            </div>
-          )}
-          {section === 'library' && (
-            <LibraryPanel query={query} onTalk={setAgent} />
-          )}
-          {agent && (
-            <div className="absolute inset-0 z-30 flex min-h-0 flex-col bg-[var(--dawn-bg)]">
-              <AgentSheet agent={agent} onClose={() => setAgent(null)} />
-            </div>
-          )}
-        </main>
-
-        {showChrome && section !== 'characters' && (
-          <div className="relative shrink-0 px-3 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-            <button
-              type="button"
-              onClick={() => { setSection('quests'); setQuestId(null); setComposing(true); }}
-              className="dw-btn dw-btn--primary absolute -top-12 right-4 shadow-[var(--dawn-shadow-pill)]"
-            >
-              <Plus aria-hidden />
-              New quest
-            </button>
-            {composing && (
-              <form onSubmit={addQuest} className="mb-2 flex gap-2">
-                <label className="sr-only" htmlFor="quest-title">Goal</label>
-                <input
-                  id="quest-title"
-                  value={draft}
-                  autoFocus
-                  onChange={(event) => setDraft(event.target.value)}
-                  placeholder="A book, a site, a habit"
-                  className="dawn-field flex-1"
-                />
-                <button type="submit" className="dw-btn dw-btn--primary">
-                  Add
-                </button>
-              </form>
-            )}
-            <label className="dawn-search flex h-12 items-center gap-2 rounded-full bg-[var(--dawn-field)] px-4">
-              <Search className="h-5 w-5 text-[var(--dawn-muted)]" aria-hidden />
-              <span className="sr-only">Search</span>
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search"
-                className="h-full min-w-0 flex-1 bg-transparent text-[length:var(--dawn-fs-body)] outline-none placeholder:text-[var(--dawn-placeholder)]"
-              />
-            </label>
-            <a href="/credits" className="dw-dock-hide mt-2 flex min-h-11 items-center justify-center text-center text-[length:var(--dawn-fs-label)] text-[var(--dawn-muted)]">Credits & licenses</a>
+        {section === 'characters' && <CharacterMaker onOpenVillage={() => openSection('village')} />}
+        {section === 'library' && <LibraryPanel query="" onTalk={openAgent} />}
+        {agent && (
+          <div className="absolute inset-0 z-30 flex min-h-0 flex-col bg-[var(--dawn-bg)]">
+            <AgentSheet key={agent.id} agent={agent} onClose={closeAgent} />
           </div>
         )}
       </div>
+
+      {section === 'quests' && !agent && (
+        <div className="relative shrink-0 px-3 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          {composing ? (
+            <form onSubmit={addQuest} className="mb-2 flex gap-2">
+              <label className="sr-only" htmlFor="quest-title">Goal</label>
+              <input id="quest-title" value={draft} autoFocus onChange={(event) => setDraft(event.target.value)} placeholder="A book, a site, a habit" className="dawn-field flex-1" />
+              <button type="submit" className="dw-btn dw-btn--primary">Add</button>
+            </form>
+          ) : (
+            <button type="button" onClick={() => { setChatOpen(false); setComposing(true); }} className="dw-btn dw-btn--primary absolute -top-12 right-4">
+              <Plus aria-hidden />
+              New quest
+            </button>
+          )}
+          {offline && <OfflineCard line="Offline preview. Open live Dawn to chat with the guide." />}
+          {!offline && (
+            <Composer
+              value={message}
+              onChange={setMessage}
+              onSubmit={ask}
+              label="Ask the guide"
+              placeholder="Ask the guide"
+              picker={picker}
+              busy={chat.busy}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -351,49 +203,4 @@ function AgentPortrait({ agent, size }: { agent: Agent; size: number }) {
       className={look?.portrait ? 'rounded-full object-cover' : '[image-rendering:pixelated]'}
     />
   );
-}
-
-function AccountBlock() {
-  const dawn = useDawn();
-  const fieldId = useId();
-  const [localName, setLocalName] = useState('');
-
-  if (dawn.user) {
-    return (
-      <button type="button" className="dw-btn dw-btn--ghost dw-btn--block justify-start" onClick={() => void dawn.signOut()}>
-        {dawn.name} · Sign out
-      </button>
-    );
-  }
-  if (dawn.mode === 'emulator') {
-    return (
-      <form
-        className="grid grid-cols-[minmax(0,1fr)_auto] gap-2"
-        onSubmit={(event) => {
-          event.preventDefault();
-          void dawn.signInLocal(localName);
-        }}
-      >
-        <label className="sr-only" htmlFor={fieldId}>Your name</label>
-        <input
-          id={fieldId}
-          value={localName}
-          onChange={(event) => setLocalName(event.target.value)}
-          placeholder="Name"
-          className="dawn-field"
-        />
-        <button type="submit" className="dw-btn">
-          Join
-        </button>
-      </form>
-    );
-  }
-  if (dawn.mode === 'hosted') {
-    return (
-      <button type="button" className="dw-btn dw-btn--block" onClick={() => void dawn.signInGoogle()}>
-        Sign in
-      </button>
-    );
-  }
-  return <p className="min-h-11 text-[length:var(--dawn-fs-action)] text-[var(--dawn-muted)]">On this phone</p>;
 }

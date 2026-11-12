@@ -1,0 +1,326 @@
+/*
+ * The one app shell. A top bar (menu, title, account) and a slide-over sidebar that docks on wide screens.
+ * Tokens come from src/styles/tokens.css. Only transform and opacity animate.
+ */
+.as-root {
+  --as-drawer: min(320px, calc(100% - 64px));
+  position: relative;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--dawn-bg);
+  color: var(--dawn-text);
+}
+.as-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--dawn-bg);
+  transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1), border-radius 280ms;
+}
+.as-root[data-open='true'] .as-stage {
+  transform: translateX(var(--as-drawer));
+  border-radius: var(--dawn-radius-sheet);
+  box-shadow: var(--dawn-shadow-menu);
+}
+.as-bar {
+  display: grid;
+  flex: none;
+  grid-template-columns: var(--dawn-tap) minmax(0, 1fr) var(--dawn-tap);
+  align-items: center;
+  gap: var(--dawn-space-2);
+  height: calc(var(--dawn-header-h) + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) var(--dawn-space-3) 0;
+  border-bottom: 1px solid var(--dawn-line);
+  background: var(--dawn-bg);
+}
+.as-title {
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--dawn-font-display);
+  font-size: var(--dawn-fs-heading);
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.as-round {
+  display: grid;
+  place-items: center;
+  width: var(--dawn-tap);
+  height: var(--dawn-tap);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--dawn-chip);
+  color: var(--dawn-text);
+  cursor: pointer;
+  overflow: hidden;
+}
+.as-round:hover {
+  background: var(--dawn-chip-hover);
+}
+.as-round svg {
+  width: 20px;
+  height: 20px;
+}
+.as-round img {
+  width: 28px;
+  height: 28px;
+  image-rendering: pixelated;
+}
+.as-view[data-fill='true'] {
+  overflow: hidden;
+}
+.as-view {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.as-page {
+  min-height: 100%;
+  animation: as-in 220ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+.as-view[data-fill='true'] > .as-page {
+  height: 100%;
+}
+@keyframes as-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.as-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  border: 0;
+  background: var(--dawn-scrim);
+  touch-action: pan-y;
+  cursor: pointer;
+}
+.as-skip {
+  position: absolute;
+  left: var(--dawn-space-3);
+  top: -100px;
+  z-index: 200;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--dawn-space-4);
+  border-radius: var(--dawn-radius-full);
+  background: var(--dawn-pill);
+  color: var(--dawn-ink);
+}
+.as-skip:focus {
+  top: var(--dawn-space-2);
+}
+.as-root :focus-visible {
+  outline: var(--dawn-focus);
+  outline-offset: 2px;
+}
+
+/* Account menu from the avatar. */
+.as-menu {
+  position: absolute;
+  top: calc(var(--dawn-header-h) + env(safe-area-inset-top) - 4px);
+  right: var(--dawn-space-3);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-1);
+  width: min(260px, calc(100% - 24px));
+  padding: var(--dawn-space-3);
+  border: 1px solid var(--dawn-line);
+  border-radius: var(--dawn-radius-panel);
+  background: var(--dawn-elev);
+  box-shadow: var(--dawn-shadow-menu);
+  animation: as-pop 180ms cubic-bezier(0.32, 1.4, 0.5, 1) both;
+}
+@keyframes as-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.as-menu p {
+  margin: 0;
+  color: var(--dawn-secondary);
+  font-size: var(--dawn-fs-action);
+}
+.as-menu a {
+  display: flex;
+  align-items: center;
+  min-height: var(--dawn-tap);
+  color: var(--dawn-text);
+  font-size: var(--dawn-fs-body);
+  text-decoration: none;
+}
+
+/* The sidebar. Every target is 44px or taller. */
+.sb {
+  position: absolute;
+  z-index: 1;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  width: var(--as-drawer);
+  padding: calc(var(--dawn-space-5) + env(safe-area-inset-top)) var(--dawn-space-4) calc(var(--dawn-space-3) + env(safe-area-inset-bottom));
+  background: var(--dawn-bg);
+  color: var(--dawn-text);
+  font-family: var(--dawn-font-ui);
+  transform: translateX(-105%);
+  visibility: hidden;
+  transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 280ms;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+}
+.as-root[data-open='true'] .sb {
+  transform: none;
+  visibility: visible;
+  transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s;
+}
+.sb-head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  margin: var(--dawn-space-2) var(--dawn-space-2) var(--dawn-space-4);
+}
+.sb-mark {
+  margin: 0;
+  font-family: var(--dawn-font-display);
+  font-size: var(--dawn-fs-display);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.sb-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: var(--dawn-space-2);
+}
+.sb-label {
+  margin: var(--dawn-space-4) var(--dawn-space-2) var(--dawn-space-1);
+  color: var(--dawn-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.sb-group:first-child .sb-label {
+  margin-top: 0;
+}
+.sb-link {
+  display: flex;
+  align-items: center;
+  gap: var(--dawn-space-3);
+  min-height: var(--dawn-tap);
+  padding: 0 var(--dawn-space-3);
+  border-radius: var(--dawn-radius-tile);
+  color: var(--dawn-secondary);
+  font-size: var(--dawn-fs-body);
+  font-weight: 500;
+  text-decoration: none;
+}
+.sb-link:hover {
+  background: var(--dawn-elev);
+  color: var(--dawn-text);
+}
+.sb-link[aria-current='page'] {
+  background: var(--dawn-navy);
+  box-shadow: inset 0 0 0 1px var(--dawn-navy-line);
+  color: #fff;
+}
+.sb-link svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  stroke-width: 1.75;
+}
+.sb-link img {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+}
+.sb-link span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sb-note {
+  margin: var(--dawn-space-1) var(--dawn-space-3);
+  color: var(--dawn-muted);
+  font-size: var(--dawn-fs-action);
+}
+.sb-foot {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: var(--dawn-space-1);
+  padding-top: var(--dawn-space-3);
+  border-top: 1px solid var(--dawn-line);
+}
+.sb-status {
+  margin: 0 var(--dawn-space-3);
+  color: var(--dawn-muted);
+  font-size: var(--dawn-fs-action);
+}
+.sb a,
+.sb img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* Wide windows: the sidebar docks beside the stage and the menu button goes away. */
+@media (min-width: 768px) and (min-height: 520px) {
+  .as-root .sb {
+    transform: none;
+    visibility: visible;
+    border-right: 1px solid var(--dawn-line);
+  }
+  .as-root .as-stage {
+    left: var(--as-drawer);
+    transform: none !important;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .as-root {
+    --as-drawer: 300px;
+  }
+  .as-bar {
+    grid-template-columns: var(--dawn-tap) minmax(0, 1fr) var(--dawn-tap);
+  }
+  .as-bar [data-menu] {
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .as-stage,
+  .sb,
+  .as-root[data-open='true'] .sb {
+    transition: none;
+  }
+  .as-page,
+  .as-menu {
+    animation: none;
+  }
+}

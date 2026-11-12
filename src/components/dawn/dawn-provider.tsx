@@ -359,7 +359,7 @@ export function DawnProvider({ children }: { children: ReactNode }) {
     }
 
     if (!db || !user) {
-      setNote('Approved on this phone. Sign in to post it to the room.');
+      setNote('Approved on this phone.');
       return;
     }
 

@@ -32,9 +32,6 @@ export function VillagePreview() {
     <div className="pv-village" data-preview-village="">
       <header className="pv-village-bar">
         <p className="pv-word">DAWN</p>
-        <button type="button" className="pv-village-sign" disabled>
-          Sign in
-        </button>
       </header>
       <div className="pv-village-scene">
         {tab === 'village' && (
@@ -52,7 +49,7 @@ export function VillagePreview() {
           <div className="pv-village-panel">
             <img src="/sprites/town/atlas-scout.png" alt="" width={64} height={64} />
             <h1>Map</h1>
-            <p>Stand-in spot. Not your location. Atlas still says the Cardinal note is coming soon.</p>
+            <p>Default spot. Not your location. Atlas still says the Cardinal note is coming soon.</p>
           </div>
         )}
         {tab === 'chat' && (

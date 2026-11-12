@@ -177,7 +177,7 @@
     "name": "clsx",
     "kind": "dawn",
     "license": "MIT",
-    "url": "lukeed/clsx"
+    "url": "https://github.com/lukeed/clsx"
   },
   {
     "name": "cmdk",
@@ -255,7 +255,7 @@
     "name": "nanoid",
     "kind": "dawn",
     "license": "MIT",
-    "url": "ai/nanoid"
+    "url": "https://github.com/ai/nanoid"
   },
   {
     "name": "next",
@@ -315,7 +315,7 @@
     "name": "react-jsx-parser",
     "kind": "dawn",
     "license": "MIT",
-    "url": "TroyAlford/react-jsx-parser"
+    "url": "https://github.com/TroyAlford/react-jsx-parser"
   },
   {
     "name": "react-resizable-panels",

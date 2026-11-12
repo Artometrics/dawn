@@ -12,7 +12,7 @@ test('a teammate chat hands the turn to the other bot and restores it', async ()
     const desk = new TeammatesDesk(dbPath);
     const { id } = desk.createRoom();
     const asked = await desk.postMessage(id, 'Write the note');
-    assert.match(asked.messages.at(-1)?.body || '', /Mock reply from Builder/);
+    assert.match(asked.messages.at(-1)?.body || '', /Fixture reply from Builder/);
     assert.equal(asked.active, 'builder');
     const handed = await desk.postMessage(id, 'handoff reviewer Check the note');
     assert.equal(handed.active, 'reviewer');

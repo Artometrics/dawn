@@ -1,0 +1,33 @@
+.sc {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--dawn-space-3) var(--dawn-space-4);
+  padding: var(--dawn-space-4);
+  border: 1px solid var(--dawn-line);
+  border-radius: var(--dawn-radius-panel);
+  background: var(--dawn-elev);
+}
+.sc-line {
+  flex: 1 1 220px;
+  margin: 0;
+  color: var(--dawn-secondary);
+  font-size: var(--dawn-fs-support);
+  line-height: 1.35;
+}
+.sc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--dawn-tap);
+  padding: 0 var(--dawn-space-5);
+  border-radius: var(--dawn-radius-full);
+  background: var(--dawn-pill);
+  color: var(--dawn-ink);
+  font-size: var(--dawn-fs-body);
+  font-weight: 600;
+  text-decoration: none;
+}
+.sc-btn:hover {
+  background: var(--dawn-pill-hover);
+}

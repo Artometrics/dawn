@@ -4,6 +4,7 @@ import { Markdown } from '@/components/credits/markdown';
 import './credits.css';
 import { PageShell } from '@/components/site/page-shell';
 import { BUNDLED_ASSETS, BUNDLED_FONTS } from '@/lib/credits/assets';
+import { KITS } from '@/lib/kits/registry';
 import { AGENT_SPRITES } from '@/lib/credits/sprites';
 import { TOWN_CAST } from '@/lib/credits/town';
 import libraries from '@/lib/credits/libraries.json';
@@ -19,6 +20,7 @@ export default function CreditsPage() {
   return (
     <PageShell
       title="Credits & licenses"
+      showTitle
       wide
       className="credits"
       lead="One owner today. The fields below are the record for a later commercial release: who made each piece, where it came from, and which license covers it."
@@ -57,6 +59,18 @@ export default function CreditsPage() {
               <p>Artist: Dawn</p>
               <p>License: Project original</p>
             </div>
+          </li>
+        ))}
+      </ul>
+
+      <h2 className="dw-h2">Code tools</h2>
+      <p>
+        NightCode, Teammates and the kits adapt small patterns from public projects by Code with Antonio. Each one runs on Dawn&apos;s own server with its own code.
+      </p>
+      <ul>
+        {KITS.map((kit) => (
+          <li key={kit.id}>
+            <strong>{kit.title}</strong>. Adapted from <code>{kit.source}</code>. {kit.adapted} Not used: {kit.replaced}
           </li>
         ))}
       </ul>

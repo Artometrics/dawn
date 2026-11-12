@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { AgentsRoot } from '@/components/dawn-agents/agents-app';
 import { gatewayBase } from '@/components/dawn-agents/api';
-import { HomeClient } from '@/components/home/home-client';
+import { DeskGate } from '@/components/shell/status-card';
+import { PageShell } from '@/components/site/page-shell';
 import { probeDesk, type DeskStatus } from '@/lib/home/town-action';
 
 export function AgentsEntry() {
@@ -19,7 +20,16 @@ export function AgentsEntry() {
       cancel = true;
     };
   }, []);
-  if (desk === 'loading') return <div className="dawn-agents login">Opening the agent list…</div>;
-  if (desk === 'offline') return <HomeClient initialPanel />;
-  return <AgentsRoot />;
+  if (desk === 'ready') {
+    return (
+      <Suspense fallback={null}>
+        <AgentsRoot />
+      </Suspense>
+    );
+  }
+  return (
+    <PageShell title="Agents" lead="Your agents and their chats.">
+      <DeskGate status={desk} offline="Offline preview. Open live Dawn to see your agents." />
+    </PageShell>
+  );
 }

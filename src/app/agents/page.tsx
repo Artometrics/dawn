@@ -4,9 +4,9 @@ import './agents.css';
 
 export const metadata: Metadata = {
   title: 'Dawn Agents',
-  description: 'The pinned Dawn characters. The live desk is separate.',
+  description: 'Your Dawn agents and their chats.',
 };
 
 export default function AgentsPage() {
-  return <main style={{ display: 'contents' }}><AgentsEntry /></main>;
+  return <AgentsEntry />;
 }

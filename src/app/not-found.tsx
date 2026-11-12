@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { NotFoundHint } from '@/components/site/not-found-hint';
 import { PageShell } from '@/components/site/page-shell';
-import { SITE_NAV } from '@/lib/site/nav';
 
 export const metadata: Metadata = {
   title: 'Not found · Dawn',
@@ -10,19 +10,13 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <PageShell title="That page is not here" lead="The address does not match a page in Dawn. Pick a place to go instead.">
+    <PageShell showTitle title="That page is not here" lead="The address does not match a page in Dawn.">
       <div className="dw-empty">
         <img src="/tiles/you-0.png" alt="" width={72} height={72} />
         <h2>404</h2>
         <NotFoundHint />
+        <Link className="dw-btn dw-btn--primary" href="/">Back to Atlas</Link>
       </div>
-      <ul className="dw-grid dw-list" style={{ listStyle: 'none', padding: 0 }}>
-        {SITE_NAV.map((link) => (
-          <li key={link.href}>
-            <a className="dw-btn dw-btn--block" href={link.href}>{link.label}</a>
-          </li>
-        ))}
-      </ul>
     </PageShell>
   );
 }

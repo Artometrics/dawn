@@ -1,125 +1,104 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Bubble, Composer } from '@/components/shell/composer';
+import { useModelPicker } from '@/components/shell/model-picker';
+import { DeskGate } from '@/components/shell/status-card';
 import { PageShell } from '@/components/site/page-shell';
+import { jsonInit, kitCall, type KitResult } from '@/lib/site/kit-client';
 
 type Message = { id: string; role: 'user' | 'assistant'; body: string; tool: string };
-type Session = {
-  id: string;
-  title: string;
-  mode: 'plan' | 'build';
-  messages: Message[];
-  files: string[];
-  tools?: string[];
-  prompt?: string;
-  reason?: string;
-};
-
-type SessionSummary = { id: string; title: string; mode: 'plan' | 'build' };
-type SessionList = { sessions?: SessionSummary[]; note?: string };
-
-async function fetchSessionList(search: string): Promise<SessionList> {
-  const response = await fetch(`/api/kits/nightcode/sessions?q=${encodeURIComponent(search)}`, { credentials: 'include', redirect: 'manual' });
-  if (response.type === 'opaqueredirect' || response.status === 401) {
-    return { note: 'Google sign-in is in front of this host. Open /oauth2/start, then return here.' };
-  }
-  if (!response.ok) return { note: 'The gateway is not answering on this origin.' };
-  const data = await response.json() as { sessions: SessionSummary[]; reason?: string };
-  return { sessions: data.sessions, note: data.reason };
-}
+type Mode = 'plan' | 'build';
+type Session = { id: string; title: string; mode: Mode; messages: Message[]; files: string[]; model?: string; reason?: string };
+type SessionSummary = { id: string; title: string; mode: Mode };
+type SessionList = { sessions: SessionSummary[]; reason?: string };
 
 export function NightcodeDesk() {
-  const [sessions, setSessions] = useState<{ id: string; title: string; mode: 'plan' | 'build' }[]>([]);
+  const picker = useModelPicker();
+  const [desk, setDesk] = useState<'loading' | 'ready' | 'offline' | 'signin'>('loading');
+  const [sessions, setSessions] = useState<SessionSummary[]>([]);
   const [current, setCurrent] = useState<Session | null>(null);
-  const [mode, setMode] = useState<'plan' | 'build'>('plan');
-  const [text, setText] = useState('list');
+  const [mode, setMode] = useState<Mode>('plan');
+  const [text, setText] = useState('');
   const [query, setQuery] = useState('');
   const [dialog, setDialog] = useState(false);
-  const [note, setNote] = useState('Sign in, then start a session. Press Tab to switch mode. Gemini is off.');
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState('');
+  const [fixture, setFixture] = useState('');
 
-  function applyList(result: SessionList) {
-    if (result.sessions) setSessions(result.sessions);
-    if (result.note) setNote(result.note);
+  function applyList(result: KitResult<SessionList>) {
+    if (result.status === 'ok') {
+      setDesk('ready');
+      setSessions(result.data.sessions ?? []);
+      setFixture(result.data.reason ?? '');
+    } else if (result.status === 'offline') setDesk('offline');
+    else if (result.status === 'closed') setDesk('signin');
+    else setNote(result.message);
   }
 
-  async function loadList(search = query) {
-    applyList(await fetchSessionList(search));
+  async function loadList(search: string) {
+    applyList(await kitCall<SessionList>(`/api/kits/nightcode/sessions?q=${encodeURIComponent(search)}`));
   }
 
   useEffect(() => {
-    let cancelled = false;
-    void fetchSessionList('').then((result) => {
-      if (cancelled) return;
-      if (result.sessions) setSessions(result.sessions);
-      if (result.note) setNote(result.note);
-    });
-    return () => { cancelled = true; };
+    void kitCall<SessionList>('/api/kits/nightcode/sessions?q=').then(applyList);
   }, []);
 
+  function show(session: Session) {
+    setCurrent(session);
+    setMode(session.mode);
+    setFixture(session.reason ?? '');
+  }
+
   async function start() {
-    const response = await fetch('/api/kits/nightcode/sessions', {
-      method: 'POST',
-      credentials: 'include',
-      redirect: 'manual',
-      headers: { 'content-type': 'application/json' },
-      body: '{}',
-    });
-    if (!response.ok) {
-      setNote('Could not start a session.');
+    const result = await kitCall<Session>('/api/kits/nightcode/sessions', jsonInit({}));
+    if (result.status !== 'ok') {
+      setNote(result.status === 'error' ? result.message : 'Could not start a session.');
       return;
     }
-    const data = await response.json() as Session;
-    setCurrent(data);
-    setMode(data.mode);
+    show(result.data);
+    setNote('');
     setDialog(false);
     void loadList(query);
   }
 
   async function open(id: string) {
-    const response = await fetch(`/api/kits/nightcode/sessions/${id}`, { credentials: 'include', redirect: 'manual' });
-    if (!response.ok) return;
-    const data = await response.json() as Session;
-    setCurrent(data);
-    setMode(data.mode);
+    const result = await kitCall<Session>(`/api/kits/nightcode/sessions/${id}`);
+    if (result.status !== 'ok') return;
+    show(result.data);
     setDialog(false);
   }
 
-  async function send(event: React.FormEvent) {
-    event.preventDefault();
+  async function send() {
     if (!current) return;
-    const response = await fetch(`/api/kits/nightcode/sessions/${current.id}/messages`, {
-      method: 'POST',
-      credentials: 'include',
-      redirect: 'manual',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ text, mode }),
-    });
-    const data = await response.json() as Session & { error?: string };
-    if (!response.ok) {
-      setNote(data.error || 'The turn stopped.');
+    setBusy(true);
+    const result = await kitCall<Session>(`/api/kits/nightcode/sessions/${current.id}/messages`, jsonInit({ text, mode, model: picker.choice }));
+    setBusy(false);
+    if (result.status !== 'ok') {
+      setNote(result.status === 'error' ? result.message : 'The message did not send.');
       return;
     }
-    setCurrent(data);
-    setNote(data.reason || 'Turn stored. The tool list followed the mode. No model was called.');
+    show(result.data);
+    setText('');
+    setNote('');
   }
 
-  const border = mode === 'plan' ? 'var(--dawn-muted)' : 'var(--dawn-accent)';
+  const ready = desk === 'ready';
 
   return (
-    <PageShell
-      title="NightCode"
-      current="/kits"
-      lead="Plan mode only offers readFile, listDirectory, glob, and grep. Build mode adds writeFile, editFile, and bash. The process also refuses a plan-mode write. Press Tab in the input to toggle. Sessions open from a search dialog, not a chat sidebar."
-    >
-      <div className="dw-actions">
-        <a className="dw-btn dw-btn--chip" href="/kits">All kits</a>
-        <button type="button" className="dw-btn dw-btn--primary" onClick={() => { void start(); }}>New session</button>
-        <button type="button" className="dw-btn" onClick={() => { setDialog(true); void loadList(query); }}>Sessions</button>
-      </div>
+    <PageShell title="NightCode" lead="Plan with read-only tools, or switch to build to change files.">
+      <DeskGate status={desk} offline="Offline preview. Open live Dawn to start a session and chat." />
+      {ready && (
+        <div className="dw-actions">
+          <button type="button" className="dw-btn dw-btn--primary" onClick={() => { void start(); }}>New session</button>
+          <button type="button" className="dw-btn" onClick={() => { setDialog(true); void loadList(query); }}>Sessions</button>
+        </div>
+      )}
       {dialog && (
         <div role="dialog" aria-label="Sessions" className="dw-card dw-form">
           <input className="dw-field" value={query} onChange={(event) => { setQuery(event.target.value); void loadList(event.target.value); }} aria-label="Search sessions" placeholder="Search sessions" />
           <ul className="dw-list">
+            {sessions.length === 0 && <li className="dw-note">No sessions yet.</li>}
             {sessions.map((session) => (
               <li key={session.id}><button type="button" className="dw-row" onClick={() => { void open(session.id); }}>{session.title} · {session.mode}</button></li>
             ))}
@@ -127,35 +106,38 @@ export function NightcodeDesk() {
           <button type="button" className="dw-btn" onClick={() => setDialog(false)}>Close</button>
         </div>
       )}
-      {current && (
+      {ready && current && (
         <>
-          <p className="dw-alert" role="status">Mode {mode} · model mock · tools {current.tools?.join(', ')}</p>
-          <p className="dw-note">{current.prompt}</p>
-          <ol className="dw-list">
+          <ol className="bb-list">
             {current.messages.map((message) => (
-              <li key={message.id} className="dw-card dw-card--stone"><strong>{message.role}</strong> {message.tool ? `(${message.tool}) ` : ''}{message.body}</li>
+              <Bubble key={message.id} who={message.role === 'user' ? 'you' : 'bot'} name={message.role === 'user' ? 'You' : 'NightCode'}>{message.body}</Bubble>
             ))}
           </ol>
-          <p className="dw-note">Files restored with the session: {current.files.length ? current.files.join(', ') : 'none yet'}</p>
-          <form className="dw-actions" onSubmit={(event) => { void send(event); }}>
-            <input
-              className="dw-field"
-              value={text}
-              onChange={(event) => setText(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Tab') {
-                  event.preventDefault();
-                  setMode((currentMode) => currentMode === 'plan' ? 'build' : 'plan');
-                }
-              }}
-              aria-label="NightCode message"
-              style={{ flex: '1 1 240px', boxShadow: `inset 0 0 0 2px ${border}` }}
-            />
-            <button type="submit" className="dw-btn dw-btn--primary">Send</button>
-          </form>
+          <Composer
+            value={text}
+            onChange={setText}
+            onSubmit={() => { void send(); }}
+            label="NightCode message"
+            placeholder={mode === 'plan' ? 'Ask, or type list, read, grep' : 'Ask, or type write, edit, bash'}
+            picker={picker}
+            busy={busy}
+            onKeyDown={(event) => {
+              if (event.key === 'Tab') {
+                event.preventDefault();
+                setMode((value) => (value === 'plan' ? 'build' : 'plan'));
+              }
+            }}
+            extra={
+              <button type="button" className="dw-btn dw-btn--chip" aria-pressed={mode === 'build'} onClick={() => setMode((value) => (value === 'plan' ? 'build' : 'plan'))}>
+                {mode === 'plan' ? 'Plan' : 'Build'}
+              </button>
+            }
+          />
+          {current.files.length > 0 && <p className="dw-note">Files: {current.files.join(', ')}</p>}
         </>
       )}
-      <p className="dw-alert" role="status">{note}</p>
+      {ready && fixture && <p className="dw-note">{fixture}</p>}
+      {note && <p className="dw-alert" role="status">{note}</p>}
     </PageShell>
   );
 }

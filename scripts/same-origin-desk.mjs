@@ -14,7 +14,8 @@
  *
  * This script is the local pair: static files on 127.0.0.1:3000 and the
  * gateway on 127.0.0.1:8787. It strips client auth headers. Sign-in stays
- * 401 until oauth2-proxy is in front. No model is called.
+ * 401 until oauth2-proxy is in front, unless DAWN_AUTH_DISABLED=1 is set
+ * (testing only). A model is called only when a provider key is set.
  */
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
@@ -85,12 +86,12 @@ const server = createServer(async (req, res) => {
     } catch { /* next */ }
   }
   res.writeHead(404, { 'content-type': 'text/html' });
-  res.end('<h1>This page could not be found</h1>');
+  res.end(await readFile(path.join(out, '404.html')).catch(() => '<h1>This page could not be found</h1>'));
 });
 
 server.listen(port, '127.0.0.1', () => {
   console.log(`Dawn same-origin on http://127.0.0.1:${port}`);
-  console.log('Sign-in is 401 until oauth2-proxy sets the owner header. No model is called.');
+  console.log(process.env.DAWN_AUTH_DISABLED === '1' ? 'DAWN_AUTH_DISABLED=1: every request is the owner.' : 'Sign-in is 401 until oauth2-proxy sets the owner header.');
 });
 
 function stop() {

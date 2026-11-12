@@ -68,7 +68,7 @@ export type Usage = {
   costUsd: number;
 };
 
-export type ChatChannel = 'chat' | 'group' | 'routine' | 'editor';
+export type ChatChannel = 'chat' | 'group' | 'routine' | 'editor' | 'kit';
 
 export type MessageRecord = {
   id: string;

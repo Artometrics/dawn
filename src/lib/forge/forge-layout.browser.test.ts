@@ -88,6 +88,8 @@ function collect(args: { phone: boolean; tokens: string[] }): Facts {
     .filter((el) => {
       const r = el.getBoundingClientRect();
       if (r.left >= -1 && r.right <= vw + 1) return false;
+      // With the menu open the page slides aside, inert, so the bar is meant to sit past the edge.
+      if (el.closest('.as-view[inert], [data-bar]') || el.matches('[aria-label="Close menu"]')) return false;
       for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
         if (['auto', 'scroll'].includes(getComputedStyle(p).overflowX) && p.scrollWidth > p.clientWidth) return false;
       }
@@ -152,11 +154,15 @@ async function assertSound(found: Session, viewport: (typeof VIEWPORTS)[number],
   assert.deepEqual(metrics.brokenImages, [], `${where}: broken images`);
   assert.ok(!/rainfall/i.test(facts.text), `${where}: Rainfall text on a Forge page`);
   assert.deepEqual(found.pageErrors, [], `${where}: uncaught errors`);
-  assert.deepEqual(found.consoleErrors, [], `${where}: console errors`);
+  // The shell probes /api/state for the desk. A static host answers 404, which the browser logs as a console error.
+  const apiMisses = found.badResponses.filter((entry) => / \/api\//.test(entry)).length;
+  const logged = found.consoleErrors.filter((entry) => !/^Failed to load resource: the server responded with a status of 404/.test(entry));
+  assert.deepEqual(logged, [], `${where}: console errors`);
+  assert.ok(found.consoleErrors.length - logged.length <= apiMisses, `${where}: a 404 was logged that is not an /api probe`);
   assert.deepEqual(found.badResponses.filter((entry) => !/ \/api\//.test(entry)), [], `${where}: failed requests`);
   if (options.webgl !== false) {
     assert.ok(facts.canvas, `${where}: no 3D view`);
-    assert.ok(facts.canvas.left >= -1 && facts.canvas.right <= viewport.width + 1, `${where}: 3D view runs off the screen`);
+    if (state !== 'menu drawer') assert.ok(facts.canvas.left >= -1 && facts.canvas.right <= viewport.width + 1, `${where}: 3D view runs off the screen`);
     assert.ok(facts.canvas.width >= 280 && facts.canvas.height >= 160, `${where}: 3D view is only ${facts.canvas.width}x${facts.canvas.height}`);
     const share = facts.canvas.height / viewport.height;
     assert.ok(share <= 0.75, `${where}: 3D view fills ${(share * 100).toFixed(0)}% of the window and pushes the controls away`);
@@ -244,16 +250,12 @@ test('Forge is clean in every state on desktop and phones', { skip, timeout: 600
             assert.ok(await page.locator('aside[aria-label="Dawn"]').isVisible(), `${viewport.name}: the menu is docked`);
           }
 
-          await page.getByRole('button', { name: 'You', exact: true }).click();
-          await assertSound(found, viewport, 'you panel');
-          await page.keyboard.press('Escape');
-
           await page.getByRole('button', { name: 'See in village' }).click();
           await page.waitForSelector('canvas:not([data-forge-canvas])');
           await page.waitForTimeout(1500);
           await assertSound(found, viewport, 'village with the Forge avatar', { webgl: false });
           await page.getByRole('main').getByRole('button', { name: 'Trinity' }).click();
-          await page.waitForSelector('#agent-prompt');
+          await page.getByRole('textbox', { name: 'Message' }).waitFor();
           await assertSound(found, viewport, 'agent sheet', { webgl: false });
         } finally {
           await found.context.close();

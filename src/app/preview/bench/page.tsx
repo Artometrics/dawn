@@ -13,7 +13,6 @@ export default function BenchPage() {
     <PreviewShell
       title="Choose a sample"
       lead="Ideas stay in this browser."
-      current="/preview/bench"
     >
       <BenchView />
     </PreviewShell>

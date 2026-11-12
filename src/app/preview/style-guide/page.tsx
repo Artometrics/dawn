@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { PageShell, SiteHeader } from '@/components/site/page-shell';
+import { PageShell } from '@/components/site/page-shell';
 import { Swatch } from './swatch';
 import './style-guide.css';
 
@@ -28,7 +28,7 @@ const ACCENT = [
   ['--dawn-accent', 'Clay. Marks, never grounds'],
   ['--dawn-accent-strong', 'Clay for small marks and text'],
   ['--dawn-pill', 'Primary action'],
-  ['--dawn-ink', 'Text on pill and clay'],
+  ['--dawn-ink', 'Text on the cream pill'],
 ] as const;
 const MAP = [
   ['--dawn-grass', 'Town grass'],
@@ -133,7 +133,7 @@ export default function StyleGuidePage() {
             <p className="dw-note">The chip tone, for a card that sits on another card.</p>
             <span className="dw-badge">Draft</span>
           </div>
-          <p className="dw-alert"><strong>Heads up.</strong> Alerts use the same tone with a clay lead word.</p>
+          <p className="dw-alert"><strong>Heads up.</strong> Alerts use the same tone with a light-blue lead word.</p>
           <div className="dw-form">
             <label className="dw-label" htmlFor="sg-field">Field label</label>
             <input id="sg-field" className="dw-field" placeholder="Placeholder text" />
@@ -182,9 +182,8 @@ export default function StyleGuidePage() {
       </section>
 
       <section className="sg-section" aria-labelledby="sg-header">
-        <h2 id="sg-header" className="dw-h2">Header, nav and footer</h2>
-        <p className="dw-note">This is the bar at the top of this page: the pixel DAWN mark, then one chip per page. The current page is clay.</p>
-        <div className="sg-header-demo"><SiteHeader current="/village" /></div>
+        <h2 id="sg-header" className="dw-h2">Top bar and sidebar</h2>
+        <p className="dw-note">Every page sits inside one shell: a top bar with the menu button on the left, the page title in the middle and the account button on the right, and one slide-over sidebar that docks on wide screens. The current page is a navy row with a light-blue outline. There is no tab bar and no footer row.</p>
       </section>
 
       <section className="sg-section" aria-labelledby="sg-shape">

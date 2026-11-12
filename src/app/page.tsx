@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { AtlasHome } from '@/components/home/atlas-home';
+import { AtlasScreen } from '@/components/site/atlas-screen';
 
 export const metadata: Metadata = {
   title: 'Dawn',
@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <main style={{ display: 'contents' }}>
+    <main id="main" style={{ display: 'contents' }}>
       <h1 className="dw-sr-only">Atlas</h1>
-      <AtlasHome />
+      <AtlasScreen />
     </main>
   );
 }

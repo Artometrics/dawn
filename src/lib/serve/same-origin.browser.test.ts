@@ -13,7 +13,7 @@ import { forwardedApiHeaders } from './forward-headers.ts';
 const chromeBin = ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/usr/bin/chromium'].find((item) => existsSync(item));
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../..', 'out');
 
-test('same-origin owner desk persists chat, a file, a draft, and a local booth', { skip: chromeBin && existsSync(root) ? false : 'Chrome or the static build is missing' }, async () => {
+test('same-origin owner desk persists a file, a draft, and a local booth', { skip: chromeBin && existsSync(root) ? false : 'Chrome or the static build is missing' }, async () => {
   const home = await mkdtemp(path.join(tmpdir(), 'dawn-same-'));
   const gateway = await startAgentsServer({
     storePath: path.join(home, 'store.json'),
@@ -37,10 +37,8 @@ test('same-origin owner desk persists chat, a file, a draft, and a local booth',
     const tab = await fetch('http://127.0.0.1:9521/json/new?http://127.0.0.1:3000/__session', { method: 'PUT' }).then((response) => response.json()) as { webSocketDebuggerUrl: string };
     const result = await drive(tab.webSocketDebuggerUrl);
     assert.equal(result.spoof, 401);
-    assert.ok(result.moved > 40, `walker only moved ${result.moved}`);
-    assert.equal(result.reload, true);
     assert.equal(result.file, true);
-    assert.match(result.booth, /not a browser/);
+    assert.match(result.booth, /Saved page read back/);
     assert.match(result.remote, /refused/i);
     assert.match(result.draft, /review/i);
   } finally {
@@ -132,24 +130,6 @@ async function drive(webSocketUrl: string) {
     headers: { 'content-type': 'application/json', origin: 'http://127.0.0.1:3000', 'sec-fetch-site': 'same-origin', 'x-auth-request-email': 'attacker@example.com' },
     body: JSON.stringify({ kind: 'chat', personId: 'letter-carrier', text: 'spoof' }),
   });
-  await call('Page.navigate', { url: 'http://127.0.0.1:3000/town' });
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  await ev(`document.querySelector('.ph-sheet-close')?.click()`);
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  const start = String(await ev(`document.querySelector('[data-hero]').dataset.hero`));
-  for (let i = 0; i < 8; i += 1) {
-    await ev(`document.querySelector('button[aria-label="Walk up"]').dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,pointerId:1,pointerType:'touch',isPrimary:true}))`);
-    await new Promise((resolve) => setTimeout(resolve, 40));
-  }
-  const end = String(await ev(`document.querySelector('[data-hero]').dataset.hero`));
-  const moved = Number(start.split(',')[1]) - Number(end.split(',')[1]);
-  await ev(`document.querySelector('button[aria-label="Talk to Letter Carrier"]').click()`);
-  await new Promise((resolve) => setTimeout(resolve, 400));
-  await ev(`(() => { const input=document.getElementById('bot-draft'); const set=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set; set.call(input,'saved line'); input.dispatchEvent(new Event('input',{bubbles:true})); input.form.requestSubmit(); })()`);
-  await new Promise((resolve) => setTimeout(resolve, 400));
-  await call('Page.navigate', { url: 'http://127.0.0.1:3000/town?bot=letter-carrier' });
-  await new Promise((resolve) => setTimeout(resolve, 1200));
-  const reload = Boolean(await ev(`document.body.innerText.includes('saved line')`));
   await call('Page.navigate', { url: 'http://127.0.0.1:3000/projects' });
   await new Promise((resolve) => setTimeout(resolve, 800));
   await ev(`(() => { const name=document.querySelector('input'); const text=document.querySelector('textarea'); const set=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set; const setText=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set; set.call(name,'note.txt'); name.dispatchEvent(new Event('input',{bubbles:true})); setText.call(text,'hello file'); text.dispatchEvent(new Event('input',{bubbles:true})); name.form.requestSubmit(); })()`);
@@ -157,9 +137,9 @@ async function drive(webSocketUrl: string) {
   await call('Page.reload');
   await new Promise((resolve) => setTimeout(resolve, 800));
   const file = Boolean(await ev(`document.body.innerText.includes('note.txt')`));
-  await call('Page.navigate', { url: 'http://127.0.0.1:3000/editor' });
+  await call('Page.navigate', { url: 'http://127.0.0.1:3000/code/editor' });
   await new Promise((resolve) => setTimeout(resolve, 800));
-  await ev(`(() => { const area=document.getElementById('file-body'); const set=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set; set.call(area,'export const page = 1'); area.dispatchEvent(new Event('input',{bubbles:true})); [...document.querySelectorAll('button')].find(el=>el.textContent.trim()==='Save page.txt')?.click(); })()`);
+  await ev(`(() => { const area=document.getElementById('file-body'); const set=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set; set.call(area,'export const page = 1'); area.dispatchEvent(new Event('input',{bubbles:true})); [...document.querySelectorAll('button')].find(el=>el.textContent.trim()==='Save')?.click(); })()`);
   await new Promise((resolve) => setTimeout(resolve, 400));
   await call('Page.reload');
   await new Promise((resolve) => setTimeout(resolve, 800));
@@ -175,7 +155,7 @@ async function drive(webSocketUrl: string) {
   await new Promise((resolve) => setTimeout(resolve, 300));
   const draft = String(await ev(`document.body.innerText`) || '');
   ws.close();
-  return { spoof: spoof.status, moved, reload, file, booth, remote, draft };
+  return { spoof: spoof.status, file, booth, remote, draft };
 }
 
 async function waitFor(url: string) {

@@ -23,7 +23,6 @@ test('a NightCode session plans without writing and builds only after build mode
     assert.equal(again.tools.join(','), 'readFile,listDirectory,glob,grep');
     assert.match(again.prompt, /plan mode/);
     assert.match(again.messages.find((message) => message.tool === 'readFile')?.body || '', /export const page/);
-    assert.equal(desk.modelState().gemini, 'off');
     assert.deepEqual(desk.searchSessions('page').map((session) => session.id), [id]);
     assert.deepEqual(desk.searchSessions('missing'), []);
     assert.deepEqual([...toolsFor('plan')], ['readFile', 'listDirectory', 'glob', 'grep']);

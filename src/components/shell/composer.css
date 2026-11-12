@@ -1,0 +1,113 @@
+.cp {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-2);
+  padding: var(--dawn-space-3);
+  border: 1px solid var(--dawn-line);
+  border-radius: var(--dawn-radius-panel);
+  background: var(--dawn-elev);
+}
+.cp-input {
+  width: 100%;
+  min-height: var(--dawn-tap);
+  max-height: 160px;
+  padding: var(--dawn-space-2) var(--dawn-space-2);
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--dawn-text);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.4;
+  resize: none;
+  field-sizing: content;
+}
+.cp-input::placeholder {
+  color: var(--dawn-placeholder);
+}
+.cp-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--dawn-space-2);
+}
+.cp-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--dawn-tap);
+  margin-left: auto;
+  padding: 0 var(--dawn-space-5);
+  border: 0;
+  border-radius: var(--dawn-radius-full);
+  background: var(--dawn-pill);
+  color: var(--dawn-ink);
+  font: inherit;
+  font-size: var(--dawn-fs-body);
+  font-weight: 600;
+  cursor: pointer;
+}
+.cp-send:hover {
+  background: var(--dawn-pill-hover);
+}
+.cp-send:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.bb {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 88%;
+  animation: bb-in 200ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+.bb[data-who='you'] {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+.bb-name {
+  color: var(--dawn-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.bb-body {
+  padding: var(--dawn-space-2) var(--dawn-space-3);
+  border: 1px solid var(--dawn-line);
+  border-radius: var(--dawn-radius-panel);
+  background: var(--dawn-elev);
+  color: var(--dawn-text);
+  font-size: var(--dawn-fs-body);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.bb[data-who='you'] .bb-body {
+  border-color: var(--dawn-navy-line);
+  background: var(--dawn-navy);
+  color: #fff;
+}
+.bb-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@keyframes bb-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bb {
+    animation: none;
+  }
+}

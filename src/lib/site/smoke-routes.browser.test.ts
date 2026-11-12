@@ -80,7 +80,10 @@ test('an unknown path gets the branded 404 page with a 404 status', { skip }, as
       const response = await page.goto(`${site.url}${route.path}`);
       assert.equal(response?.status(), 404);
       assert.ok(await page.locator('main h1').first().isVisible(), 'the 404 page has a heading');
-      assert.ok((await page.locator('header nav a').count()) >= 5, 'the 404 page keeps the site nav');
+      assert.equal(await page.locator('[data-bar="dawn"]').count(), 1, 'the 404 page keeps the shared top bar');
+      assert.equal(await page.locator('[data-sidebar="dawn"]').count(), 1, 'the 404 page keeps the shared sidebar');
+      assert.ok((await page.locator('main a[href="/"]').count()) >= 1, 'the 404 page links home');
+      assert.match(response?.headers()['content-type'] || '', /text\/html/);
       await page.close();
     }
   } finally {

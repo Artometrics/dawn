@@ -4,14 +4,81 @@
   gap: var(--dawn-space-4);
 }
 
+.rb-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--dawn-space-3);
+}
+
+.rb-seg {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 3px;
+  border: 1px solid var(--dawn-line);
+  border-radius: var(--dawn-radius-full);
+  background: var(--dawn-elev);
+  overflow-x: auto;
+}
+
+.rb-seg button {
+  min-height: 36px;
+  padding: 0 var(--dawn-space-3);
+  border: 0;
+  border-radius: var(--dawn-radius-full);
+  background: transparent;
+  color: var(--dawn-secondary);
+  font: inherit;
+  font-size: var(--dawn-fs-action);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.rb-seg button[aria-pressed='true'] {
+  background: var(--dawn-navy);
+  box-shadow: inset 0 0 0 1px var(--dawn-navy-line);
+  color: #fff;
+}
+
+.rb-size {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--dawn-space-2);
+}
+
+.rb-size button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--dawn-line);
+  border-radius: 50%;
+  background: var(--dawn-elev);
+  color: var(--dawn-text);
+  font: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.rb-size button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.rb-size input {
+  width: 96px;
+  accent-color: var(--dawn-accent);
+}
+
 .rb .board {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
-  gap: var(--dawn-space-4);
+  grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr));
+  gap: var(--dawn-space-3);
 }
 
 .rb .pin {
   display: block;
+  min-width: 0;
   min-height: var(--dawn-tap);
   padding: 0;
   border: 0;
@@ -19,18 +86,29 @@
   color: var(--dawn-text);
   text-align: left;
   cursor: pointer;
+  animation: rb-in 260ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation-delay: calc(var(--i, 0) * 30ms);
 }
 
 .rb .cv {
+  container-type: inline-size;
   overflow: hidden;
+  border: 1px solid var(--dawn-line);
   border-radius: var(--dawn-radius-panel);
   background: var(--dawn-elev);
 }
 
+.rb .cv .sr {
+  font-size: clamp(5px, 7cqw, 28px);
+}
+
 .rb .pin .nm {
+  overflow: hidden;
   padding: var(--dawn-space-2) var(--dawn-space-1) 0;
-  font-size: var(--dawn-fs-action);
   color: var(--dawn-secondary);
+  font-size: var(--dawn-fs-action);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rb .pin:hover .nm {
@@ -41,4 +119,65 @@
   display: flex;
   flex-direction: column;
   gap: var(--dawn-space-4);
+  max-width: 560px;
+  animation: rb-in 260ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.rb-top {
+  display: flex;
+  align-items: center;
+  gap: var(--dawn-space-3);
+}
+
+.rb-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--dawn-space-2);
+}
+
+.rb-dot {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--dawn-line-strong);
+  border-radius: 50%;
+}
+
+.rb-code summary {
+  min-height: var(--dawn-tap);
+  display: flex;
+  align-items: center;
+  color: var(--dawn-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.rb-code pre {
+  overflow: auto;
+  max-height: 260px;
+  padding: var(--dawn-space-3);
+  border: 1px solid var(--dawn-line);
+  border-radius: var(--dawn-radius-panel);
+  background: var(--dawn-elev);
+  font-size: var(--dawn-fs-micro);
+}
+
+@keyframes rb-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rb .pin,
+  .rb-sheet {
+    animation: none;
+  }
 }

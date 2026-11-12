@@ -294,7 +294,7 @@ export default function DawnStudio() {
     if (!prompt.trim() || isLoading) return;
     const boot = await bootFirebase();
     if (studioSendMode(boot.mode) !== 'provider' || !boot.app) {
-      setHostNote('A model is not connected on this host. Nothing was sent.');
+      setHostNote('Offline preview. Open live Dawn for real replies.');
       return;
     }
 
@@ -345,12 +345,12 @@ export default function DawnStudio() {
   };
 
   return (
-    <div className="dawn-studio flex flex-col h-screen w-screen bg-[var(--dawn-sheet)] text-[var(--dawn-text)] font-sans overflow-hidden select-none">
+    <div className="dawn-studio flex flex-col h-full w-full bg-[var(--dawn-sheet)] text-[var(--dawn-text)] font-sans overflow-hidden select-none">
       <h1 className="dw-sr-only">Studio</h1>
       {/* ═══════════════════════════════════════════════════════════════
           SLACK-STYLE TOP WINDOW BAR WITH GLOBAL SEARCH (IMAGE 5 STYLE)
       ═════════════════════════════════════════════════════════════════ */}
-      <header className={`${narrow ? 'hidden' : 'h-11 bg-[var(--dawn-bg)] border-b border-[var(--dawn-chip)] px-3 flex items-center justify-between shrink-0 z-30'}`}>
+      <header className="hidden">
         {/* Left: Window Traffic Lights & Navigation */}
         <div className="flex items-center gap-3 min-w-0">
           <div className="flex items-center gap-2 group">
@@ -777,7 +777,6 @@ export default function DawnStudio() {
 
           {/* Chat Messages Stream */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs select-text">
-            <p role="status" className="text-[var(--dawn-accent)]">Sample transcript. Saved in this page, not a live chat. No model is connected.</p>
             {hostNote && <p role="status">{hostNote}</p>}
             {/* Claude-style "Evening thoughts" hero title if few messages or starting clean */}
             {messages.length === 0 && (
@@ -891,10 +890,6 @@ export default function DawnStudio() {
                     <Plus className="w-4 h-4" />
                   </button>
 
-                  {/* Model indicator */}
-                  <div className="flex items-center gap-1 font-mono text-[11px] text-[var(--dawn-muted)] bg-[var(--dawn-elev)] px-2 py-0.5 rounded border border-[var(--dawn-chip)]">
-                    <span>Sample label. No model is connected.</span>
-                  </div>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -905,8 +900,8 @@ export default function DawnStudio() {
                   <button
                     type="submit"
                     aria-label="Send"
-                    disabled={isLoading || !input.trim()}
-                    className="size-7 rounded-xl bg-[var(--dawn-pill)] hover:bg-[var(--dawn-pill-hover)] disabled:opacity-40 flex items-center justify-center text-[var(--dawn-ink)] cursor-pointer shadow-md transition-all"
+                    disabled={isLoading}
+                    className="size-7 rounded-xl bg-[var(--dawn-pill)] hover:bg-[var(--dawn-pill-hover)] flex items-center justify-center text-[var(--dawn-ink)] cursor-pointer shadow-md transition-all"
                   >
                     <ArrowRight className="w-3.5 h-3.5 -rotate-90 stroke-[2.5]" />
                   </button>

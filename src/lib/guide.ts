@@ -6,7 +6,7 @@ import { clip, detectKind, splitProposal, type Proposal } from '@/lib/proposals'
 export type GuideResult = {
   text: string;
   proposal: Proposal | null;
-  source: 'gemini' | 'practice';
+  source: 'gateway' | 'gemini' | 'practice';
   /** Set when the visible text is a stand-in because Gemini did not answer. */
   error: string | null;
 };
@@ -36,9 +36,11 @@ export async function askAgent(
   memories: string[],
   history: { role: 'user' | 'agent'; text: string }[],
   prompt: string,
+  viaGateway?: () => Promise<string | null>,
 ): Promise<GuideResult> {
   const fallback = practiceReply(agent, prompt, memories);
-  const gemini = await runGemini(prompt, {
+  const gated = await viaGateway?.();
+  const gemini: GeminiLine = gated ? { text: gated, error: null } : await runGemini(prompt, {
     systemInstruction: systemPrompt(agent, memories),
     history: history.slice(0, -1).slice(-8).map((line) => ({
       role: line.role === 'user' ? ('user' as const) : ('model' as const),
@@ -55,7 +57,7 @@ export async function askAgent(
   return {
     text,
     proposal,
-    source: answered ? 'gemini' : 'practice',
+    source: answered ? (gated ? 'gateway' : 'gemini') : 'practice',
     error: answered ? null : gemini.error,
   };
 }

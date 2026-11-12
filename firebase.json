@@ -22,6 +22,11 @@
       }
     ],
     "cleanUrls": true,
+    "redirects": [
+      { "source": "/atlas", "destination": "/", "type": 302 },
+      { "source": "/town", "destination": "/village?section=village", "type": 302 },
+      { "source": "/editor", "destination": "/code", "type": 302 }
+    ],
     "rewrites": [
       {
         "source": "/studio",

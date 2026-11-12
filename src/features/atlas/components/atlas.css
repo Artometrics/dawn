@@ -733,7 +733,7 @@
   font-size: var(--dawn-fs-micro);
 }
 .at-badge--clay {
-  background: rgb(217 119 70 / 0.16);
+  background: var(--dawn-accent-wash);
   color: var(--dawn-accent-strong);
 }
 .at-answers {
@@ -761,7 +761,7 @@
 }
 .at-answer.is-right {
   border-color: var(--dawn-accent);
-  background: rgb(217 119 70 / 0.12);
+  background: var(--dawn-accent-wash);
 }
 .at-answer.is-wrong {
   opacity: 0.6;

@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { OfflineCard } from '@/components/shell/status-card';
 import { PageShell } from '@/components/site/page-shell';
 
-type Row = { name: string; text: string; where: 'desk' | 'visit' };
+type Row = { name: string; text: string; where: 'desk' };
 
 async function readDesk(): Promise<{ rows?: Row[]; note: string } | null> {
   try {
@@ -21,9 +22,9 @@ async function readDesk(): Promise<{ rows?: Row[]; note: string } | null> {
       const body = await read.json() as { text?: string };
       loaded.push({ name: file, text: body.text || '', where: 'desk' });
     }
-    return { rows: loaded, note: loaded.length ? 'These names are stored on this desk.' : 'No project files on this desk yet.' };
+    return { rows: loaded, note: '' };
   } catch {
-    return { note: 'The desk is not answering. A file you save here stays for this visit.' };
+    return null;
   }
 }
 
@@ -31,7 +32,8 @@ export default function ProjectsPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [name, setName] = useState('note.txt');
   const [text, setText] = useState('');
-  const [note, setNote] = useState('Project files for Dawn. This is not the sample chat.');
+  const [note, setNote] = useState('');
+  const [offline, setOffline] = useState(false);
 
   async function load() {
     const result = await readDesk();
@@ -43,7 +45,11 @@ export default function ProjectsPage() {
   useEffect(() => {
     let cancelled = false;
     void readDesk().then((result) => {
-      if (cancelled || !result) return;
+      if (cancelled) return;
+      if (!result) {
+        setOffline(true);
+        return;
+      }
       if (result.rows) setRows(result.rows);
       setNote(result.note);
     });
@@ -74,26 +80,31 @@ export default function ProjectsPage() {
     } catch {
       /* visit copy below */
     }
-    setRows((current) => [...current.filter((row) => row.name !== file), { name: file, text, where: 'visit' }]);
-    setText('');
-    setNote(`${file} is listed for this visit. The desk did not store it.`);
+    setNote(`${file} was not saved. Try again.`);
+  }
+
+  if (offline) {
+    return (
+      <PageShell title="Projects" lead="Notes and files saved on your Dawn desk.">
+        <OfflineCard line="Offline preview. Open live Dawn to see and save project files." />
+      </PageShell>
+    );
   }
 
   return (
-    <PageShell title="Projects" current="/projects" lead="Project files for Dawn. This is not the sample chat.">
-      <p className="dw-alert" role="status">{note}</p>
+    <PageShell title="Projects" lead="Notes and files saved on your Dawn desk.">
+      {note && <p className="dw-alert" role="status">{note}</p>}
       {rows.length === 0 ? (
         <div className="dw-empty">
           <img src="/tiles/you-0.png" alt="" width={72} height={72} />
           <h2>No files yet</h2>
-          <p>Save a note below. It is stored on the desk when one is connected, and listed for this visit when not.</p>
+          <p>Save a note below.</p>
         </div>
       ) : (
         <ul className="dw-list">
           {rows.map((row) => (
             <li key={row.name} className="dw-card">
               <strong>{row.name}</strong>
-              <span className="dw-note"> {row.where === 'desk' ? 'On this desk' : 'This visit'}</span>
               {row.text && <p style={{ margin: '8px 0 0', whiteSpace: 'pre-wrap' }}>{row.text}</p>}
             </li>
           ))}

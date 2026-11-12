@@ -6,6 +6,9 @@ import { askAgent } from '@/lib/guide';
 import { describeGeminiError } from '@/lib/gemini-error';
 import { actionLabel } from '@/lib/proposals';
 import { useDawn, type Approval } from '@/components/dawn/dawn-provider';
+import { Bubble, Composer } from '@/components/shell/composer';
+import { useModelPicker } from '@/components/shell/model-picker';
+import { askGateway } from '@/lib/site/chat-client';
 
 function draftedApproval(
   agentId: Approval['agentId'],
@@ -28,7 +31,8 @@ export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => vo
   const [lines, setLines] = useState<{ role: 'user' | 'agent'; text: string }[]>([]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
-  const [source, setSource] = useState<'gemini' | 'practice' | null>(null);
+  const [source, setSource] = useState<'gateway' | 'gemini' | 'practice' | null>(null);
+  const picker = useModelPicker();
   const [error, setError] = useState<string | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
   const mine = memories.filter((item) => item.agentId === agent.id).slice(-6);
@@ -43,9 +47,18 @@ export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => vo
     setBusy(true);
     setError(null);
     try {
-      const result = await askAgent(agent, mine.map((item) => item.text), history, prompt);
+      const memoryLines = mine.map((item) => item.text);
+      const viaGateway = picker.status === 'ready'
+        ? async () => {
+            const answer = await askGateway({ persona: agent.id, memories: memoryLines, lines: history, choice: picker.choice });
+            if (answer.status === 'ok') return answer.data.reply;
+            if (answer.status === 'error') setError(answer.message);
+            return null;
+          }
+        : undefined;
+      const result = await askAgent(agent, memoryLines, history, prompt, viaGateway);
       setSource(result.source);
-      setError(result.error);
+      setError(result.source === 'practice' ? (result.error ?? 'Offline preview. Open live Dawn for real replies.') : null);
       setLines([...history, { role: 'agent', text: result.text }]);
       remember(agent.id, `You: ${prompt}`.slice(0, 400));
       remember(agent.id, `${agent.name}: ${result.text}`.slice(0, 400));
@@ -69,61 +82,37 @@ export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => vo
 
   return (
     <section className="flex min-h-0 flex-1 flex-col gap-3 bg-[var(--dawn-bg)] p-3">
-      <div className="flex items-center gap-2">
-        <img src={agent.src} alt="" width={36} height={36} className="h-9 w-9 rounded-[var(--dawn-radius-tile)] bg-[var(--dawn-chip)] [image-rendering:pixelated]" />
+      <div className="flex items-center gap-3">
+        <img src={agent.src} alt="" width={40} height={40} className="h-10 w-10 rounded-[var(--dawn-radius-tile)] border border-[var(--dawn-line)] bg-[var(--dawn-chip)] [image-rendering:pixelated]" />
         <div className="min-w-0 flex-1">
           <p className="text-[length:var(--dawn-fs-body)] font-medium">{agent.name}</p>
           <p className="truncate text-[length:var(--dawn-fs-label)] text-[var(--dawn-muted)]">{agent.title}</p>
         </div>
-        <button type="button" className="dw-btn dw-btn--ghost" onClick={onClose}>Close</button>
+        <button type="button" className="dw-btn" onClick={onClose}>Close</button>
       </div>
-      {source === 'gemini' && <p className="text-[length:var(--dawn-fs-label)] text-[var(--dawn-accent)]">Gemini</p>}
-      {error && (
-        <p role="alert" className="rounded-[var(--dawn-radius-panel)] bg-[var(--dawn-elev)] px-3 py-2 text-[length:var(--dawn-fs-support)] leading-snug">
-          {error} Showing a stand-in reply.
-        </p>
-      )}
+      {error && <p role="alert" className="dw-alert">{error}</p>}
       {mine.length > 0 && <p className="text-[length:var(--dawn-fs-label)] text-[var(--dawn-muted)]">Remembers: {mine.at(-1)?.text}</p>}
-      <div ref={scroller} className="flex min-h-16 flex-1 flex-col gap-2 overflow-y-auto text-[length:var(--dawn-fs-body)]">
-        {lines.map((line, index) => (
-          <p
-            key={`${line.role}-${index}`}
-            className={line.role === 'user'
-              ? 'ml-8 rounded-[var(--dawn-radius-panel)] bg-[var(--dawn-chip)] px-3 py-2'
-              : 'mr-8 rounded-[var(--dawn-radius-panel)] bg-[var(--dawn-elev)] px-3 py-2'}
-          >
-            {line.text}
-          </p>
-        ))}
-        {busy && <p className="text-[length:var(--dawn-fs-action)] text-[var(--dawn-muted)]">Thinking…</p>}
+      <div ref={scroller} className="min-h-16 flex-1 overflow-y-auto">
+        <ol className="bb-list">
+          {lines.map((line, index) => (
+            <Bubble key={`${line.role}-${index}`} who={line.role === 'user' ? 'you' : 'bot'} name={line.role === 'user' ? 'You' : agent.name}>{line.text}</Bubble>
+          ))}
+          {busy && <li className="dw-note">Thinking…</li>}
+        </ol>
       </div>
       {pending.map((item) => (
         <ApprovalRow key={item.id} item={item} onDecide={decide} />
       ))}
-      {note && <p className="text-[length:var(--dawn-fs-label)] text-[var(--dawn-accent)]">{note}</p>}
-      <form
-        className="flex shrink-0 gap-2"
-        onSubmit={(event) => {
-          event.preventDefault();
-          void send();
-        }}
-      >
-        <label className="sr-only" htmlFor="agent-prompt">Message</label>
-        <input
-          id="agent-prompt"
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          placeholder={`Ask ${agent.name}`}
-          className="dawn-field flex-1"
-        />
-        <button
-          type="submit"
-          disabled={busy || !input.trim()}
-          className="dw-btn dw-btn--primary"
-        >
-          Ask
-        </button>
-      </form>
+      {note && <p className="text-[length:var(--dawn-fs-label)] text-[var(--dawn-muted)]">{note}</p>}
+      <Composer
+        value={input}
+        onChange={setInput}
+        onSubmit={() => { void send(); }}
+        label="Message"
+        placeholder={`Ask ${agent.name}`}
+        picker={picker}
+        busy={busy}
+      />
     </section>
   );
 }
@@ -137,7 +126,7 @@ function ApprovalRow({
 }) {
   const agent = agentById(item.agentId);
   return (
-    <div className="rounded-[var(--dawn-radius-panel)] bg-[var(--dawn-elev)] p-3 text-[length:var(--dawn-fs-support)]">
+    <div className="rounded-[var(--dawn-radius-panel)] border border-[var(--dawn-line)] bg-[var(--dawn-elev)] p-3 text-[length:var(--dawn-fs-support)]">
       <p>{agent?.name} drafted a {actionLabel(item.kind)}: {item.summary}</p>
       <div className="mt-3 flex gap-2">
         <button type="button" className="dw-btn dw-btn--primary flex-1" onClick={() => void onDecide(item.id, 'approved')}>

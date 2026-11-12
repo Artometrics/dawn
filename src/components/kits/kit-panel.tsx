@@ -1,24 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { DeskGate } from '@/components/shell/status-card';
 import { PageShell } from '@/components/site/page-shell';
 import { KITS, type KitInfo } from '@/lib/kits/registry';
+import { jsonInit, kitCall } from '@/lib/site/kit-client';
+import '@/components/code/code-hub.css';
+
+type Desk = 'loading' | 'ready' | 'offline' | 'signin';
+const deskOf = (status: string): Desk => (status === 'ok' ? 'ready' : status === 'closed' ? 'signin' : 'offline');
 
 export function KitDashboard() {
+  const [desk, setDesk] = useState<Desk>('loading');
+  useEffect(() => {
+    void kitCall<unknown>('/api/kits').then((result) => setDesk(deskOf(result.status)));
+  }, []);
   return (
-    <PageShell
-      title="Kits"
-      current="/kits"
-      lead="Six local checks adapted from the Code with Antonio projects. None of them call a model or send a message. They only run where the local gateway is running; a static host cannot run them."
-    >
-      <ul className="dw-list" style={{ gap: 12 }}>
-        {KITS.map((kit) => (
-          <li key={kit.id} className="dw-card">
-            <h2 className="dw-card-title"><a className="dw-link" href={kit.href}>{kit.title}</a></h2>
-            <p className="dw-note">{kit.adapted}</p>
-            <p className="dw-note">Replaced: {kit.replaced}</p>
-            <p className="dw-note">After the deploy worker publishes this build and restarts the gateway: {kit.liveUrl}</p>
-            <a className="dw-btn dw-btn--chip" style={{ marginTop: 12 }} href={kit.href}>Open</a>
+    <PageShell title="Kits" lead="Small checks you can run on the Dawn server.">
+      <DeskGate status={desk} offline="Offline preview. Open live Dawn to run the kits." />
+      <ul className="ch-grid">
+        {KITS.map((kit, index) => (
+          <li key={kit.id} style={{ ['--i' as string]: index }}>
+            <Link className="ch-card" href={kit.href}>
+              <span className="ch-title">{kit.title}</span>
+              <span className="ch-line">{kit.blurb}</span>
+            </Link>
           </li>
         ))}
       </ul>
@@ -27,45 +34,39 @@ export function KitDashboard() {
 }
 
 export function KitPage({ kit }: { kit: KitInfo }) {
-  const [note, setNote] = useState('Sign in on this host, then run the check. A static host with no gateway cannot run it.');
+  const [desk, setDesk] = useState<Desk>('loading');
+  const [note, setNote] = useState('');
   const [html, setHtml] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    void kitCall<unknown>('/api/kits').then((result) => setDesk(deskOf(result.status)));
+  }, []);
 
   async function run() {
-    setNote('Running the local check…');
-    try {
-      const response = await fetch(`/api/kits/${kit.id}`, {
-        method: 'POST',
-        credentials: 'include',
-        redirect: 'manual',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ check: 'run' }),
-      });
-      if (response.type === 'opaqueredirect' || response.status === 401) {
-        setNote('Google sign-in is in front of this host. Open /oauth2/start on this same site, then come back.');
-        return;
-      }
-      const data = await response.json() as { summary?: string; error?: string; detail?: { html?: string } };
-      setNote(data.summary || data.error || 'The check did not finish.');
-      setHtml(data.detail?.html || '');
-    } catch {
-      setNote('The gateway is not answering on this origin.');
+    setBusy(true);
+    setNote('Running…');
+    const result = await kitCall<{ summary?: string; detail?: { html?: string } }>(`/api/kits/${kit.id}`, jsonInit({ check: 'run' }));
+    setBusy(false);
+    if (result.status === 'ok') {
+      setNote(result.data.summary || 'Done.');
+      setHtml(result.data.detail?.html || '');
+    } else {
+      setNote(result.status === 'error' ? result.message : 'The check did not run.');
     }
   }
 
   return (
-    <PageShell title={kit.title} current="/kits" lead={kit.adapted}>
-      <p className="dw-actions"><a className="dw-btn dw-btn--chip" href="/kits">All kits</a></p>
-      <section className="dw-card">
-        <p className="dw-note">Source: {kit.source}</p>
-        <p className="dw-note">Replaced: {kit.replaced}</p>
-        <p className="dw-note">Intended URL after deploy: {kit.liveUrl}. It is not live until that deploy finishes.</p>
-      </section>
-      <div className="dw-actions">
-        <button type="button" className="dw-btn dw-btn--primary" onClick={() => { void run(); }}>Run local check</button>
-      </div>
-      <p className="dw-alert" role="status">{note}</p>
+    <PageShell title={kit.title} lead={kit.blurb}>
+      <DeskGate status={desk} offline="Offline preview. Open live Dawn to run this check." />
+      {desk === 'ready' && (
+        <div className="dw-actions">
+          <button type="button" className="dw-btn dw-btn--primary" disabled={busy} onClick={() => { void run(); }}>Run check</button>
+        </div>
+      )}
+      {note && <p className="dw-alert" role="status">{note}</p>}
       {html && (
-        <iframe title="Seeded game" sandbox="" srcDoc={html} style={{ width: '100%', height: 180, border: 0, borderRadius: 'var(--dawn-radius-row)', background: '#fff' }} />
+        <iframe title="Result" sandbox="" srcDoc={html} style={{ width: '100%', height: 180, border: 0, borderRadius: 'var(--dawn-radius-row)', background: 'var(--dawn-sheet)' }} />
       )}
     </PageShell>
   );

@@ -12,11 +12,17 @@ if (process.env.DAWN_ALLOW_LOOPBACK_OWNER === '1') {
   console.error('Loopback without a proxy header is the owner. Do not set this on the public host.');
 }
 
+const authDisabled = process.env.DAWN_AUTH_DISABLED === '1';
+if (authDisabled) {
+  console.error('DAWN_AUTH_DISABLED=1: every request is the owner, including NightCode build mode and bash. Testing only.');
+}
+
 const port = Number(process.env.DAWN_AGENTS_PORT || 8787);
 const server = await startAgentsServer({
   storePath: process.env.DAWN_AGENTS_STORE || 'data/dawn-agents/store.json',
   ownerEmail: email,
   allowLoopbackOwner: process.env.DAWN_ALLOW_LOOPBACK_OWNER === '1',
+  authDisabled,
   workerToken: process.env.DAWN_WORKER_TOKEN || '',
   editorToken: process.env.DAWN_EDITOR_TOKEN || '',
   spendCapUsd: process.env.DAWN_SPEND_CAP_USD ? Number(process.env.DAWN_SPEND_CAP_USD) : 20,

@@ -232,7 +232,7 @@ async function speak(
   setSource(spoken.source);
   if (spoken.error) setNotice(spoken.error);
   talk.lines.push({ author: speaker.name, text: spoken.text });
-  setStatus(spoken.error ? `${speaker.name} answered with a stand-in.` : `${speaker.name} is talking.`);
+  setStatus(spoken.error ? `${speaker.name} answered offline.` : `${speaker.name} is talking.`);
 
   if (talk.phase === 'start') talk.phase = 'continue';
   else if (talk.lines.length >= 3) talk.phase = 'leave';
