@@ -31,6 +31,8 @@ test('the current page is the highlighted entry, including sections and sub-page
   assert.equal(activeItem('/nowhere'), undefined);
   assert.equal(pageTitle('/nowhere'), 'Dawn');
   assert.equal(pageTitle('/credits'), 'Credits');
+  assert.equal(pageTitle('/kits/sandbox'), 'Sandbox kit');
+  assert.equal(pageTitle('/kits'), 'Kits');
 });
 
 test('old addresses redirect to a place that exists', () => {

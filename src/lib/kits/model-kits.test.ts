@@ -151,3 +151,18 @@ test('Teammates ask the model, and the model can hand the turn on', async () => 
     await rm(root, { recursive: true, force: true });
   }
 });
+
+test('a relative data folder works: the jail child does not resolve the workspace twice', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'dawn-rel-'));
+  const here = process.cwd();
+  try {
+    const relative = path.relative(here, path.join(root, 'nightcode.sqlite'));
+    const desk = new NightcodeDesk(relative);
+    const { id } = desk.createSession('Relative');
+    const session = await desk.postMessage(id, 'list', 'plan');
+    assert.notEqual(session.messages.at(-1)?.tool, 'refused');
+    assert.doesNotMatch(session.messages.at(-1)?.body || '', /ENOENT/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

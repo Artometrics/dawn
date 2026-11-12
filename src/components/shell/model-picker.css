@@ -3,7 +3,7 @@
   display: inline-flex;
   flex: none;
   align-items: center;
-  min-height: 36px;
+  min-height: var(--dawn-tap, 44px);
   padding: 0 var(--dawn-space-3);
   border-radius: var(--dawn-radius-full);
   background: var(--dawn-navy);
@@ -15,7 +15,7 @@
 .mp[data-disabled='true'] {
   background: var(--dawn-chip);
   box-shadow: inset 0 0 0 1px var(--dawn-line);
-  color: var(--dawn-muted);
+  color: var(--dawn-secondary);
 }
 .mp-select {
   position: absolute;

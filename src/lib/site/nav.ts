@@ -121,7 +121,7 @@ const OTHER_TITLES: Record<string, string> = {
 /** Title for the top bar. Never empty. */
 export function pageTitle(pathname: string, section?: string | null): string {
   const path = normalizePath(pathname);
-  return activeItem(path, section)?.label ?? OTHER_TITLES[path] ?? 'Dawn';
+  return OTHER_TITLES[path] ?? activeItem(path, section)?.label ?? 'Dawn';
 }
 
 /** Every page the static export emits. The smoke test fails when a page appears here but not in out/. */

@@ -69,7 +69,7 @@ export function ModelPicker({ picker }: { picker: PickerState }) {
   const { providers, choice, setChoice, status } = picker;
   const label = choice
     ? (providers.find((item) => item.id === choice.provider)?.models.find((item) => item.id === choice.model)?.label ?? 'Model')
-    : 'Gemini Flash';
+    : status === 'ready' ? 'No model' : 'Gemini Flash';
   const disabled = status !== 'ready' || providers.length === 0;
   return (
     <label className="mp" data-disabled={disabled}>

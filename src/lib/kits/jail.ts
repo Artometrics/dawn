@@ -22,7 +22,9 @@ export type JailRequest = {
 const CLEAN_ENV = ['PATH', 'LANG', 'LC_ALL'];
 
 /** Runs one allowlisted file tool in a short-lived process. The child receives no parent secrets. */
-export async function runJail(root: string, request: JailRequest): Promise<Record<string, unknown>> {
+export async function runJail(workspace: string, request: JailRequest): Promise<Record<string, unknown>> {
+  // The child starts inside the workspace, so a relative path would be resolved twice.
+  const root = path.resolve(workspace);
   const script = path.resolve(process.cwd(), 'scripts/kit-jail.mjs');
   const env: NodeJS.ProcessEnv = { NODE_ENV: process.env.NODE_ENV || 'production' };
   for (const key of CLEAN_ENV) {
