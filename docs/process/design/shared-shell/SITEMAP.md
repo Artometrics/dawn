@@ -23,8 +23,8 @@ One fixed shell on every route and on both origins (the live gateway origin and 
 | Work | Newsletter | `/newsletter` | Compose, the subscriber list, a dry-run send, and counts. |
 | Work | Invoices | `/invoices` | Numbered invoices, PDF, and print. |
 | Work | Contacts | `/contacts` | People, companies, the pipeline, and today. |
-| Work | Games | `/games` | Dilemma village and Pantheon Towers. Both stay in the browser. |
-| Work | Fernbound | `/fernbound` | The wildkin field. It loads only after Open the field. |
+| Work | Games | `/games` | Dilemma village, Fernbound, and Pantheon Towers. All stay in the browser. |
+| Work | Fernbound | `/fernbound` | The wildkin field on The Fern Marches. It loads after Play the marches. |
 | Work | Aftercare | `/aftercare` | Cards, numbers, and a journal. Nothing is sent. |
 | Work | Books | `/books` | Literary tarot, the book quiz, the Gutenberg press, the library, and a shelf. |
 | Work | Cuts | `/cuts` | A video board: script, chapters, captions, and a license shelf. |

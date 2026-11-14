@@ -1,85 +1,37 @@
 'use client';
 
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
-import { DilemmaVillage, type SimulationSnapshot } from '@/lib/games/dilemma';
 import { TOWER_KINDS, TOWERS, type TowerKind } from '@/lib/towers/config';
 import { Game } from '@/lib/towers/game';
 import { BOUNDS, PATH, SLOTS } from '@/lib/towers/map';
 import './desks.css';
+import { DilemmaDesk } from './dilemma-desk';
+import { FernboundDesk } from './fernbound-desk';
 import { DeskSwitch } from './switch';
 
 const VIEWS = [
   { id: 'dilemma', label: 'Dilemma' },
+  { id: 'fernbound', label: 'Fernbound' },
   { id: 'towers', label: 'Towers' },
 ];
 
 export function GamesDesk() {
   const [view, setView] = useState('dilemma');
   return (
-    <div className="desk">
-      <p className="dw-note">Both games run on this phone. They do not call a server.</p>
-      <DeskSwitch label="Arcade" views={VIEWS} current={view} onChange={setView} />
-      {view === 'dilemma' ? <DilemmaPlay /> : <TowersPlay />}
+    <div className="arcade">
+      <div className="arcade-bar">
+        <p className="dw-note">These games run on this page. They do not call a server.</p>
+        <DeskSwitch label="Arcade" views={VIEWS} current={view} onChange={setView} />
+      </div>
+      {view === 'dilemma' ? <DilemmaDesk /> : null}
+      {view === 'fernbound' ? <FernboundDesk /> : null}
+      {view === 'towers' ? (
+        <div className="arcade-scroll">
+          <TowersPlay />
+        </div>
+      ) : null}
     </div>
   );
-}
-
-function DilemmaPlay() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [snap, setSnap] = useState<SimulationSnapshot | null>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const village = new DilemmaVillage();
-    let frame = 0;
-    let last = performance.now();
-    let current = village.snapshot();
-    const draw = (now: number) => {
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
-      current = village.step(dt);
-      paintDilemma(canvas, current);
-      if (frame++ % 15 === 0) setSnap(current);
-      request = requestAnimationFrame(draw);
-    };
-    let request = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(request);
-  }, []);
-
-  return (
-    <div className="desk-stage">
-      <canvas ref={canvasRef} className="game-canvas" width={960} height={540} aria-label="Prisoner's dilemma village" />
-      <ol className="game-standings">
-        {(snap?.standings ?? []).map((row) => (
-          <li key={row.name}><span style={{ background: row.color }} />{row.name}<b>{row.score}</b></li>
-        ))}
-      </ol>
-      {snap?.events[0] ? <p className="dw-note">{snap.events[0]}</p> : <p className="dw-note">Agents are walking out to meet.</p>}
-    </div>
-  );
-}
-
-function paintDilemma(canvas: HTMLCanvasElement, snap: SimulationSnapshot) {
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-  const { width, height } = canvas;
-  ctx.clearRect(0, 0, width, height);
-  ctx.fillStyle = '#1c1916';
-  ctx.fillRect(0, 0, width, height);
-  for (const agent of snap.agents) {
-    const x = (agent.x / snap.width) * width;
-    const y = (agent.y / snap.height) * height;
-    ctx.fillStyle = agent.color;
-    ctx.beginPath();
-    ctx.arc(x, y, agent.mode === 'interacting' ? 11 : 8, 0, Math.PI * 2);
-    ctx.fill();
-    if (agent.lastAction) {
-      ctx.fillStyle = '#f4efe6';
-      ctx.font = '12px sans-serif';
-      ctx.fillText(`${agent.lastAction} ${agent.lastPoints}`, x + 12, y - 8);
-    }
-  }
 }
 
 function TowersPlay() {

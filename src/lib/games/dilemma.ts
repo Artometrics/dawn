@@ -35,6 +35,33 @@ export const STRATEGY_COLORS: Record<StrategyKey, string> = {
   Random: '#C8CDD7',
 };
 
+/** Names for the desk. The engine still stores the original keys. */
+export const STRATEGY_LABELS: Record<StrategyKey, string> = {
+  TitForTat: 'Tit-for-Tat',
+  Grudger: 'Grudger',
+  Pavlov: 'Pavlov',
+  AlwaysDefect: 'Always Defect',
+  AlwaysCooperate: 'Always Cooperate',
+  GenerousTitForTat: 'Generous TFT',
+  Random: 'Random',
+};
+
+export const STRATEGY_RULES: Record<StrategyKey, string> = {
+  TitForTat: 'Copies their last move. Opens with cooperate.',
+  Grudger: 'Cooperates until they defect once, then never again.',
+  Pavlov: 'Keeps a move that scored 3 or more. Otherwise switches.',
+  AlwaysDefect: 'Always defects.',
+  AlwaysCooperate: 'Always cooperates.',
+  GenerousTitForTat: 'Tit-for-tat, but forgives a defection 15% of the time.',
+  Random: 'Cooperates or defects with an even chance.',
+};
+
+/** Event lines store strategy keys. Longer keys first so GenerousTitForTat is not clipped. */
+export function readableEvent(text: string): string {
+  const keys = [...STRATEGY_ORDER].sort((a, b) => b.length - a.length);
+  return keys.reduce((line, key) => line.replaceAll(key, STRATEGY_LABELS[key]), text);
+}
+
 export function pickAction(
   strategy: StrategyKey,
   opponentHistory: Action[],
@@ -88,6 +115,8 @@ const COOLDOWN_SECONDS = 0.24;
 const SEPARATION_DISTANCE = 54;
 const PATH_MARGIN = 110;
 
+export type Facing = 'up' | 'down' | 'left' | 'right';
+
 export type AgentSnapshot = {
   id: string;
   name: StrategyKey;
@@ -95,9 +124,12 @@ export type AgentSnapshot = {
   x: number;
   y: number;
   mode: AgentMode;
+  facing: Facing;
   score: number;
   lastAction: Action | null;
   lastPoints: number;
+  /** Seconds left on the cooperate/defect bubble. 0 hides it. */
+  bubbleTimer: number;
 };
 
 export type SimulationSnapshot = {
@@ -114,7 +146,6 @@ type AgentState = AgentSnapshot & {
   targetY: number;
   vx: number;
   vy: number;
-  bubbleTimer: number;
   speed: number;
   cooldown: number;
   encounterId: string | null;
@@ -133,6 +164,11 @@ function mulberry32(seed: number) {
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
+}
+
+function facingFromVelocity(vx: number, vy: number): Facing {
+  if (Math.abs(vx) > Math.abs(vy)) return vx >= 0 ? 'right' : 'left';
+  return vy >= 0 ? 'down' : 'up';
 }
 
 /** Headless village. `step` is deterministic for a seed. */
@@ -159,6 +195,7 @@ export class DilemmaVillage {
         vx: 0,
         vy: 0,
         mode: 'roaming' as const,
+        facing: 'down' as const,
         score: 0,
         lastAction: null,
         lastPoints: 0,
@@ -203,6 +240,7 @@ export class DilemmaVillage {
       agent.vy = (directionY + repel.y * 1.35) * agent.speed;
       agent.x = clamp(agent.x + agent.vx * dt, PATH_MARGIN, WORLD_WIDTH - PATH_MARGIN);
       agent.y = clamp(agent.y + agent.vy * dt, PATH_MARGIN, WORLD_HEIGHT - PATH_MARGIN);
+      agent.facing = facingFromVelocity(agent.vx, agent.vy);
     }
     this.seek();
     return this.snapshot();
@@ -213,13 +251,13 @@ export class DilemmaVillage {
       elapsed: this.elapsed,
       width: WORLD_WIDTH,
       height: WORLD_HEIGHT,
-      agents: this.agents.map(({ id, name, color, x, y, mode, score, lastAction, lastPoints }) => ({
-        id, name, color, x, y, mode, score, lastAction, lastPoints,
+      agents: this.agents.map(({ id, name, color, x, y, mode, facing, score, lastAction, lastPoints, bubbleTimer }) => ({
+        id, name, color, x, y, mode, facing, score, lastAction, lastPoints, bubbleTimer,
       })),
       standings: [...this.agents]
         .sort((a, b) => b.score - a.score)
         .map((agent) => ({ name: agent.name, score: agent.score, color: agent.color })),
-      events: this.events.slice(0, 8),
+      events: this.events.slice(0, 12),
     };
   }
 
@@ -281,6 +319,12 @@ export class DilemmaVillage {
     b.encounterId = id;
     a.mode = 'interacting';
     b.mode = 'interacting';
+    a.vx = 0;
+    a.vy = 0;
+    b.vx = 0;
+    b.vy = 0;
+    a.facing = a.x < b.x ? 'right' : 'left';
+    b.facing = b.x < a.x ? 'right' : 'left';
     this.encounters.set(id, { id, agentA: a.id, agentB: b.id, timer: INTERACTION_SECONDS });
     this.events.unshift(`${a.name} ${actionA} (${pointsA}) vs ${b.name} ${actionB} (${pointsB})`);
     this.events.splice(12);
