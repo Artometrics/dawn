@@ -21,7 +21,7 @@ const ACTUAL = [
   { href: '/contacts', name: 'Contacts', note: 'People, pipeline, and today.' },
   { href: '/games', name: 'Games', note: 'Dilemma village, Fernbound, and towers. No server.' },
   { href: '/fernbound', name: 'Fernbound', note: 'The field loads after Play the marches. No server.' },
-  { href: '/aftercare', name: 'Aftercare', note: 'Cards, numbers, journal. Nothing is sent.' },
+  { href: '/aftercare', name: 'Aftercare', note: 'Tarot table, birth chart, journal. Nothing is sent.' },
   { href: '/books', name: 'Books', note: 'Oracle, quiz, Gutenberg press, library, and shelf. No shop links.' },
   { href: '/cuts', name: 'Cuts', note: 'A board for one video: script, chapters, captions, and a license shelf.' },
   { href: '/shows', name: 'Shows', note: 'Podcast shows and episodes. The feed stays empty until you publish.' },

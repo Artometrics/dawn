@@ -1,0 +1,508 @@
+.ac-desk {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dawn-space-4);
+}
+
+.ac-split,
+.ac-birth,
+.ac-chart,
+.ac-deck-layout {
+  display: grid;
+  gap: var(--dawn-space-4);
+  min-width: 0;
+}
+
+.ac-table {
+  position: relative;
+  height: clamp(420px, 62vh, 640px);
+  border-radius: var(--dawn-radius-panel);
+  border: 1px solid var(--dawn-line-strong);
+  background:
+    radial-gradient(ellipse 68% 54% at 50% 42%, #243044 0%, #121211 70%);
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.ac-table[data-spread="celtic"] {
+  height: clamp(520px, 78vh, 820px);
+}
+
+.ac-table::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: min(680px, 118%);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px dashed rgb(140 196 255 / 0.35);
+  pointer-events: none;
+}
+
+.ac-table .table-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.ac-table .table-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ac-table .pos-label {
+  position: absolute;
+  transform: translate(-50%, 0);
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  color: var(--dawn-text);
+  font-family: var(--dawn-font-ui);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ac-table .pos-label b {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--dawn-pill);
+  color: var(--dawn-ink);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.ac-table .pos-label em {
+  font-style: normal;
+  color: var(--dawn-secondary);
+}
+
+.ac-table[data-label-mode="badge"] .pos-label {
+  transform: translate(-50%, -50%);
+}
+
+.ac-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: var(--dawn-space-6);
+  text-align: center;
+  color: var(--dawn-secondary);
+}
+
+.ac-face {
+  display: block;
+  width: 100%;
+}
+
+.ac-face svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.ac-face.is-reversed {
+  transform: rotate(180deg);
+}
+
+.ac-reading,
+.ac-focus {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: var(--dawn-space-3);
+  align-items: start;
+}
+
+.ac-reading.is-on,
+.ac-detail {
+  box-shadow: inset 0 0 0 1px var(--dawn-navy-line);
+}
+
+.ac-deck {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: var(--dawn-space-3);
+}
+
+.ac-deck-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--dawn-secondary);
+  font: inherit;
+  font-size: var(--dawn-fs-micro);
+  text-align: center;
+  cursor: pointer;
+}
+
+.ac-deck-btn[aria-pressed="true"] .ac-face svg {
+  box-shadow: 0 0 0 2px var(--dawn-accent);
+}
+
+.ac-detail {
+  position: sticky;
+  top: var(--dawn-space-4);
+  display: grid;
+  gap: var(--dawn-space-3);
+}
+
+.ac-detail .ac-face {
+  max-width: 220px;
+}
+
+.ac-identity {
+  display: flex;
+  gap: var(--dawn-space-4);
+  align-items: center;
+}
+
+.ac-sigil {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: 0;
+  flex: none;
+  border-radius: 50%;
+  background: var(--dawn-navy);
+  box-shadow: inset 0 0 0 1px var(--dawn-navy-line);
+  color: var(--dawn-text);
+  font-family: var(--dawn-font-display);
+  font-size: 28px;
+}
+
+.ac-map {
+  width: 100%;
+  height: auto;
+  border-radius: var(--dawn-radius-row);
+  cursor: pointer;
+}
+
+.ac-map-sea {
+  fill: #101412;
+}
+
+.ac-map-land {
+  fill: #2c3834;
+  stroke: var(--dawn-accent);
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+}
+
+.ac-pin {
+  stroke: var(--dawn-text);
+  stroke-width: 1.4;
+}
+
+.ac-pin--birth,
+.ac-star--own {
+  fill: var(--dawn-accent);
+}
+
+.ac-pin--movie {
+  fill: var(--dawn-neon-orange);
+}
+
+.ac-pin--book {
+  fill: var(--dawn-neon-green);
+}
+
+.ac-pin--thing {
+  fill: #d7b4a0;
+}
+
+.ac-pin-ring {
+  fill: none;
+  stroke: var(--dawn-accent);
+  stroke-width: 1.5;
+  opacity: 0.7;
+}
+
+.ac-pin-list,
+.ac-fav-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: var(--dawn-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ac-pin-list li,
+.ac-fav-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ac-fav-row {
+  justify-content: space-between;
+  margin: 0;
+}
+
+.ac-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.ac-constellation {
+  width: 100%;
+  height: auto;
+  min-width: 640px;
+}
+
+.ac-constellation-scroll {
+  overflow-x: auto;
+}
+
+.ac-orbit {
+  fill: none;
+  stroke: var(--dawn-line-strong);
+  stroke-dasharray: 3 6;
+}
+
+.ac-edge {
+  stroke: var(--dawn-muted);
+  stroke-width: 1.2;
+}
+
+.ac-edge--own {
+  stroke: var(--dawn-accent);
+}
+
+.ac-star {
+  fill: var(--dawn-navy);
+  stroke: var(--dawn-text);
+  stroke-width: 1.4;
+}
+
+.ac-star-label,
+.ac-you-label,
+.ac-sign-glyph,
+.ac-body-glyph,
+.ac-house-num,
+.ac-wheel-core-name {
+  fill: var(--dawn-text);
+  font-family: var(--dawn-font-ui);
+}
+
+.ac-star-label {
+  font-size: 13px;
+}
+
+.ac-star-role,
+.ac-wheel-core-kicker {
+  fill: var(--dawn-secondary);
+  font-family: var(--dawn-font-ui);
+  font-size: 11px;
+}
+
+.ac-you {
+  fill: var(--dawn-bg);
+  stroke: var(--dawn-accent);
+  stroke-width: 2;
+}
+
+.ac-you-label {
+  font-size: 16px;
+}
+
+.ac-nums,
+.ac-pair,
+.ac-favs,
+.ac-mini-row {
+  display: grid;
+  gap: var(--dawn-space-3);
+}
+
+.ac-favs li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ac-desk .desk-check .dw-note {
+  display: block;
+}
+
+.ac-nums {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.ac-num b {
+  display: block;
+  font-family: var(--dawn-font-display);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--dawn-text);
+}
+
+.ac-num span,
+.ac-num small {
+  display: block;
+  color: var(--dawn-secondary);
+}
+
+.ac-pair {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.ac-pair .ac-face,
+.ac-mini-row .ac-face {
+  max-width: 140px;
+}
+
+.ac-mini-row {
+  grid-template-columns: repeat(auto-fit, minmax(72px, 96px));
+}
+
+.ac-wheel {
+  width: min(100%, 560px);
+  height: auto;
+}
+
+.ac-wheel-rim,
+.ac-wheel-line,
+.ac-house {
+  fill: none;
+  stroke: var(--dawn-line-strong);
+}
+
+.ac-wheel-rim {
+  stroke: var(--dawn-accent);
+  stroke-width: 1.5;
+}
+
+.ac-sign {
+  fill: #1a2428;
+  stroke: var(--dawn-line);
+}
+
+.ac-sign--alt {
+  fill: #14181c;
+}
+
+.ac-sign-glyph {
+  font-size: 18px;
+}
+
+.ac-house--angle {
+  stroke: var(--dawn-accent);
+}
+
+.ac-house-num {
+  font-size: 11px;
+  fill: var(--dawn-muted);
+}
+
+.ac-body {
+  fill: var(--dawn-elev);
+  stroke: var(--dawn-text);
+}
+
+.ac-body--sun {
+  fill: var(--dawn-navy);
+  stroke: var(--dawn-accent);
+}
+
+.ac-body-glyph {
+  font-size: 16px;
+}
+
+.ac-wheel-core {
+  fill: var(--dawn-bg);
+  stroke: var(--dawn-line-strong);
+}
+
+.ac-wheel-core-name {
+  font-family: var(--dawn-font-display);
+  font-size: 16px;
+}
+
+.ac-planets {
+  overflow-x: auto;
+}
+
+.ac-planets table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--dawn-fs-action);
+}
+
+.ac-planets th,
+.ac-planets td {
+  padding: 8px 6px;
+  text-align: left;
+  border-bottom: 1px solid var(--dawn-line);
+  white-space: nowrap;
+}
+
+.ac-planets th {
+  color: var(--dawn-muted);
+  font-size: var(--dawn-fs-micro);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+fieldset.dw-card {
+  margin: 0;
+  min-inline-size: 0;
+}
+
+fieldset.dw-card legend {
+  padding: 0;
+}
+
+@media (min-width: 900px) {
+  .ac-split {
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.8fr);
+    align-items: start;
+  }
+
+  .ac-birth,
+  .ac-chart,
+  .ac-deck-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
+    align-items: start;
+  }
+
+  .ac-favs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .ac-deck {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ac-reading,
+  .ac-focus {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .ac-constellation {
+    min-width: 560px;
+  }
+}
