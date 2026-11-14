@@ -15,7 +15,10 @@ const ACTUAL = [
   { href: '/atlas', name: 'Atlas', note: 'Same screen as home. Kept so old links work.' },
   { href: '/agents', name: 'Agents desk', note: 'Gateway desk. Not opened by this preview.' },
   { href: '/studio', name: 'Studio', note: 'Chat and live preview workspace. Sends need a model on the host; local and static builds send nothing.' },
-  { href: '/letter', name: 'Letter', note: 'Newsletter page. Needs the desk to subscribe.' },
+  { href: '/letter', name: 'Letter', note: 'Public signup and archive. Needs consent, then a confirmation link.' },
+  { href: '/newsletter', name: 'Newsletter', note: 'Compose, list, archive, and counts. Sending is off.' },
+  { href: '/invoices', name: 'Invoices', note: 'Numbered invoices with PDF and print.' },
+  { href: '/contacts', name: 'Contacts', note: 'People, pipeline, and today.' },
   { href: '/credits', name: 'Credits', note: 'Sprite and library credits.' },
   { href: '/preview/style-guide', name: 'Style guide', note: 'Tokens and shared components every page uses.' },
 ];

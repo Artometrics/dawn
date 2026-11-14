@@ -35,6 +35,8 @@ export type SendRecord = {
   clicks: number;
   openedIds: string[];
   clickedIds: string[];
+  /** True when the send was filed and nobody was mailed. */
+  dryRun?: boolean;
 };
 
 export type OutboxMail = {
@@ -43,11 +45,32 @@ export type OutboxMail = {
   html: string;
   text: string;
   articleId: string;
+  headers?: Record<string, string>;
 };
+
+export type MailMessage = {
+  to: string;
+  subject: string;
+  html: string;
+  text: string;
+  articleId?: string;
+  headers?: Record<string, string>;
+};
+
+/** Confirmed readers mailed in one pass. Extra addresses stay for a later send. */
+export const SEND_BATCH_CAP = 50;
+
+/**
+ * Real mail is off unless this is the exact string "true".
+ * A Resend, Postmark, or SES key does not turn it on by itself.
+ */
+export function mailSendingEnabled(env: Record<string, string | undefined> = process.env): boolean {
+  return env.NEWSLETTER_SEND_ENABLED === 'true';
+}
 
 export interface EmailProvider {
   readonly id: 'console' | 'resend' | 'postmark' | 'ses';
-  send(message: { to: string; subject: string; html: string; text: string; articleId?: string }): Promise<{ id?: string }>;
+  send(message: MailMessage): Promise<{ id?: string }>;
 }
 
 export function slugify(title: string): string {
@@ -133,7 +156,14 @@ export function consoleEmailProvider(outbox: OutboxMail[]): EmailProvider {
   return {
     id: 'console',
     async send(message) {
-      outbox.push({ to: message.to, subject: message.subject, html: message.html, text: message.text, articleId: message.articleId || '' });
+      outbox.push({
+        to: message.to,
+        subject: message.subject,
+        html: message.html,
+        text: message.text,
+        articleId: message.articleId || '',
+        headers: message.headers,
+      });
       return { id: `console-${outbox.length}` };
     },
   };
@@ -146,7 +176,7 @@ export function resendProvider(fetchImpl: typeof fetch, key: string, from: strin
       const response = await fetchImpl('https://api.resend.com/emails', {
         method: 'POST',
         headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' },
-        body: JSON.stringify({ from, to: message.to, subject: message.subject, html: message.html, text: message.text }),
+        body: JSON.stringify({ from, to: message.to, subject: message.subject, html: message.html, text: message.text, headers: message.headers }),
       });
       if (!response.ok) throw new Error(`Resend refused the message (${response.status}).`);
       const data = (await response.json()) as { id?: string };
@@ -162,7 +192,14 @@ export function postmarkProvider(fetchImpl: typeof fetch, key: string, from: str
       const response = await fetchImpl('https://api.postmarkapp.com/email', {
         method: 'POST',
         headers: { 'X-Postmark-Server-Token': key, 'content-type': 'application/json', accept: 'application/json' },
-        body: JSON.stringify({ From: from, To: message.to, Subject: message.subject, HtmlBody: message.html, TextBody: message.text }),
+        body: JSON.stringify({
+          From: from,
+          To: message.to,
+          Subject: message.subject,
+          HtmlBody: message.html,
+          TextBody: message.text,
+          Headers: Object.entries(message.headers || {}).map(([Name, Value]) => ({ Name, Value })),
+        }),
       });
       if (!response.ok) throw new Error(`Postmark refused the message (${response.status}).`);
       const data = (await response.json()) as { MessageID?: string };

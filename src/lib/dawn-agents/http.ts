@@ -23,7 +23,8 @@ import {
 import { eventAllowed, tastePairs, validReaderId, type EngagementEvent } from './engage';
 import { newId } from './ids';
 import { nextCron } from './cron';
-import { emailProviderFromEnv, markdownToHtml, parseSubscriberCsv, renderLetterHtml, rewriteLinks, slugify, subscribersToCsv, type OutboxMail } from './publish';
+import { ADDRESS_LINES } from '../newsletter/desk';
+import { emailProviderFromEnv, mailSendingEnabled, markdownToHtml, parseSubscriberCsv, renderLetterHtml, rewriteLinks, SEND_BATCH_CAP, slugify, subscribersToCsv, type OutboxMail } from './publish';
 import { latestBotSession, parkedAssignmentId, resumeApprovedWrite, runBotTask, runDeskPreset } from './bot-session';
 import { handoffNote, playableGame } from './connected';
 import { canSpend, formatUsd, monthKey, spentThisMonth } from './spend';
@@ -978,9 +979,8 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       return sendJson(res, 200, { ok: true, readerId: reader });
     }
     if (req.method === 'POST' && pathname === '/api/public/unsubscribe') {
-      const body = await readJson(req);
-      const token = String(body.token || '');
-      const reader = readerId(req, body.readerId);
+      const token = await unsubscribeToken(req, url);
+      const reader = readerId(req, url.searchParams.get('r'));
       let ok = false;
       await store.update((data) => {
         const row = data.subscribers.find((item) => item.unsubToken === token);
@@ -1420,14 +1420,20 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
     if (!row) return { error: 'Subscriber not found.', status: 404 };
     const origin = publicOrigin(req);
     const link = `${origin}/letter?confirm=${row.confirmToken}`;
+    const previewPath = `/letter?confirm=${row.confirmToken}`;
+    if (!mailSendingEnabled()) {
+      return { sent: false, dryRun: true, provider: 'off', previewPath };
+    }
+    const unsub = `${origin}/letter?unsub=${row.unsubToken}`;
     await email.send({
       to: row.email,
       subject: 'Confirm the Artometrics letter',
-      text: `Confirm you want the letter: ${link}`,
+      text: `Confirm you want the letter: ${link}\n\nUnsubscribe: ${unsub}`,
       html: `<p>Confirm you want the letter.</p><p><a href="${link}">Confirm</a></p>`,
       articleId: 'confirm',
+      headers: listUnsubscribeHeaders(origin, row.unsubToken),
     });
-    return { sent: true, provider: email.id, previewPath: email.id === 'console' ? `/letter?confirm=${row.confirmToken}` : undefined };
+    return { sent: true, dryRun: false, provider: email.id, previewPath: email.id === 'console' ? previewPath : undefined };
   }
 
   async function sendArticle(articleId: string, req: IncomingMessage) {
@@ -1436,34 +1442,47 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
     if (!article || article.status !== 'published') return { error: 'Publish the letter before sending it.', status: 400 };
     const confirmed = data.subscribers.filter((row) => row.status === 'confirmed');
     if (!confirmed.length) return { error: 'Nobody has confirmed yet.', status: 400 };
+    const batch = confirmed.slice(0, SEND_BATCH_CAP);
     const origin = publicOrigin(req);
     const send = {
       id: newId('send'),
       articleId: article.id,
       sentAt: Date.now(),
-      recipients: confirmed.length,
+      recipients: batch.length,
       opens: 0,
       clicks: 0,
       openedIds: [] as string[],
       clickedIds: [] as string[],
+      dryRun: !mailSendingEnabled(),
     };
-    for (const row of confirmed) {
-      const token = `${send.id}.${row.id}`;
-      const pixel = `<img src="${origin}/api/public/open/${token}.gif" width="1" height="1" alt="">`;
-      const html = rewriteLinks(renderLetterHtml(article, pixel), `${origin}/api/public/click/${token}?u=`);
-      const unsub = `${origin}/letter?unsub=${row.unsubToken}`;
-      await email.send({
-        to: row.email,
-        subject: article.subject || article.title,
-        html: `${html}<p><a href="${unsub}">Unsubscribe</a></p>`,
-        text: `${article.title}\n\n${article.body}\n\nUnsubscribe: ${unsub}`,
-        articleId: article.id,
-      });
+    if (mailSendingEnabled()) {
+      for (const row of batch) {
+        const token = `${send.id}.${row.id}`;
+        const pixel = `<img src="${origin}/api/public/open/${token}.gif" width="1" height="1" alt="">`;
+        const html = rewriteLinks(renderLetterHtml(article, pixel), `${origin}/api/public/click/${token}?u=`);
+        const unsub = `${origin}/letter?unsub=${row.unsubToken}`;
+        const address = ADDRESS_LINES.join('\n');
+        await email.send({
+          to: row.email,
+          subject: article.subject || article.title,
+          html: `${html}<p><a href="${unsub}">Unsubscribe</a></p><p>${ADDRESS_LINES.join('<br>')}</p>`,
+          text: `${article.title}\n\n${article.body}\n\nUnsubscribe: ${unsub}\n\n${address}`,
+          articleId: article.id,
+          headers: listUnsubscribeHeaders(origin, row.unsubToken),
+        });
+      }
     }
     await store.update((draft) => {
       draft.sends.push(send);
     });
-    return { sent: confirmed.length, provider: email.id, sendId: send.id };
+    return {
+      sent: send.dryRun ? 0 : batch.length,
+      dryRun: send.dryRun,
+      queued: batch.length,
+      heldBack: confirmed.length - batch.length,
+      provider: send.dryRun ? 'off' : email.id,
+      sendId: send.id,
+    };
   }
 
   async function tick(fileStore: FileStore, turn: TurnContext) {
@@ -1521,6 +1540,31 @@ function publicArticle(article: { id: string; title: string; slug: string; dek: 
 
 function publicSubscriber(row: { id: string; email: string; status: string; consentAt: number | null; createdAt: number }) {
   return { id: row.id, email: row.email, status: row.status, consentAt: row.consentAt, createdAt: row.createdAt };
+}
+
+function listUnsubscribeHeaders(origin: string, token: string): Record<string, string> {
+  const page = `${origin}/letter?unsub=${token}`;
+  const oneClick = `${origin}/api/public/unsubscribe?token=${encodeURIComponent(token)}`;
+  return {
+    'List-Unsubscribe': `<${page}>, <${oneClick}>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+  };
+}
+
+async function unsubscribeToken(req: IncomingMessage, url: URL): Promise<string> {
+  const fromUrl = url.searchParams.get('token') || '';
+  const raw = await readBody(req);
+  if (fromUrl) return fromUrl;
+  if (!raw.trim()) return '';
+  if (raw.trim().startsWith('{')) {
+    try {
+      const body = JSON.parse(raw) as { token?: unknown };
+      return String(body.token || '');
+    } catch {
+      return '';
+    }
+  }
+  return '';
 }
 
 function publicOrigin(req: IncomingMessage): string {

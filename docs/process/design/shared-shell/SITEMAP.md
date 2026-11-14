@@ -19,7 +19,10 @@ One fixed shell on every route and on both origins (the live gateway origin and 
 | Work | Projects | `/projects` | Desk projects and files. |
 | Work | Studio | `/studio` | Image and note studio. |
 | Work | Recipes | `/artifacts` | Style recipes: gallery, detail view, mixer. |
-| Work | Letter | `/letter` | The letter and its signup. |
+| Work | Letter | `/letter` | The public letter, signup, and archive. |
+| Work | Newsletter | `/newsletter` | Compose, the subscriber list, a dry-run send, and counts. |
+| Work | Invoices | `/invoices` | Numbered invoices, PDF, and print. |
+| Work | Contacts | `/contacts` | People, companies, the pipeline, and today. |
 | Code | Code | `/code` | Code hub: cards for every code tool, and the "Open VS Code" button. |
 | Code | NightCode | `/kits/nightcode` | Plan with read-only tools, or build. |
 | Code | Teammates | `/kits/teammates` | A Builder and a Reviewer in one chat. |

@@ -167,5 +167,14 @@ await assertFails(setDoc(doc(alice, `users/alice/characters/${characterId}`), { 
 await assertFails(setDoc(doc(alice, 'users/alice/characters/other-id-1234567890'), character));
 await assertSucceeds(deleteDoc(doc(alice, `users/alice/characters/${characterId}`)));
 
+const desk = { kind: 'newsletter', payload: '{"issues":[]}', updatedAt: now };
+await assertSucceeds(setDoc(doc(alice, 'users/alice/desks/newsletter'), desk));
+await assertSucceeds(getDoc(doc(alice, 'users/alice/desks/newsletter')));
+await assertFails(getDoc(doc(bob, 'users/alice/desks/newsletter')));
+await assertFails(setDoc(doc(anon, 'users/alice/desks/newsletter'), desk));
+await assertFails(setDoc(doc(alice, 'users/alice/desks/newsletter'), { ...desk, kind: 'crm' }));
+await assertFails(setDoc(doc(alice, 'users/alice/desks/extra'), desk));
+await assertSucceeds(deleteDoc(doc(alice, 'users/alice/desks/newsletter')));
+
 await testEnv.cleanup();
 console.log('firestore rules ok');
