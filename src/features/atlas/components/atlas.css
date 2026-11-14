@@ -416,6 +416,20 @@
 .at-root[data-covered='true'] .at-controls {
   visibility: hidden;
 }
+.at-walk {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: var(--dawn-radius-full);
+  background: var(--dawn-navy);
+  color: var(--dawn-accent-strong);
+  font-size: var(--dawn-fs-action);
+  text-decoration: none;
+  box-shadow: var(--dawn-shadow-pill);
+}
 .at-fab {
   display: grid;
   place-items: center;

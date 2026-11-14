@@ -47,6 +47,7 @@ Pinned characters (Trinity, Kali, Nimbus) open `/village?agent=<id>`. The accoun
 | Route | Purpose | Reached from |
 | --- | --- | --- |
 | `/credits` | Credits and licenses, including where each code tool came from. | Account menu |
+| `/walk` | Single-player walk: XP, loot, bosses, daily quests, and a festival. Saved on this phone. | Atlas Here chip |
 | `/kits/assistant`, `/kits/browser`, `/kits/sandbox`, `/kits/sendkit` | One kit each. Highlight "Kits". | `/kits` |
 | `/preview` and `/preview/*` | Review pages for design work. | Not linked |
 

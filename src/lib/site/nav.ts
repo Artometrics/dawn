@@ -118,6 +118,7 @@ export function activeItem(pathname: string, section?: string | null): NavItem |
 
 const OTHER_TITLES: Record<string, string> = {
   '/credits': 'Credits',
+  '/walk': 'Walk',
   '/preview': 'Review pages',
   '/preview/village': 'Village preview',
   '/preview/bench': 'Bench demo',
@@ -175,4 +176,5 @@ export const SITE_ROUTES: string[] = [
   '/preview/habits',
   '/preview/stuck',
   '/preview/style-guide',
+  '/walk',
 ];

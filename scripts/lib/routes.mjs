@@ -37,6 +37,7 @@ export const ROUTES = [
   { path: '/preview/habits', name: 'preview-habits', title: 'Preview: habits' },
   { path: '/preview/stuck', name: 'preview-stuck', title: 'Preview: stuck' },
   { path: '/preview/style-guide', name: 'preview-style-guide', title: 'Preview: style guide' },
+  { path: '/walk', name: 'walk', title: 'Walk' },
 ];
 
 // Forge, the Character Maker, is a section of /village rather than a page of its own. These are the

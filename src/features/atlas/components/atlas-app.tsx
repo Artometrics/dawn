@@ -626,6 +626,11 @@ export function AtlasApp({ region = DEFAULT_REGION, framed = 'page', onMenu, men
         >
           <Layers size={20} aria-hidden />
         </button>
+        {layer === 'here' && (
+          <Link href="/walk" className="at-walk">
+            Walk
+          </Link>
+        )}
         {layer === 'atlas' && (
           <>
             <div className="at-zoom" role="group" aria-label="Zoom">

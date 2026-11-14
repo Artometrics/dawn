@@ -94,6 +94,10 @@
       {
         "source": "/credits",
         "destination": "/credits.html"
+      },
+      {
+        "source": "/walk",
+        "destination": "/walk.html"
       }
     ]
   },

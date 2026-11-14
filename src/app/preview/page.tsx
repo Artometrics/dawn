@@ -27,6 +27,7 @@ const ACTUAL = [
   { href: '/shows', name: 'Shows', note: 'Podcast shows and episodes. The feed stays empty until you publish.' },
   { href: '/research', name: 'Research', note: 'Cited answers over your own files. Embeddings are off.' },
   { href: '/credits', name: 'Credits', note: 'Sprite and library credits.' },
+  { href: '/walk', name: 'Walk', note: 'Single-player map. XP, loot, bosses, daily quests, and a festival. Saved on this phone.' },
   { href: '/preview/style-guide', name: 'Style guide', note: 'Tokens and shared components every page uses.' },
 ];
 
