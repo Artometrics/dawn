@@ -1,3 +1,35 @@
+.game-canvas,
+.game-frame {
+  width: 100%;
+  height: min(78vh, 820px);
+  background: #1c1916;
+  border: 0;
+  border-radius: 8px;
+  touch-action: none;
+  display: block;
+}
+
+.game-standings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.game-standings li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.game-standings span {
+  width: 10px;
+  height: 10px;
+  border-radius: 99px;
+}
+
 .desk-flag {
   display: block;
   margin: 8px 0;
@@ -16,6 +48,18 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--dawn-space-3);
+}
+
+.desk-stack {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--dawn-space-3);
+}
+
+@media (min-width: 800px) {
+  .desk-stack--pair {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .desk-stage {

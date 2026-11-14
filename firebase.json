@@ -12,6 +12,13 @@
     ],
     "headers": [
       {
+        "source": "**/*.wasm",
+        "headers": [
+          { "key": "Content-Type", "value": "application/wasm" },
+          { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+        ]
+      },
+      {
         "source": "**",
         "headers": [
           {
@@ -52,10 +59,26 @@
         "source": "/invoices",
         "destination": "/invoices.html"
       },
-      {
-        "source": "/contacts",
-        "destination": "/contacts.html"
-      },
+        {
+          "source": "/contacts",
+          "destination": "/contacts.html"
+        },
+        {
+          "source": "/games",
+          "destination": "/games.html"
+        },
+        {
+          "source": "/fernbound",
+          "destination": "/fernbound.html"
+        },
+        {
+          "source": "/aftercare",
+          "destination": "/aftercare.html"
+        },
+        {
+          "source": "/books",
+          "destination": "/books.html"
+        },
       {
         "source": "/credits",
         "destination": "/credits.html"

@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Godot's published web export. It is engine output, not Dawn source.
+    "public/play/**",
   ]),
 ]);
 

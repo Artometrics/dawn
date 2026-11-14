@@ -10,6 +10,14 @@ The Character Maker (`src/lib/forge/`) draws with [three.js](https://threejs.org
 
 Other notices, including AI Town (MIT) and Stanford Generative Agents, stay in `THIRD_PARTY_NOTICES.md`.
 
+## Folded desks
+
+The dilemma village in `src/lib/games/dilemma.ts` is the simulation from [kylesmcauliffe/dawn](https://github.com/kylesmcauliffe/dawn), rewritten as a canvas on `/games`. Pantheon Towers in `src/lib/towers/` is the rules from Artometrics/pantheon `games/towers`. The three.js courtyard and its CC0 meshes stay in that repo.
+
+Fernbound's page loads `public/play/fernbound/`, the published Godot web export (engine [MIT](https://godotengine.org/license/)). The GDScript sources were not in the Artometrics or kylesmcauliffe GitHub accounts, so the desk plays that build.
+
+Aftercare's card text, numerology, and spreads in `src/lib/aftercare/` come from Artometrics/aftercare `site/`. The three.js table, the Netlify app, and Gemini card readings stay there. Books in `src/lib/books/` is the PageMatch quiz and shelf from Artometrics/carrie `apps/books`. The pet certificates and the Amazon affiliate buttons stay out.
+
 ## Dawn Agents
 
 Dawn Agents is original code. The projects below were read for architecture only. No source from them is copied into this repo.

@@ -158,7 +158,7 @@ service cloud.firestore {
 
     function validDesk(data) {
       return data.keys().hasOnly(['kind', 'payload', 'updatedAt'])
-        && data.kind in ['newsletter', 'invoices', 'crm']
+        && data.kind in ['newsletter', 'invoices', 'crm', 'aftercare', 'books']
         && data.payload is string
         && data.payload.size() > 0
         && data.payload.size() <= 350000
@@ -291,7 +291,7 @@ service cloud.firestore {
     match /users/{uid}/desks/{deskId} {
       allow read, delete: if isOwner(uid);
       allow create, update: if isOwner(uid)
-        && deskId in ['newsletter', 'invoices', 'crm']
+        && deskId in ['newsletter', 'invoices', 'crm', 'aftercare', 'books']
         && validDesk(request.resource.data)
         && request.resource.data.kind == deskId
         && request.resource.size() < 400000;
