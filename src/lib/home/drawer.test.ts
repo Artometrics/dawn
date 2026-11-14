@@ -9,7 +9,7 @@ const thread = (over: Partial<Thread> & { id: string }): Thread => ({ kind: 'dir
 test('the sidebar lists the same places in the same order, and the village sections each get one entry', () => {
   assert.deepEqual(NAV_GROUPS.map((group) => group.label), [null, 'Work', 'Code', 'Agents']);
   assert.deepEqual(NAV_GROUPS[0].items.map((item) => item.label), ['Atlas', 'Quests', 'Village', 'Characters', 'Library']);
-  assert.deepEqual(NAV_GROUPS[1].items.map((item) => item.label), ['Projects', 'Studio', 'Recipes', 'Letter', 'Newsletter', 'Invoices', 'Contacts', 'Games', 'Fernbound', 'Aftercare', 'Books']);
+  assert.deepEqual(NAV_GROUPS[1].items.map((item) => item.label), ['Projects', 'Studio', 'Recipes', 'Letter', 'Newsletter', 'Invoices', 'Contacts', 'Games', 'Fernbound', 'Aftercare', 'Books', 'Cuts', 'Shows', 'Research']);
   assert.deepEqual(NAV_GROUPS[2].items.map((item) => item.label), ['Code', 'NightCode', 'Teammates', 'Editor', 'Kits']);
   assert.deepEqual(NAV_GROUPS[3].items.map((item) => item.label), ['Agents', 'Bot desk', 'Data', 'Settings']);
   assert.equal(new Set(NAV_ITEMS.map((item) => item.href)).size, NAV_ITEMS.length, 'no two entries share an address');

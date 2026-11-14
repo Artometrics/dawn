@@ -1,6 +1,6 @@
 /** Local desk envelopes. Signed-in copies live at users/{uid}/desks/{kind}. */
 
-export const DESK_KINDS = ['newsletter', 'invoices', 'crm', 'aftercare', 'books'] as const;
+export const DESK_KINDS = ['newsletter', 'invoices', 'crm', 'aftercare', 'books', 'cuts', 'shows', 'research'] as const;
 export type DeskKind = (typeof DESK_KINDS)[number];
 
 export const DESK_KEYS: Record<DeskKind, string> = {
@@ -9,6 +9,9 @@ export const DESK_KEYS: Record<DeskKind, string> = {
   crm: 'dawn.desk.crm.v1',
   aftercare: 'dawn.desk.aftercare.v1',
   books: 'dawn.desk.books.v1',
+  cuts: 'dawn.desk.cuts.v1',
+  shows: 'dawn.desk.shows.v1',
+  research: 'dawn.desk.research.v1',
 };
 
 /** Firestore rules reject anything larger than this. */

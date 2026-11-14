@@ -23,6 +23,9 @@ const ACTUAL = [
   { href: '/fernbound', name: 'Fernbound', note: 'The field loads after a button. No server.' },
   { href: '/aftercare', name: 'Aftercare', note: 'Cards, numbers, journal. Nothing is sent.' },
   { href: '/books', name: 'Books', note: 'Quiz, library, and shelf. No shop links.' },
+  { href: '/cuts', name: 'Cuts', note: 'A board for one video: script, chapters, captions, and a license shelf.' },
+  { href: '/shows', name: 'Shows', note: 'Podcast shows and episodes. The feed stays empty until you publish.' },
+  { href: '/research', name: 'Research', note: 'Cited answers over your own files. Embeddings are off.' },
   { href: '/credits', name: 'Credits', note: 'Sprite and library credits.' },
   { href: '/preview/style-guide', name: 'Style guide', note: 'Tokens and shared components every page uses.' },
 ];

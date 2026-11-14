@@ -68,7 +68,7 @@ export type Usage = {
   costUsd: number;
 };
 
-export type ChatChannel = 'chat' | 'group' | 'routine' | 'editor' | 'kit';
+export type ChatChannel = 'chat' | 'group' | 'routine' | 'editor' | 'kit' | 'cuts' | 'research';
 
 export type MessageRecord = {
   id: string;
@@ -123,6 +123,8 @@ export type SettingsRecord = {
   spendCapUsd: number;
   trainingEnabled: boolean;
   trainingProviders: TrainingProviders;
+  /** Model embeddings for the research desk. Off until the owner turns this on, and the gateway flag is also set. */
+  embeddingsEnabled: boolean;
   /** UTC hour slot of the last Data Studio collect, `YYYY-MM-DD-HH`. */
   lastCollectSlot?: string;
 };

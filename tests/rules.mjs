@@ -178,5 +178,14 @@ await assertSucceeds(setDoc(doc(alice, 'users/alice/desks/books'), { kind: 'book
 await assertSucceeds(setDoc(doc(alice, 'users/alice/desks/aftercare'), { kind: 'aftercare', payload: '{"name":"","birthDate":"","readings":[],"notes":[]}', updatedAt: now }));
 await assertSucceeds(deleteDoc(doc(alice, 'users/alice/desks/newsletter')));
 
+for (const kind of ['cuts', 'shows', 'research']) {
+  const row = { ...desk, kind };
+  await assertSucceeds(setDoc(doc(alice, `users/alice/desks/${kind}`), row));
+  await assertFails(setDoc(doc(bob, `users/alice/desks/${kind}`), row));
+  await assertFails(setDoc(doc(anon, `users/alice/desks/${kind}`), row));
+  await assertFails(setDoc(doc(alice, `users/alice/desks/${kind}`), { ...row, kind: 'extra' }));
+}
+await assertFails(setDoc(doc(alice, 'users/alice/desks/extra'), { ...desk, kind: 'cuts' }));
+
 await testEnv.cleanup();
 console.log('firestore rules ok');

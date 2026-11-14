@@ -222,6 +222,12 @@
     "url": "https://firebase.google.com/"
   },
   {
+    "name": "jszip",
+    "kind": "dawn",
+    "license": "MIT OR GPL-3.0-or-later",
+    "url": "https://github.com/Stuk/jszip"
+  },
+  {
     "name": "input-otp",
     "kind": "dawn",
     "license": "MIT",
@@ -376,6 +382,12 @@
     "kind": "dawn",
     "license": "MIT",
     "url": "https://github.com/Wombosvideo/tw-animate-css#readme"
+  },
+  {
+    "name": "unpdf",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/unjs/unpdf"
   },
   {
     "name": "typescript",
