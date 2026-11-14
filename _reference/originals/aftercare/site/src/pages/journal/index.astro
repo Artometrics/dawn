@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Icon from '../../components/Icon.astro'
+---
+<BaseLayout title="Journal" active="journal" description="The Aftercare journal is on its way. For now, add notes to your saved tarot readings.">
+  <section class="page-head"><div class="wrap">
+    <span class="badge-later">Coming next</span>
+    <h1 style="margin-top:16px">The <em>journal.</em></h1>
+    <p class="lede">A quiet place to write beside the cards you pull, with prompts that fit what you drew. It is not built yet, and we would rather it arrive well than early.</p>
+  </div></section>
+  <section style="padding-top:20px"><div class="wrap">
+    <div class="grid g2">
+      <div class="plate editor">
+        <div class="prompt"><Icon name="eye" /><span>What would you say to the version of you who first asked this question?</span></div>
+        <div class="field"><label for="j-sample">A peek at the editor</label><textarea id="j-sample" disabled placeholder="Your words will live here, linked to a reading, kept on your device."></textarea></div>
+        <div class="linked"><Icon name="cards" /><div><b>Linked to a reading</b><br /><small class="muted">Each entry can point at a saved spread.</small></div></div>
+      </div>
+      <div class="plate" style="padding:26px;display:grid;gap:14px;align-content:start">
+        <h3>For now</h3>
+        <p class="muted" style="margin:0">Every saved reading has a note field. It is a small start, and it travels with your backup file.</p>
+        <div class="chips"><a class="btn sm" href="/tarot/readings/">Open my readings</a><a class="btn ghost sm" href="/tarot/">Pull some cards</a></div>
+      </div>
+    </div>
+  </div></section>
+</BaseLayout>

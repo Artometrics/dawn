@@ -13,6 +13,8 @@ export type Book = {
   author: string;
   isbn: string;
   genres: string[];
+  /** Search tags (found family, unreliable narrator, and the like). */
+  tropes: string[];
   vibe: string;
   pacing: string;
   synopsis: string;
@@ -25,7 +27,7 @@ export type QuizQuestion = {
   prompt: string;
   subtitle: string;
   key: 'vibe' | 'genre' | 'pacing';
-  options: { text: string; desc: string; val: string }[];
+  options: { text: string; desc: string; val: string; icon?: string }[];
 };
 
 export const BOOKS = catalog.books as Book[];

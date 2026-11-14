@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import Icon from '../../../components/Icon.astro'
+import { DECK, neighbours, SUIT_BLURB, bySuit, MAJORS } from '../../../lib/deck'
+import { cardArtSvg } from '../../../lib/cardArt'
+import { SIGNS } from '../../../lib/zodiac'
+import { THEMES } from '../../../lib/themes'
+import { lifePathCardNumber, NUMBER_MEANINGS } from '../../../lib/numerology'
+import { REFLECTION_NOTE } from '../../../lib/reading'
+
+export function getStaticPaths() {
+  return DECK.map((card) => ({ params: { slug: card.slug }, props: { card } }))
+}
+const { card } = Astro.props
+const { prev, next } = neighbours(card.id)
+const isMajor = card.arcana === 'major'
+const signs = isMajor ? SIGNS.filter((s) => s.cardNumber === card.number) : []
+const themes = isMajor ? THEMES.filter((t) => t.cardNumber === card.number) : []
+const lifePaths = isMajor ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 22, 33].filter((n) => lifePathCardNumber(n) === card.number) : []
+const related = (isMajor ? MAJORS : bySuit(card.suit!)).filter((c) => c.id !== card.id)
+const start = Math.max(0, related.findIndex((c) => c.number > card.number))
+const relatedShown = [...related.slice(start), ...related.slice(0, start)].slice(0, 5)
+const desc = `${card.name}: ${card.keywords.slice(0, 4).join(', ')}. ${card.upright.split('. ')[0]}.`
+---
+<BaseLayout title={card.name} active="tarot" description={desc}>
+  <section class="detail">
+    <div class="wrap split">
+      <div class="big-card">
+        <div class="tcard" set:html={cardArtSvg(card, { uid: 'big', labels: true })} />
+      </div>
+      <div>
+        <p class="crumbs"><a href="/tarot/">Tarot</a> / <a href="/tarot/cards/">The deck</a> / {card.name}</p>
+        <span class="eyebrow">{isMajor ? `Major arcana · ${card.label}` : `${card.suit![0].toUpperCase()}${card.suit!.slice(1)} · ${card.label}`}</span>
+        <h1 style="font-size:clamp(2.4rem,5.5vw,4.2rem);margin:14px 0 14px">{card.name}</h1>
+        <div class="chips">{card.keywords.map((k) => <span class="chip fill">{k}</span>)}</div>
+        <div class="meaning">
+          <div class="plate"><h3><Icon name="sun" /> Upright</h3><p>{card.upright}</p></div>
+          <div class="plate"><h3><Icon name="moon" /> Reversed</h3><p>{card.reversed}</p></div>
+          <div class="plate"><h3><Icon name="eye" /> A question to sit with</h3><p><em>{card.reflect}</em></p></div>
+        </div>
+        <div class="connect">
+          <div><small>Element</small><b style="text-transform:capitalize">{card.element}</b></div>
+          <div><small>{isMajor ? 'Number' : 'Rank'}</small><b>{isMajor ? card.number : card.label}</b></div>
+          {isMajor && lifePaths.length > 0 && <div><small>Life path</small><b><a href={`/numerology/#n-${lifePaths[0]}`}>{lifePaths.join(', ')}</a></b></div>}
+          {signs.length > 0 && <div><small>Sun sign (our pairing)</small><b>{signs.map((s) => s.name).join(', ')}</b></div>}
+          {themes.length > 0 && <div><small>Theme</small><b>{themes.map((t) => t.label).join(', ')}</b></div>}
+          {!isMajor && <div><small>Suit</small><b style="text-transform:capitalize">{card.suit}</b></div>}
+        </div>
+        {!isMajor && <p class="muted">{SUIT_BLURB[card.suit!]}</p>}
+        {isMajor && lifePaths.length > 0 && <p class="muted">People with life path {lifePaths.join(' or ')} ({NUMBER_MEANINGS[lifePaths[0]].title.toLowerCase()}) are paired with this card in our map. These pairings are our own, offered for fun.</p>}
+        <p class="note">{REFLECTION_NOTE}</p>
+        <div class="pager">
+          <a class="btn ghost sm" href={`/tarot/cards/${prev.slug}/`}>← {prev.name}</a>
+          <a class="btn ghost sm" href={`/tarot/cards/${next.slug}/`}>{next.name} →</a>
+        </div>
+        <p style="margin-top:18px"><a class="btn sm" href="/tarot/">Draw cards at the table</a></p>
+      </div>
+    </div>
+  </section>
+  <section style="padding-top:20px">
+    <div class="wrap">
+      <div class="section-head" style="margin-bottom:20px"><h2 style="font-size:1.8rem">More from {isMajor ? 'the major arcana' : card.suit}</h2></div>
+      <ul class="related" style="list-style:none;margin:0;padding:0">
+        {relatedShown.map((c) => (
+          <li><a href={`/tarot/cards/${c.slug}/`}><span class="mini-card" style="width:100%" set:html={cardArtSvg(c, { uid: 'rel', labels: true })} /><span>{c.name}</span></a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

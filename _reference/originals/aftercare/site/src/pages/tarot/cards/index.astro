@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import { DECK, MAJORS, SUITS, SUIT_BLURB, bySuit } from '../../../lib/deck'
+import { cardArtSvg } from '../../../lib/cardArt'
+const groups = [{ id: 'major', title: 'Major arcana', blurb: 'Twenty-two big chapters, from The Fool to The World.', cards: MAJORS }, ...SUITS.map((s) => ({ id: s, title: s[0].toUpperCase() + s.slice(1), blurb: SUIT_BLURB[s], cards: bySuit(s) }))]
+---
+<BaseLayout title="The deck" active="tarot" description="All 78 cards of the Aftercare tarot deck, with original art and original meanings.">
+  <section class="page-head"><div class="wrap">
+    <span class="eyebrow">The deck</span>
+    <h1>All <em>seventy-eight.</em></h1>
+    <p class="lede">Original art drawn by code, original words written for this app. Tap a card for its upright and reversed meanings, keywords and a question to sit with.</p>
+    <nav class="chips" aria-label="Jump to a suit" style="margin-top:18px">{groups.map((g) => <a class="chip fill" href={`#${g.id}`}>{g.title}</a>)}</nav>
+    <p class="muted" style="margin-top:10px">{DECK.length} cards</p>
+  </div></section>
+  {groups.map((g) => (
+    <section id={g.id} style="padding-block:36px" class={g.id === 'major' ? '' : ''}>
+      <div class="wrap">
+        <div class="section-head" style="margin-bottom:22px"><h2 style="font-size:clamp(1.8rem,4vw,2.6rem)">{g.title}</h2><p class="muted" style="margin:0">{g.blurb}</p></div>
+        <ul class="card-grid">
+          {g.cards.map((c) => (
+            <li><a href={`/tarot/cards/${c.slug}/`} class="card-tile"><span class="mini-card" set:html={cardArtSvg(c, { uid: 'g', labels: true })} /><span class="sr">{c.name}</span></a></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  ))}
+</BaseLayout>

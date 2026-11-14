@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import Icon from '../components/Icon.astro'
+import { cardArtSvg } from '../lib/cardArt'
+import { requireCard, DECK } from '../lib/deck'
+import { buildView, redactView } from '../lib/secondSelf'
+import { encodeShare } from '../lib/share'
+import { DEFAULT_VISIBILITY } from '../lib/storage'
+import { REFLECTION_NOTE } from '../lib/reading'
+import type { Profile } from '../lib/types'
+
+const fan = ['the-high-priestess', 'the-star', 'the-sun'].map((id) => requireCard(id))
+const sample: Profile = {
+  id: 'sample',
+  displayName: 'Mara Ellison',
+  birthDate: '1992-03-14',
+  birthPlace: { label: 'Lisbon, Portugal', lat: 38.72, lng: -9.14 },
+  favorites: [
+    { id: '1', kind: 'movie', title: 'Spirited Away', themeId: 'change', place: { label: 'Tokyo, Japan', lat: 35.68, lng: 139.69 } },
+    { id: '2', kind: 'book', title: 'The Hobbit', themeId: 'home', place: { label: 'Oxford, United Kingdom', lat: 51.75, lng: -1.26 } },
+    { id: '3', kind: 'movie', title: 'Amelie', themeId: 'joy', place: { label: 'Paris, France', lat: 48.86, lng: 2.35 } },
+    { id: '4', kind: 'book', title: 'One Hundred Years of Solitude', themeId: 'memory', place: { label: 'Bogota, Colombia', lat: 4.71, lng: -74.07 } },
+    { id: '5', kind: 'thing', title: 'Rainy windows', themeId: 'rest' },
+    { id: '6', kind: 'thing', title: 'Night markets', themeId: 'wonder' },
+  ],
+  visibility: { ...DEFAULT_VISIBILITY, favorites: true },
+  updatedAt: '2026-01-01T00:00:00.000Z',
+}
+const view = redactView(buildView(sample, new Date(2026, 0, 15)), sample.visibility)
+const sampleHref = `/share/#${encodeShare(view)}`
+---
+<BaseLayout title="Aftercare" active="home" description="Aftercare is a warm little almanac: tarot with a 3D table, numerology, and a map of the things you love, all kept on your own device.">
+  <section class="hero"><div class="wrap split">
+    <div>
+      <span class="eyebrow">Tarot · Numbers · Maps · You</span>
+      <h1>Meet your <em>second self.</em></h1>
+      <p class="lede">Tell Aftercare your name, your birthday, where you began and the movies, books and odd little things you love. It draws the map, pulls the cards, counts the numbers, and shows how it all connects.</p>
+      <div class="hero-actions"><a class="btn" href="/onboarding/">Start your profile <Icon name="flourish" /></a><a class="btn ghost" href="/tarot/">Try a free reading</a></div>
+      <div class="chips"><span class="chip fill">No account needed</span><span class="chip fill">Stays on your device</span><span class="chip fill">Free to explore</span></div>
+    </div>
+    <div class="hero-stage">
+      <svg class="ring" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="96" fill="none" stroke="#7b2d3a" stroke-opacity=".45" stroke-dasharray="2 6"/><circle cx="100" cy="100" r="80" fill="none" stroke="#0f2321" stroke-opacity=".18"/></svg>
+      <div class="fan">
+        {fan.map((c, i) => <div class={`tcard c${i + 1}`} set:html={cardArtSvg(c, { uid: `h${i}`, labels: true })} />)}
+      </div>
+      <span class="tag t1">Life path {view.numbers?.lifePath}</span><span class="tag t2">born in Lisbon</span><span class="tag t3">The Star</span><span class="tag t4">Pisces sun</span>
+    </div>
+  </div></section>
+
+  <div class="strip"><div class="wrap"><span>Tarot</span><i>✦</i><span>Numerology</span><i>✦</i><span>Maps</span><i>✦</i><span>Connections</span><i>✦</i><span>Your own almanac</span></div></div>
+
+  <section><div class="wrap">
+    <div class="section-head"><span class="eyebrow">How it works</span><h2>Three small steps, <em>one big picture.</em></h2><p class="lede">No quiz marathon. Give us a few details and we do the weaving.</p></div>
+    <div class="grid g3">
+      <article class="plate step"><span class="num">1</span><h3>Tell us who you are</h3><p>Name, date of birth, birthplace. Add favorite movies, books and things, and drop them on the map if they belong somewhere.</p></article>
+      <article class="plate step"><span class="num">2</span><h3>Pull a few cards</h3><p>A tabletop you can touch: shuffle, deal, flip. One card, three cards, or the full Celtic Cross. Save the ones you want to remember.</p></article>
+      <article class="plate step"><span class="num">3</span><h3>See what connects</h3><p>Your life path number, birth card and sun sign link up with your places and favorites in a little constellation you can share.</p></article>
+    </div>
+  </div></section>
+
+  <section class="dark"><div class="wrap split">
+    <div>
+      <span class="eyebrow">Your second self</span>
+      <h2>Everything you love, <em>on one page.</em></h2>
+      <p class="lede">A profile that is part passport, part tarot card, part scrapbook. You choose what is visible and what stays yours.</p>
+      <div class="chips" style="margin-top:20px"><span class="chip on-dark"><Icon name="lock" /> Private by default</span><span class="chip on-dark"><Icon name="share" /> Share only what you pick</span></div>
+      <p style="margin-top:26px"><a class="btn" href={sampleHref}>See a sample profile</a></p>
+    </div>
+    <div class="plate preview">
+      <div class="stat-row"><div class="stat"><b>{view.numbers?.lifePath}</b><span>Life path</span></div><div class="stat"><b>{DECK.find((c) => c.id === view.numbers?.birthCard)?.label}</b><span>Birth card</span></div><div class="stat"><b>♓︎</b><span>Pisces sun</span></div></div>
+      <ul class="facts" style="justify-content:center">{view.links?.slice(0, 2).map((l) => <li>{l.title}</li>)}</ul>
+    </div>
+  </div></section>
+
+  <section><div class="wrap">
+    <div class="section-head"><span class="eyebrow">Inside</span><h2>A little almanac <em>for everything.</em></h2></div>
+    <div class="grid g2">
+      <a href="/tarot/" class="plate feature" style="text-decoration:none"><div class="art"><Icon name="cards" /></div><div><h3>The tarot table</h3><p>78 cards with original art, 3D shuffle and flip, reversed cards, and readings saved on your device.</p></div></a>
+      <a href="/numerology/" class="plate feature" style="text-decoration:none"><div class="art"><Icon name="num" /></div><div><h3>Numbers that mean something</h3><p>Life path, birthday, name numbers and your personal year, each paired with a tarot card.</p></div></a>
+      <a href="/profile/" class="plate feature" style="text-decoration:none"><div class="art"><Icon name="pin" /></div><div><h3>A map of you</h3><p>Where you were born, where your favorite stories happen, and the places you want to remember.</p></div></a>
+      <a href="/privacy/" class="plate feature" style="text-decoration:none"><div class="art"><Icon name="lock" /></div><div><h3>Share on your terms</h3><p>Flip a switch per section. Your share link carries only what you chose to show.</p></div></a>
+    </div>
+  </div></section>
+
+  <section style="background:var(--paper-2)"><div class="wrap">
+    <div class="section-head"><span class="eyebrow">Coming later</span><h2>The almanac <em>keeps growing.</em></h2><p class="lede">The first release is about you, your cards and your numbers. These are on the shelf for later.</p></div>
+    <div class="grid g4">
+      <div class="later"><Icon name="home" /><h3>Knowledge hub</h3><p>Druid trees, historical figures, fun facts and symbols from many traditions, each linked to cards and numbers.</p><span class="chip">Later</span></div>
+      <div class="later"><Icon name="book" /><h3>Journal</h3><p>Write beside your readings, with prompts that fit the card you drew.</p><span class="chip">Next up</span></div>
+      <div class="later"><Icon name="flourish" /><h3>Stories &amp; comics</h3><p>A Tumblr-style blog for the strange and tender things you make.</p><span class="chip">Later</span></div>
+      <div class="later"><Icon name="star" /><h3>Marketplace &amp; community</h3><p>Handmade goods, circles and shared spreads. Gentle, moderated, no pile-ons.</p><span class="chip">Later</span></div>
+    </div>
+  </div></section>
+
+  <section class="dark cta-band"><div class="wrap"><h2>Ready to meet <em>yourself, again?</em></h2><a class="btn" href="/onboarding/">Start your profile</a><p class="note">{REFLECTION_NOTE}</p></div></section>
+</BaseLayout>

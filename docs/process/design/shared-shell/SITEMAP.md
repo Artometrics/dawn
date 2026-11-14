@@ -26,7 +26,7 @@ One fixed shell on every route and on both origins (the live gateway origin and 
 | Work | Games | `/games` | Dilemma village and Pantheon Towers. Both stay in the browser. |
 | Work | Fernbound | `/fernbound` | The wildkin field. It loads only after Open the field. |
 | Work | Aftercare | `/aftercare` | Cards, numbers, and a journal. Nothing is sent. |
-| Work | Books | `/books` | The book quiz, the library, and a shelf. |
+| Work | Books | `/books` | Literary tarot, the book quiz, the Gutenberg press, the library, and a shelf. |
 | Work | Cuts | `/cuts` | A video board: script, chapters, captions, and a license shelf. |
 | Work | Shows | `/shows` | Podcast shows and episodes. The public feed is empty until a show is published. |
 | Work | Research | `/research` | Cited answers over your own files. Embeddings stay off. |

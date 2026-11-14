@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Icon from '../../components/Icon.astro'
+import { NUMBER_MEANINGS } from '../../lib/numerology'
+import { REFLECTION_NOTE } from '../../lib/reading'
+const today = new Date().toISOString().slice(0, 10)
+const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 22, 33]
+---
+<BaseLayout title="Numerology" active="numerology" description="Find your life path number from your birth date, with your birth card and name numbers. Free, private and computed on your device.">
+  <section class="dark hero" style="padding-bottom:clamp(40px,6vw,72px)">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">Numerology</span>
+        <h1 style="margin:18px 0 18px">Your <em>life path</em>, in plain numbers.</h1>
+        <p class="lede">Your birth date folds down to a single digit (or a master number) that numerologists read as a theme. Try it. It is a conversation starter, not a verdict.</p>
+      </div>
+      <div class="dial" aria-live="polite">
+        <svg viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="94" fill="none" stroke="#d99a2b" stroke-opacity=".5" stroke-dasharray="2 5"/><circle cx="100" cy="100" r="78" fill="none" stroke="#f3ead9" stroke-opacity=".35"/><circle cx="100" cy="100" r="60" fill="none" stroke="#d99a2b" stroke-opacity=".35"/></svg>
+        <b id="dial-num">?</b><small id="dial-label">Life path</small>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap split" style="align-items:start">
+      <form class="plate calc" id="num-form" novalidate>
+        <h2 style="font-size:1.8rem">Try it</h2>
+        <div class="field"><label for="n-date">Date of birth</label><input id="n-date" type="date" min="1900-01-01" max={today} /></div>
+        <div class="field"><label for="n-name">Full name (optional)</label><input id="n-name" maxlength="80" autocomplete="off" placeholder="Adds expression, soul urge and personality numbers" /></div>
+        <p class="note" id="n-msg" role="status">Enter a birth date to begin. Nothing leaves your device.</p>
+        <div class="chips"><a class="btn ghost sm" href="/onboarding/"><Icon name="me" /> Save this to my profile</a></div>
+      </form>
+      <div id="num-result" aria-live="polite">
+        <div class="plate" style="padding:26px"><h3>Waiting for a date</h3><p class="muted" style="margin:8px 0 0">Your results, with the working shown, will appear here.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head"><span class="eyebrow">How it works</span><h2>The sums, <em>shown.</em></h2></div>
+      <div class="grid g3">
+        <div class="plate step"><span class="num">1</span><h3>Reduce each part</h3><p>Month, day and year are each added down to one digit, unless they land on 11, 22 or 33. Those master numbers stay as they are.</p></div>
+        <div class="plate step"><span class="num">2</span><h3>Add and reduce</h3><p>Add the three results, then reduce again the same way. Example: 29 November 1985 gives 11 + 11 + 5 = 27, then 2 + 7 = 9.</p></div>
+        <div class="plate step"><span class="num">3</span><h3>Read it as a theme</h3><p>Each number carries a short character sketch below. Use the parts that fit and ignore the rest.</p></div>
+      </div>
+      <p class="note" style="margin-top:22px">Name numbers use the Pythagorean letter table (A=1 through I=9, then it repeats). We count Y as a consonant to keep things simple, and ignore accents and punctuation.</p>
+    </div>
+  </section>
+
+  <section class="dark">
+    <div class="wrap">
+      <div class="section-head"><span class="eyebrow">The numbers</span><h2>Every number, <em>one line.</em></h2></div>
+      <div class="grid g3">
+        {nums.map((n) => (
+          <div class="plate" style="padding:22px" id={`n-${n}`}>
+            <span class="chip gold">{n}{n > 9 ? ' · master' : ''}</span>
+            <h3 style="margin:12px 0 6px">{NUMBER_MEANINGS[n].title}</h3>
+            <p style="margin:0;color:#c9d4cb">{NUMBER_MEANINGS[n].summary}</p>
+          </div>
+        ))}
+      </div>
+      <p class="note" style="margin-top:28px">{REFLECTION_NOTE}</p>
+    </div>
+  </section>
+  <script>
+    import '../../scripts/numerologyPage'
+  </script>
+</BaseLayout>

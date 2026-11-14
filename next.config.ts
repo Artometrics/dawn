@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // `_reference/` at the repo root is original-app source for merger work.
+  // It is excluded from tsconfig and ESLint. Static export only emits
+  // `src/app` and `public` into `out/`, so that folder must never ship.
   output: "export",
   images: { unoptimized: true },
   allowedDevOrigins: ["127.0.0.1", "localhost"],
