@@ -7,6 +7,7 @@ export type IconKey =
   | 'atlas' | 'quests' | 'village' | 'characters' | 'library'
   | 'projects' | 'studio' | 'recipes' | 'letter' | 'newsletter' | 'invoices' | 'contacts'
   | 'games' | 'fernbound' | 'aftercare' | 'books'
+  | 'cuts' | 'shows' | 'research'
   | 'code' | 'nightcode' | 'teammates' | 'editor' | 'kits'
   | 'agents' | 'desk' | 'data' | 'settings';
 
@@ -51,6 +52,9 @@ export const NAV_GROUPS: NavGroup[] = [
       { id: 'fernbound', label: 'Fernbound', href: '/fernbound', icon: 'fernbound', path: '/fernbound' },
       { id: 'aftercare', label: 'Aftercare', href: '/aftercare', icon: 'aftercare', path: '/aftercare' },
       { id: 'books', label: 'Books', href: '/books', icon: 'books', path: '/books' },
+      { id: 'cuts', label: 'Cuts', href: '/cuts', icon: 'cuts', path: '/cuts' },
+      { id: 'shows', label: 'Shows', href: '/shows', icon: 'shows', path: '/shows' },
+      { id: 'research', label: 'Research', href: '/research', icon: 'research', path: '/research' },
     ],
   },
   {
@@ -153,6 +157,9 @@ export const SITE_ROUTES: string[] = [
   '/fernbound',
   '/aftercare',
   '/books',
+  '/cuts',
+  '/shows',
+  '/research',
   '/credits',
   '/desk',
   '/kits',

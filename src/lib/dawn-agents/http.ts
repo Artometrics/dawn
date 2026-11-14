@@ -46,6 +46,9 @@ import { spriteById } from '../credits/sprites';
 import { DEFAULT_TRUSTED_ORIGINS, ownerMutationDecision } from './request-provenance';
 import { WorkerHub } from './worker-hub';
 import type { WorkerKind } from './types';
+import { routeOwnerDesk, routePublicShow } from './desk-routes';
+import type { Generate } from './model-reply';
+import type { EmbedTask } from '../research/embed';
 
 const PIXEL = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
 const MODELS = ['gemini-3.8-flash', 'gemini-3.1-pro-preview', 'x-ai/grok-4.7'];
@@ -68,6 +71,12 @@ export type ServerOptions = {
   fetchImpl?: typeof fetch;
   /** Exact browser Origins allowed to call owner mutations. Host is not used. */
   trustedOrigins?: readonly string[];
+  /** Test hook for the cuts and research model calls. */
+  generate?: Generate;
+  /** Test hook for research embeddings. Production uses Gemini only when the setting is on. */
+  researchEmbed?: (texts: string[], task: EmbedTask) => Promise<number[][]>;
+  /** Overrides process.env for desk routes. Tests use this so they do not share the process environment. */
+  env?: Record<string, string | undefined>;
 };
 
 export type RunningServer = {
@@ -175,7 +184,7 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       if (!ownerOk(req)) return sendJson(res, 401, { error: 'Sign in with Google.' });
       return sendJson(res, 200, { email: emailFromProxyHeaders(req.headers) || firstAllowedEmail(ownerEmail) });
     }
-    if (req.method === 'POST' && (pathname === '/api/chat' || /^\/api\/(kits\/.+|threads\/[^/]+)\/messages$/.test(pathname))) {
+    if (req.method === 'POST' && (pathname === '/api/chat' || pathname === '/api/cuts/generate' || pathname === '/api/research/ask' || /\/api\/research\/sources\/[^/]+\/process$/.test(pathname) || /^\/api\/(kits\/.+|threads\/[^/]+)\/messages$/.test(pathname))) {
       if (!ipLimiter.take(clientIp(req.socket.remoteAddress, req.headers['x-forwarded-for']))) {
         sendJson(res, 429, { error: 'Too many messages. Wait a minute and try again.' });
         return;
@@ -213,6 +222,20 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       sendJson(res, decision.status, { error: decision.error });
       return;
     }
+    if (await routeOwnerDesk(req, res, pathname, {
+      store,
+      researchPath: path.join(path.dirname(options.storePath), 'research.json'),
+      dailyCap,
+      capBlocked,
+      newId,
+      sendJson,
+      readBody,
+      fetchImpl,
+      generate: options.generate,
+      researchEmbed: options.researchEmbed,
+      env: options.env,
+      publicOrigin,
+    })) return;
     if (req.method === 'GET' && pathname === '/api/state') {
       sendJson(res, 200, await snapshot());
       return;
@@ -582,6 +605,7 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
           data.settings.spendCapUsd = body.spendCapUsd;
         }
         if (typeof body.trainingEnabled === 'boolean') data.settings.trainingEnabled = body.trainingEnabled;
+        if (typeof body.embeddingsEnabled === 'boolean') data.settings.embeddingsEnabled = body.embeddingsEnabled;
         if (body.trainingProviders && typeof body.trainingProviders === 'object') {
           for (const id of TRAINING_PROVIDER_IDS) {
             const value = (body.trainingProviders as Record<string, unknown>)[id];
@@ -919,6 +943,17 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
   }
 
   async function publicRoute(req: IncomingMessage, res: ServerResponse, pathname: string, url: URL) {
+    if (await routePublicShow(req, res, pathname, {
+      store,
+      researchPath: path.join(path.dirname(options.storePath), 'research.json'),
+      dailyCap,
+      capBlocked,
+      newId,
+      sendJson,
+      readBody,
+      fetchImpl,
+      publicOrigin,
+    })) return;
     if (req.method === 'GET' && pathname === '/api/public/letters') {
       const data = await store.read();
       return sendJson(res, 200, {
@@ -1611,13 +1646,13 @@ function startSse(res: ServerResponse) {
   };
 }
 
-async function readBody(req: IncomingMessage): Promise<string> {
+async function readBody(req: IncomingMessage, max = 400_000): Promise<string> {
   const chunks: Buffer[] = [];
   let size = 0;
   for await (const chunk of req) {
     const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
     size += buffer.length;
-    if (size > 400_000) throw new Error('Request is too large.');
+    if (size > max) throw new Error('Request is too large.');
     chunks.push(buffer);
   }
   return Buffer.concat(chunks).toString('utf8');

@@ -15,6 +15,7 @@ import { normalizeTrainingProviders } from './training';
 import type { EngagementEvent } from './engage';
 import type { DataExample } from './data-studio';
 import type { ArticleRecord, SendRecord, SubscriberRecord } from './publish';
+import type { PublishedShow } from '../shows/types';
 
 export type StoreData = {
   agents: AgentRecord[];
@@ -29,6 +30,8 @@ export type StoreData = {
   articles: ArticleRecord[];
   subscribers: SubscriberRecord[];
   sends: SendRecord[];
+  shows: PublishedShow[];
+  listens: Record<string, number>;
   settings: SettingsRecord;
 };
 
@@ -46,10 +49,13 @@ export function emptyStore(spendCapUsd = 20): StoreData {
     articles: [],
     subscribers: [],
     sends: [],
+    shows: [],
+    listens: {},
     settings: {
       spendCapUsd,
       trainingEnabled: true,
       trainingProviders: { ...DEFAULT_TRAINING_PROVIDERS },
+      embeddingsEnabled: false,
     },
   };
 }
@@ -70,6 +76,8 @@ function normalize(raw: Partial<StoreData> | null, spendCapUsd: number): StoreDa
     articles: Array.isArray(raw.articles) ? raw.articles : [],
     subscribers: Array.isArray(raw.subscribers) ? raw.subscribers : [],
     sends: Array.isArray(raw.sends) ? raw.sends : [],
+    shows: Array.isArray(raw.shows) ? raw.shows : [],
+    listens: raw.listens && typeof raw.listens === 'object' ? raw.listens : {},
     settings: {
       spendCapUsd:
         typeof raw.settings?.spendCapUsd === 'number' && raw.settings.spendCapUsd >= 0
@@ -77,6 +85,7 @@ function normalize(raw: Partial<StoreData> | null, spendCapUsd: number): StoreDa
           : spendCapUsd,
       trainingEnabled: raw.settings?.trainingEnabled !== false,
       trainingProviders: normalizeTrainingProviders(raw.settings?.trainingProviders),
+      embeddingsEnabled: raw.settings?.embeddingsEnabled === true,
       lastCollectSlot: typeof raw.settings?.lastCollectSlot === 'string' ? raw.settings.lastCollectSlot : undefined,
     },
   };

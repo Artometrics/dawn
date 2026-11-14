@@ -15,6 +15,15 @@ export const PRICE_PER_MILLION: Record<string, { input: number; output: number }
 
 const FALLBACK_PRICE = { input: 3, output: 15 };
 
+/** Gemini embedding price, labeled as an estimate. $0.15 per 1M input tokens. */
+export const EMBED_PRICE_PER_MILLION = 0.15;
+
+export function estimateEmbedCost(texts: string[]): number {
+  const tokens = texts.reduce((sum, text) => sum + Math.ceil(text.length / 4), 0);
+  const cost = (tokens / 1_000_000) * EMBED_PRICE_PER_MILLION;
+  return Math.round(cost * 1e8) / 1e8;
+}
+
 export function estimateCost(model: string, promptTokens: number, completionTokens: number): number {
   const price = PRICE_PER_MILLION[model] ?? FALLBACK_PRICE;
   const cost = (Math.max(0, promptTokens) / 1_000_000) * price.input + (Math.max(0, completionTokens) / 1_000_000) * price.output;
