@@ -246,6 +246,12 @@
     "url": "https://lucide.dev"
   },
   {
+    "name": "maplibre-gl",
+    "kind": "dawn",
+    "license": "BSD-3-Clause",
+    "url": "https://maplibre.org/"
+  },
+  {
     "name": "media-chrome",
     "kind": "dawn",
     "license": "MIT",

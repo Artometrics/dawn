@@ -49,3 +49,4 @@ publish('preview/habits');
 publish('preview/stuck');
 publish('preview/village');
 publish('preview');
+publish('walk');

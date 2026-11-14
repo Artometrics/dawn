@@ -35,7 +35,7 @@ const subscribeDock = (notify: () => void) => {
 const isDocked = () => window.matchMedia(DOCK_QUERY).matches;
 
 /** Pages that fill the view and manage their own scrolling. Every other page scrolls inside the view. */
-const FILL_ROUTES = new Set(['/', '/village', '/agents', '/studio', '/preview/village', '/town', '/atlas']);
+const FILL_ROUTES = new Set(['/', '/village', '/agents', '/studio', '/preview/village', '/town', '/atlas', '/walk']);
 
 type ShellState = { desk: DeskStatus; open: boolean; docked: boolean; setOpen: (open: boolean) => void };
 const ShellContext = createContext<ShellState>({ desk: 'offline', open: false, docked: false, setOpen: () => undefined });
