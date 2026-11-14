@@ -1,0 +1,21 @@
+{
+  "projects": {
+    "default": "carrie-510519"
+  },
+  "targets": {
+    "carrie-510519": {
+      "hosting": {
+        "books": [
+          "carrie-books"
+        ],
+        "pets": [
+          "carrie-pets"
+        ],
+        "portal": [
+          "carrie-510519"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

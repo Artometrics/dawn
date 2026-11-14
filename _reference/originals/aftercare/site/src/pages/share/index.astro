@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Icon from '../../components/Icon.astro'
+import { REFLECTION_NOTE } from '../../lib/reading'
+---
+<BaseLayout title="A shared second self" active="profile" description="Someone shared their Aftercare second self with you.">
+  <div id="share-bad" hidden>
+    <section class="page-head"><div class="wrap">
+      <span class="eyebrow">Shared profile</span>
+      <h1>This link <em>looks empty.</em></h1>
+      <p class="lede">Shared profiles live entirely inside the link, so a link that was cut short or edited cannot be read. Ask for a fresh one, or make your own.</p>
+      <p style="margin-top:24px"><a class="btn" href="/onboarding/"><Icon name="me" /> Make your own second self</a></p>
+    </div></section>
+  </div>
+  <div id="share-root"></div>
+  <section id="share-foot" hidden>
+    <div class="wrap">
+      <div class="plate" style="padding:24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center">
+        <div><h3>Want one of your own?</h3><p class="muted" style="margin:6px 0 0">It takes about two minutes and stays on your device.</p></div>
+        <a class="btn" href="/onboarding/">Start your profile</a>
+      </div>
+      <p class="note" style="margin-top:24px">{REFLECTION_NOTE} Shared profiles are shown exactly as the sender chose, with no server involved.</p>
+    </div>
+  </section>
+  <script>
+    import { decodeShare } from '../../lib/share'
+    import { renderSelf } from '../../lib/renderSelf'
+    const view = decodeShare(location.hash)
+    const root = document.getElementById('share-root') as HTMLElement
+    if (!view) {
+      (document.getElementById('share-bad') as HTMLElement).hidden = false
+    } else {
+      root.innerHTML = renderSelf(view, { shared: true })
+      document.getElementById('self-actions')?.remove()
+      ;(document.getElementById('share-foot') as HTMLElement).hidden = false
+      document.title = `${view.name} - Aftercare`
+    }
+  </script>
+</BaseLayout>

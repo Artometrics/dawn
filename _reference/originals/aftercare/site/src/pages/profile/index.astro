@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Icon from '../../components/Icon.astro'
+import { REFLECTION_NOTE } from '../../lib/reading'
+---
+<BaseLayout title="Your second self" active="profile" description="Your numbers, map and connections in one shareable profile, kept on your own device.">
+  <div id="self-empty" hidden>
+    <section class="page-head"><div class="wrap">
+      <span class="eyebrow">Your second self</span>
+      <h1>Nobody <em>home</em> yet.</h1>
+      <p class="lede">Tell us your name, birth date and a few favorites. We will place you on a map, work out your numbers and show how the pieces connect. It all stays on this device.</p>
+      <p style="margin-top:24px"><a class="btn" href="/onboarding/"><Icon name="me" /> Start your profile</a></p>
+    </div></section>
+  </div>
+
+  <div id="self-root"></div>
+
+  <section id="self-tools" hidden>
+    <div class="wrap">
+      <div class="section-head"><span class="eyebrow">Share and keep</span><h2>Yours to <em>control.</em></h2>
+        <p class="lede">Choose what a share link can show. The link carries the chosen parts inside the address itself, so nothing is uploaded anywhere.</p></div>
+      <div class="split" style="align-items:start">
+        <div class="plate share-box" id="vis-box">
+          <h3>Visible in a share link</h3>
+          <div class="toggles" id="vis-toggles"></div>
+        </div>
+        <div class="plate share-box">
+          <h3>Your link</h3>
+          <code id="share-link" aria-live="polite"></code>
+          <div class="chips">
+            <button class="btn sm" type="button" id="btn-copy"><Icon name="share" /> Copy link</button>
+            <a class="btn ghost sm" id="btn-preview" href="/share/" target="_blank" rel="noopener">Preview</a>
+          </div>
+          <p class="note" id="share-msg" role="status">Anyone with the link sees exactly what is switched on, and nothing else.</p>
+        </div>
+      </div>
+      <div class="plate share-box" style="margin-top:24px">
+        <h3>Backup and reset</h3>
+        <p class="muted" style="margin:0">Export your profile and saved readings as a file, bring them to another device, or wipe everything from this one.</p>
+        <div class="chips">
+          <button class="btn ghost sm" type="button" id="btn-export">Export backup</button>
+          <label class="btn ghost sm" for="file-import" style="cursor:pointer">Import backup</label>
+          <input id="file-import" type="file" accept="application/json,.json" class="sr" />
+          <a class="btn ghost sm" href="/onboarding/">Edit profile</a>
+          <button class="btn ghost sm" type="button" id="btn-wipe">Delete everything here</button>
+        </div>
+        <p class="note" id="backup-msg" role="status"></p>
+      </div>
+      <p class="note" style="margin-top:28px">{REFLECTION_NOTE}</p>
+    </div>
+  </section>
+  <script>
+    import '../../scripts/profilePage'
+  </script>
+</BaseLayout>

@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { REFLECTION_NOTE } from '../../lib/reading'
+---
+<BaseLayout title="Privacy and your data" description="Aftercare keeps your profile and readings on your own device. Here is exactly what is stored and how sharing works.">
+  <section class="page-head"><div class="wrap" style="max-width:46rem">
+    <span class="eyebrow">Privacy</span>
+    <h1>Your data <em>stays yours.</em></h1>
+    <p class="lede">This first version of Aftercare has no accounts and no server that stores anything about you.</p>
+    <div class="prose">
+      <h2>What is stored, and where</h2>
+      <p>Your profile and saved readings are kept in your browser's local storage, under the keys <code>aftercare.profile</code> and <code>aftercare.readings</code>. They never leave your device. Clearing your browser data, or using "Delete everything here" on your profile page, removes them.</p>
+      <h2>No outside calls</h2>
+      <p>Fonts, the world map and the list of cities are bundled with the site. Birthplace search uses a built-in list of well-known cities and a tap-to-pin map, not a location service.</p>
+      <h2>How sharing works</h2>
+      <p>A share link carries the parts you switched on inside the address itself (the part after the <code>#</code>). Browsers do not send that part to servers, so it is never uploaded. Anyone who has the link can read what it carries, so share it with care. Your exact birth date and your favorites are off by default.</p>
+      <h2>Backups</h2>
+      <p>You can export a backup file from your profile page and import it on another device. Nothing is synced automatically.</p>
+      <h2>A note on readings</h2>
+      <p>{REFLECTION_NOTE}</p>
+    </div>
+  </div></section>
+</BaseLayout>
