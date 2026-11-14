@@ -6,6 +6,7 @@
 export type IconKey =
   | 'atlas' | 'quests' | 'village' | 'characters' | 'library'
   | 'projects' | 'studio' | 'recipes' | 'letter' | 'newsletter' | 'invoices' | 'contacts'
+  | 'games' | 'fernbound' | 'aftercare' | 'books'
   | 'code' | 'nightcode' | 'teammates' | 'editor' | 'kits'
   | 'agents' | 'desk' | 'data' | 'settings';
 
@@ -46,6 +47,10 @@ export const NAV_GROUPS: NavGroup[] = [
       { id: 'newsletter', label: 'Newsletter', href: '/newsletter', icon: 'newsletter', path: '/newsletter' },
       { id: 'invoices', label: 'Invoices', href: '/invoices', icon: 'invoices', path: '/invoices' },
       { id: 'contacts', label: 'Contacts', href: '/contacts', icon: 'contacts', path: '/contacts' },
+      { id: 'games', label: 'Games', href: '/games', icon: 'games', path: '/games' },
+      { id: 'fernbound', label: 'Fernbound', href: '/fernbound', icon: 'fernbound', path: '/fernbound' },
+      { id: 'aftercare', label: 'Aftercare', href: '/aftercare', icon: 'aftercare', path: '/aftercare' },
+      { id: 'books', label: 'Books', href: '/books', icon: 'books', path: '/books' },
     ],
   },
   {
@@ -144,6 +149,10 @@ export const SITE_ROUTES: string[] = [
   '/newsletter',
   '/invoices',
   '/contacts',
+  '/games',
+  '/fernbound',
+  '/aftercare',
+  '/books',
   '/credits',
   '/desk',
   '/kits',

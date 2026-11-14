@@ -53,7 +53,7 @@ test('Caddy: every page is public, the APIs (kits included) go through the one a
   const caddy = read('deploy/Caddyfile');
   const publicLine = caddy.split('\n').find((line) => line.includes('@public path')) ?? '';
   const publicPaths = publicLine.split(/\s+/);
-  for (const route of ['/', '/atlas', '/village', '/town', '/projects', '/artifacts', '/code', '/code/*', '/desk', '/kits', '/kits/*', '/credits', '/preview', '/newsletter', '/invoices', '/contacts']) {
+  for (const route of ['/', '/atlas', '/village', '/town', '/projects', '/artifacts', '/code', '/code/*', '/desk', '/kits', '/kits/*', '/credits', '/preview', '/newsletter', '/invoices', '/contacts', '/games', '/fernbound', '/aftercare', '/books', '/play/*']) {
     assert.ok(publicPaths.includes(route), `${route} is public`);
   }
   for (const route of ['/agents', '/editor', '/api']) assert.ok(!publicPaths.includes(route), `${route} must not be a public static path`);
@@ -70,5 +70,5 @@ test('Caddy: every page is public, the APIs (kits included) go through the one a
 
 test('the static export publishes the nested pages as folders so Firebase finds them', () => {
   const script = read('scripts/fix-static-export.mjs');
-  for (const route of ['town', 'village', 'atlas', 'code', 'code/editor', 'kits', 'desk', 'newsletter', 'invoices', 'contacts']) assert.match(script, new RegExp(`publish\\('${route}'\\)`));
+  for (const route of ['town', 'village', 'atlas', 'code', 'code/editor', 'kits', 'desk', 'newsletter', 'invoices', 'contacts', 'games', 'fernbound', 'aftercare', 'books']) assert.match(script, new RegExp(`publish\\('${route}'\\)`));
 });

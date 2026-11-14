@@ -67,7 +67,7 @@
 	# Every page of the static app stays public. The pages hold no data. The
 	# data lives behind /api/*, which uses dawn_auth. /agents is the one page that
 	# still goes through dawn_auth, so sign-in lands there when it is switched on.
-	@public path / /atlas /atlas/* /studio /studio/* /projects /projects/* /artifacts /artifacts/* /village /village/* /town /town/* /credits /credits/* /code /code/* /desk /desk/* /kits /kits/* /newsletter /newsletter/* /invoices /invoices/* /contacts /contacts/* /letter /letter/* /preview /preview/* /sprites/* /tiles/* /maps/* /_next/* /dawn-agents-config.json /favicon.ico /robots.txt /404.html /*.svg
+	@public path / /atlas /atlas/* /studio /studio/* /projects /projects/* /artifacts /artifacts/* /village /village/* /town /town/* /credits /credits/* /code /code/* /desk /desk/* /kits /kits/* /newsletter /newsletter/* /invoices /invoices/* /contacts /contacts/* /games /games/* /fernbound /fernbound/* /aftercare /aftercare/* /books /books/* /play/* /letter /letter/* /preview /preview/* /sprites/* /tiles/* /maps/* /_next/* /dawn-agents-config.json /favicon.ico /robots.txt /404.html /*.svg
 	handle @public {
 		root * {$DAWN_STATIC_ROOT}
 		try_files {path} {path}.html {path}/index.html

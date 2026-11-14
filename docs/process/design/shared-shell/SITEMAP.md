@@ -23,6 +23,10 @@ One fixed shell on every route and on both origins (the live gateway origin and 
 | Work | Newsletter | `/newsletter` | Compose, the subscriber list, a dry-run send, and counts. |
 | Work | Invoices | `/invoices` | Numbered invoices, PDF, and print. |
 | Work | Contacts | `/contacts` | People, companies, the pipeline, and today. |
+| Work | Games | `/games` | Dilemma village and Pantheon Towers. Both stay in the browser. |
+| Work | Fernbound | `/fernbound` | The wildkin field. It loads only after Open the field. |
+| Work | Aftercare | `/aftercare` | Cards, numbers, and a journal. Nothing is sent. |
+| Work | Books | `/books` | The book quiz, the library, and a shelf. |
 | Code | Code | `/code` | Code hub: cards for every code tool, and the "Open VS Code" button. |
 | Code | NightCode | `/kits/nightcode` | Plan with read-only tools, or build. |
 | Code | Teammates | `/kits/teammates` | A Builder and a Reviewer in one chat. |

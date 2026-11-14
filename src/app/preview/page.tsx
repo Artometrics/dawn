@@ -19,6 +19,10 @@ const ACTUAL = [
   { href: '/newsletter', name: 'Newsletter', note: 'Compose, list, archive, and counts. Sending is off.' },
   { href: '/invoices', name: 'Invoices', note: 'Numbered invoices with PDF and print.' },
   { href: '/contacts', name: 'Contacts', note: 'People, pipeline, and today.' },
+  { href: '/games', name: 'Games', note: 'Dilemma village and towers. No server.' },
+  { href: '/fernbound', name: 'Fernbound', note: 'The field loads after a button. No server.' },
+  { href: '/aftercare', name: 'Aftercare', note: 'Cards, numbers, journal. Nothing is sent.' },
+  { href: '/books', name: 'Books', note: 'Quiz, library, and shelf. No shop links.' },
   { href: '/credits', name: 'Credits', note: 'Sprite and library credits.' },
   { href: '/preview/style-guide', name: 'Style guide', note: 'Tokens and shared components every page uses.' },
 ];
