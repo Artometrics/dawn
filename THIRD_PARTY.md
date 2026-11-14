@@ -16,7 +16,7 @@ The dilemma village in `src/lib/games/dilemma.ts` is the simulation from [kylesm
 
 Fernbound's page loads `public/play/fernbound/`, the published Godot web export (engine [MIT](https://godotengine.org/license/)). The GDScript sources were not in the Artometrics or kylesmcauliffe GitHub accounts, so the desk plays that build.
 
-Aftercare's card text, numerology, and spreads in `src/lib/aftercare/` come from Artometrics/aftercare `site/`. The three.js table, the Netlify app, and Gemini card readings stay there. Books in `src/lib/books/` is the PageMatch quiz and shelf from Artometrics/carrie `apps/books`. The pet certificates and the Amazon affiliate buttons stay out.
+Aftercare's card text, numerology, and spreads in `src/lib/aftercare/` come from Artometrics/aftercare `site/`. The three.js table, the Netlify app, and Gemini card readings stay there. Books in `src/lib/books/` is the PageMatch oracle, quiz, Gutenberg press, study capsules, and shelf from Artometrics/carrie `apps/books`. The capsule text is Carrie's short study notes, not a CliffsNotes feed. Covers come from Open Library and Project Gutenberg. The in-page text reader uses a public jsDelivr copy of the same Gutenberg file when the browser cannot read gutenberg.org (that host does not send CORS headers). The pet certificates and the Amazon affiliate buttons stay out.
 
 ## Dawn Agents
 

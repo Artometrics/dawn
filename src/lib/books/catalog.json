@@ -32,7 +32,13 @@
           }
         ],
         "discussion": "How does Piranesi’s unconditional gratitude contrast with our modern obsession with conquering our environment?"
-      }
+      },
+      "tropes": [
+        "labyrinth",
+        "solitude",
+        "philosophical",
+        "wonder"
+      ]
     },
     {
       "id": "project-hail-mary",
@@ -65,7 +71,13 @@
           }
         ],
         "discussion": "Why is optimism and curiosity often more potent than fear when facing existential extinction?"
-      }
+      },
+      "tropes": [
+        "friendship",
+        "space",
+        "survival",
+        "science"
+      ]
     },
     {
       "id": "the-silent-patient",
@@ -98,7 +110,13 @@
           }
         ],
         "discussion": "How does childhood neglect warp adult perception, and who was truly the patient in the room?"
-      }
+      },
+      "tropes": [
+        "unreliable narrator",
+        "twist",
+        "psychological",
+        "silence"
+      ]
     },
     {
       "id": "house-in-the-cerulean-sea",
@@ -132,7 +150,13 @@
           }
         ],
         "discussion": "How does systemic prejudice masquerade as \"polite policy\" in our daily institutions?"
-      }
+      },
+      "tropes": [
+        "found family",
+        "cozy",
+        "healing",
+        "acceptance"
+      ]
     },
     {
       "id": "tomorrow-and-tomorrow",
@@ -165,7 +189,13 @@
           }
         ],
         "discussion": "Why is platonic creative partnership often more emotionally intense than romantic love?"
-      }
+      },
+      "tropes": [
+        "creative partnership",
+        "grief",
+        "friendship",
+        "play"
+      ]
     },
     {
       "id": "fourth-wing",
@@ -199,7 +229,13 @@
           }
         ],
         "discussion": "How does physical vulnerability force characters to rely on mental agility and strategic alliances?"
-      }
+      },
+      "tropes": [
+        "dragons",
+        "enemies to lovers",
+        "academy",
+        "romance"
+      ]
     },
     {
       "id": "yellowface",
@@ -233,7 +269,13 @@
           }
         ],
         "discussion": "At what point does \"artistic freedom\" cross into predatory cultural exploitation?"
-      }
+      },
+      "tropes": [
+        "satire",
+        "publishing",
+        "unreliable narrator",
+        "appropriation"
+      ]
     },
     {
       "id": "atomic-habits",
@@ -262,7 +304,13 @@
           }
         ],
         "discussion": "Why is focusing on who you want to become far more durable than focusing on what you want to achieve?"
-      }
+      },
+      "tropes": [
+        "habits",
+        "systems",
+        "nonfiction",
+        "self-improvement"
+      ]
     }
   ],
   "questions": [
