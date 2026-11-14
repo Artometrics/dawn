@@ -1,0 +1,15 @@
+{
+  "name": "artometrics-newsletter-mcp",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "artometrics-newsletter-mcp": "./server.js"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "zod": "^4.6.7"
+  }
+}

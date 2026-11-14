@@ -1,0 +1,180 @@
+rules_version = '2';
+// Prototype rules. Review before a public launch.
+//
+// Assumed data model
+//
+// issues/{id}
+//   title: string (1..180)
+//   slug: string ^[a-z0-9]+(?:-[a-z0-9]+)*$ max 80, immutable after create
+//   subject: string (1..240)
+//   preheader: string (0..240)
+//   dek: string (0..400)
+//   bodyMarkdown: string (0..100000)
+//   status: draft | scheduled on client writes. sending | sent | failed are Admin SDK only.
+//   createdBy: string, immutable
+//   createdAt, updatedAt: timestamp
+//   scheduledAt: null while draft, timestamp while scheduled
+//   sentAt: null on client writes
+//   stats: map of ints. Clients may create zeros and must not change them.
+//   gemini: null on client create, immutable afterwards
+//   physicalAddress: list of 1..8 strings
+//
+// slugs/{slug}
+//   issueId: string. Create-only, so a slug cannot be reused by the client.
+//
+// subscribers/{id}, events/{id}, sends/{id}, rateLimits/{id}
+//   No client access. Emails and unsubscribe tokens live here.
+//
+// dryRuns/{id}
+//   Admin SDK writes. Allowlisted accounts may read the log.
+//
+// Allowlist (keep in sync with functions/src/config.js):
+//   team@artometrics.com
+//   kylesmcauliffe@gmail.com
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in [
+          'team@artometrics.com',
+          'kylesmcauliffe@gmail.com'
+        ];
+    }
+
+    function nonEmpty(v, max) {
+      return v is string && v.size() > 0 && v.size() <= max;
+    }
+
+    function validStats(s) {
+      return s is map
+        && s.keys().hasOnly([
+          'recipients', 'sent', 'failed', 'opens', 'uniqueOpens',
+          'clicks', 'uniqueClicks', 'unsubscribes'
+        ])
+        && s.recipients is int
+        && s.sent is int
+        && s.failed is int
+        && s.opens is int
+        && s.uniqueOpens is int
+        && s.clicks is int
+        && s.uniqueClicks is int
+        && s.unsubscribes is int;
+    }
+
+    function zeroStats(s) {
+      return validStats(s)
+        && s.recipients == 0
+        && s.sent == 0
+        && s.failed == 0
+        && s.opens == 0
+        && s.uniqueOpens == 0
+        && s.clicks == 0
+        && s.uniqueClicks == 0
+        && s.unsubscribes == 0;
+    }
+
+    function issueKeys(data) {
+      return data.keys().hasOnly([
+        'title', 'slug', 'subject', 'preheader', 'dek', 'bodyMarkdown',
+        'status', 'createdBy', 'createdAt', 'updatedAt', 'scheduledAt',
+        'sentAt', 'stats', 'gemini', 'physicalAddress'
+      ]);
+    }
+
+    function validIssueShape(data) {
+      return issueKeys(data)
+        && nonEmpty(data.title, 180)
+        && data.slug is string
+        && data.slug.size() > 0
+        && data.slug.size() <= 80
+        && data.slug.matches('^[a-z0-9]+(?:-[a-z0-9]+)*$')
+        && nonEmpty(data.subject, 240)
+        && data.preheader is string
+        && data.preheader.size() <= 240
+        && data.dek is string
+        && data.dek.size() <= 400
+        && data.bodyMarkdown is string
+        && data.bodyMarkdown.size() <= 100000
+        && nonEmpty(data.createdBy, 320)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp
+        && data.sentAt == null
+        && data.physicalAddress is list
+        && data.physicalAddress.size() >= 1
+        && data.physicalAddress.size() <= 8
+        && data.physicalAddress[0] is string
+        && validStats(data.stats);
+    }
+
+    function isValidDraftCreate(data) {
+      return validIssueShape(data)
+        && data.status == 'draft'
+        && data.scheduledAt == null
+        && data.gemini == null
+        && zeroStats(data.stats);
+    }
+
+    function isValidIssueUpdate(prev, next) {
+      return validIssueShape(next)
+        && prev.status in ['draft', 'scheduled']
+        && next.slug == prev.slug
+        && next.createdBy == prev.createdBy
+        && next.createdAt == prev.createdAt
+        && next.sentAt == prev.sentAt
+        && next.stats == prev.stats
+        && next.gemini == prev.gemini
+        && (
+          (next.status == 'draft' && next.scheduledAt == null)
+          || (next.status == 'scheduled' && next.scheduledAt is timestamp)
+        );
+    }
+
+    match /issues/{id} {
+      allow read: if isAdmin() || resource.data.status == 'sent';
+      allow create: if isAdmin() && isValidDraftCreate(request.resource.data);
+      allow update: if isAdmin() && isValidIssueUpdate(resource.data, request.resource.data);
+      allow delete: if false;
+    }
+
+    match /slugs/{slug} {
+      allow read: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly(['issueId'])
+        && request.resource.data.issueId is string
+        && request.resource.data.issueId.size() > 0
+        && request.resource.data.issueId.size() <= 200;
+      allow update, delete: if false;
+    }
+
+    match /dryRuns/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /subscribers/{id} {
+      allow read, write: if false;
+    }
+
+    match /events/{id} {
+      allow read, write: if false;
+    }
+
+    match /sends/{id} {
+      allow read, write: if false;
+    }
+
+    match /rateLimits/{id} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

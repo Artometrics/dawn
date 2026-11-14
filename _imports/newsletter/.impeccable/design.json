@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-21T12:20:00.000Z",
+  "title": "Design System: Artometrics",
+  "extensions": {
+    "colorMeta": {
+      "blue": {
+        "role": "primary",
+        "displayName": "House Blue",
+        "canonical": "oklch(51.1% 0.274 263.5)",
+        "tonalRamp": ["#200083", "#1600a6", "#0100c9", "#003af4", "#1f68ff", "#4a9aff", "#9dcfff", "#d7efff"]
+      },
+      "blue-deep": {
+        "role": "primary",
+        "displayName": "Press Blue",
+        "canonical": "oklch(42.6% 0.235 263.7)",
+        "tonalRamp": ["#170072", "#0a0093", "#0013b5", "#0e47df", "#3170ff", "#5a9fff", "#a5d0ff", "#daefff"]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Press Paper",
+        "canonical": "oklch(97.0% 0.003 264.5)",
+        "tonalRamp": ["#0d0d0f", "#232425", "#3c3d3f", "#5d5e5f", "#7f8082", "#aaabad", "#d0d1d2", "#eeeeef"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(19.1% 0.017 264.0)",
+        "tonalRamp": ["#090d15", "#20242d", "#383d47", "#595e68", "#7b808b", "#a5abb6", "#ced1d7", "#edeef1"]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "oklch(30.8% 0.040 260.4)",
+        "tonalRamp": ["#040d1e", "#192437", "#313e52", "#515e75", "#738199", "#9dacc5", "#c9d2e0", "#ebeff5"]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Rule",
+        "canonical": "oklch(89.0% 0.016 262.7)",
+        "tonalRamp": ["#090d14", "#20242c", "#393d46", "#595e67", "#7b808a", "#a5abb6", "#ced1d7", "#edeef1"]
+      },
+      "white": {
+        "role": "neutral",
+        "displayName": "Sheet White",
+        "canonical": "oklch(100% 0 0)",
+        "tonalRamp": ["#0d0d0d", "#242424", "#3d3d3d", "#5d5d5d", "#808080", "#ababab", "#d1d1d1", "#eeeeee"]
+      },
+      "wash": {
+        "role": "neutral",
+        "displayName": "Blue Wash",
+        "canonical": "oklch(94.9% 0.024 267.9)",
+        "tonalRamp": ["#090d18", "#1f2430", "#383d4a", "#585d6c", "#7a808f", "#a4abbb", "#cdd1da", "#edeef3"]
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Blue Mist",
+        "canonical": "oklch(90.9% 0.044 271.3)",
+        "tonalRamp": ["#070b20", "#1c2339", "#353c54", "#545d77", "#767f9b", "#a0aac7", "#cbd1e1", "#eceef6"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Home title and locked-desk title. Cap 6rem." },
+      "headline": { "displayName": "Headline", "purpose": "Issue title on the blue sheet and in the archive." },
+      "title": { "displayName": "Title", "purpose": "Section titles and headings inside a letter." },
+      "body": { "displayName": "Body", "purpose": "The letter, the dek, and the colophon." },
+      "label": { "displayName": "Label", "purpose": "Navigation, buttons, fields, and desk rows." }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "mast-rule",
+        "value": "700ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The 3px mast rule draws from the left. Disabled under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      { "name": "md", "value": "768px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The desk action. Square, house blue, 44px tall.",
+      "html": "<button class=\"ds-btn-primary\">Sign in with Google</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; background: #0047FF; color: #ffffff; border: 0; border-radius: 0; font-family: \"Familjen Grotesk\", \"Avenir Next\", \"Segoe UI\", sans-serif; font-size: 0.95rem; letter-spacing: -0.01em; cursor: pointer; } .ds-btn-primary:hover { background: #0033CC; } .ds-btn-primary:focus-visible { outline: 2px solid #0047FF; outline-offset: 3px; }"
+    },
+    {
+      "name": "Inverse Button",
+      "kind": "button",
+      "refersTo": "button-inverse",
+      "description": "The action on the blue sheet: read the letter, or send the confirmation.",
+      "html": "<div style=\"background:#0047FF;padding:24px\"><button class=\"ds-btn-inverse\">Read this letter</button></div>",
+      "css": ".ds-btn-inverse { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px; background: #ffffff; color: #0047FF; border: 0; border-radius: 0; font-family: \"Familjen Grotesk\", \"Avenir Next\", \"Segoe UI\", sans-serif; font-size: 0.95rem; letter-spacing: -0.01em; cursor: pointer; } .ds-btn-inverse:hover { background: #e7eeff; } .ds-btn-inverse:focus-visible { outline: 2px solid #ffffff; outline-offset: 3px; }"
+    },
+    {
+      "name": "Line Button",
+      "kind": "button",
+      "refersTo": "button-line",
+      "description": "A secondary desk action, such as sign out when the account is not allowlisted.",
+      "html": "<button class=\"ds-btn-line\">Sign out</button>",
+      "css": ".ds-btn-line { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; background: transparent; color: #10141c; border: 1px solid rgba(16,20,28,0.2); border-radius: 0; font-family: \"Familjen Grotesk\", \"Avenir Next\", \"Segoe UI\", sans-serif; font-size: 0.95rem; letter-spacing: -0.01em; cursor: pointer; } .ds-btn-line:hover { border-color: #0047FF; color: #0047FF; } .ds-btn-line:focus-visible { outline: 2px solid #0047FF; outline-offset: 3px; }"
+    },
+    {
+      "name": "Email Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Square field, 16px type, house-blue caret.",
+      "html": "<label class=\"ds-label\" for=\"ds-email\">Email</label><input class=\"ds-input\" id=\"ds-email\" type=\"email\" placeholder=\"you@studio.com\" />",
+      "css": ".ds-label { display: block; margin-bottom: 8px; font-family: \"Familjen Grotesk\", \"Avenir Next\", \"Segoe UI\", sans-serif; font-size: 0.95rem; color: #10141c; } .ds-input { width: 100%; min-height: 44px; box-sizing: border-box; border: 1px solid #d5dbe6; border-radius: 0; background: #ffffff; color: #10141c; padding: 0 12px; font-family: \"Familjen Grotesk\", \"Avenir Next\", \"Segoe UI\", sans-serif; font-size: 16px; caret-color: #0047FF; } .ds-input::placeholder { color: #243044; } .ds-input:focus-visible { outline: 2px solid #0047FF; outline-offset: 3px; }"
+    },
+    {
+      "name": "Masthead",
+      "kind": "nav",
+      "refersTo": "button-line",
+      "description": "Wordmark, two links, and a 3px rule.",
+      "html": "<header class=\"ds-mast\"><div class=\"ds-mast-row\"><span class=\"ds-word\">Artometrics</span><nav><a class=\"ds-nav\" href=\"#archive\">Archive</a><a class=\"ds-nav\" href=\"#desk\">Desk</a></nav></div><div class=\"ds-rule\"></div></header>",
+      "css": ".ds-mast { font-family: \"Familjen Grotesk\", \"Avenir Next\", \"Segoe UI\", sans-serif; color: #10141c; } .ds-mast-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; } .ds-word { font-family: \"Bodoni Moda\", Palatino, serif; font-size: 1.7rem; letter-spacing: -0.03em; line-height: 1; } .ds-nav { color: #10141c; text-decoration: none; margin-left: 20px; font-size: 0.95rem; min-height: 44px; display: inline-flex; align-items: center; } .ds-nav:hover { color: #0047FF; } .ds-rule { height: 3px; background: #0047FF; transform-origin: left center; animation: ds-draw 700ms cubic-bezier(0.16, 1, 0.3, 1) both; } @keyframes ds-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }"
+    },
+    {
+      "name": "Blue Sheet",
+      "kind": "custom",
+      "refersTo": "button-inverse",
+      "description": "Full-bleed house-blue band for the latest letter.",
+      "html": "<section class=\"ds-sheet\"><h2 class=\"ds-issue\">The desk is clear.</h2><p class=\"ds-dek\">No letter has been sent. Join, and the next one can find you.</p></section>",
+      "css": ".ds-sheet { background: #0047FF; color: #ffffff; padding: 40px 20px; } .ds-issue { margin: 0; font-family: \"Bodoni Moda\", Palatino, serif; font-weight: 400; font-size: clamp(2.2rem, 4vw, 3.4rem); line-height: 1.02; letter-spacing: -0.03em; } .ds-dek { margin: 16px 0 0; max-width: 34ch; font-family: Literata, Palatino, serif; font-size: 1.25rem; font-style: italic; color: #e7eeff; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Studio Letter",
+    "overview": "The page is a printed sheet. Paper is the ground. One band of house blue carries the latest letter and the way to join it. The name and the titles are a display face; the letter itself is a text face; the desk is a plain grotesque. Nothing is rounded, nothing floats, and the only motion is a rule drawing itself under the masthead.\n\nThe public pages are for reading and for a single decision: confirm that you want the letter. The desk is for operating the list. Counts stay in tables. The archive is the letter, set again, not a campaign recap.\n\nThe metaphor and the color names below were taken from the shipped magazine UI. The brief fixed house blue and a clean magazine, and it asked for no questions.",
+    "keyCharacteristics": [
+      "Square corners on every control and sheet",
+      "House blue as one full-bleed band, plus the primary action",
+      "Display type capped at 6rem, with the date under the title",
+      "The desk is a list and a composer, not a hero metric",
+      "One motion: the mast rule, and it is still when motion is reduced"
+    ],
+    "rules": [
+      { "name": "The Sheet Rule", "body": "House blue is a full-bleed band or a primary action. It is not a tint behind cards, and it is not a second color for charts.", "section": "colors" },
+      { "name": "The Underline Rule", "body": "The date sits under the title. No small label sits above a display heading.", "section": "typography" },
+      { "name": "The Flat Sheet Rule", "body": "Surfaces do not lift on hover. Hover changes color: press blue, blue wash, or ink at 5% on a ghost control.", "section": "elevation" },
+      { "name": "The Square Rule", "body": "Do not round buttons, fields, sheets, or the wordmark.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do keep field type at 16px and hit targets at 44px, including the phone tab bar.",
+      "Do put the postal address in the colophon in the same lines the mail footer uses.",
+      "Do set white type on house blue and ink on press paper. Selection is house blue with white type.",
+      "Do leave the archive empty until a letter has actually been sent. Say so in a sentence, not a illustration."
+    ],
+    "donts": [
+      "Don't place an eyebrow or kicker above a display heading.",
+      "Don't round a control, add a drop shadow, or introduce a second accent.",
+      "Don't publish subscriber counts, open rates, or a specimen issue as if they were a public mailing.",
+      "Don't shrink display type past the 6rem cap, or set the letter in the UI grotesque."
+    ]
+  }
+}

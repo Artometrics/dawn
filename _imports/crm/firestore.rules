@@ -1,0 +1,370 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Shared desk. Every allowlisted verified account can read and write.
+// There is no public data and no users collection (profiles stay in Auth).
+//
+// Collection: contacts
+// Document ID: [A-Za-z0-9][A-Za-z0-9_-]{0,127}
+// Fields:
+//   - name: string (required, 1-120)
+//   - companyId: string (required, id or empty)
+//   - companyName: string (required, 0-160)
+//   - email: string (required, empty or email, <=160)
+//   - phone: string (required, <=40, phone characters)
+//   - instagram: string (required, <=40, handle characters)
+//   - website: string (required, empty or http(s) URL, <=300)
+//   - tags: list (required, <=8, each tag 1-24 chars)
+//   - source: string (required, 0-80)
+//   - ownerUid: string (required, creator uid, immutable)
+//   - demo: bool (required, immutable)
+//   - createdAt: timestamp (required, immutable, not in the future)
+//   - updatedAt: timestamp (required, must equal request.time on write)
+//
+// Collection: companies
+// Fields:
+//   - name: string (required, 1-160)
+//   - website: string (required, empty or http(s), <=300)
+//   - phone: string (required, <=40)
+//   - notes: string (required, 0-4000)
+//   - ownerUid, demo, createdAt, updatedAt: same rules as contacts
+//
+// Collection: deals
+// Fields:
+//   - title: string (required, 1-160)
+//   - contactId, companyId: string ids or empty
+//   - contactName, companyName: string 0-160
+//   - stage: lead | contacted | proposal | won | lost
+//   - value: int dollars, 0..1000000000
+//   - currency: 3-letter code
+//   - ownerUid, demo, createdAt, updatedAt
+//
+// Collection: notes
+// Fields:
+//   - contactId: string id (required)
+//   - body: string 1-8000
+//   - authorUid: string (required, immutable, creator)
+//   - authorName: string 1-80 (immutable)
+//   - occurredAt: timestamp (immutable, when it happened, bounded)
+//   - demo, createdAt, updatedAt
+//
+// Collection: activities
+// Append-only. No updates.
+// Fields:
+//   - contactId: string id (required)
+//   - kind: created | note | stage | task | edit | file | draft
+//   - summary: string 1-300
+//   - actorUid: string (creator)
+//   - occurredAt, demo, createdAt
+//
+// Collection: tasks
+// Fields:
+//   - title: string 1-160
+//   - contactId: string id or empty
+//   - dueAt: timestamp
+//   - done: bool
+//   - notes: string 0-500
+//   - ownerUid, demo, createdAt, updatedAt
+//
+// Collection: files
+// Create and delete only.
+// Fields:
+//   - contactId: string id
+//   - name: string 1-120 (display name)
+//   - storagePath: attachments/{contactId}/{file}
+//   - contentType: allowed mime
+//   - size: int 0..10485760
+//   - ownerUid, demo, createdAt
+//
+// Collection: digests
+// Written only by the morning function (Admin SDK). Clients may read.
+// Document IDs: latest, or YYYY-MM-DD.
+// Fields are not client-validated because clients cannot write.
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAllowed() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.lower() in [
+          'team@artometrics.com',
+          'kylesmcauliffe@gmail.com'
+        ];
+    }
+
+    function validId(id, required) {
+      return id is string
+        && id.size() <= 128
+        && (id.size() > 0 || required == false)
+        && (id.size() == 0 || id.matches('^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$'));
+    }
+
+    function validEmail(email) {
+      return email is string
+        && email.size() <= 160
+        && (
+          email.size() == 0
+          || email.matches('^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]{2,}$')
+        );
+    }
+
+    function validPhone(phone) {
+      return phone is string
+        && phone.size() <= 40
+        && phone.matches('^[0-9+() ._-]{0,40}$');
+    }
+
+    function validHandle(handle) {
+      return handle is string
+        && handle.size() <= 40
+        && handle.matches('^[A-Za-z0-9._]{0,40}$');
+    }
+
+    function validWebsite(url) {
+      return url is string
+        && url.size() <= 300
+        && (url.size() == 0 || url.matches('^https?://.{3,290}$'));
+    }
+
+    function isShortTag(tag) {
+      return tag is string
+        && tag.size() >= 1
+        && tag.size() <= 24
+        && tag.matches('^[A-Za-z0-9 _.+#&/-]{1,24}$');
+    }
+
+    function validTags(tags) {
+      return tags is list
+        && tags.size() <= 8
+        && (tags.size() < 1 || isShortTag(tags[0]))
+        && (tags.size() < 2 || isShortTag(tags[1]))
+        && (tags.size() < 3 || isShortTag(tags[2]))
+        && (tags.size() < 4 || isShortTag(tags[3]))
+        && (tags.size() < 5 || isShortTag(tags[4]))
+        && (tags.size() < 6 || isShortTag(tags[5]))
+        && (tags.size() < 7 || isShortTag(tags[6]))
+        && (tags.size() < 8 || isShortTag(tags[7]));
+    }
+
+    function boundedTime(t) {
+      return t is timestamp
+        && t <= request.time + duration.value(2, 'm')
+        && t > request.time - duration.value(3650, 'd');
+    }
+
+    function freshStamp(t) {
+      return t == request.time;
+    }
+
+    function baseCreate(data) {
+      return data.ownerUid is string
+        && data.ownerUid == request.auth.uid
+        && data.ownerUid.size() > 0
+        && data.ownerUid.size() <= 128
+        && data.demo is bool
+        && boundedTime(data.createdAt)
+        && freshStamp(data.updatedAt);
+    }
+
+    function baseUpdate(data) {
+      return data.ownerUid == resource.data.ownerUid
+        && data.demo == resource.data.demo
+        && data.createdAt == resource.data.createdAt
+        && freshStamp(data.updatedAt);
+    }
+
+    function isValidContact(data) {
+      return data.keys().hasOnly([
+          'name', 'companyId', 'companyName', 'email', 'phone', 'instagram',
+          'website', 'tags', 'source', 'ownerUid', 'demo', 'createdAt', 'updatedAt'
+        ])
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 120
+        && validId(data.companyId, false)
+        && data.companyName is string && data.companyName.size() <= 160
+        && validEmail(data.email)
+        && validPhone(data.phone)
+        && validHandle(data.instagram)
+        && validWebsite(data.website)
+        && validTags(data.tags)
+        && data.source is string && data.source.size() <= 80
+        && data.ownerUid is string && data.ownerUid.size() > 0 && data.ownerUid.size() <= 128
+        && data.demo is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidCompany(data) {
+      return data.keys().hasOnly([
+          'name', 'website', 'phone', 'notes', 'ownerUid', 'demo', 'createdAt', 'updatedAt'
+        ])
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 160
+        && validWebsite(data.website)
+        && validPhone(data.phone)
+        && data.notes is string && data.notes.size() <= 4000
+        && data.ownerUid is string && data.ownerUid.size() > 0 && data.ownerUid.size() <= 128
+        && data.demo is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidDeal(data) {
+      return data.keys().hasOnly([
+          'title', 'contactId', 'companyId', 'contactName', 'companyName',
+          'stage', 'value', 'currency', 'ownerUid', 'demo', 'createdAt', 'updatedAt'
+        ])
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 160
+        && validId(data.contactId, false)
+        && validId(data.companyId, false)
+        && data.contactName is string && data.contactName.size() <= 160
+        && data.companyName is string && data.companyName.size() <= 160
+        && data.stage in ['lead', 'contacted', 'proposal', 'won', 'lost']
+        && data.value is int && data.value >= 0 && data.value <= 1000000000
+        && data.currency is string && data.currency.matches('^[A-Z]{3}$')
+        && data.ownerUid is string && data.ownerUid.size() > 0 && data.ownerUid.size() <= 128
+        && data.demo is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidNote(data) {
+      return data.keys().hasOnly([
+          'contactId', 'body', 'authorUid', 'authorName', 'demo',
+          'createdAt', 'updatedAt', 'occurredAt'
+        ])
+        && validId(data.contactId, true)
+        && data.body is string && data.body.size() >= 1 && data.body.size() <= 8000
+        && data.authorUid is string && data.authorUid.size() > 0 && data.authorUid.size() <= 128
+        && data.authorName is string && data.authorName.size() >= 1 && data.authorName.size() <= 80
+        && data.demo is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp
+        && boundedTime(data.occurredAt);
+    }
+
+    function isValidActivity(data) {
+      return data.keys().hasOnly([
+          'contactId', 'kind', 'summary', 'actorUid', 'demo', 'createdAt', 'occurredAt'
+        ])
+        && validId(data.contactId, true)
+        && data.kind in ['created', 'note', 'stage', 'task', 'edit', 'file', 'draft']
+        && data.summary is string && data.summary.size() >= 1 && data.summary.size() <= 300
+        && data.actorUid is string && data.actorUid.size() > 0 && data.actorUid.size() <= 128
+        && data.demo is bool
+        && boundedTime(data.createdAt)
+        && boundedTime(data.occurredAt);
+    }
+
+    function isValidTask(data) {
+      return data.keys().hasOnly([
+          'title', 'contactId', 'dueAt', 'done', 'notes', 'ownerUid', 'demo', 'createdAt', 'updatedAt'
+        ])
+        && data.title is string && data.title.size() >= 1 && data.title.size() <= 160
+        && validId(data.contactId, false)
+        && data.dueAt is timestamp
+        && data.done is bool
+        && data.notes is string && data.notes.size() <= 500
+        && data.ownerUid is string && data.ownerUid.size() > 0 && data.ownerUid.size() <= 128
+        && data.demo is bool
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function allowedMime(mime) {
+      return mime in [
+        'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+        'image/heic', 'image/heif', 'application/pdf', 'text/plain'
+      ];
+    }
+
+    function isValidFile(data) {
+      return data.keys().hasOnly([
+          'contactId', 'name', 'storagePath', 'contentType', 'size', 'ownerUid', 'demo', 'createdAt'
+        ])
+        && validId(data.contactId, true)
+        && data.name is string && data.name.size() >= 1 && data.name.size() <= 120
+        && data.storagePath is string
+        && data.storagePath.matches('^attachments/' + data.contactId + '/[A-Za-z0-9][A-Za-z0-9_.-]{0,119}$')
+        && allowedMime(data.contentType)
+        && data.size is int && data.size >= 0 && data.size <= 10485760
+        && data.ownerUid is string && data.ownerUid.size() > 0 && data.ownerUid.size() <= 128
+        && data.demo is bool
+        && boundedTime(data.createdAt);
+    }
+
+    match /contacts/{id} {
+      allow read: if isAllowed();
+      allow create: if isAllowed() && isValidContact(request.resource.data) && baseCreate(request.resource.data);
+      allow update: if isAllowed() && isValidContact(request.resource.data) && baseUpdate(request.resource.data);
+      allow delete: if isAllowed();
+    }
+
+    match /companies/{id} {
+      allow read: if isAllowed();
+      allow create: if isAllowed() && isValidCompany(request.resource.data) && baseCreate(request.resource.data);
+      allow update: if isAllowed() && isValidCompany(request.resource.data) && baseUpdate(request.resource.data);
+      allow delete: if isAllowed();
+    }
+
+    match /deals/{id} {
+      allow read: if isAllowed();
+      allow create: if isAllowed() && isValidDeal(request.resource.data) && baseCreate(request.resource.data);
+      allow update: if isAllowed() && isValidDeal(request.resource.data) && baseUpdate(request.resource.data);
+      allow delete: if isAllowed();
+    }
+
+    match /notes/{id} {
+      allow read: if isAllowed();
+      allow create: if isAllowed()
+        && isValidNote(request.resource.data)
+        && request.resource.data.authorUid == request.auth.uid
+        && request.resource.data.demo is bool
+        && boundedTime(request.resource.data.createdAt)
+        && freshStamp(request.resource.data.updatedAt);
+      allow update: if isAllowed()
+        && isValidNote(request.resource.data)
+        && request.resource.data.authorUid == resource.data.authorUid
+        && request.resource.data.authorName == resource.data.authorName
+        && request.resource.data.contactId == resource.data.contactId
+        && request.resource.data.demo == resource.data.demo
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.occurredAt == resource.data.occurredAt
+        && freshStamp(request.resource.data.updatedAt);
+      allow delete: if isAllowed();
+    }
+
+    match /activities/{id} {
+      allow read: if isAllowed();
+      allow create: if isAllowed()
+        && isValidActivity(request.resource.data)
+        && request.resource.data.actorUid == request.auth.uid;
+      allow update: if false;
+      allow delete: if isAllowed();
+    }
+
+    match /tasks/{id} {
+      allow read: if isAllowed();
+      allow create: if isAllowed() && isValidTask(request.resource.data) && baseCreate(request.resource.data);
+      allow update: if isAllowed() && isValidTask(request.resource.data) && baseUpdate(request.resource.data);
+      allow delete: if isAllowed();
+    }
+
+    match /files/{id} {
+      allow read: if isAllowed();
+      allow create: if isAllowed()
+        && isValidFile(request.resource.data)
+        && request.resource.data.ownerUid == request.auth.uid;
+      allow update: if false;
+      allow delete: if isAllowed();
+    }
+
+    match /digests/{id} {
+      allow read: if isAllowed();
+      allow create, update, delete: if false;
+    }
+  }
+}
