@@ -43,6 +43,7 @@ import type { AgentRecord, ChatChannel, ComputerKind, MessageRecord, PixelAvatar
 import { TRAINING_PROVIDER_IDS } from './types';
 import { validAvatar } from './avatar';
 import { spriteById } from '../credits/sprites';
+import { routeOwnerFeature, routePublicFeature, type FeatureCtx } from './feature-routes';
 import { DEFAULT_TRUSTED_ORIGINS, ownerMutationDecision } from './request-provenance';
 import { WorkerHub } from './worker-hub';
 import type { WorkerKind } from './types';
@@ -175,7 +176,8 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       if (!ownerOk(req)) return sendJson(res, 401, { error: 'Sign in with Google.' });
       return sendJson(res, 200, { email: emailFromProxyHeaders(req.headers) || firstAllowedEmail(ownerEmail) });
     }
-    if (req.method === 'POST' && (pathname === '/api/chat' || /^\/api\/(kits\/.+|threads\/[^/]+)\/messages$/.test(pathname))) {
+    const costly = req.method === 'POST' && (pathname === '/api/chat' || /^\/api\/(kits\/.+|threads\/[^/]+)\/messages$/.test(pathname) || pathname === '/api/cuts/generate' || pathname === '/api/cuts/narrate' || pathname === '/api/cuts/transcribe' || pathname === '/api/research/ask' || /^\/api\/research\/sources\/[^/]+\/process$/.test(pathname));
+    if (costly) {
       if (!ipLimiter.take(clientIp(req.socket.remoteAddress, req.headers['x-forwarded-for']))) {
         sendJson(res, 429, { error: 'Too many messages. Wait a minute and try again.' });
         return;
@@ -831,6 +833,7 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       if ('error' in result) return sendJson(res, result.status ?? 400, { error: result.error });
       return sendJson(res, 200, result);
     }
+    if (await routeOwnerFeature(featureCtx(req, res, pathname))) return;
     sendJson(res, 404, { error: 'Not found.' });
   }
 
@@ -1042,7 +1045,32 @@ export function startAgentsServer(options: ServerOptions): Promise<RunningServer
       res.end();
       return;
     }
+    if (await routePublicFeature(featureCtx(req, res, pathname))) return;
     sendJson(res, 404, { error: 'Not found.' });
+  }
+
+  function featureCtx(req: IncomingMessage, res: ServerResponse, pathname: string): FeatureCtx {
+    const host = headerOne(req, 'x-forwarded-host') || headerOne(req, 'host') || '127.0.0.1';
+    const proto = headerOne(req, 'x-forwarded-proto') || 'http';
+    const origin = (process.env.DAWN_PUBLIC_ORIGIN || `${proto}://${host}`).replace(/\/$/, '');
+    return {
+      store,
+      dataDir: path.dirname(options.storePath),
+      req,
+      res,
+      pathname,
+      readJson: () => readJson(req),
+      readBody: (max) => readBody(req, max),
+      sendJson,
+      capBlocked,
+      record: async (entry) => {
+        await store.update((data) => {
+          data.ledger.push({ id: newId('led'), at: Date.now(), ...entry, source: 'kit' });
+        });
+      },
+      dailyCap,
+      origin,
+    };
   }
 
   async function snapshot() {
@@ -1611,13 +1639,13 @@ function startSse(res: ServerResponse) {
   };
 }
 
-async function readBody(req: IncomingMessage): Promise<string> {
+async function readBody(req: IncomingMessage, max = 400_000): Promise<string> {
   const chunks: Buffer[] = [];
   let size = 0;
   for await (const chunk of req) {
     const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
     size += buffer.length;
-    if (size > 400_000) throw new Error('Request is too large.');
+    if (size > max) throw new Error('Request is too large.');
     chunks.push(buffer);
   }
   return Buffer.concat(chunks).toString('utf8');

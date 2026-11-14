@@ -3,6 +3,7 @@ import type { LedgerEntry, TrainingProvider } from './types';
 /** Estimated USD per 1M tokens. The guard uses these figures, labeled as estimates. */
 export const PRICE_PER_MILLION: Record<string, { input: number; output: number }> = {
   'gemini-3.8-flash': { input: 0.15, output: 0.6 },
+  'gemini-embedding-001': { input: 0.15, output: 0 },
   'gemini-3.1-pro-preview': { input: 1.25, output: 10 },
   'x-ai/grok-4.7': { input: 3, output: 15 },
   'grok-4.7': { input: 3, output: 15 },

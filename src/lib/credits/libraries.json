@@ -396,6 +396,24 @@
     "url": "https://zod.dev"
   },
   {
+    "name": "jszip",
+    "kind": "dawn",
+    "license": "(MIT OR GPL-3.0-or-later)",
+    "url": "https://github.com/Stuk/jszip"
+  },
+  {
+    "name": "pdf-lib",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://pdf-lib.js.org/"
+  },
+  {
+    "name": "unpdf",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/unjs/unpdf"
+  },
+  {
     "name": "@types/node",
     "kind": "dawn-code",
     "license": "MIT",

@@ -19,6 +19,9 @@ const ACTUAL = [
   { href: '/newsletter', name: 'Newsletter', note: 'Compose, list, archive, and counts. Sending is off.' },
   { href: '/invoices', name: 'Invoices', note: 'Numbered invoices with PDF and print.' },
   { href: '/contacts', name: 'Contacts', note: 'People, pipeline, and today.' },
+  { href: '/cuts', name: 'Cuts', note: 'YouTube cut board, script, chapters, captions, and the license shelf. Narration is off.' },
+  { href: '/shows', name: 'Shows', note: 'Podcast shows, the RSS feed, and download counts.' },
+  { href: '/research', name: 'Research', note: 'Cited answers over PDFs and transcripts. Local matching when no model key is set.' },
   { href: '/credits', name: 'Credits', note: 'Sprite and library credits.' },
   { href: '/preview/style-guide', name: 'Style guide', note: 'Tokens and shared components every page uses.' },
 ];

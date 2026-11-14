@@ -23,6 +23,9 @@ One fixed shell on every route and on both origins (the live gateway origin and 
 | Work | Newsletter | `/newsletter` | Compose, the subscriber list, a dry-run send, and counts. |
 | Work | Invoices | `/invoices` | Numbered invoices, PDF, and print. |
 | Work | Contacts | `/contacts` | People, companies, the pipeline, and today. |
+| Work | Cuts | `/cuts` | YouTube cut board, script, chapters, captions, and the license shelf. |
+| Work | Shows | `/shows` | Podcast shows, RSS feed, embed player, and download counts. |
+| Work | Research | `/research` | Cited answers over PDFs, transcripts, and web clips. |
 | Code | Code | `/code` | Code hub: cards for every code tool, and the "Open VS Code" button. |
 | Code | NightCode | `/kits/nightcode` | Plan with read-only tools, or build. |
 | Code | Teammates | `/kits/teammates` | A Builder and a Reviewer in one chat. |

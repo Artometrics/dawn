@@ -57,6 +57,18 @@
         "destination": "/contacts.html"
       },
       {
+        "source": "/cuts",
+        "destination": "/cuts.html"
+      },
+      {
+        "source": "/shows",
+        "destination": "/shows.html"
+      },
+      {
+        "source": "/research",
+        "destination": "/research.html"
+      },
+      {
         "source": "/credits",
         "destination": "/credits.html"
       }
