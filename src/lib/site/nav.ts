@@ -5,7 +5,7 @@
  */
 export type IconKey =
   | 'atlas' | 'quests' | 'village' | 'characters' | 'library'
-  | 'projects' | 'studio' | 'recipes' | 'letter'
+  | 'projects' | 'studio' | 'recipes' | 'letter' | 'newsletter' | 'invoices' | 'contacts'
   | 'code' | 'nightcode' | 'teammates' | 'editor' | 'kits'
   | 'agents' | 'desk' | 'data' | 'settings';
 
@@ -43,6 +43,9 @@ export const NAV_GROUPS: NavGroup[] = [
       { id: 'studio', label: 'Studio', href: '/studio', icon: 'studio', path: '/studio' },
       { id: 'recipes', label: 'Recipes', href: '/artifacts', icon: 'recipes', path: '/artifacts' },
       { id: 'letter', label: 'Letter', href: '/letter', icon: 'letter', path: '/letter' },
+      { id: 'newsletter', label: 'Newsletter', href: '/newsletter', icon: 'newsletter', path: '/newsletter' },
+      { id: 'invoices', label: 'Invoices', href: '/invoices', icon: 'invoices', path: '/invoices' },
+      { id: 'contacts', label: 'Contacts', href: '/contacts', icon: 'contacts', path: '/contacts' },
     ],
   },
   {
@@ -138,6 +141,9 @@ export const SITE_ROUTES: string[] = [
   '/projects',
   '/artifacts',
   '/letter',
+  '/newsletter',
+  '/invoices',
+  '/contacts',
   '/credits',
   '/desk',
   '/kits',

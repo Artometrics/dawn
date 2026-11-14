@@ -156,6 +156,15 @@ service cloud.firestore {
         && (value == '' || value.matches('^data:image/png;base64,[A-Za-z0-9+/]+=*$'));
     }
 
+    function validDesk(data) {
+      return data.keys().hasOnly(['kind', 'payload', 'updatedAt'])
+        && data.kind in ['newsletter', 'invoices', 'crm']
+        && data.payload is string
+        && data.payload.size() > 0
+        && data.payload.size() <= 350000
+        && freshMillis(data.updatedAt);
+    }
+
     function validCharacter(data) {
       return data.keys().hasOnly(['id', 'name', 'spec', 'portrait', 'sprite', 'agentId', 'createdAt', 'updatedAt'])
         && data.id is string
@@ -277,6 +286,15 @@ service cloud.firestore {
         allow update: if false;
         allow delete: if isOwner(uid);
       }
+    }
+
+    match /users/{uid}/desks/{deskId} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && deskId in ['newsletter', 'invoices', 'crm']
+        && validDesk(request.resource.data)
+        && request.resource.data.kind == deskId
+        && request.resource.size() < 400000;
     }
 
     match /users/{uid}/characters/{characterId} {

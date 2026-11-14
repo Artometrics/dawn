@@ -45,6 +45,18 @@
         "destination": "/letter.html"
       },
       {
+        "source": "/newsletter",
+        "destination": "/newsletter.html"
+      },
+      {
+        "source": "/invoices",
+        "destination": "/invoices.html"
+      },
+      {
+        "source": "/contacts",
+        "destination": "/contacts.html"
+      },
+      {
         "source": "/credits",
         "destination": "/credits.html"
       }
