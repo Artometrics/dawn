@@ -81,6 +81,7 @@ export function FernboundDesk() {
       <p className="fern-caption">Arrows move. Z confirms, X opens the menu. On a phone, use the pad and A / B. Turn sideways if the field feels tight.</p>
       <div className="fern-frame">
         {loaded ? null : <p className="dw-stage-message">The field is loading.</p>}
+        {/* Keep the explicit index.html so Godot's relative assets stay under /play/fernbound/, even if cleanUrls would serve /play/fernbound. */}
         <iframe
           className="fern-iframe"
           title="Fernbound"
