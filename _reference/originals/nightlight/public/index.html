@@ -1,0 +1,51 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><meta name="apple-mobile-web-app-capable" content="yes">
+<title>Nightlight</title><link rel="icon" href="data:,"><link rel="preload" href="fonts/caveat-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:Caveat;src:url("fonts/caveat-latin-400.woff2") format("woff2");font-weight:400;font-display:swap}
+html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:Georgia,"Times New Roman",serif;color:#e8e4da;-webkit-user-select:none;user-select:none;touch-action:none;-webkit-touch-callout:none}
+canvas{display:block;position:fixed;inset:0;width:100%;height:100%}
+#obj{position:fixed;left:calc(18px + env(safe-area-inset-left));top:calc(14px + env(safe-area-inset-top));font-size:15px;letter-spacing:.5px;text-shadow:0 0 6px #000;opacity:0;transition:opacity 1s}
+#obj small{display:block;font-size:11px;opacity:.6;letter-spacing:2px;text-transform:uppercase}
+#sub{position:fixed;left:0;right:0;bottom:calc(22px + env(safe-area-inset-bottom));text-align:center;font-size:16px;text-shadow:0 0 8px #000,0 0 3px #000;padding:0 18%;opacity:0;transition:opacity .6s;pointer-events:none}
+.btn{position:fixed;width:54px;height:54px;border-radius:50%;background:rgba(20,20,20,.45);border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:24px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+#bFocus{right:calc(27px + env(safe-area-inset-right));bottom:calc(176px + env(safe-area-inset-bottom));width:40px;height:40px}
+#bFocus span{width:0;height:0;border-style:solid;border-width:0 5px 15px 5px;border-color:transparent transparent #f3ead7 transparent;filter:drop-shadow(0 0 4px #fff6)}
+#bLight{right:calc(20px + env(safe-area-inset-right));bottom:calc(110px + env(safe-area-inset-bottom))}
+#bRun{right:calc(86px + env(safe-area-inset-right));bottom:calc(40px + env(safe-area-inset-bottom))}
+#bChar{right:calc(16px + env(safe-area-inset-right));top:calc(12px + env(safe-area-inset-top));width:44px;height:44px;font-size:20px}
+.on{background:rgba(255,220,150,.35)!important}
+#joy{position:fixed;left:calc(30px + env(safe-area-inset-left));bottom:calc(30px + env(safe-area-inset-bottom));width:120px;height:120px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.2)}
+#knob{position:absolute;left:38px;top:38px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.3)}
+#start{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 60%,#16201c,#000 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10}
+#start h1{font-weight:normal;letter-spacing:12px;font-size:40px;margin:0 0 6px}
+#start p{opacity:.6;margin:0 0 30px;font-size:13px;letter-spacing:2px}
+#play{font-size:44px;width:90px;height:90px;border-radius:50%;border:1px solid #fff6;display:flex;align-items:center;justify-content:center}
+#load{opacity:.5;font-size:12px;margin-top:20px}
+#picker{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;z-index:20;align-items:center;justify-content:center;flex-direction:column;gap:10px}
+#picker div.c{padding:12px 26px;border:1px solid #fff4;border-radius:10px;min-width:180px;text-align:center;font-size:17px}
+#picker div.c.sel{background:#fff2}
+#picker label{opacity:.7;font-size:14px;padding:10px;border:1px dashed #fff5;border-radius:10px}
+#done{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;z-index:5;pointer-events:none;letter-spacing:4px}
+#done b{font-weight:normal;font-size:26px}
+#hint{position:fixed;left:50%;top:14px;transform:translateX(-50%);font-size:11px;opacity:.45;display:none}
+#prompt{position:fixed;left:50%;top:62%;transform:translate(-50%,-50%);z-index:6;opacity:0;transition:opacity .2s;pointer-events:none;text-align:center;color:#f6efe2;text-shadow:0 2px 0 #000,0 0 12px #000;font-family:Caveat,cursive;font-size:clamp(32px,6vh,48px);line-height:1;letter-spacing:.5px}
+#prompt span{display:inline-block}
+#prompt b{display:block;height:5px;margin:6px auto 0;width:74%;background:rgba(12,8,4,.72);border-radius:3px;overflow:hidden;transform:rotate(-2deg);box-shadow:0 0 0 1px rgba(0,0,0,.8),0 0 8px #000}
+#prompt i{display:block;height:100%;width:100%;background:#ffe7b0;transform:scaleX(0);transform-origin:left center;box-shadow:0 0 10px #ffd27a}
+@media (hover:hover) and (pointer:fine){#joy,#bRun,#bFocus{display:none}#hint{display:block}}
+</style>
+<script type="importmap">{"imports":{"three":"./vendor/build/three.module.js","three/addons/":"./vendor/jsm/"}}</script>
+</head><body>
+<div id="obj"><small>Objective</small>Reach the radio station</div>
+<div id="sub"></div>
+<div id="hint">WASD · Shift run · F light · hold right mouse to focus · click to use · hold on the door</div>
+<div id="prompt" aria-live="polite"></div>
+<div id="joy"><div id="knob"></div></div>
+<div class="btn" id="bFocus" aria-label="focus"><span aria-hidden="true"></span></div><div class="btn" id="bLight">🔦</div><div class="btn" id="bRun">🏃</div><div class="btn" id="bChar">👤</div>
+<div id="done"><small style="opacity:.6;font-size:12px">OBJECTIVE COMPLETE</small><b>Reach the radio station</b></div>
+<div id="picker"></div>
+<div id="start"><h1>NIGHTLIGHT</h1><p>working title</p><div id="play">▶</div><div id="load">loading…</div></div>
+<script type="module" src="./game.js"></script>
+</body></html>

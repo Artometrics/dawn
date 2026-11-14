@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Icon from '../../components/Icon.astro'
+import { PLACES } from '../../lib/places'
+import { REFLECTION_NOTE } from '../../lib/reading'
+const today = new Date().toISOString().slice(0, 10)
+---
+<BaseLayout title="Start your profile" active="profile" description="Add your name, birth date, birthplace and favorites. Aftercare places you on a map and shows how it all connects.">
+  <section class="page-head"><div class="wrap">
+    <span class="eyebrow">Your second self</span>
+    <h1>Tell us a little. <em>We'll find the threads.</em></h1>
+    <p class="lede">Everything you type stays in this browser. Nothing is uploaded, and you decide later what a share link can show.</p>
+  </div></section>
+
+  <div class="wrap form-layout">
+    <form id="profile-form" novalidate autocomplete="off">
+      <datalist id="place-list">{PLACES.map((p) => <option value={p.label} />)}</datalist>
+
+      <fieldset class="plate fieldset" style="border:0">
+        <h2><span>1</span> About you</h2>
+        <div class="field"><label for="f-name">Name</label>
+          <input id="f-name" name="name" maxlength="80" placeholder="The name you want on your profile" required />
+          <small>Your full birth name gives the richest name numbers, but any name works.</small></div>
+        <div class="row2">
+          <div class="field"><label for="f-date">Date of birth</label><input id="f-date" type="date" min="1900-01-01" max={today} required /></div>
+          <div class="field"><label for="f-time">Time of birth (optional)</label><input id="f-time" type="time" /><small>Kept for later chart features. Not used yet.</small></div>
+        </div>
+        <p class="note" id="err-date" role="alert" hidden>Please enter a real date of birth.</p>
+      </fieldset>
+
+      <fieldset class="plate fieldset" style="border:0">
+        <h2><span>2</span> Where you began</h2>
+        <div class="field"><label for="f-place">Birthplace</label>
+          <input id="f-place" list="place-list" placeholder="Start typing a city, or tap the map" maxlength="120" />
+          <small id="place-hint">We know about 190 well-known cities offline. For anywhere else, tap the map to drop a pin.</small></div>
+        <div class="mini-map" id="pin-map" aria-label="Tap the map to pin your birthplace"></div>
+      </fieldset>
+
+      <fieldset class="plate fieldset" style="border:0">
+        <h2><span>3</span> Things you love</h2>
+        <p class="muted" style="margin:0">Add a few favorites. Each one gets a theme, which is how we connect it to tarot cards and your numbers. We guess a theme for you and you can change it.</p>
+        <div class="fav-cols" id="fav-cols">
+          {([['movie', 'Movies', 'book'], ['book', 'Books', 'book'], ['thing', 'Things', 'star']] as const).map(([kind, label, icon]) => (
+            <div class="fav-col" data-kind={kind}>
+              <h3><Icon name={icon} /> {label}</h3>
+              <ul class="fav-items" id={`list-${kind}`}></ul>
+              <div class="field">
+                <label for={`add-${kind}`} class="sr">Add a {kind}</label>
+                <input id={`add-${kind}`} data-add={kind} maxlength="100" placeholder={kind === 'movie' ? 'e.g. Spirited Away' : kind === 'book' ? 'e.g. The Hobbit' : 'e.g. Rainy windows'} />
+              </div>
+              <button class="btn ghost sm" type="button" data-add-btn={kind} style="margin-top:8px">Add</button>
+            </div>
+          ))}
+        </div>
+        <div class="field"><label for="fav-place">Pin the last one you added to a place (optional)</label>
+          <input id="fav-place" list="place-list" placeholder="Where does it live? e.g. Tokyo, Japan" maxlength="120" />
+          <small>Type or pick a city, then tap the small pin button beside a favorite.</small></div>
+      </fieldset>
+
+      <div class="plate fieldset" style="border:0">
+        <h2><span>4</span> Save</h2>
+        <p class="muted" style="margin:0">By default a share link carries your numbers, map pin and connections, but not your exact birth date or your favorites. You can change that on your profile.</p>
+        <p class="note" id="err-form" role="alert" hidden></p>
+        <div class="chips"><button class="btn" type="submit">Build my second self</button><a class="btn ghost" href="/profile/">Cancel</a></div>
+        <p class="note">{REFLECTION_NOTE}</p>
+      </div>
+    </form>
+
+    <aside class="sticky" aria-label="Live preview">
+      <div class="plate id-card dark" style="background:var(--ink);color:var(--paper)">
+        <div class="sigil" id="pv-sigil" aria-hidden="true">?</div>
+        <h3 id="pv-name">Your name</h3>
+        <div class="chips" id="pv-chips"><span class="chip on-dark">Waiting for a birth date</span></div>
+        <p class="muted" id="pv-text" style="color:#b9c6bd;margin:0">Fill in the form and your numbers appear here as you type.</p>
+        <div id="pv-map" style="width:100%"></div>
+      </div>
+    </aside>
+  </div>
+  <script>
+    import '../../scripts/onboardingPage'
+  </script>
+</BaseLayout>

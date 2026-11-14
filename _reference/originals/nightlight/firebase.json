@@ -1,0 +1,1 @@
+{"hosting":{"site":"nightlight-510519","public":"public","headers":[{"source":"**","headers":[{"key":"X-Robots-Tag","value":"noindex, nofollow"}]},{"source":"**/*.@(glb|jpg|js)","headers":[{"key":"Cache-Control","value":"public, max-age=3600"}]}]}}

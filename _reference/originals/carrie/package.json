@@ -1,0 +1,23 @@
+{
+  "name": "carrie-suite",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Carrie's Web Suite — Book Recommendation Quiz & Pet Certificate Generator",
+  "scripts": {
+    "dev:books": "vite apps/books --port 3000",
+    "dev:pets": "vite apps/pets --port 3001",
+    "dev:portal": "vite portal --port 3002",
+    "build:books": "vite build apps/books --outDir dist",
+    "build:pets": "vite build apps/pets --outDir dist",
+    "build:portal": "vite build portal --outDir dist",
+    "build": "npm run build:books && npm run build:pets && npm run build:portal",
+    "deploy": "npm run build && npx firebase-tools deploy --project carrie-510519",
+    "deploy:books": "npm run build:books && npx firebase-tools deploy --only hosting:books --project carrie-510519",
+    "deploy:pets": "npm run build:pets && npx firebase-tools deploy --only hosting:pets --project carrie-510519",
+    "deploy:portal": "npm run build:portal && npx firebase-tools deploy --only hosting:portal --project carrie-510519"
+  },
+  "devDependencies": {
+    "canvas-confetti": "^1.9.4",
+    "vite": "^8.3.3"
+  }
+}

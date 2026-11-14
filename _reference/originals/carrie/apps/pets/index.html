@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PawCert Studio — Official Pet Birth & Birthday Certificate Studio</title>
+  <meta name="description" content="Generate beautiful, official commemorative birth, adoption, and birthday certificates for your beloved pets with guilloche banknote borders, live scaling preview, and print-ready downloads.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@500;600;700;800;900&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐾</text></svg>">
+</head>
+<body class="app-shell">
+
+  <!-- Header -->
+  <header class="studio-header no-print">
+    <div class="header-inner">
+      <div class="brand-group">
+        <span class="brand-paw">🐾</span>
+        <div>
+          <h1 class="brand-title">PawCert Studio</h1>
+          <span class="brand-author">by Carrie &bull; Artometrics</span>
+        </div>
+      </div>
+
+      <div class="header-nav">
+        <div class="preset-dropdown-wrapper">
+          <button id="presetsBtn" class="btn btn-outline btn-sm">
+            <span>✨ Load Sample Pet</span>
+          </button>
+          <div id="presetsMenu" class="dropdown-menu hidden">
+            <button class="dropdown-item" data-preset="dog">🐕 Golden Retriever (Puppy Birth)</button>
+            <button class="dropdown-item" data-preset="cat">🐈 Calico Rescue (Gotcha Day)</button>
+            <button class="dropdown-item" data-preset="birthday">🎂 French Bulldog (5th Birthday)</button>
+            <button class="dropdown-item" data-preset="goodboy">🌟 Beagle (100% Good Boy Honor)</button>
+          </div>
+        </div>
+
+        <button id="galleryBtn" class="btn btn-outline btn-sm" title="Choose from curated stock pet portraits">
+          <span>📸 Stock Pet Gallery</span>
+        </button>
+
+        <a href="https://carrie-books.web.app" target="_blank" class="nav-secondary-link" title="Visit Carrie's Literary Tarot & Book Quiz">
+          🔮 Literary Tarot &rarr;
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main 1-Screen Studio Workspace -->
+  <main class="studio-workspace" id="studioWorkspace">
+    
+    <!-- LEFT PANEL: Editor & Form Controls -->
+    <aside class="editor-panel no-print" id="editorPanel">
+      <div class="panel-header">
+        <h2>Customize Certificate</h2>
+        <p>Real-time updates as you type. Automatically scales to your screen.</p>
+      </div>
+
+      <div class="accordion-group">
+
+        <!-- 1. Certificate Purpose & Theme -->
+        <fieldset class="form-section">
+          <legend>1. Purpose & Guilloche Style</legend>
+          
+          <div class="form-row">
+            <label for="certTypeSelect">Certificate Occasion</label>
+            <select id="certTypeSelect" class="form-input">
+              <option value="birth">Official Birth Certificate</option>
+              <option value="gotcha">Adoption & Gotcha Day Certificate</option>
+              <option value="birthday">Milestone Birthday Celebration</option>
+              <option value="goodboy">Certified 100% Good Pet Honor</option>
+              <option value="citizen">Royal Companion & Sovereign Citizen</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label>Template & Border Theme</label>
+            <div class="theme-picker" id="themePicker">
+              <button class="theme-option active" data-theme="gold" title="Classic Gold Foil & Guilloche">
+                <span class="color-swatch gold-swatch"></span>
+                <span>Gold Foil</span>
+              </button>
+              <button class="theme-option" data-theme="emerald" title="Botanical Sage & Laurel">
+                <span class="color-swatch emerald-swatch"></span>
+                <span>Sage Ivy</span>
+              </button>
+              <button class="theme-option" data-theme="party" title="Birthday Confetti Celebration">
+                <span class="color-swatch party-swatch"></span>
+                <span>Party Confetti</span>
+              </button>
+              <button class="theme-option" data-theme="royal" title="Royal Midnight Sovereign">
+                <span class="color-swatch royal-swatch"></span>
+                <span>Royal Navy</span>
+              </button>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- 2. Pet Info -->
+        <fieldset class="form-section">
+          <legend>2. Pet Identity & Portrait</legend>
+          
+          <div class="form-row">
+            <label for="petNameInput">Pet's Full Name *</label>
+            <input type="text" id="petNameInput" class="form-input" placeholder="e.g., Barnaby Bear" value="Barnaby Bear">
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-row">
+              <label for="petSpeciesSelect">Species</label>
+              <select id="petSpeciesSelect" class="form-input">
+                <option value="Dog">Dog 🐕</option>
+                <option value="Cat">Cat 🐈</option>
+                <option value="Bunny">Rabbit 🐇</option>
+                <option value="Bird">Bird 🦜</option>
+                <option value="Hamster">Hamster 🐹</option>
+                <option value="Horse">Horse 🐎</option>
+                <option value="Ferret">Ferret 🐾</option>
+                <option value="Reptile">Reptile 🦎</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="petBreedInput">Breed / Mix</label>
+              <input type="text" id="petBreedInput" class="form-input" placeholder="e.g. Golden Retriever" value="Golden Retriever">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-row">
+              <label for="eventDateInput" id="dateLabel">Date of Birth</label>
+              <input type="date" id="eventDateInput" class="form-input" value="2024-04-18">
+            </div>
+            <div class="form-row">
+              <label for="petGenderSelect">Title / Pronouns</label>
+              <select id="petGenderSelect" class="form-input">
+                <option value="Good Boy">Good Boy (He/Him)</option>
+                <option value="Good Girl">Good Girl (She/Her)</option>
+                <option value="Sweet Angel">Sweet Angel (They/Them)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Photo Upload & Gallery Selection -->
+          <div class="form-row">
+            <label>Pet Portrait Photo</label>
+            <div class="photo-controls-bar">
+              <input type="file" id="photoUploadInput" accept="image/*" class="file-input">
+              <button type="button" id="uploadTriggerBtn" class="btn btn-outline btn-sm">📷 Upload Your Photo</button>
+              <button type="button" id="quickGalleryBtn" class="btn btn-outline btn-sm">🖼️ Pick Stock Pet</button>
+              <button type="button" id="removePhotoBtn" class="btn btn-text btn-sm hidden">Remove</button>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- 3. Guardians & Origin -->
+        <fieldset class="form-section">
+          <legend>3. Guardians & Registry Vows</legend>
+
+          <div class="form-row">
+            <label for="guardianInput">Proud Parent(s) / Guardian(s)</label>
+            <input type="text" id="guardianInput" class="form-input" placeholder="e.g. Carrie & Family" value="Carrie & Family">
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-row">
+              <label for="locationInput">Hometown / Place</label>
+              <input type="text" id="locationInput" class="form-input" placeholder="e.g. San Francisco, CA" value="San Francisco, California">
+            </div>
+            <div class="form-row">
+              <label for="certNumberInput">Registry / Microchip #</label>
+              <div class="input-with-button">
+                <input type="text" id="certNumberInput" class="form-input" value="PAW-2026-98102">
+                <button type="button" id="regenCertNumBtn" class="btn-icon" title="Generate New Registry Number">🎲</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="vowInput">Custom Dedication Motto</label>
+            <textarea id="vowInput" class="form-textarea" rows="2" placeholder="e.g. Bound by endless love, unconditional cuddles, treat privileges, and eternal happiness.">Bound by endless love, unconditional cuddles, treat privileges, and eternal happiness.</textarea>
+          </div>
+
+          <div class="form-row">
+            <label for="sealTypeSelect">Embossed Gold Seal</label>
+            <select id="sealTypeSelect" class="form-input">
+              <option value="gold-paw">Embossed Gold Paw Medal</option>
+              <option value="royal-crest">Royal Heraldic Crest</option>
+              <option value="star-ribbon">Honor Ribbon & Star</option>
+              <option value="heart-shield">Golden Heart Shield</option>
+            </select>
+          </div>
+        </fieldset>
+
+      </div>
+    </aside>
+
+    <!-- RIGHT PANEL: Dynamic Auto-Scaling Certificate Canvas Viewport -->
+    <section class="preview-panel" id="previewPanel">
+      
+      <!-- Toolbar -->
+      <div class="preview-toolbar no-print">
+        <div class="toolbar-left">
+          <span class="preview-badge">🔴 Live Dynamic Preview</span>
+          <span class="zoom-indicator" id="zoomLevelTag">Scale: 100%</span>
+        </div>
+        <div class="toolbar-center">
+          <button id="zoomOutBtn" class="btn-tool" title="Zoom Out">&minus;</button>
+          <button id="zoomResetBtn" class="btn-tool" title="Auto Fit to Window">Auto Fit</button>
+          <button id="zoomInBtn" class="btn-tool" title="Zoom In">&plus;</button>
+        </div>
+        <div class="toolbar-actions">
+          <button id="printBtn" class="btn btn-outline" title="Print certificate using your printer">
+            <span>🖨️ Print</span>
+          </button>
+          <button id="downloadBtn" class="btn btn-primary" title="Download 2400x1700 high resolution PNG">
+            <span>💾 Download (.PNG)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Auto-Fitting Viewport Container -->
+      <div class="certificate-viewport-container" id="certViewport">
+        <div id="certificateScaleWrapper" class="certificate-scale-wrapper">
+          
+          <!-- Live Certificate Frame -->
+          <div id="certificateContainer" class="certificate-wrapper theme-gold cert-birth">
+            
+            <!-- Guilloche Banknote Background Pattern -->
+            <div class="guilloche-overlay"></div>
+
+            <!-- Outer Ornate Border with Double Guilloche Waves -->
+            <div class="cert-outer-border">
+              <div class="cert-inner-border">
+                
+                <!-- Corner Filigrees & Rosettes -->
+                <div class="corner-ornament top-left">❦</div>
+                <div class="corner-ornament top-right">❦</div>
+                <div class="corner-ornament bottom-left">❦</div>
+                <div class="corner-ornament bottom-right">❦</div>
+
+                <!-- Certificate Header -->
+                <div class="cert-header">
+                  <div class="cert-registry-info">
+                    <span class="cert-official-seal-text">&bull; OFFICIAL COMPANION REGISTRY &bull;</span>
+                    <span class="cert-id-tag" id="certDisplayNumber">NO. PAW-2026-98102</span>
+                  </div>
+                  <h2 class="cert-main-title" id="certDisplayTitle">BIRTH CERTIFICATE</h2>
+                  <div class="cert-decorative-line">
+                    <span class="line-wing"></span>
+                    <span class="line-icon" id="certTitleIcon">🐾</span>
+                    <span class="line-wing"></span>
+                  </div>
+                  <p class="cert-preamble" id="certDisplayPreamble">
+                    This certifies with absolute joy that the following beloved companion has officially entered our world:
+                  </p>
+                </div>
+
+                <!-- Pet Core Hero Banner -->
+                <div class="cert-hero-section">
+                  <!-- Pet Photo Portrait with Ornate Gold Ring -->
+                  <div class="pet-photo-frame-container">
+                    <div class="pet-photo-frame">
+                      <img id="certPetPhoto" src="" alt="Pet Portrait" class="hidden">
+                      <span id="certSpeciesSilhouette" class="species-silhouette">🐕</span>
+                    </div>
+                  </div>
+
+                  <div class="pet-name-block">
+                    <h3 class="cert-pet-name" id="certDisplayName">Barnaby Bear</h3>
+                    <div class="cert-pet-species-breed">
+                      <span id="certDisplayGender">Good Boy</span> &bull; 
+                      <span id="certDisplayBreed">Golden Retriever</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Certificate Details Grid -->
+                <div class="cert-details-grid">
+                  <div class="detail-cell">
+                    <span class="detail-label" id="certDetailDateLabel">DATE OF BIRTH</span>
+                    <span class="detail-value" id="certDisplayDate">April 18, 2024</span>
+                  </div>
+                  <div class="detail-cell">
+                    <span class="detail-label">HOMETOWN / LOCATION</span>
+                    <span class="detail-value" id="certDisplayLocation">San Francisco, California</span>
+                  </div>
+                  <div class="detail-cell full-width">
+                    <span class="detail-label">OFFICIAL GUARDIAN(S) & PARENT(S)</span>
+                    <span class="detail-value guardian-highlight" id="certDisplayGuardians">Carrie & Family</span>
+                  </div>
+                </div>
+
+                <!-- Custom Vow / Motto Statement -->
+                <div class="cert-vow-box">
+                  <p class="cert-vow-text" id="certDisplayVow">
+                    &ldquo;Bound by endless love, unconditional cuddles, treat privileges, and eternal happiness.&rdquo;
+                  </p>
+                </div>
+
+                <!-- Signatures & Official Gold Seal -->
+                <div class="cert-footer">
+                  <!-- Signature 1: Guardian -->
+                  <div class="signature-block">
+                    <div class="signature-line-drawn" id="certGuardianSig">Carrie & Family</div>
+                    <div class="signature-rule"></div>
+                    <span class="signature-label">PROUD GUARDIAN / PARENT</span>
+                  </div>
+
+                  <!-- Central Official Embossed Seal -->
+                  <div class="official-seal-wrapper">
+                    <div class="embossed-seal" id="certDisplaySeal">
+                      <div class="seal-inner-circle">
+                        <span class="seal-star">★ ★ ★</span>
+                        <span class="seal-emblem" id="sealEmblemIcon">🐾</span>
+                        <span class="seal-text-arch">OFFICIAL REGISTRY</span>
+                        <span class="seal-year">SEAL OF LOVE</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Signature 2: Certified Paw Of Approval -->
+                  <div class="signature-block">
+                    <div class="signature-line-drawn pet-sig" id="certPetSig">Barnaby 🐾</div>
+                    <div class="signature-rule"></div>
+                    <span class="signature-label">PET SIGNATURE & PAW APPROVAL</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Stock Pet Portrait Modal -->
+  <div id="galleryModal" class="modal-backdrop hidden no-print">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Choose a Stock Pet Portrait</h3>
+        <button id="closeGalleryBtn" class="btn-close">&times;</button>
+      </div>
+      <p class="modal-desc">Click any adorable companion below to instantly place their portrait onto your certificate.</p>
+      
+      <div class="stock-grid" id="stockGalleryGrid">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Offscreen Canvas for Crisp 2400x1700 Image Generation -->
+  <canvas id="exportCanvas" class="hidden" width="2400" height="1700"></canvas>
+
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

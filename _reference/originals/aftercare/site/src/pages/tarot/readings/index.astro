@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import { REFLECTION_NOTE } from '../../../lib/reading'
+---
+<BaseLayout title="My readings" active="tarot" description="Your saved tarot readings, stored only on this device.">
+  <section class="page-head"><div class="wrap">
+    <span class="eyebrow">Saved on this device</span>
+    <h1>My <em>readings.</em></h1>
+    <p class="lede">A quiet record of the cards you have pulled. Add a note to any of them, and watch which cards keep turning up.</p>
+  </div></section>
+  <section style="padding-top:20px"><div class="wrap">
+    <div id="readings-empty" hidden class="plate" style="padding:28px"><h3>Nothing saved yet</h3><p class="muted">Pull a few cards, turn them all over, and press "Save reading".</p><a class="btn sm" href="/tarot/">Go to the table</a></div>
+    <div id="readings-stats" class="chips" style="margin-bottom:22px"></div>
+    <ul id="readings-list" class="saved-list"></ul>
+    <p class="note" style="margin-top:28px">{REFLECTION_NOTE}</p>
+  </div></section>
+  <script>
+    import '../../../scripts/readingsPage'
+  </script>
+</BaseLayout>
