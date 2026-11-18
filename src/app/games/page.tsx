@@ -3,7 +3,7 @@ import { GamesDesk } from '@/components/desks/games-desk';
 
 export const metadata: Metadata = {
   title: 'Games',
-  description: 'The dilemma village, Fernbound, and towers. All of it stays in the browser.',
+  description: 'The dilemma village and towers. All of it stays in the browser.',
   robots: { index: false, follow: false },
 };
 

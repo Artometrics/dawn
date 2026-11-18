@@ -15,8 +15,7 @@
   flex-direction: column;
 }
 
-.arcade-shell > .arcade,
-.arcade-shell > .fern {
+.arcade-shell > .arcade {
   flex: 1 1 auto;
   min-height: 0;
 }
@@ -81,8 +80,7 @@
   display: block;
 }
 
-.dilemma-stage .dw-stage-message,
-.fern-frame .dw-stage-message {
+.dilemma-stage .dw-stage-message {
   z-index: 2;
 }
 
@@ -158,9 +156,7 @@
 }
 
 .dilemma-who small,
-.dilemma-event,
-.fern-walk span,
-.fern-controls span {
+.dilemma-event {
   color: var(--dawn-muted);
   font-size: var(--dawn-fs-label);
   line-height: 1.45;
@@ -204,135 +200,6 @@
 
   .dilemma-feed {
     max-height: none;
-  }
-}
-
-/* Fernbound. A landing, then the original field in the remaining space. */
-.fern {
-  flex: 1;
-  min-height: 0;
-  min-width: 0;
-  overflow: auto;
-  background: var(--dawn-bg);
-}
-
-.fern-live {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.fern-landing {
-  width: min(100%, 720px);
-  margin: 0 auto;
-  padding: var(--dawn-space-6) var(--dawn-space-4) var(--dawn-space-10);
-  display: flex;
-  flex-direction: column;
-  gap: var(--dawn-space-4);
-}
-
-.fern-title {
-  margin: 0;
-  font-family: var(--dawn-font-display);
-  font-size: var(--dawn-fs-display);
-  font-weight: 560;
-  letter-spacing: -0.03em;
-  line-height: 1;
-}
-
-.fern-walk,
-.fern-controls {
-  list-style: none;
-  margin: var(--dawn-space-2) 0 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--dawn-space-3);
-}
-
-.fern-walk {
-  counter-reset: fern;
-}
-
-.fern-walk li,
-.fern-controls li {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-
-.fern-walk li {
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: var(--dawn-space-3);
-}
-
-.fern-walk li::before {
-  counter-increment: fern;
-  content: counter(fern);
-  grid-row: 1 / span 2;
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  margin-top: 2px;
-  border-radius: var(--dawn-radius-full);
-  background: var(--dawn-navy);
-  box-shadow: inset 0 0 0 1px var(--dawn-navy-line);
-  color: #fff;
-  font-size: var(--dawn-fs-label);
-  font-weight: 600;
-}
-
-.fern-walk strong,
-.fern-controls strong {
-  font-size: var(--dawn-fs-action);
-}
-
-.fern-bar {
-  flex: none;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--dawn-space-3);
-  padding: var(--dawn-space-3) var(--dawn-space-4);
-  border-bottom: 1px solid var(--dawn-line);
-}
-
-.fern-bar .dw-card-title,
-.fern-bar .dw-eyebrow {
-  margin: 0;
-}
-
-.fern-caption {
-  flex: none;
-  margin: 0;
-  padding: var(--dawn-space-2) var(--dawn-space-4);
-  border-bottom: 1px solid var(--dawn-line);
-  color: var(--dawn-muted);
-  font-size: var(--dawn-fs-label);
-  line-height: 1.45;
-}
-
-.fern-frame {
-  position: relative;
-  flex: 1;
-  min-height: 240px;
-  background: #142018;
-}
-
-.fern-iframe {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  background: #142018;
-}
-
-@media (max-width: 767px) {
-  .fern-play-btn {
-    width: 100%;
   }
 }
 

@@ -6,12 +6,10 @@ import { Game } from '@/lib/towers/game';
 import { BOUNDS, PATH, SLOTS } from '@/lib/towers/map';
 import './desks.css';
 import { DilemmaDesk } from './dilemma-desk';
-import { FernboundDesk } from './fernbound-desk';
 import { DeskSwitch } from './switch';
 
 const VIEWS = [
   { id: 'dilemma', label: 'Dilemma' },
-  { id: 'fernbound', label: 'Fernbound' },
   { id: 'towers', label: 'Towers' },
 ];
 
@@ -24,7 +22,6 @@ export function GamesDesk() {
         <DeskSwitch label="Arcade" views={VIEWS} current={view} onChange={setView} />
       </div>
       {view === 'dilemma' ? <DilemmaDesk /> : null}
-      {view === 'fernbound' ? <FernboundDesk /> : null}
       {view === 'towers' ? (
         <div className="arcade-scroll">
           <TowersPlay />
