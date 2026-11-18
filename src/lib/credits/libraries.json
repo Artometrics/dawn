@@ -240,6 +240,12 @@
     "url": "https://leafletjs.com/"
   },
   {
+    "name": "html-to-image",
+    "kind": "dawn",
+    "license": "MIT",
+    "url": "https://github.com/bubkoo/html-to-image"
+  },
+  {
     "name": "lucide-react",
     "kind": "dawn",
     "license": "ISC",
