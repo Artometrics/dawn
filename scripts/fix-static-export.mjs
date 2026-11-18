@@ -43,6 +43,7 @@ publish('code/editor');
 publish('kits');
 publish('projects');
 publish('artifacts');
+publish('recipes');
 publish('preview/bench');
 publish('preview/habits');
 publish('preview/stuck');
