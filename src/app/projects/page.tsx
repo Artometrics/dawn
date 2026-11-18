@@ -86,7 +86,7 @@ export default function ProjectsPage() {
   if (offline) {
     return (
       <PageShell title="Projects" lead="Notes and files saved on your Dawn desk.">
-        <OfflineCard line="Offline preview. Open live Dawn to see and save project files." />
+        <OfflineCard line="Desk not connected. Open your Dawn desk to see and save project files." />
       </PageShell>
     );
   }

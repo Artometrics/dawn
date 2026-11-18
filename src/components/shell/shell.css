@@ -162,6 +162,100 @@
   color: var(--dawn-secondary);
   font-size: var(--dawn-fs-action);
 }
+.as-avatar {
+  padding: 0;
+  overflow: hidden;
+}
+.as-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+.as-menu {
+  width: min(300px, calc(100% - 24px));
+}
+.as-me {
+  display: flex;
+  align-items: center;
+  gap: var(--dawn-space-3);
+  padding-bottom: var(--dawn-space-2);
+}
+.as-me img {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  object-fit: cover;
+  box-shadow: 0 0 0 2px var(--dawn-elev), 0 0 0 3px var(--dawn-line);
+}
+.as-me strong {
+  display: block;
+  color: var(--dawn-text);
+  font-family: var(--dawn-font-serif, Georgia, serif);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.as-me span {
+  color: var(--dawn-secondary);
+  font-size: 12px;
+}
+.as-menu .as-kicker {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.as-portraits {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  padding: 4px 0 2px;
+}
+.as-portraits button {
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--dawn-field);
+  cursor: pointer;
+  transition: transform 220ms cubic-bezier(0.32, 1.4, 0.5, 1), box-shadow 160ms ease;
+}
+.as-portraits button:hover {
+  transform: scale(1.08);
+}
+.as-portraits button:active {
+  transform: scale(0.94);
+}
+.as-portraits button[aria-checked='true'] {
+  box-shadow: 0 0 0 2px var(--dawn-elev), 0 0 0 4px var(--dawn-accent);
+}
+.as-portraits img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.as-menu .as-note {
+  font-size: 11px;
+}
+.as-menu .as-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: var(--dawn-space-2);
+  padding-top: var(--dawn-space-2);
+  border-top: 1px solid var(--dawn-line);
+}
+.as-status span {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--dawn-muted);
+}
+.as-status[data-desk='ready'] span {
+  background: #3fb950;
+}
 .as-menu a {
   display: flex;
   align-items: center;

@@ -102,25 +102,13 @@ interface WorkspaceTab {
   url?: string;
 }
 
-const INITIAL_CODE = `// Welcome to Dawn Studio (Artometrics)
-// Unified Claude + Slack + Grok Bot workspace
-
-export async function startServer(port: number = 3000) {
-  console.log(\`Starting Dawn Agent service on port \${port}...\`);
-  return {
-    status: 200,
-    url: \`http://localhost:\${port}\`,
-    ready: true,
-  };
-}
-`;
+const INITIAL_CODE = '';
 
 export default function DawnStudio() {
   // Navigation & Rail State
   const [activeNavRail, setActiveNavRail] = useState<'home' | 'bots' | 'activity' | 'files' | 'code'>('bots');
-  const [claudeTopPill, setClaudeTopPill] = useState<'home' | 'code'>('home');
   const [claudeMode, setClaudeMode] = useState<'chat' | 'cowork'>('chat');
-  const [rightPanelTab, setRightPanelTab] = useState<'details' | 'library' | 'computer' | 'editor'>('computer');
+  const [rightPanelTab, setRightPanelTab] = useState<'details' | 'library' | 'computer' | 'editor'>('details');
 
   // Search Bar / Command Palette
   const [searchQuery, setSearchQuery] = useState('');
@@ -294,7 +282,7 @@ export default function DawnStudio() {
     if (!prompt.trim() || isLoading) return;
     const boot = await bootFirebase();
     if (studioSendMode(boot.mode) !== 'provider' || !boot.app) {
-      setHostNote('Offline preview. Open live Dawn for real replies.');
+      setHostNote('Desk not connected. Open your Dawn desk for real replies.');
       return;
     }
 
@@ -326,11 +314,6 @@ export default function DawnStudio() {
           messages: newMessages.map((item) => ({ role: item.role, content: item.content })),
           model: activeTeammate.model,
           teammate: activeTeammate,
-          codeContext: {
-            filename: 'page.tsx',
-            language: 'typescript',
-            content: editorCode,
-          },
         },
         (accumulated) => {
           setMessages((prev) => prev.map((item) => (item.id === assistantId ? { ...item, content: accumulated } : item)));
@@ -429,7 +412,7 @@ export default function DawnStudio() {
               onClick={() => setMobilePane(pane)}
               className={`flex-1 py-3 text-sm capitalize ${mobilePane === pane ? 'text-[var(--dawn-text)]' : 'text-[var(--dawn-muted)]'}`}
             >
-              {pane === 'project' ? 'Project' : pane === 'computer' ? 'Computer' : 'Chat'}
+              {pane === 'project' ? 'Project' : pane === 'computer' ? 'Details' : 'Chat'}
             </button>
           ))}
         </div>
@@ -443,7 +426,6 @@ export default function DawnStudio() {
           <div className="flex flex-col items-center gap-3">
             <button 
               onClick={() => {
-                setClaudeTopPill('home');
                 setActiveNavRail('home');
               }}
               title="Dawn Studio Home"
@@ -457,7 +439,6 @@ export default function DawnStudio() {
               <button
                 onClick={() => {
                   setActiveNavRail('home');
-                  setClaudeTopPill('home');
                 }}
                 title="Home (Claude Evening Thoughts)"
                 className={`p-2.5 rounded-xl cursor-pointer transition-all ${
@@ -482,36 +463,7 @@ export default function DawnStudio() {
                 <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-[var(--dawn-accent)]" />
               </button>
 
-              <button
-                onClick={() => {
-                  setClaudeTopPill('code');
-                  setRightPanelTab('editor');
-                  setIsRightPanelOpen(true);
-                }}
-                title="Code Editor / IDE"
-                className={`p-2.5 rounded-xl cursor-pointer transition-all ${
-                  claudeTopPill === 'code'
-                    ? 'bg-[var(--dawn-field)] text-[var(--dawn-accent)]'
-                    : 'text-[var(--dawn-muted)] hover:bg-[var(--dawn-elev)] hover:text-[var(--dawn-text)]'
-                }`}
-              >
-                <Code2 className="w-4 h-4" />
-              </button>
 
-              <button
-                onClick={() => {
-                  setRightPanelTab('computer');
-                  setIsRightPanelOpen(true);
-                }}
-                title="Live Browser & Computer Preview"
-                className={`p-2.5 rounded-xl cursor-pointer transition-all ${
-                  rightPanelTab === 'computer' && isRightPanelOpen
-                    ? 'bg-[var(--dawn-field)] text-[var(--dawn-accent)]'
-                    : 'text-[var(--dawn-muted)] hover:bg-[var(--dawn-elev)] hover:text-[var(--dawn-text)]'
-                }`}
-              >
-                <Globe className="w-4 h-4" />
-              </button>
 
               <button
                 onClick={() => setActiveNavRail('activity')}
@@ -555,38 +507,6 @@ export default function DawnStudio() {
         ───────────────────────────────────────────────────────────────── */}
         {(narrow ? mobilePane === 'project' : isSidebarOpen) && (
           <aside className={`${narrow ? 'absolute inset-0 z-40 w-full' : 'w-64'} bg-[var(--dawn-sheet)] border-r border-[var(--dawn-chip)] flex flex-col shrink-0`}>
-            {/* Claude-style Mode Switcher: [ Home ] vs [ </> Code ] */}
-            <div className="p-2.5 border-b border-[var(--dawn-chip)]">
-              <div className="grid grid-cols-2 bg-[var(--dawn-field)] p-0.5 rounded-lg text-xs font-medium text-[var(--dawn-muted)]">
-                <button
-                  onClick={() => setClaudeTopPill('home')}
-                  className={`flex items-center justify-center gap-1.5 py-1 rounded-md transition-all cursor-pointer ${
-                    claudeTopPill === 'home'
-                      ? 'bg-[var(--dawn-chip)] text-[var(--dawn-text)] shadow-sm'
-                      : 'hover:text-[var(--dawn-text)]'
-                  }`}
-                >
-                  <Home className="w-3.5 h-3.5" />
-                  <span>Home</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setClaudeTopPill('code');
-                    setRightPanelTab('editor');
-                    setIsRightPanelOpen(true);
-                  }}
-                  className={`flex items-center justify-center gap-1.5 py-1 rounded-md transition-all cursor-pointer ${
-                    claudeTopPill === 'code'
-                      ? 'bg-[var(--dawn-chip)] text-[var(--dawn-text)] shadow-sm'
-                      : 'hover:text-[var(--dawn-text)]'
-                  }`}
-                >
-                  <Code2 className="w-3.5 h-3.5" />
-                  <span>Code</span>
-                </button>
-              </div>
-            </div>
-
             {/* Active Highlighted Grok Bot Banner (Trinity from image 4) */}
             <div className="p-3 mx-2 mt-2 bg-[var(--dawn-field)] rounded-xl border border-[var(--dawn-chip)] flex items-center gap-3 shadow-sm">
               <div className="relative size-10 rounded-full bg-[var(--dawn-pill)] flex items-center justify-center text-[var(--dawn-ink)] shrink-0 shadow">
@@ -762,16 +682,6 @@ export default function DawnStudio() {
                 </button>
               </div>
 
-              <button
-                onClick={() => {
-                  setRightPanelTab('computer');
-                  setIsRightPanelOpen(true);
-                }}
-                className="text-[var(--dawn-muted)] hover:text-[var(--dawn-text)] p-1 rounded hover:bg-[var(--dawn-field)] cursor-pointer"
-                title="Open Computer View"
-              >
-                <Monitor className="w-4 h-4" />
-              </button>
             </div>
           </div>
 
@@ -929,36 +839,6 @@ export default function DawnStudio() {
                   }`}
                 >
                   Details
-                </button>
-                <button
-                  onClick={() => setRightPanelTab('library')}
-                  className={`px-2.5 py-1 rounded-md text-xs font-medium cursor-pointer transition-colors ${
-                    rightPanelTab === 'library'
-                      ? 'bg-[var(--dawn-chip)] text-[var(--dawn-text)] shadow-sm'
-                      : 'text-[var(--dawn-muted)] hover:text-[var(--dawn-text)]'
-                  }`}
-                >
-                  Library
-                </button>
-                <button
-                  onClick={() => setRightPanelTab('computer')}
-                  className={`px-2.5 py-1 rounded-md text-xs font-medium cursor-pointer transition-colors ${
-                    rightPanelTab === 'computer'
-                      ? 'bg-[var(--dawn-chip)] text-[var(--dawn-text)] shadow-sm'
-                      : 'text-[var(--dawn-muted)] hover:text-[var(--dawn-text)]'
-                  }`}
-                >
-                  Computer
-                </button>
-                <button
-                  onClick={() => setRightPanelTab('editor')}
-                  className={`px-2.5 py-1 rounded-md text-xs font-medium cursor-pointer transition-colors ${
-                    rightPanelTab === 'editor'
-                      ? 'bg-[var(--dawn-chip)] text-[var(--dawn-text)] shadow-sm'
-                      : 'text-[var(--dawn-muted)] hover:text-[var(--dawn-text)]'
-                  }`}
-                >
-                  Code
                 </button>
               </div>
 
@@ -1181,36 +1061,12 @@ export default function DawnStudio() {
               </div>
               <button
                 onClick={() => {
-                  setClaudeTopPill('home');
                   setIsSearchOpen(false);
                 }}
                 className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-[var(--dawn-chip)] text-left cursor-pointer"
               >
                 <span className="text-sm font-serif">🏠</span>
                 <span className="text-[var(--dawn-text)]">Claude Home View (&quot;Evening Thoughts&quot;)</span>
-              </button>
-              <button
-                onClick={() => {
-                  setRightPanelTab('computer');
-                  setIsRightPanelOpen(true);
-                  setIsComputerAwake(true);
-                  setIsSearchOpen(false);
-                }}
-                className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-[var(--dawn-chip)] text-left cursor-pointer"
-              >
-                <Monitor className="w-4 h-4 text-[var(--dawn-accent)]" />
-                <span className="text-[var(--dawn-text)]">Grok Computer / Live Webview</span>
-              </button>
-              <button
-                onClick={() => {
-                  setRightPanelTab('editor');
-                  setIsRightPanelOpen(true);
-                  setIsSearchOpen(false);
-                }}
-                className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-[var(--dawn-chip)] text-left cursor-pointer"
-              >
-                <Code2 className="w-4 h-4 text-[var(--dawn-accent)]" />
-                <span className="text-[var(--dawn-text)]">Monaco Code Editor</span>
               </button>
             </div>
           </div>

@@ -13,8 +13,6 @@ export const ROUTES = [
   { path: '/artifacts', name: 'artifacts', title: 'Style recipes' },
   { path: '/letter', name: 'letter', title: 'Letter' },
   { path: '/newsletter', name: 'newsletter', title: 'Newsletter' },
-  { path: '/invoices', name: 'invoices', title: 'Invoices' },
-  { path: '/contacts', name: 'contacts', title: 'Contacts' },
   { path: '/games', name: 'games', title: 'Games' },
   { path: '/aftercare', name: 'aftercare', title: 'Aftercare' },
   { path: '/books', name: 'books', title: 'Books' },

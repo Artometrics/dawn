@@ -67,7 +67,7 @@ export default function EditorPage() {
 
   return (
     <PageShell title="Editor" lead="Edit your desk files.">
-      <DeskGate status={desk} offline="Offline preview. Open live Dawn to edit and save files." />
+      <DeskGate status={desk} offline="Desk not connected. Open your Dawn desk to edit and save files." />
       {ready && (
         <>
           <label className="dw-label">

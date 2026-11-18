@@ -17,8 +17,6 @@ const ACTUAL = [
   { href: '/studio', name: 'Studio', note: 'Chat and live preview workspace. Sends need a model on the host; local and static builds send nothing.' },
   { href: '/letter', name: 'Letter', note: 'Public signup and archive. Needs consent, then a confirmation link.' },
   { href: '/newsletter', name: 'Newsletter', note: 'Compose, list, archive, and counts. Sending is off.' },
-  { href: '/invoices', name: 'Invoices', note: 'Numbered invoices with PDF and print.' },
-  { href: '/contacts', name: 'Contacts', note: 'People, pipeline, and today.' },
   { href: '/games', name: 'Games', note: 'Dilemma village and towers. No server.' },
   { href: '/aftercare', name: 'Aftercare', note: 'Tarot table, birth chart, journal. Nothing is sent.' },
   { href: '/books', name: 'Books', note: 'Oracle, quiz, Gutenberg press, library, and shelf. No shop links.' },

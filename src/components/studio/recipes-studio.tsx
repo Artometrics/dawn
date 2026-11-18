@@ -186,11 +186,20 @@ function Badge({ recipe }: { recipe: StudioRecipe }) {
 
 const noopSubscribe = () => () => {};
 
+const MAST_FONT_CSS =
+  'https://fonts.googleapis.com/css2?family=Anton&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;1,8..60,400&display=swap';
+const pdCount = STUDIO_RECIPES.filter((recipe) => recipe.origin === 'Public domain').length;
+const DATELINE = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+const noSubscribe = () => () => undefined;
+const todayLine = () => DATELINE.format(new Date());
+const noDate = () => 'Dawn edition';
+
 export function RecipesStudio({ classic }: { classic?: ReactNode }) {
   const [kind, setKind] = useState<'All' | StudioKind | 'Videos & swatches'>('All');
   const [query, setQuery] = useState('');
   const [savedOnly, setSavedOnly] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
+  const dateline = useSyncExternalStore(noSubscribe, todayLine, noDate);
   const [toast, setToast] = useState('');
   const saved = useStore(savedStore);
   const drafts = useStore(draftStore);
@@ -255,12 +264,37 @@ export function RecipesStudio({ classic }: { classic?: ReactNode }) {
   return (
     <div className="st">
       <link rel="stylesheet" href={STUDIO_FONT_CSS} />
-      <header className="st-head">
-        <div>
-          <p className="st-code">[DAWN / RECIPES STUDIO]</p>
-          <h2 className="st-title">Tap a recipe. Edit it live. Ship the HTML.</h2>
+      <link rel="stylesheet" href={MAST_FONT_CSS} />
+      <header className="st-head st-mast">
+        <p className="st-dateline">{dateline}</p>
+        <div className="st-word" aria-label="Artometrics">
+          <span>Artometrics</span>
         </div>
-        <p className="st-sub">{STUDIO_RECIPES.length} recipes: tickets, art cards, design-deck cards, covers, posters, archive scans, motion and game assets. Every one is a single HTML file you can hand to an agent.</p>
+        <p className="st-tag">
+          culture, quantified <b>Dawn</b>
+        </p>
+        <p className="st-kicker">Recipes · The studio</p>
+        <h2 className="st-title">
+          {STUDIO_RECIPES.length} recipes for <em>covers, cards &amp; moving</em> things
+        </h2>
+        <p className="st-sub">
+          Tickets, art cards, design-deck cards, magazine covers, posters, archive scans, motion and game assets. Tap one to edit any text, image or
+          colour live, then ship it as a single HTML file or save it as an image.
+        </p>
+        <p className="st-stats">
+          <span>
+            <b>{STUDIO_RECIPES.length}</b> recipes
+          </span>
+          <span>
+            <b>{pdCount}</b> public-domain scans
+          </span>
+          <span>
+            <b>{STUDIO_FONTS.length}</b> fonts
+          </span>
+          <span>
+            <b>1</b> file each
+          </span>
+        </p>
       </header>
 
       <div className="st-bar">

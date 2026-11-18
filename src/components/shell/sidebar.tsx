@@ -13,8 +13,6 @@ import {
   LayoutGrid,
   Mail,
   Newspaper,
-  Receipt,
-  Contact,
   Gamepad2,
   Flower2,
   Clapperboard,
@@ -49,8 +47,6 @@ const ICONS: Record<IconKey, typeof Folder> = {
   recipes: LayoutGrid,
   letter: Mail,
   newsletter: Newspaper,
-  invoices: Receipt,
-  contacts: Contact,
   games: Gamepad2,
   aftercare: Flower2,
   books: Library,
@@ -149,8 +145,8 @@ export function Sidebar({ open, desk, threads, onClose, closeRef }: SidebarProps
         ))}
       </nav>
       <div className="sb-foot">
-        <p className="sb-status">{desk === 'ready' ? 'Connected to Dawn' : 'Offline preview'}</p>
-        {desk !== 'ready' && live && <a className="sb-link" href={live}>Open live Dawn</a>}
+        <p className="sb-status">{desk === 'ready' ? 'Connected to Dawn' : 'Desk not connected'}</p>
+        {desk !== 'ready' && live && <a className="sb-link" href={live}>Open Dawn desk</a>}
         <Link className="sb-link" href={CREDITS_HREF} aria-current={pathname.startsWith('/credits') ? 'page' : undefined}>Credits &amp; licenses</Link>
       </div>
     </aside>

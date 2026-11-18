@@ -74,7 +74,7 @@ export function BotDesk() {
   const session = payload?.session;
   return (
     <PageShell title="Bot desk" lead="Run one task in a small workspace on the Dawn server.">
-      <DeskGate status={desk} offline="Offline preview. Open live Dawn to run a task." />
+      <DeskGate status={desk} offline="Desk not connected. Open your Dawn desk to run a task." />
       {desk === 'ready' && <div className="dw-actions">
         <button type="button" className="dw-btn" disabled={busy} onClick={() => run('plan', 'Read the note')}>Read the note</button>
         <button type="button" className="dw-btn" disabled={busy} onClick={() => run('ask', 'Ask before writing')}>Ask before writing</button>

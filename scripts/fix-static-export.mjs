@@ -25,8 +25,6 @@ publish('atlas');
 publish('agents');
 publish('letter');
 publish('newsletter');
-publish('invoices');
-publish('contacts');
 publish('games');
 publish('aftercare');
 publish('books');

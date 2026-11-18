@@ -18,7 +18,7 @@ export function KitDashboard() {
   }, []);
   return (
     <PageShell title="Kits" lead="Small checks you can run on the Dawn server.">
-      <DeskGate status={desk} offline="Offline preview. Open live Dawn to run the kits." />
+      <DeskGate status={desk} offline="Desk not connected. Open your Dawn desk to run the kits." />
       <ul className="ch-grid">
         {KITS.map((kit, index) => (
           <li key={kit.id} style={{ ['--i' as string]: index }}>
@@ -58,7 +58,7 @@ export function KitPage({ kit }: { kit: KitInfo }) {
 
   return (
     <PageShell title={kit.title} lead={kit.blurb}>
-      <DeskGate status={desk} offline="Offline preview. Open live Dawn to run this check." />
+      <DeskGate status={desk} offline="Desk not connected. Open your Dawn desk to run this check." />
       {desk === 'ready' && (
         <div className="dw-actions">
           <button type="button" className="dw-btn dw-btn--primary" disabled={busy} onClick={() => { void run(); }}>Run check</button>

@@ -87,7 +87,7 @@ export function NightcodeDesk() {
 
   return (
     <PageShell title="NightCode" lead="Plan with read-only tools, or switch to build to change files.">
-      <DeskGate status={desk} offline="Offline preview. Open live Dawn to start a session and chat." />
+      <DeskGate status={desk} offline="Desk not connected. Open your Dawn desk to start a session and chat." />
       {ready && (
         <div className="dw-actions">
           <button type="button" className="dw-btn dw-btn--primary" onClick={() => { void start(); }}>New session</button>

@@ -56,14 +56,6 @@
         "source": "/newsletter",
         "destination": "/newsletter.html"
       },
-      {
-        "source": "/invoices",
-        "destination": "/invoices.html"
-      },
-        {
-          "source": "/contacts",
-          "destination": "/contacts.html"
-        },
         {
           "source": "/games",
           "destination": "/games.html"

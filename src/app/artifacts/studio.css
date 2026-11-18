@@ -1,13 +1,17 @@
 /* Recipes Studio: black and white, serif titles, coded labels, springy motion. */
 .st, .st-portal {
   /* Dawn runs dark: ink is near-white, surfaces are near-black. */
-  --st-ink: #f4f3ef;
-  --st-on-ink: #0b0b0b;
-  --st-paper: #0b0b0b;
-  --st-surface: #151515;
-  --st-surface-2: #1d1d1d;
-  --st-line: rgba(255, 255, 255, 0.12);
-  --st-mute: rgba(255, 255, 255, 0.56);
+  /* Artometrics house colours: black ground, cream ink, hot pink. */
+  --st-ink: #f3ead7;
+  --st-on-ink: #14110e;
+  --st-paper: #000;
+  --st-surface: #0e1110;
+  --st-surface-2: #121014;
+  --st-line: #2a3330;
+  --st-mute: #b7d0cb;
+  --st-pink: #ff3d8a;
+  --st-display: 'Anton', Impact, 'Arial Narrow', sans-serif;
+  --st-word: 'Chomsky', 'UnifrakturMaguntia', Georgia, serif;
   --st-hover: rgba(255, 255, 255, 0.08);
   --st-dot: rgba(255, 255, 255, 0.08);
   --st-blue: #2f6bff;
@@ -15,9 +19,9 @@
   --st-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --st-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px -12px rgba(0, 0, 0, 0.7);
   --st-shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 26px 50px -18px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255,255,255,.08);
-  --st-serif: 'Instrument Serif', 'Fraunces', Georgia, serif;
-  --st-mono: 'IBM Plex Mono', ui-monospace, monospace;
-  --st-sans: 'Inter', system-ui, sans-serif;
+  --st-serif: 'Source Serif 4', 'Instrument Serif', Georgia, serif;
+  --st-mono: 'DM Mono', 'IBM Plex Mono', ui-monospace, monospace;
+  --st-sans: 'DM Sans', 'Inter', system-ui, sans-serif;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -30,6 +34,23 @@
 .st-head { display: grid; gap: 10px; }
 .st-title { margin: 4px 0 0; font: 400 clamp(30px, 5vw, 48px)/1 var(--st-serif); letter-spacing: -0.01em; }
 .st-sub { margin: 0; max-width: 62ch; color: var(--st-mute); font-size: 14px; line-height: 1.5; }
+
+/* Artometrics masthead */
+@font-face { font-family: 'Chomsky'; src: url('/fonts/Chomsky.otf') format('opentype'); font-display: swap; }
+.st-mast { gap: 0; text-align: left; }
+.st-dateline { margin: 0; padding: 6px 12px; border-bottom: 1px solid var(--st-line); text-align: center; font: 400 11px var(--st-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--st-mute); }
+.st-word { display: flex; justify-content: center; padding: 14px 0 0; }
+.st-word span { font: 400 clamp(40px, 9vw, 64px)/1 var(--st-word); color: var(--st-ink); text-shadow: 3px 3px 0 var(--st-pink), 6px 6px 0 rgba(0, 71, 255, 0.55); letter-spacing: 0.01em; }
+.st-tag { margin: 4px 0 0; text-align: center; font: 400 12px var(--st-mono); letter-spacing: 0.08em; color: var(--st-mute); }
+.st-tag b { display: block; font-weight: 500; color: var(--st-pink); text-transform: uppercase; letter-spacing: 0.14em; }
+.st-kicker { margin: 22px 0 0; padding-top: 14px; border-top: 1px solid var(--st-line); font: 500 12px var(--st-mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--st-pink); }
+.st-mast .st-title { margin: 10px 0 0; font: 400 clamp(34px, 5.4vw, 56px)/1.04 var(--st-serif); letter-spacing: -0.015em; max-width: 18ch; }
+.st-mast .st-title em { font-style: italic; }
+.st-mast .st-sub { margin-top: 14px; font-size: 16px; line-height: 1.5; color: var(--st-ink); opacity: 0.86; }
+.st-stats { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 14px 0 0; font: 400 12px var(--st-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--st-mute); }
+.st-stats b { color: var(--st-ink); font-weight: 500; margin-right: 4px; }
+.st .st-chip { font-family: var(--st-mono) !important; text-transform: uppercase; letter-spacing: 0.08em; font-size: 12px !important; background: transparent; border-color: var(--st-ink); }
+.st .st-chip[aria-pressed='true'] { background: var(--st-ink); color: var(--st-on-ink) !important; }
 
 /* toolbar */
 .st-bar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; padding: 10px 0; background: color-mix(in srgb, var(--st-paper) 86%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
@@ -62,7 +83,7 @@
 .st-pin-open:hover .st-pin-hint { opacity: 1; transform: none; }
 .st-pin-meta { display: flex; align-items: flex-start; gap: 6px; padding: 9px 2px 0; }
 .st-pin-text { flex: 1; min-width: 0; }
-.st-pin-title { margin: 0; font: 600 13.5px/1.25 var(--st-sans); }
+.st-pin-title { margin: 0; font: 500 16px/1.2 var(--st-serif); }
 .st-pin-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 5px 0 0; font: 500 11px var(--st-mono); color: var(--st-mute); }
 .st-badge { padding: 2px 7px; border-radius: 999px; font: 600 10px/1.4 var(--st-mono); letter-spacing: 0.02em; border: 1px solid var(--st-line); color: var(--st-ink); background: var(--st-surface); }
 .st-badge--public-domain { background: #3a3324; border-color: #5a4e36; color: #f1e6c8; }

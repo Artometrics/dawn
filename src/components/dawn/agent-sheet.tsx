@@ -58,7 +58,7 @@ export function AgentSheet({ agent, onClose }: { agent: Agent; onClose: () => vo
         : undefined;
       const result = await askAgent(agent, memoryLines, history, prompt, viaGateway);
       setSource(result.source);
-      setError(result.source === 'practice' ? (result.error ?? 'Offline preview. Open live Dawn for real replies.') : null);
+      setError(result.source === 'practice' ? (result.error ?? 'Desk not connected. Open your Dawn desk for real replies.') : null);
       setLines([...history, { role: 'agent', text: result.text }]);
       remember(agent.id, `You: ${prompt}`.slice(0, 400));
       remember(agent.id, `${agent.name}: ${result.text}`.slice(0, 400));

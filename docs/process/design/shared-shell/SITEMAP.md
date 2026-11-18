@@ -21,8 +21,6 @@ One fixed shell on every route and on both origins (the live gateway origin and 
 | Work | Recipes | `/artifacts` | Style recipes: gallery, detail view, mixer. |
 | Work | Letter | `/letter` | The public letter, signup, and archive. |
 | Work | Newsletter | `/newsletter` | Compose, the subscriber list, a dry-run send, and counts. |
-| Work | Invoices | `/invoices` | Numbered invoices, PDF, and print. |
-| Work | Contacts | `/contacts` | People, companies, the pipeline, and today. |
 | Work | Games | `/games` | Dilemma village and Pantheon Towers. All stay in the browser. |
 | Work | Aftercare | `/aftercare` | Cards, numbers, and a journal. Nothing is sent. |
 | Work | Books | `/books` | Literary tarot, the book quiz, the Gutenberg press, the library, and a shelf. |
