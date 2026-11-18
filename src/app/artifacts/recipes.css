@@ -181,3 +181,37 @@
     animation: none;
   }
 }
+
+.rb-search {
+  flex: 1 1 180px;
+  min-width: 160px;
+  max-width: 280px;
+}
+
+.rb-search input {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 var(--dawn-space-3);
+  border: 1px solid var(--dawn-line);
+  border-radius: var(--dawn-radius-full);
+  background: var(--dawn-elev);
+  color: var(--dawn-text);
+  font: inherit;
+  font-size: var(--dawn-fs-action);
+}
+
+.rb-search input::placeholder {
+  color: var(--dawn-muted);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

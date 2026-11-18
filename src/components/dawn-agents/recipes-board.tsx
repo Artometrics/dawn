@@ -5,6 +5,8 @@ import { FONT_STYLESHEET, FONTS, LAYOUTS, PALETTES, RECIPES, RECIPE_BASE_CSS, TE
 
 const CATS = ['All', 'Styles', 'Textures', 'Palettes', 'Type'];
 const WIDE = '(min-width: 900px)';
+const SAVED_KEY = 'dawn-recipes-saved';
+const SAVED_EVENT = 'dawn-recipes-saved';
 
 function subscribeWide(notify: () => void) {
   const query = window.matchMedia(WIDE);
@@ -12,8 +14,36 @@ function subscribeWide(notify: () => void) {
   return () => query.removeEventListener('change', notify);
 }
 
+let savedCacheRaw: string | null = null;
+let savedCache: string[] = [];
+
+function readSaved(): string[] {
+  try {
+    const raw = window.localStorage.getItem(SAVED_KEY) ?? '';
+    if (raw === savedCacheRaw) return savedCache;
+    const parsed = raw ? (JSON.parse(raw) as unknown) : [];
+    savedCacheRaw = raw;
+    savedCache = Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : [];
+    return savedCache;
+  } catch {
+    return savedCache;
+  }
+}
+
+function subscribeSaved(notify: () => void) {
+  window.addEventListener('storage', notify);
+  window.addEventListener(SAVED_EVENT, notify);
+  return () => {
+    window.removeEventListener('storage', notify);
+    window.removeEventListener(SAVED_EVENT, notify);
+  };
+}
+
 export function RecipesBoard({ onEvent }: { onEvent: (action: string, recipe: Recipe) => Promise<void> }) {
   const [cat, setCat] = useState('All');
+  const [query, setQuery] = useState('');
+  const [savedOnly, setSavedOnly] = useState(false);
+  const saved = useSyncExternalStore(subscribeSaved, readSaved, (): string[] => []);
   const [open, setOpen] = useState<Recipe | null>(null);
   const [mixing, setMixing] = useState<Recipe | null>(null);
   const [picked, setPicked] = useState<number | null>(null);
@@ -21,7 +51,22 @@ export function RecipesBoard({ onEvent }: { onEvent: (action: string, recipe: Re
   const min = 2;
   const max = wide ? 10 : 6;
   const cols = Math.min(max, Math.max(min, picked ?? (wide ? 4 : 2)));
-  const list = RECIPES.filter((recipe) => cat === 'All' || recipe.tags.includes(cat));
+  function persistSaved(next: string[]) {
+    try {
+      window.localStorage.setItem(SAVED_KEY, JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+    savedCacheRaw = null;
+    window.dispatchEvent(new Event(SAVED_EVENT));
+  }
+  const needle = query.trim().toLowerCase();
+  const list = RECIPES.filter((recipe) => cat === 'All' || recipe.tags.includes(cat)).filter((recipe) => {
+    if (savedOnly && !saved.includes(recipe.id)) return false;
+    if (!needle) return true;
+    const hay = [recipe.name, recipe.note, ...recipe.tags].join(' ').toLowerCase();
+    return hay.includes(needle);
+  });
 
   useEffect(() => {
     if (!open && !mixing) return;
@@ -48,6 +93,18 @@ export function RecipesBoard({ onEvent }: { onEvent: (action: string, recipe: Re
                 </button>
               ))}
             </div>
+            <label className="rb-search">
+              <span className="sr-only">Search recipes</span>
+              <input
+                type="search"
+                placeholder="Search layouts, palettes, type…"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </label>
+            <button type="button" className="dw-btn" aria-pressed={savedOnly} onClick={() => setSavedOnly((v) => !v)}>
+              Saved{saved.length ? ` (${saved.length})` : ''}
+            </button>
             <div className="rb-size" role="group" aria-label="Grid size">
               <button type="button" aria-label="Fewer columns, larger cards" disabled={cols <= min} onClick={() => setPicked(cols - 1)}>−</button>
               <input
@@ -61,6 +118,7 @@ export function RecipesBoard({ onEvent }: { onEvent: (action: string, recipe: Re
               <button type="button" aria-label="More columns, smaller cards" disabled={cols >= max} onClick={() => setPicked(cols + 1)}>+</button>
             </div>
           </div>
+          {list.length === 0 ? <p className="dw-lead">No recipes match that search.</p> : null}
           <div className="board" style={{ ['--cols' as string]: cols }}>
             {list.map((recipe, index) => (
               <button key={recipe.id} type="button" className="pin" style={{ ['--i' as string]: Math.min(index, 12) }} aria-label={`Open ${recipe.name}`} onClick={() => setOpen(recipe)}>
@@ -79,6 +137,9 @@ export function RecipesBoard({ onEvent }: { onEvent: (action: string, recipe: Re
           onClose={() => setOpen(null)}
           onMix={() => setMixing(open)}
           onEvent={async (action) => {
+            if (action === 'save') {
+              persistSaved(saved.includes(open.id) ? saved.filter((id) => id !== open.id) : [...saved, open.id]);
+            }
             await onEvent(action, open);
           }}
         />
