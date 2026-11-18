@@ -103,7 +103,7 @@
 @media (max-width: 699px) { .st-icon--hover { display: none; } }
 
 /* editor */
-.st-ed { position: fixed; inset: 0; z-index: 9000; display: grid; grid-template-rows: auto 1fr auto; background: var(--st-paper); color: var(--st-ink); animation: st-fade 0.25s var(--st-ease); }
+.st-ed { position: fixed; inset: 0; z-index: 9000; display: grid; grid-template-rows: auto 1fr auto; grid-template-columns: minmax(0, 1fr); background: var(--st-paper); color: var(--st-ink); animation: st-fade 0.25s var(--st-ease); }
 @keyframes st-fade { from { opacity: 0; } }
 .st-ed-top { display: flex; align-items: center; gap: 8px; padding: 10px 12px; padding-top: max(10px, env(safe-area-inset-top)); border-bottom: 1px solid var(--st-line); background: var(--st-surface); }
 .st-ed-name { flex: 1; min-width: 0; }
