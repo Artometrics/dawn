@@ -28,7 +28,12 @@ export default function ArtifactsPage() {
     };
   }, []);
   return (
-    <PageShell title="Recipes" wide lead="Layouts, textures, palettes and type to look at and mix.">
+    <PageShell title="Recipes" wide lead={
+        <>
+          Layouts, textures, palettes and type to look at and mix. Historical artifacts live in{' '}
+          <a href="https://gotha.artometrics.com">Gotha, the almanac of artifacts</a>.
+        </>
+      }>
       {note && <p className="dw-alert" role="status">{note}</p>}
       {offlineNote && <OfflineCard line="Offline preview. Open live Dawn to save a like." />}
       <RecipesBoard
