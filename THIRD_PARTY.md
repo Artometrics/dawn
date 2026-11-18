@@ -14,7 +14,7 @@ Other notices, including AI Town (MIT) and Stanford Generative Agents, stay in `
 
 The dilemma village in `src/lib/games/dilemma.ts` is the simulation from [kylesmcauliffe/dawn](https://github.com/kylesmcauliffe/dawn), rewritten as a canvas on `/games`. Pantheon Towers in `src/lib/towers/` is the rules from Artometrics/pantheon `games/towers`. The three.js courtyard and its CC0 meshes stay in that repo.
 
-Fernbound's page loads `public/play/fernbound/`, the published Godot web export (engine [MIT](https://godotengine.org/license/)). The GDScript sources were not in the Artometrics or kylesmcauliffe GitHub accounts, so the desk plays that build.
+Fernbound was a published Godot web export (engine [MIT](https://godotengine.org/license/)). It was retired from Dawn on 17 November 2026. The compiled original is in the Artometrics Drive archive; the GDScript sources were never in the Artometrics or kylesmcauliffe GitHub accounts.
 
 Aftercare's card text, numerology, and spreads in `src/lib/aftercare/` come from Artometrics/aftercare `site/`. The three.js table, the Netlify app, and Gemini card readings stay there. Books in `src/lib/books/` is the PageMatch oracle, quiz, Gutenberg press, study capsules, and shelf from Artometrics/carrie `apps/books`. The capsule text is Carrie's short study notes, not a CliffsNotes feed. Covers come from Open Library and Project Gutenberg. The in-page text reader uses a public jsDelivr copy of the same Gutenberg file when the browser cannot read gutenberg.org (that host does not send CORS headers). The pet certificates and the Amazon affiliate buttons stay out.
 

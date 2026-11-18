@@ -16,7 +16,6 @@ export const ROUTES = [
   { path: '/invoices', name: 'invoices', title: 'Invoices' },
   { path: '/contacts', name: 'contacts', title: 'Contacts' },
   { path: '/games', name: 'games', title: 'Games' },
-  { path: '/fernbound', name: 'fernbound', title: 'Fernbound' },
   { path: '/aftercare', name: 'aftercare', title: 'Aftercare' },
   { path: '/books', name: 'books', title: 'Books' },
   { path: '/cuts', name: 'cuts', title: 'Cuts' },

@@ -20,6 +20,8 @@ Do not open a production PR that copies these files into `public/` or `src/app` 
 | `originals/carrie/` | Artometrics/carrie (PageMatch books, plus PawCert pets and the portal) | Drive folder [1W4tnGH_653YJboRw-yIUf28LRnO2l475](https://drive.google.com/drive/folders/1W4tnGH_653YJboRw-yIUf28LRnO2l475) |
 | `originals/dilemma/` | kylesmcauliffe/dawn (Phaser prisoner’s-dilemma village) | Drive remainder [14gKU2icG_Sj9bjaqPloizht771U_qC0T](https://drive.google.com/drive/folders/14gKU2icG_Sj9bjaqPloizht771U_qC0T) (`kylesmcauliffe--dawn.bundle`) |
 | `originals/fernbound/` | Fernbound Godot 4.7 web export (no git repo was archived) | Drive folder [1xtMxmPjFzBpJqs45PllaseDVljyPsWFW](https://drive.google.com/drive/folders/1xtMxmPjFzBpJqs45PllaseDVljyPsWFW) |
+
+Fernbound was removed from the live Dawn desk, route, and `/play/fernbound` export on 17 November 2026. This reference copy stays.
 | `originals/nightlight/` | Artometrics/nightlight (Three.js flashlight walk-around) | Drive folder [1aUzM6Nj6QCX1FbVrtSlqXo2Mylfgxac1](https://drive.google.com/drive/folders/1aUzM6Nj6QCX1FbVrtSlqXo2Mylfgxac1) |
 
 Each app folder has `FEATURES.md` (full inventory) and `NOTES.md` (backup SHA256, git tip, omitted large files, Drive locations).
@@ -44,7 +46,7 @@ Bundle tips: Aftercare `a19c6dc8cbec` on `main`; Carrie `a734540001de` on `main`
 ## What was left out of this tree
 
 - `.git`, `node_modules`, and build output.
-- Any single file over ~5 MB. The only omission is Fernbound’s `public/index.wasm` (37.7 MB). See `originals/fernbound/NOTES.md` — the same bytes already live on `main` at `public/play/fernbound/index.wasm` (SHA256 `fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0`), and in the Drive zip.
+- Any single file over ~5 MB. The only omission is Fernbound’s `public/index.wasm` (37.7 MB). See `originals/fernbound/NOTES.md`. Those bytes were on `main` at `public/play/fernbound/index.wasm` until the 17 November 2026 retirement (SHA256 `fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0`). They remain in the Drive zip.
 - Nightlight’s box-copy extras (dev screenshots, raw 3D kits, `nightlight-source.tgz`). The playable repo is here; extras stay in the Drive working-tree zip. See `originals/nightlight/NOTES.md`.
 
 ## Other game backups not copied here

@@ -28,7 +28,6 @@ publish('newsletter');
 publish('invoices');
 publish('contacts');
 publish('games');
-publish('fernbound');
 publish('aftercare');
 publish('books');
 publish('cuts');
