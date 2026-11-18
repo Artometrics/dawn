@@ -5,6 +5,12 @@ export type FontSet = { id: string; name: string; heading: string; headingWeight
 export type Texture = { id: string; name: string; background: (colors: string[]) => string };
 export type Layout = { id: string; name: string; css: string; html: (text: RecipeText) => string };
 export type RecipeText = { kicker: string; headline: string; mark: string; number: string; prose: string };
+export type RecipeVideo = {
+  url: string;
+  id: string;
+  aspect?: 'landscape' | 'portrait';
+};
+
 export type Recipe = {
   id: string;
   name: string;
@@ -15,6 +21,7 @@ export type Recipe = {
   font: string;
   text: RecipeText;
   note: string;
+  video?: RecipeVideo;
 };
 
 const enc = (svg: string) => `url('data:image/svg+xml,${encodeURIComponent(svg).replace(/'/g, '%27')}')`;
@@ -90,7 +97,35 @@ export const LAYOUTS: Layout[] = [
   { id: 'terminal', name: 'Terminal', css: `.L-terminal{aspect-ratio:4/3;padding:7%;color:var(--ink);font:.72em/1.5 var(--fb)}.L-terminal h1{font:var(--hw) 1.4em/1.1 var(--fh);margin:.3em 0}`, html: (t) => `<div>$ ${esc(t.kicker.toLowerCase())}</div><h1>${esc(t.headline)}</h1><div>&gt; ${esc(t.mark)}</div>` },
 ];
 
+export function youtubeThumb(id: string): string {
+  return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+}
+
 export const RECIPES: Recipe[] = [
+  {
+    id: 'midway-mania',
+    name: 'Toy Story Midway Mania',
+    tags: ['References', 'Hoops', 'Game art'],
+    layout: 'cel',
+    texture: 'speed',
+    palette: 'cel',
+    font: 'rounded',
+    text: textOf('Hoops · Game art', 'Carnival booths, pop-up targets, toy-scale world', 'watch'),
+    note: 'Why it works: each booth is a full world swap — farm, volcano darts, space ring-toss, western town, mine bonus — with its own color, projectile, and cartoon reactions. Targets are dense and labeled (100, 500, 1000, 2000). Hits splash, smash, or pop immediately. A bonus round packs the screen and raises the values. It ends on a prize ladder and a toy Game Boy high-score card. For Hoops: change the whole court after a make, float labeled bonuses, keep reactions big but readable, and save the huge payoff for streaks and special scores.',
+    video: { url: 'https://youtu.be/5e3QwMIw_Ag', id: '5e3QwMIw_Ag', aspect: 'landscape' },
+  },
+  {
+    id: 'voice-actors-everywhere',
+    name: 'Voice Actors Who Are Everywhere',
+    tags: ['References', 'DWTS', 'Short-video format'],
+    layout: 'kindle',
+    texture: 'flat',
+    palette: 'sepia',
+    font: 'helv',
+    text: textOf('DWTS · Shorts', 'Short intro, labels in real time, then the clip', 'watch'),
+    note: 'Why it works: a two-second title card sets the series and part number, then each clip plays clearly. While it plays, on-screen text does the explaining — actor name and photo stay in the corner, the character name is large, and the show logo sits underneath. Nothing talks over the moment. The pattern repeats, so you always know who, what, and from where. For DWTS and Artometrics shorts: give a short intro for context, keep names and short explainers on screen, and let the clip play without covering it.',
+    video: { url: 'https://youtube.com/shorts/MogsjNoo1tA', id: 'MogsjNoo1tA', aspect: 'portrait' },
+  },
   { id: 'pixel-billboard', name: 'Pixel Mosaic Billboard', tags: ['Styles', 'Textures'], layout: 'billboard', texture: 'pixel', palette: 'ultraviolet', font: 'plex', text: textOf('Specialized tools from the studio', 'We make the tools you bring the vision', 'studio'), note: 'Started from a street billboard: a dithered pixel mosaic, a tall panel left of center, a monospace kicker, and a tight headline. Keep the panel about two thirds wide.' },
   { id: 'swiss-grid', name: 'Swiss Grid', tags: ['Styles', 'Type'], layout: 'swiss', texture: 'grid', palette: 'swiss', font: 'helv', text: textOf('Grid systems', 'Form follows function', 'Zürich 1959', '07'), note: 'One oversized numeral, flush-left heavy sans, two columns under a rule.' },
   { id: 'riso-zine', name: 'Risograph Zine', tags: ['Textures', 'Palettes'], layout: 'riso', texture: 'grain', palette: 'riso', font: 'archivo', text: textOf('Issue 03', 'Print it loud', 'zine'), note: 'Two spot inks and grain that fakes a risograph drum.' },
