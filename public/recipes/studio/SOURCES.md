@@ -1,6 +1,6 @@
 # Recipes Studio sources
 
-All archive images are public domain per Wikimedia Commons (US: published before 1931 or author died long ago). Inspired recipes are original HTML/CSS recreations of layout styles; no copied logos or cover photos beyond the PD scans listed here. Our assets come from Artometrics (brand wordmarks, A mark) and Hoops (Artometrics/storm-toss screenshots). Kyle's 12 Pinterest refs (public/recipes/studio/refs) are third-party images saved for private reference only, not for publishing.
+All archive images are public domain per Wikimedia Commons (US: published before 1931 or author died long ago). Inspired recipes are original HTML/CSS recreations of layout styles; no copied logos or cover photos beyond the PD scans listed here. Our assets come from Artometrics (brand wordmarks, A mark) and Hoops (Artometrics/storm-toss screenshots).
 
 | File | Artist | Date | License | Source |
 |---|---|---|---|---|
