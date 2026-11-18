@@ -22,6 +22,7 @@ import type { DeskStatus } from '@/lib/home/town-action';
 import { AGENTS } from '@/lib/agents';
 import { CREDITS_HREF, normalizePath, pageTitle } from '@/lib/site/nav';
 import { liveHref } from '@/lib/site/live';
+import { PORTRAITS, useAvatar } from '@/lib/site/portraits';
 import { Sidebar } from './sidebar';
 import './shell.css';
 
@@ -108,8 +109,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           <Sidebar open={open || docked} desk={desk} threads={threads} closeRef={closeRef} onClose={() => setOpen(false)} />
         </Suspense>
         <div className="as-stage">
-          <Suspense fallback={<TopBar title="Dawn" open={open} desk={desk} menuRef={menuRef} onMenu={() => setOpen(!open)} />}>
-            <SectionBar open={open} desk={desk} menuRef={menuRef} onMenu={() => setOpen(!open)} />
+          <Suspense fallback={<TopBar title="Dawn" open={open} desk={desk} menuRef={menuRef} onMenu={() => setOpen(!open)} onAccount={() => setAsked(true)} />}>
+            <SectionBar open={open} desk={desk} menuRef={menuRef} onMenu={() => setOpen(!open)} onAccount={() => setAsked(true)} />
           </Suspense>
           <div className="as-view" data-fill={fill} inert={open && !docked}>
             <div key={pathname} className="as-page">{children}</div>
@@ -133,7 +134,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   );
 }
 
-type BarProps = { open: boolean; desk: DeskStatus; menuRef: React.Ref<HTMLButtonElement>; onMenu: () => void };
+type BarProps = { open: boolean; desk: DeskStatus; menuRef: React.Ref<HTMLButtonElement>; onMenu: () => void; onAccount: () => void };
 
 function SectionBar(props: BarProps) {
   const pathname = usePathname() || '/';
@@ -142,8 +143,9 @@ function SectionBar(props: BarProps) {
   return <TopBar {...props} title={agent?.name ?? pageTitle(pathname, params.get('section'))} />;
 }
 
-function TopBar({ title, open, desk, menuRef, onMenu }: BarProps & { title: string }) {
+function TopBar({ title, open, desk, menuRef, onMenu, onAccount }: BarProps & { title: string }) {
   const [account, setAccount] = useState(false);
+  const [avatar, setAvatar] = useAvatar();
   const [live, setLive] = useState<string | null>(null);
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- the origin is only known in the browser
@@ -163,13 +165,51 @@ function TopBar({ title, open, desk, menuRef, onMenu }: BarProps & { title: stri
         <Menu aria-hidden />
       </button>
       <h2 className="as-title">{title}</h2>
-      <button type="button" className="as-round" aria-label="Account" aria-expanded={account} onClick={() => setAccount((value) => !value)}>
-        <img src="/tiles/you-0.png" alt="" width={28} height={28} />
+      <button
+        type="button"
+        className="as-round as-avatar"
+        aria-label="Account"
+        aria-expanded={account}
+        onClick={() => {
+          onAccount();
+          setAccount((value) => !value);
+        }}
+      >
+        <img src={avatar.src} alt="" width={36} height={36} />
       </button>
       {account && (
         <div className="as-menu" role="menu">
-          <p>{desk === 'ready' ? 'Connected to Dawn.' : 'Offline preview.'}</p>
-          {desk !== 'ready' && live && <a role="menuitem" href={live}>Open live Dawn</a>}
+          <div className="as-me">
+            <img src={avatar.src} alt="" width={48} height={48} />
+            <div>
+              <strong>{avatar.title}</strong>
+              <span>
+                {avatar.artist}, {avatar.year}
+              </span>
+            </div>
+          </div>
+          <p className="as-kicker">Choose your portrait</p>
+          <div className="as-portraits" role="group" aria-label="Choose your portrait">
+            {PORTRAITS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="menuitemradio"
+                aria-checked={item.id === avatar.id}
+                aria-label={`${item.title}, ${item.artist}`}
+                title={`${item.title} · ${item.artist}`}
+                onClick={() => setAvatar(item.id)}
+              >
+                <img src={item.src} alt="" width={64} height={64} loading="lazy" />
+              </button>
+            ))}
+          </div>
+          <p className="as-note">Public-domain paintings via Wikimedia Commons.</p>
+          <p className="as-status" data-desk={desk}>
+            <span aria-hidden />
+            {desk === 'ready' ? 'Desk connected' : desk === 'signin' ? 'Desk needs sign-in' : 'Desk not connected'}
+          </p>
+          {desk !== 'ready' && live && <a role="menuitem" href={live}>Open Dawn desk</a>}
           <Link role="menuitem" href={CREDITS_HREF}>Credits &amp; licenses</Link>
         </div>
       )}

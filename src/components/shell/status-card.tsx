@@ -6,7 +6,7 @@ import type { DeskStatus } from '@/lib/home/town-action';
 import './status-card.css';
 
 /** One calm card for "this needs the Dawn server". Offline pages link to the same page on the live origin. */
-export function OfflineCard({ line = 'Offline preview. Open live Dawn to save and chat.' }: { line?: string }) {
+export function OfflineCard({ line = 'Desk not connected. Open your Dawn desk to save and chat.' }: { line?: string }) {
   const [href, setHref] = useState<string | null>(null);
   useEffect(() => {
     // The origin is only known in the browser, so the link appears after hydration.
@@ -16,7 +16,7 @@ export function OfflineCard({ line = 'Offline preview. Open live Dawn to save an
   return (
     <div className="sc" role="status" data-status="offline">
       <p className="sc-line">{line}</p>
-      {href && <a className="sc-btn" href={href}>Open live Dawn</a>}
+      {href && <a className="sc-btn" href={href}>Open Dawn desk</a>}
     </div>
   );
 }

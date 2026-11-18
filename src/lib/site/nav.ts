@@ -5,7 +5,7 @@
  */
 export type IconKey =
   | 'atlas' | 'quests' | 'village' | 'characters' | 'library'
-  | 'projects' | 'studio' | 'recipes' | 'letter' | 'newsletter' | 'invoices' | 'contacts'
+  | 'projects' | 'studio' | 'recipes' | 'letter' | 'newsletter'
   | 'games' | 'aftercare' | 'books'
   | 'cuts' | 'shows' | 'research'
   | 'code' | 'nightcode' | 'teammates' | 'editor' | 'kits'
@@ -46,8 +46,6 @@ export const NAV_GROUPS: NavGroup[] = [
       { id: 'recipes', label: 'Recipes', href: '/artifacts', icon: 'recipes', path: '/artifacts' },
       { id: 'letter', label: 'Letter', href: '/letter', icon: 'letter', path: '/letter' },
       { id: 'newsletter', label: 'Newsletter', href: '/newsletter', icon: 'newsletter', path: '/newsletter' },
-      { id: 'invoices', label: 'Invoices', href: '/invoices', icon: 'invoices', path: '/invoices' },
-      { id: 'contacts', label: 'Contacts', href: '/contacts', icon: 'contacts', path: '/contacts' },
       { id: 'games', label: 'Games', href: '/games', icon: 'games', path: '/games' },
       { id: 'aftercare', label: 'Aftercare', href: '/aftercare', icon: 'aftercare', path: '/aftercare' },
       { id: 'books', label: 'Books', href: '/books', icon: 'books', path: '/books' },
@@ -151,8 +149,6 @@ export const SITE_ROUTES: string[] = [
   '/artifacts',
   '/letter',
   '/newsletter',
-  '/invoices',
-  '/contacts',
   '/games',
   '/aftercare',
   '/books',

@@ -2,8 +2,9 @@ import { bootFirebase } from '@/lib/firebase-client';
 import { describeGeminiError } from '@/lib/gemini-error';
 import { GEMINI_FAST, remapModelId } from '@/lib/models';
 import type { Teammate } from '@/types/teammate';
+import { geminiHistory, type ChatTurn } from './chat-history';
 
-export type StudioChatMessage = { role: 'user' | 'assistant'; content: string };
+export type StudioChatMessage = ChatTurn;
 
 export type StudioChatRequest = {
   messages: StudioChatMessage[];
@@ -69,7 +70,7 @@ export async function streamStudioChat(
     systemInstruction: systemParts.join('\n\n'),
   });
 
-  const history = req.messages.slice(0, -1).slice(-16).map((m) => ({
+  const history = geminiHistory(req.messages.slice(0, -1)).map((m) => ({
     role: m.role === 'user' ? ('user' as const) : ('model' as const),
     parts: [{ type: 'text' as const, text: m.content }],
   }));

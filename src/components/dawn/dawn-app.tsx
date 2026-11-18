@@ -172,7 +172,7 @@ function Shell() {
               New quest
             </button>
           )}
-          {offline && <OfflineCard line="Offline preview. Open live Dawn to chat with the guide." />}
+          {offline && <OfflineCard line="Desk not connected. Open your Dawn desk to chat with the guide." />}
           {!offline && (
             <Composer
               value={message}

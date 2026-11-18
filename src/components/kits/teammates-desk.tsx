@@ -54,7 +54,7 @@ export function TeammatesDesk() {
 
   return (
     <PageShell title="Teammates" lead="Builder and Reviewer share one chat. Hand the turn on when you want a second look.">
-      <DeskGate status={desk} offline="Offline preview. Open live Dawn to start a chat." />
+      <DeskGate status={desk} offline="Desk not connected. Open your Dawn desk to start a chat." />
       {desk === 'ready' && (
         <div className="dw-actions">
           <button type="button" className="dw-btn dw-btn--primary" onClick={() => { void start(); }}>New chat</button>

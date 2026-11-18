@@ -39,7 +39,7 @@ export default function ArtifactsPage() {
               <a href="https://gotha.artometrics.com/artifacts">Gotha Artifacts</a>.
             </p>
               {note && <p className="dw-alert" role="status">{note}</p>}
-              {offlineNote && <OfflineCard line="Offline preview. Open live Dawn to save a like." />}
+              {offlineNote && <OfflineCard line="Desk not connected. Open your Dawn desk to save a like." />}
               <RecipesBoard
                 onEvent={async (action, recipe) => {
                   if (desk !== 'ready') {

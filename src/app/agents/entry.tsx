@@ -29,7 +29,7 @@ export function AgentsEntry() {
   }
   return (
     <PageShell title="Agents" lead="Your agents and their chats.">
-      <DeskGate status={desk} offline="Offline preview. Open live Dawn to see your agents." />
+      <DeskGate status={desk} offline="Desk not connected. Open your Dawn desk to see your agents." />
     </PageShell>
   );
 }
