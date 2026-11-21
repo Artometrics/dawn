@@ -1,6 +1,7 @@
 import type { Auth, User } from 'firebase/auth';
 import type { Firestore } from 'firebase/firestore';
 import type { FirebaseApp } from 'firebase/app';
+import { startAppCheck } from './app-check';
 
 export type DawnMode = 'emulator' | 'hosted' | 'offline';
 
@@ -61,6 +62,7 @@ async function boot(): Promise<Boot> {
     const config = (await response.json()) as { apiKey?: string; projectId?: string; appId?: string };
     if (!config.apiKey || !config.projectId || !config.appId) throw new Error('incomplete');
     const app = initializeApp(config, 'dawn');
+    await startAppCheck(app);
     return { mode: 'hosted', app, auth: getAuth(app), db: getFirestore(app) };
   } catch {
     return { mode: 'offline', app: null, auth: null, db: null };
